@@ -2,7 +2,7 @@
 /**
  * cli.ts — `cxc subagents` operator surface (L9.3 / 093).
  *
- * Read/write the SAME `.codexclaw/subagents.json` store the MCP server and GUI use,
+ * Read/write the SAME `.cursorclaw/subagents.json` store the MCP server and GUI use,
  * so the terminal, the dashboard, and MCP all roundtrip one source of truth. Pure
  * arg parsing + a thin runner; the store owns validation (validateRolePatch) and the
  * atomic write. Zero third-party deps (node:* only) per the build constraint.
@@ -111,7 +111,7 @@ function parseProjectArgs(argv: string[]): ParsedSubagentsArgs {
 }
 
 const HELP = [
-  "cxc subagents — per-role subagent model/prompt config (.codexclaw/subagents.json)",
+  "cxc subagents — per-role subagent model/prompt config (.cursorclaw/subagents.json)",
   "",
   "  subagents               list all role configs",
   "  subagents get <role>    show one role config",
@@ -146,7 +146,7 @@ export function runSubagents(parsed: ParsedSubagentsArgs, cwd: string, nativeHom
     }
     case "trust-token": {
       const token = projectConfigTrustToken(cwd);
-      if (!token) return { code: 1, output: "subagents: cannot hash .codexclaw/subagents.json" };
+      if (!token) return { code: 1, output: "subagents: cannot hash .cursorclaw/subagents.json" };
       return { code: 0, output: `export CODEXCLAW_TRUST_PROJECT_SUBAGENTS='${token}'` };
     }
     case "register": {

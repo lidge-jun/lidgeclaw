@@ -16,7 +16,7 @@ import { atomicWrite, disabledPath, ensureDir } from "../src/store.ts";
 
 function workspace(): string {
   const dir = mkdtempSync(join(tmpdir(), "bgwake-"));
-  mkdirSync(join(dir, ".codexclaw"), { recursive: true });
+  mkdirSync(join(dir, ".cursorclaw"), { recursive: true });
   ensureDir(dir);
   return dir;
 }
@@ -114,7 +114,7 @@ test("SessionStart adopts a previous session's undelivered completion", () => {
 
 test("a corrupt record never blocks the session", () => {
   const cwd = workspace();
-  writeFileSync(join(cwd, ".codexclaw", "bg", "broken.json"), "{ not json", "utf8");
+  writeFileSync(join(cwd, ".cursorclaw", "bg", "broken.json"), "{ not json", "utf8");
   assert.equal(handleStop({ session_id: "S1", cwd }, cwd, NO_ENV), "");
   assert.equal(handleUserPromptSubmit({ session_id: "S1", cwd }, cwd, NO_ENV), "");
   assert.equal(handleSessionStart({ session_id: "S1", cwd }, cwd, NO_ENV), "");

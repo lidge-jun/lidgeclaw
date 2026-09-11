@@ -57,7 +57,7 @@ test("Windows short paths bind and resolve the same immutable worktree", { skip:
   assert.equal(realpathSync.native(shortRoot), root);
   const shortCwd = join(shortRoot, "native"), shortSource = join(shortRoot, "source");
   assert.equal(bindSessionSource(shortCwd, id, shortSource), f.source);
-  const path = join(f.cwd, ".codexclaw", "sources", `${id}.json`);
+  const path = join(f.cwd, ".cursorclaw", "sources", `${id}.json`);
   const bytes = readFileSync(path, "utf8");
   const binding = JSON.parse(bytes);
   assert.equal(binding.nativeCwd, f.cwd);
@@ -88,7 +88,7 @@ test("worktree change advances B and Check runs there while receipts stay native
   const c = edge(f.cwd, "C", "B"); assert.equal(c.code, 0, c.output);
   const r = runReceiptCli({ verb: "test", cwd: f.cwd, session: id, command: [process.execPath, "-e", `require('node:assert/strict').equal(process.cwd(), ${JSON.stringify(f.source)})`] });
   assert.equal(r.code, 0, r.output);
-  assert.ok(r.output.startsWith(join(f.cwd, ".codexclaw", "evidence")));
+  assert.ok(r.output.startsWith(join(f.cwd, ".cursorclaw", "evidence")));
   assert.equal(validateCheckReceipt(readState(f.cwd, id), id, r.output, f.cwd).ok, true);
   writeFileSync(join(f.source, "implemented"), "changed after check");
   assert.equal(validateCheckReceipt(readState(f.cwd, id), id, r.output, f.cwd).ok, false);
@@ -113,10 +113,10 @@ test("chat phase path observes the same bound source", t => {
 test("a removed source refuses progression and preserves the baseline", t => {
   const f = fixture(t); bind(f);
   assert.equal(edge(f.cwd, "B", "A").code, 0);
-  const before = readFileSync(join(f.cwd, ".codexclaw", "sessions", `${id}.json`), "utf8");
+  const before = readFileSync(join(f.cwd, ".cursorclaw", "sessions", `${id}.json`), "utf8");
   rmSync(f.source, { recursive: true });
   const r = edge(f.cwd, "C", "B"); assert.equal(r.code, 1);
-  assert.equal(readFileSync(join(f.cwd, ".codexclaw", "sessions", `${id}.json`), "utf8"), before);
+  assert.equal(readFileSync(join(f.cwd, ".cursorclaw", "sessions", `${id}.json`), "utf8"), before);
 });
 
 test("reproduction control: unbound native cwd misses real linked-worktree implementation", t => {
@@ -158,7 +158,7 @@ test("bound command rewrites cannot produce a passing receipt", t => {
 test("removing the binding is not implementation in CLI or chat", t => {
   const f = fixture(t); bind(f);
   assert.equal(edge(f.cwd, "B", "A").code, 0);
-  rmSync(join(f.cwd, ".codexclaw", "sources", `${id}.json`));
+  rmSync(join(f.cwd, ".cursorclaw", "sources", `${id}.json`));
   writeFileSync(join(f.cwd, "unrelated"), "not source work");
   const r = edge(f.cwd, "C", "B"); assert.equal(r.code, 1);
   assert.match(r.output, /SOURCE-ROOT/); assert.doesNotMatch(r.output, /SOURCE-DELTA-01/);
@@ -172,9 +172,9 @@ test("source command preserves native identity and refuses late or foreign bindi
   const late = edge(f.cwd, "B", "A"); assert.equal(late.code, 0);
   assert.equal(runSessionCli(["source", f.source], f.cwd, f.env).code, 1);
   writeState(f.cwd, { ...defaultState(id), phase: "A" });
-  const before = readFileSync(join(f.cwd, ".codexclaw", "sessions", `${id}.json`), "utf8");
+  const before = readFileSync(join(f.cwd, ".cursorclaw", "sessions", `${id}.json`), "utf8");
   bind(f);
-  assert.equal(readFileSync(join(f.cwd, ".codexclaw", "sessions", `${id}.json`), "utf8"), before);
+  assert.equal(readFileSync(join(f.cwd, ".cursorclaw", "sessions", `${id}.json`), "utf8"), before);
   const current = JSON.parse(runSessionCli(["current", "--json"], f.cwd, f.env).output);
   assert.equal(current.cwd, f.cwd); assert.equal(current.sourceCwd, f.source);
   assert.equal(current.sourceIdentity.sourceRoot, f.source);
@@ -189,10 +189,10 @@ test("final reviewer uses the bound worktree and rejects stale commits", t => {
   writeFileSync(join(f.source, "implemented"), "yes"); git("add", "."); git("commit", "-qm", "work");
   const identity = captureSessionSourceIdentity(f.cwd, id);
   writeState(f.cwd, { ...readState(f.cwd, id), slug: "review" });
-  const receipt = join(f.cwd, ".codexclaw", "evidence", "test.json");
+  const receipt = join(f.cwd, ".cursorclaw", "evidence", "test.json");
   mkdirSync(join(receipt, ".."), { recursive: true });
   writeFileSync(receipt, JSON.stringify({ kind: "test", sourceIdentity: identity }));
-  const planPath = join(f.cwd, ".codexclaw", "goalplans", "review", "goalplan.json");
+  const planPath = join(f.cwd, ".cursorclaw", "goalplans", "review", "goalplan.json");
   mkdirSync(join(planPath, ".."), { recursive: true });
   writeFileSync(planPath, JSON.stringify({ criteria: [], finalGate: { testReceiptPath: receipt } }));
   assert.equal(checkFinalGatePrereqs("[CXC-FINAL-GATE] review", id, f.cwd).ok, true);
@@ -226,7 +226,7 @@ for (const corruption of ["json", "owner", "symlink"]) {
   test(`damaged ${corruption} binding fails closed`, t => {
     const f = fixture(t); bind(f);
     assert.equal(edge(f.cwd, "B", "A").code, 0);
-    const path = join(f.cwd, ".codexclaw", "sources", `${id}.json`);
+    const path = join(f.cwd, ".cursorclaw", "sources", `${id}.json`);
     if (corruption === "json") writeFileSync(path, "broken{");
     if (corruption === "owner") {
       const b = JSON.parse(readFileSync(path, "utf8")); b.ownerSessionId = "foreign"; writeFileSync(path, JSON.stringify(b));
@@ -245,13 +245,13 @@ test("deleting a binding during Check cannot certify the native tree", t => {
   assert.equal(edge(f.cwd, "B", "A").code, 0);
   writeFileSync(join(f.source, "implemented"), "yes");
   assert.equal(edge(f.cwd, "C", "B").code, 0);
-  rmSync(join(f.cwd, ".codexclaw", "sources", `${id}.json`));
+  rmSync(join(f.cwd, ".cursorclaw", "sources", `${id}.json`));
   const r = runReceiptCli({ verb: "test", cwd: f.cwd, session: id, command: [process.execPath, "-e", "process.exitCode=0"] });
   assert.equal(r.code, 1, r.output);
   assert.match(r.output, /SOURCE-ROOT/);
-  const beforeRestore = readFileSync(join(f.cwd, ".codexclaw", "sessions", `${id}.json`), "utf8");
+  const beforeRestore = readFileSync(join(f.cwd, ".cursorclaw", "sessions", `${id}.json`), "utf8");
   bind(f);
-  assert.equal(readFileSync(join(f.cwd, ".codexclaw", "sessions", `${id}.json`), "utf8"), beforeRestore);
+  assert.equal(readFileSync(join(f.cwd, ".cursorclaw", "sessions", `${id}.json`), "utf8"), beforeRestore);
   const restored = runReceiptCli({ verb: "test", cwd: f.cwd, session: id,
     command: [process.execPath, "-e", `require('node:assert/strict').equal(process.cwd(), ${JSON.stringify(f.source)})`] });
   assert.equal(restored.code, 0, restored.output);
@@ -270,7 +270,7 @@ test("shipped CLI binds and checks a worktree without relocating native state", 
   writeFileSync(join(f.source, "implementation"), "real work");
   run("orchestrate", "C", "--session", id, "--attest", JSON.stringify({ from: "B", to: "C", did: "CLI fixture implemented" }));
   const receipt = run("receipt", "test", "--session", id, "--", process.execPath, "-e", `require('node:assert/strict').equal(process.cwd(), ${JSON.stringify(f.source)})`);
-  assert.ok(receipt.startsWith(join(f.cwd, ".codexclaw", "evidence")));
+  assert.ok(receipt.startsWith(join(f.cwd, ".cursorclaw", "evidence")));
   assert.equal(JSON.parse(readFileSync(receipt, "utf8")).sourceIdentity.sourceRoot, f.source);
   assert.equal(readState(f.cwd, id).phase, "C");
 });
@@ -287,7 +287,7 @@ test("explicit loop validation rejects a lost binding even for legacy goalplans"
   writeGoalplan(f.cwd, plan);
   const args = { verb: "validate" as const, cwd: f.cwd, session: id, slug: plan.slug, criteria: [] };
   assert.equal(runGoalplanCli(args).code, 0);
-  rmSync(join(f.cwd, ".codexclaw", "sources", `${id}.json`));
+  rmSync(join(f.cwd, ".cursorclaw", "sources", `${id}.json`));
   const result = runGoalplanCli(args);
   assert.equal(result.code, 1); assert.match(result.output, /SOURCE-ROOT/);
 });

@@ -431,8 +431,8 @@ test("030: slug-namespaced path, distinct from plan/interview dirs", () => {
   const plan = buildGoalplan({ objective: "Hello, World!!" });
   assert.equal(plan.slug, "hello-world");
   writeGoalplan(cwd, plan);
-  assert.equal(goalplanDir(cwd, plan.slug), join(cwd, ".codexclaw", "goalplans", "hello-world"));
-  assert.ok(existsSync(join(cwd, ".codexclaw", "goalplans", "hello-world", "goalplan.json")));
+  assert.equal(goalplanDir(cwd, plan.slug), join(cwd, ".cursorclaw", "goalplans", "hello-world"));
+  assert.ok(existsSync(join(cwd, ".cursorclaw", "goalplans", "hello-world", "goalplan.json")));
 });
 
 test("030: absent or malformed -> readGoalplan returns null (never throws)", () => {
@@ -466,7 +466,7 @@ test("goalplan slug is an identifier: stored traversal, mismatches, and symlink 
   }
   const linked = tmp();
   const outside = tmp();
-  symlinkDirSync(outside, join(linked, ".codexclaw"));
+  symlinkDirSync(outside, join(linked, ".cursorclaw"));
   assert.throws(() => writeGoalplan(linked, buildGoalplan({ objective: "linked root" })), /symlink/);
 });
 

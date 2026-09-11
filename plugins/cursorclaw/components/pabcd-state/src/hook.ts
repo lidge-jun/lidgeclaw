@@ -295,7 +295,7 @@ const PHASE_DIRECTIVES: Partial<Record<Phase, string>> = {
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
     "This also scopes the Mind instructions below. Load $codexclaw:cxc-interview for dimensions, questions, loop classification and readiness. Do not implement.",
     "INTERVIEW-GROUND-01: when tracker writes are authorized, `cxc scan record --session <id> --derive --map <questionId>=<dimension> ...`",
-    "records known[]/unknown[]; read `.codexclaw/sessions/<id>.json` before the next question. Report unmet actions, not false readiness.",
+    "records known[]/unknown[]; read `.cursorclaw/sessions/<id>.json` before the next question. Report unmet actions, not false readiness.",
     "INTERVIEW-RENDER-01: show knowns, the weakest dimension and the answer's impact before the question.",
     "INTERVIEW-INDEPENDENT-01: batch only INDEPENDENT questions; independence governs, not a count.",
   ].join("\n"),
@@ -458,8 +458,8 @@ export function loopArmDirective(platform: NodeJS.Platform = process.platform): 
   const advance = platform === "win32"
     ? [
         "4. Advance EVERY forward edge yourself. On Windows write the JSON first, then attest:",
-        `   \`'${PA_ATTEST_EXAMPLE}' | Set-Content -Encoding utf8 .codexclaw/attest.json\` then`,
-        "   `cxc orchestrate <phase> --session <id> --attest-file .codexclaw/attest.json` —",
+        `   \`'${PA_ATTEST_EXAMPLE}' | Set-Content -Encoding utf8 .cursorclaw/attest.json\` then`,
+        "   `cxc orchestrate <phase> --session <id> --attest-file .cursorclaw/attest.json` —",
         "   inline --attest cannot survive PowerShell argument parsing (quotes are stripped,",
         "   and escaping them splits the value at its first space).",
       ]
@@ -1501,8 +1501,8 @@ export function stopNextCommand(phase: Phase, platform: NodeJS.Platform = proces
   if (!json || !verb) return posix;
   // Backtick-quoted for the Stop reason renderer, same as the POSIX table entries.
   const q = String.fromCharCode(96);
-  const write = q + "'" + json + "' | Set-Content -Encoding utf8 .codexclaw/attest.json" + q;
-  const run = q + "cxc orchestrate " + verb + " --attest-file .codexclaw/attest.json" + q;
+  const write = q + "'" + json + "' | Set-Content -Encoding utf8 .cursorclaw/attest.json" + q;
+  const run = q + "cxc orchestrate " + verb + " --attest-file .cursorclaw/attest.json" + q;
   return write + " then " + run;
 }
 
@@ -1573,7 +1573,7 @@ export function buildStopBlock(
   // whether Stop blocks. `escalate`/`stop` signal a repeated tool failure worth a rethink.
   if (friction === "escalate" || friction === "stop") {
     lines.push(
-      `Friction signal (${friction}): a tool failure has recurred — review .codexclaw/friction.jsonl and change approach rather than repeating the same command.`,
+      `Friction signal (${friction}): a tool failure has recurred — review .cursorclaw/friction.jsonl and change approach rather than repeating the same command.`,
     );
   }
   lines.push("C→D requires checkOutput+exitCode. D is not a resting state; close the cycle back to IDLE.");
@@ -1612,7 +1612,7 @@ export function readStopWorkContext(cwd: string, state: State): StopWorkContext 
       readyTasks: [],
       expectedEvidence: null,
       waitingOn: [`the plan is not a valid graph: ${integrity.join("; ")}`],
-      ledgerPath: `.codexclaw/goalplans/${slug}/ledger.jsonl`,
+      ledgerPath: `.cursorclaw/goalplans/${slug}/ledger.jsonl`,
     };
   }
 
@@ -1636,7 +1636,7 @@ export function readStopWorkContext(cwd: string, state: State): StopWorkContext 
     })),
     expectedEvidence: unmet[0]?.expectedEvidence ?? null,
     waitingOn,
-    ledgerPath: `.codexclaw/goalplans/${slug}/ledger.jsonl`,
+    ledgerPath: `.cursorclaw/goalplans/${slug}/ledger.jsonl`,
   };
 }
 
@@ -1659,7 +1659,7 @@ export function buildGoalIdleBlock(
   // Same PowerShell constraint as loopArmDirective: inline JSON cannot survive
   // argument parsing, so win32 gets the write-then-attest pair instead.
   const startNext = platform === "win32"
-    ? `Either start the next work-phase now: write the JSON with \`'{"from":"IDLE","to":"P","did":"<diff-level plan for the next work-phase>"}' | Set-Content -Encoding utf8 .codexclaw/attest.json\` then run \`cxc orchestrate P --session ${sessionId} --attest-file .codexclaw/attest.json\``
+    ? `Either start the next work-phase now: write the JSON with \`'{"from":"IDLE","to":"P","did":"<diff-level plan for the next work-phase>"}' | Set-Content -Encoding utf8 .cursorclaw/attest.json\` then run \`cxc orchestrate P --session ${sessionId} --attest-file .cursorclaw/attest.json\``
     : `Either start the next work-phase now: \`cxc orchestrate P --session ${sessionId} --attest '{"from":"IDLE","to":"P","did":"<diff-level plan for the next work-phase>"}'\``;
   const lines = [
     "[codexclaw — goal continuation] A host goal is ACTIVE but no PABCD cycle is in flight.",
@@ -1682,7 +1682,7 @@ export function buildGoalIdleBlock(
     if (work.ledgerPath) lines.push(`Record progress in: ${work.ledgerPath}`);
   } else if (plan && plan.workPhases.length === 0 && plan.criteria.length === 0) {
     lines.push(
-      `The bound goalplan '${state.slug}' is EMPTY: register workPhases[]/criteria[] in .codexclaw/goalplans/${state.slug}/goalplan.json (schema in $cxc-loop) so remaining work is durable and the E8 gate can pass.`,
+      `The bound goalplan '${state.slug}' is EMPTY: register workPhases[]/criteria[] in .cursorclaw/goalplans/${state.slug}/goalplan.json (schema in $cxc-loop) so remaining work is durable and the E8 gate can pass.`,
     );
   } else if (!state.slug) {
     lines.push(

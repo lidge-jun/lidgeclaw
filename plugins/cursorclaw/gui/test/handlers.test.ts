@@ -1,6 +1,6 @@
 /**
  * handlers.test.ts — L27 GUI API handler coverage (node:test).
- * Verifies save persists to .codexclaw/subagents.json (AC1/AC2) and link-bar
+ * Verifies save persists to .cursorclaw/subagents.json (AC1/AC2) and link-bar
  * provider gating (AC3) without a browser.
  */
 import { test } from "node:test";
@@ -28,8 +28,8 @@ test("AC1: POST reviewer model persists to subagents.json and GET reflects it", 
   const post = postSubagents(cwd, { role: "reviewer", mode: "model", model: "gpt-5.5" });
   assert.equal(post.status, 200);
   // on disk
-  assert.ok(existsSync(join(cwd, ".codexclaw", "subagents.json")));
-  const onDisk = JSON.parse(readFileSync(join(cwd, ".codexclaw", "subagents.json"), "utf8"));
+  assert.ok(existsSync(join(cwd, ".cursorclaw", "subagents.json")));
+  const onDisk = JSON.parse(readFileSync(join(cwd, ".cursorclaw", "subagents.json"), "utf8"));
   assert.equal(onDisk.roles.reviewer.model, "gpt-5.5");
   // reload via GET
   const get = getSubagents(cwd);

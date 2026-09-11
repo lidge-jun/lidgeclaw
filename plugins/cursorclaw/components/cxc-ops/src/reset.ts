@@ -2,23 +2,23 @@
  * reset.ts — scoped codexclaw state cleanup (L20 / 203).
  *
  * Scopes (never touches codex global config under ~/.codex):
- *  - "state":     PABCD state only — .codexclaw/sessions/*.json + .codexclaw/ledger.jsonl
- *                 + .codexclaw/interviews/ and affordance-recovery/ hint markers
- *  - "generated": generated artifacts — .codexclaw/interview/, freeze manifests
- *  - "goalplans": project-local goalplan substrate — .codexclaw/goalplans/ (lazygap_impl 030).
+ *  - "state":     PABCD state only — .cursorclaw/sessions/*.json + .cursorclaw/ledger.jsonl
+ *                 + .cursorclaw/interviews/ and affordance-recovery/ hint markers
+ *  - "generated": generated artifacts — .cursorclaw/interview/, freeze manifests
+ *  - "goalplans": project-local goalplan substrate — .cursorclaw/goalplans/ (lazygap_impl 030).
  *                 A goalplan can outlive a session reset (like a freeze manifest), so "state"
  *                 does NOT touch it; only "goalplans" or "all" remove it.
- *  - "all":       the entire .codexclaw/ working dir
+ *  - "all":       the entire .cursorclaw/ working dir
  *
  * Returns the list of removed paths so callers (and tests) can verify the blast
- * radius. Pure filesystem; no network; refuses to escape the .codexclaw subtree.
+ * radius. Pure filesystem; no network; refuses to escape the .cursorclaw subtree.
  */
 import { existsSync, readdirSync, rmSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 export type ResetScope = "state" | "generated" | "goalplans" | "all";
 
-const STATE_DIR = ".codexclaw";
+const STATE_DIR = ".cursorclaw";
 const SESSIONS_SUBDIR = "sessions";
 const LEDGER_FILE = "ledger.jsonl";
 const INTERVIEW_SUBDIR = "interview";
@@ -43,7 +43,7 @@ function rmIfExists(path: string, removed: string[], absent: string[]): void {
 
 /**
  * Compute and apply the reset for a given scope rooted at `cwd`. The codexclaw
- * state dir is always `<cwd>/.codexclaw`; nothing outside it is ever touched.
+ * state dir is always `<cwd>/.cursorclaw`; nothing outside it is ever touched.
  */
 export function runReset(cwd: string, scope: ResetScope): ResetResult {
   const stateDir = join(cwd, STATE_DIR);

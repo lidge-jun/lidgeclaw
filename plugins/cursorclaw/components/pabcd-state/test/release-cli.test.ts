@@ -22,7 +22,7 @@ function scratch(): string {
 }
 
 function candidatePath(cwd: string): string {
-  return join(cwd, ".codexclaw", "release", "candidate-0.2.0-beta.1.json");
+  return join(cwd, ".cursorclaw", "release", "candidate-0.2.0-beta.1.json");
 }
 
 function read(cwd: string): CandidateManifest {

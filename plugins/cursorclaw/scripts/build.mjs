@@ -95,7 +95,7 @@ function compileComponent(name) {
 // ---- validation ----
 async function validate() {
   const errors = [];
-  const manifestPath = join(pluginRoot, ".codex-plugin", "plugin.json");
+  const manifestPath = join(pluginRoot, ".cursor-plugin", "plugin.json");
   const manifestText = readFileSync(manifestPath, "utf8");
   if (PLACEHOLDER_RE.test(manifestText)) errors.push(`placeholder marker in ${manifestPath}`);
   const manifest = JSON.parse(manifestText);
@@ -104,8 +104,20 @@ async function validate() {
   // Imported from source (.ts) rather than dist/ on purpose — calling dist here
   // would make the build depend on its own output. Node 24 strips types natively,
   // so no flag is needed. Kind is ignored: every issue is just a build error.
-  const { validateManifestTargets } = await import("../components/cxc-ops/src/manifest-targets.ts");
-  for (const issue of validateManifestTargets(pluginRoot)) errors.push(issue.message);
+  // Cursor manifests declare hooks via hooks/hooks.json, not Codex hooks[] file lists.
+  // Keep Codex target validation only when a legacy hooks array is present.
+  try {
+    const manifestHooks = manifest.hooks;
+    if (Array.isArray(manifestHooks)) {
+      const { validateManifestTargets } = await import("../components/cxc-ops/src/manifest-targets.ts");
+      for (const issue of validateManifestTargets(pluginRoot)) errors.push(issue.message);
+    } else if (typeof manifestHooks === "string") {
+      const hooksPath = join(pluginRoot, manifestHooks.replace(/^\.\//, ""));
+      if (!existsSync(hooksPath)) errors.push(`hooks config missing: ${hooksPath}`);
+    }
+  } catch (err) {
+    errors.push(`manifest target validation failed: ${err instanceof Error ? err.message : String(err)}`);
+  }
 
   // skills: dir exists + every skill dir has a SKILL.md.
   const skillsDir = join(pluginRoot, (manifest.skills ?? "./skills/").replace(/^\.\//, ""));
@@ -160,12 +172,12 @@ if (isDirect) {
   const { emitted, errors } = await build();
   const total = Object.values(emitted).reduce((n, a) => n + a.length, 0);
   for (const [name, files] of Object.entries(emitted)) {
-    console.log(`[codexclaw] compiled ${name}: ${files.length} file(s) -> dist/`);
+    console.log(`[cursorclaw] compiled ${name}: ${files.length} file(s) -> dist/`);
   }
   if (errors.length) {
-    console.error(`[codexclaw] BUILD VALIDATION FAILED (${errors.length}):`);
+    console.error(`[cursorclaw] BUILD VALIDATION FAILED (${errors.length}):`);
     for (const e of errors) console.error(`  - ${e}`);
     process.exit(1);
   }
-  console.log(`[codexclaw] build OK — ${total} files compiled, layout validated.`);
+  console.log(`[cursorclaw] build OK — ${total} files compiled, layout validated.`);
 }

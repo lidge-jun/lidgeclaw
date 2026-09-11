@@ -134,6 +134,6 @@ test("freeze --help prints usage and writes nothing", () => {
   const args = parseFreezeArgs(["--help", "--cwd", cwd, "--session", "s1"]);
   const out = runFreeze(args);
   assert.match(out, /Usage:/);
-  assert.equal(existsSync(join(cwd, ".codexclaw", "interview", "freeze.json")), false);
+  assert.equal(existsSync(join(cwd, ".cursorclaw", "interview", "freeze.json")), false);
 });
 

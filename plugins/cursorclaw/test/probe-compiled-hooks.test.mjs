@@ -107,7 +107,7 @@ test("compiled worktree guard denies self-deletion without executing it; benign 
 
 test("compiled goal-completion gate denies mid-cycle complete but allows blocked", t => {
   const f = compiledHookFixture(t, "pre-tool-use-guarding-goal-complete.json");
-  putJson(f.cwd, ".codexclaw/sessions/probe-complete.json", {
+  putJson(f.cwd, ".cursorclaw/sessions/probe-complete.json", {
     phase: "B", sessionId: "probe-complete", slug: "", updatedAt: "2026-01-01T00:00:00Z",
     flags: { interview: false, auditPassed: false, checkPassed: false }, supersededBy: null,
     injectedTurns: [], lastInjectedPhase: "B", orchestrationActive: true, interview: null,
@@ -120,5 +120,5 @@ test("compiled goal-completion gate denies mid-cycle complete but allows blocked
   assert.equal(out.permissionDecision, "deny");
   assert.match(out.permissionDecisionReason, /GOAL-COMPLETE-GATE-01/);
   assert.equal(compiledOutput(f, { ...payload, tool_input: { status: "blocked" } }), "");
-  assert.equal(readJson(join(f.cwd, ".codexclaw/sessions/probe-complete.json")).phase, "B");
+  assert.equal(readJson(join(f.cwd, ".cursorclaw/sessions/probe-complete.json")).phase, "B");
 });

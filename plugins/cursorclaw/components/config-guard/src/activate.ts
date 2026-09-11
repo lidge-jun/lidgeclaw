@@ -15,7 +15,7 @@ import {
 import { autoEnabledManagedKeys, managedKeyId } from "./managed-keys.ts";
 import { readTableKey, setTableKey } from "./toml-edit.ts";
 
-export const INSTALL_MANIFEST = ".codexclaw-install.json";
+export const INSTALL_MANIFEST = ".cursorclaw-install.json";
 
 export interface FlagRecord {
   priorEnabled: boolean;
@@ -213,7 +213,7 @@ export function activate(deps: ActivateDeps): InstallManifest {
   // manifest promises to restore is the user's pre-install state.
   const preInstallConfig = existsSync(configPath) ? readFileSync(configPath, "utf8") : "";
   if (existsSync(configPath)) {
-    backupPath = `${configPath}.codexclaw-${now().replace(/[:.]/g, "-")}.bak`;
+    backupPath = `${configPath}.cursorclaw-${now().replace(/[:.]/g, "-")}.bak`;
     copyFileSync(configPath, backupPath);
   }
 

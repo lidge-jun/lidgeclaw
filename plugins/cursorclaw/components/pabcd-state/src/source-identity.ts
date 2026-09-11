@@ -154,7 +154,7 @@ function hashRecords(cwd: string, records: StatusRecord[]): string {
 
 /**
  * Entries the B>C source-delta gate must not count as implementation work
- * (SOURCE-DELTA-01, 050). The FSM's own writes live under `.codexclaw/` — session
+ * (SOURCE-DELTA-01, 050). The FSM's own writes live under `.cursorclaw/` — session
  * state, the ledger, goalplans — so without this the act of recording a transition
  * would register as a tree change and the gate would clear itself on every run.
  * The whole directory is excluded, not just sessions, because every file in it is
@@ -163,10 +163,10 @@ function hashRecords(cwd: string, records: StatusRecord[]): string {
  * Scoped to this option so the default identity — used for review-round and receipt
  * binding, where the state directory genuinely is part of the tree — is unchanged.
  */
-const STATE_DIR_PREFIX = ".codexclaw/";
+const STATE_DIR_PREFIX = ".cursorclaw/";
 
 export interface CaptureOptions {
-  /** Drop `.codexclaw/` entries before hashing. Default false. */
+  /** Drop `.cursorclaw/` entries before hashing. Default false. */
   excludeCodexclawArtifacts?: boolean;
   /**
    * #49: paths the check command is EXPECTED to rewrite. A validator that

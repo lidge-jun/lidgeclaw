@@ -2,8 +2,8 @@
  * freeze-cli.ts — runtime wiring for the L10.3 freeze/stale path (HIGH-1/HIGH-4).
  *
  * `cli.js freeze --dry-run [--cwd <dir>] [--session <id>]` reads the session
- * interview tracker, hashes the plan files under .codexclaw/plan/<slug>/, builds
- * (or previews) the freeze manifest at .codexclaw/interview/freeze.json, runs a
+ * interview tracker, hashes the plan files under .cursorclaw/plan/<slug>/, builds
+ * (or previews) the freeze manifest at .cursorclaw/interview/freeze.json, runs a
  * stale check against any existing manifest, and prints a human summary. This
  * makes triage/freeze reachable from production, not just exported definitions.
  */
@@ -59,7 +59,7 @@ export function parseFreezeArgs(argv: string[]): FreezeCliArgs {
     sessionId: get("--session") ?? "default",
     dryRun: argv.includes("--dry-run"),
     // 260825 wp1: `cxc freeze --help` used to fall straight through to runFreeze,
-    // which WROTE .codexclaw/interview/freeze.json and exited 0 — a workspace
+    // which WROTE .cursorclaw/interview/freeze.json and exited 0 — a workspace
     // mutation behind a read-only-looking flag, with nothing in the output to
     // signal it. Help is now parsed, and runFreeze returns before any IO.
     help: argv.length === 0 || argv.some((a) => a === "help" || a === "--help" || a === "-h"),
@@ -77,8 +77,8 @@ export function runFreeze(args: FreezeCliArgs): string {
       "  cxc freeze --help",
       "",
       "Notes:",
-      "  Hashes the plan files under .codexclaw/plan/<slug>/ and writes the manifest",
-      "  at .codexclaw/interview/freeze.json, then reports staleness against any",
+      "  Hashes the plan files under .cursorclaw/plan/<slug>/ and writes the manifest",
+      "  at .cursorclaw/interview/freeze.json, then reports staleness against any",
       "  existing manifest.",
       "  --dry-run previews without writing. --help never writes.",
     ].join("\n");

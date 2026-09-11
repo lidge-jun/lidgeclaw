@@ -56,7 +56,7 @@ test("080.1: recordFriction increments the same signature and escalates", () => 
   assert.equal(recordFriction(cwd, "Bash", "fatal: boom at x.ts:1:1"), "retry");
   assert.equal(recordFriction(cwd, "Bash", "fatal: boom at x.ts:2:9"), "escalate");
   assert.equal(recordFriction(cwd, "Bash", "fatal: boom at x.ts:3:3"), "stop");
-  assert.ok(existsSync(join(cwd, ".codexclaw", "friction.jsonl")));
+  assert.ok(existsSync(join(cwd, ".cursorclaw", "friction.jsonl")));
   assert.equal(peakFrictionVerdict(cwd), "stop");
 });
 

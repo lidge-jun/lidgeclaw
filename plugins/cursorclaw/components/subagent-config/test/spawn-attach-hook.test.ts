@@ -9,7 +9,7 @@
  *    ambiguous/mixed line is protected verbatim — false negatives beat
  *    message corruption.
  *  - the leaf topology guard (D1 deny + D2 block) applies to BOTH surfaces.
- *  - model AND reasoning_effort routing from `.codexclaw/subagents.json` applies to
+ *  - model AND reasoning_effort routing from `.cursorclaw/subagents.json` applies to
  *    BOTH surfaces, decided independently per field, skipped on full-history forks.
  *  - v2-shaped spawns additionally get SKILL.md body inlining (atomic overflow).
  *  - native V2 hook names (collaborationspawn_agent) are accepted.
@@ -90,8 +90,8 @@ function spawnPayloadAt(cwd: string, toolInput: Record<string, unknown>): string
 
 function workspaceWithConfig(roles: Record<string, unknown>): string {
   const cwd = tempCwd("cxc-spawn-attach-");
-  mkdirSync(join(cwd, ".codexclaw"), { recursive: true });
-  writeFileSync(join(cwd, ".codexclaw", "subagents.json"), JSON.stringify({ roles }));
+  mkdirSync(join(cwd, ".cursorclaw"), { recursive: true });
+  writeFileSync(join(cwd, ".cursorclaw", "subagents.json"), JSON.stringify({ roles }));
   return cwd;
 }
 
@@ -452,7 +452,7 @@ test("v2 root spawn: guard + configured model/effort injected on a non-full fork
     ui.message,
     `${LEAF_GUARD_BLOCK}\n\nreview the frontend diff\n\n${skillAffordanceBlock(SKILLS_DIR)}`,
   );
-  // 260710 parity: v2 spawns now honor .codexclaw/subagents.json like v1 (the
+  // 260710 parity: v2 spawns now honor .cursorclaw/subagents.json like v1 (the
   // "review" keyword routes this explorer spawn to the reviewer role, which has
   // no config here, so the explorer config does NOT apply — assert via a
   // non-review message instead below; this payload keeps the explorer wording).

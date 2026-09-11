@@ -15,8 +15,8 @@
  *    phase-I / context-pressure / stagnation guards.
  *
  * State lives in files (no orchestrator server):
- *  - .codexclaw/sessions/<session>.json  (per-session phase + injectedTurns)
- *  - .codexclaw/ledger.jsonl             (transition audit trail)
+ *  - .cursorclaw/sessions/<session>.json  (per-session phase + injectedTurns)
+ *  - .cursorclaw/ledger.jsonl             (transition audit trail)
  *
  * argv: [node, cli.ts, kind, event] e.g. ["...", "...", "hook", "user-prompt-submit"].
  */

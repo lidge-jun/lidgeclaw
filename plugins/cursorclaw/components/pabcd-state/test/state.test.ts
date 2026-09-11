@@ -473,7 +473,7 @@ test("131: appendInterviewEvent writes parseable scan events; readInterviewEvent
     assert.equal(events.length, 2);
     assert.equal(events[0].event, "scan_started");
     assert.equal(events[1].event, "scan_completed");
-    // file lives under .codexclaw/interviews/
+    // file lives under .cursorclaw/interviews/
     assert.ok(existsSync(join(cwd, STATE_DIR, INTERVIEWS_SUBDIR, "iv.jsonl")));
     // missing session -> []
     assert.deepEqual(readInterviewEvents(cwd, "nope"), []);

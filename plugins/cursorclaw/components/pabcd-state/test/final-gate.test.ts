@@ -53,7 +53,7 @@ function gate(over: Partial<FinalGateState> = {}): FinalGateState {
     status: "approved",
     reviewRoundId: "r1",
     sourceIdentity: HERE,
-    testReceiptPath: ".codexclaw/evidence/test.json",
+    testReceiptPath: ".cursorclaw/evidence/test.json",
     verdict: "pass",
     qaRequired: false,
     updatedAt: "2026-01-01T00:00:00.000Z",
@@ -227,13 +227,13 @@ test("v2 rejects a reviewer who looked at a different tree", () => {
 test("v2 rejects a receipt produced against a different tree", () => {
   const dir = cwd();
   const p = plan({ schemaVersion: 2, finalGate: gate(), reviewRounds: [round()] });
-  assert.match(reasons(p, ctx(dir, HERE, { "test:.codexclaw/evidence/test.json": ELSEWHERE })), /test receipt describes a different source/);
+  assert.match(reasons(p, ctx(dir, HERE, { "test:.cursorclaw/evidence/test.json": ELSEWHERE })), /test receipt describes a different source/);
 });
 
 test("v2 reports a receipt the parser refused", () => {
   const dir = cwd();
   const p = plan({ schemaVersion: 2, finalGate: gate(), reviewRounds: [round()] });
-  assert.match(reasons(p, ctx(dir, HERE, { "test:.codexclaw/evidence/test.json": "kind mismatch" })), /test receipt is not usable/);
+  assert.match(reasons(p, ctx(dir, HERE, { "test:.cursorclaw/evidence/test.json": "kind mismatch" })), /test receipt is not usable/);
 });
 
 test("v2 rejects a missing test receipt path", () => {
@@ -318,12 +318,12 @@ test("computeQaRequired scans the whole plan", () => {
 
 test("finalGate, schemaVersion and surface survive a write/read round trip", () => {
   const dir = cwd();
-  const p = plan({ schemaVersion: 2, finalGate: gate({ qaRequired: true, qaReceiptPath: ".codexclaw/evidence/qa.json" }), reviewRounds: [round()] });
+  const p = plan({ schemaVersion: 2, finalGate: gate({ qaRequired: true, qaReceiptPath: ".cursorclaw/evidence/qa.json" }), reviewRounds: [round()] });
   writeGoalplan(dir, p);
   const back = readGoalplan(dir, p.slug);
   assert.equal(back?.schemaVersion, 2);
   assert.equal(back?.finalGate?.qaRequired, true);
-  assert.equal(back?.finalGate?.qaReceiptPath, ".codexclaw/evidence/qa.json");
+  assert.equal(back?.finalGate?.qaReceiptPath, ".cursorclaw/evidence/qa.json");
   assert.equal(back?.finalGate?.sourceIdentity?.commitSha, "aaaaaaa");
   assert.equal(back?.criteria[0]?.surface, "logic");
 });

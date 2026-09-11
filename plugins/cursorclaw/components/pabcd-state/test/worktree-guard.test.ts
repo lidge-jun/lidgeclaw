@@ -265,7 +265,7 @@ test("UserPromptSubmit: managed + rename intent injects once per session (dedupe
   try {
     const first = handleWorktreeGuard(payload());
     assert.match(first, /WORKTREE-GUARD-02/);
-    const marker = join(rig.checkoutRoot, ".codexclaw", "worktree-guard", `${session}.json`);
+    const marker = join(rig.checkoutRoot, ".cursorclaw", "worktree-guard", `${session}.json`);
     assert.equal(existsSync(marker), true);
     const second = handleWorktreeGuard(payload());
     assert.equal(second, "");

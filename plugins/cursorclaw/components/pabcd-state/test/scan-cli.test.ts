@@ -5,7 +5,7 @@
  * failure modes, the null-tracker init path (fresh session → round 1), roundId
  * monotonicity, the both-counters contract (scanRounds AND lastScanRoundId move
  * together, A2-round B2), the durable ledger append
- * (.codexclaw/interviews/<id>.jsonl scan_completed rows), and that one record
+ * (.cursorclaw/interviews/<id>.jsonl scan_completed rows), and that one record
  * satisfies the scanRan half of the I->P readiness soft-gate.
  */
 import { test } from "node:test";
@@ -119,14 +119,14 @@ test("scan record: second record is monotonic (round 2) and keeps both counters 
   }
 });
 
-test("scan record: appends scan_completed rows to .codexclaw/interviews/<id>.jsonl", () => {
+test("scan record: appends scan_completed rows to .cursorclaw/interviews/<id>.jsonl", () => {
   const cwd = freshCwd();
   try {
     record(cwd, "s-ledger", 1, 1);
     record(cwd, "s-ledger", 0, 0);
 
     // Raw file: two JSONL rows at the documented path.
-    const raw = readFileSync(join(cwd, ".codexclaw", "interviews", "s-ledger.jsonl"), "utf8");
+    const raw = readFileSync(join(cwd, ".cursorclaw", "interviews", "s-ledger.jsonl"), "utf8");
     const rows = raw.trim().split("\n").map((line) => JSON.parse(line) as Record<string, unknown>);
     assert.equal(rows.length, 2);
     for (const row of rows) assert.equal(row.event, "scan_completed");

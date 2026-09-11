@@ -71,17 +71,17 @@ test("default-mode invariant: switching back to default clears the model", () =>
 
 test("malformed file -> defaults, never throws", () => {
   const cwd = tmp();
-  mkdirSync(join(cwd, ".codexclaw"), { recursive: true });
-  writeFileSync(join(cwd, ".codexclaw", "subagents.json"), "{ not json ]");
+  mkdirSync(join(cwd, ".cursorclaw"), { recursive: true });
+  writeFileSync(join(cwd, ".cursorclaw", "subagents.json"), "{ not json ]");
   const cfg = readConfig(cwd);
   assert.deepEqual(cfg, defaultConfig());
 });
 
 test("partial/invalid role values normalized per-field (model-mode missing model -> default)", () => {
   const cwd = tmp();
-  mkdirSync(join(cwd, ".codexclaw"), { recursive: true });
+  mkdirSync(join(cwd, ".cursorclaw"), { recursive: true });
   writeFileSync(
-    join(cwd, ".codexclaw", "subagents.json"),
+    join(cwd, ".cursorclaw", "subagents.json"),
     JSON.stringify({ roles: { reviewer: { mode: "model", model: 123, promptOverride: 7 } } }),
   );
   const r = readConfig(cwd).roles.reviewer;
@@ -118,9 +118,9 @@ test("effort: offered set is exactly the catalog-supported wire values (no none/
 
 test("effort: unknown persisted value normalizes to null (inherit), read never throws", () => {
   const cwd = tmp();
-  mkdirSync(join(cwd, ".codexclaw"), { recursive: true });
+  mkdirSync(join(cwd, ".cursorclaw"), { recursive: true });
   writeFileSync(
-    join(cwd, ".codexclaw", "subagents.json"),
+    join(cwd, ".cursorclaw", "subagents.json"),
     JSON.stringify({ roles: { executor: { mode: "default", model: null, effort: "ultra", promptOverride: null } } }),
   );
   assert.equal(readConfig(cwd).roles.executor.effort, null);
@@ -137,9 +137,9 @@ test("effort: independent of mode — survives a default-mode role and resolves 
 test("atomic write leaves no orphan .tmp", () => {
   const cwd = tmp();
   setRole(cwd, "reviewer", { mode: "model", model: "m1" });
-  const files = readdirSync(join(cwd, ".codexclaw"));
+  const files = readdirSync(join(cwd, ".cursorclaw"));
   assert.ok(!files.some((f) => f.endsWith(".tmp")), `orphan tmp left: ${files.join(",")}`);
-  assert.ok(existsSync(join(cwd, ".codexclaw", "subagents.json")));
+  assert.ok(existsSync(join(cwd, ".cursorclaw", "subagents.json")));
 });
 
 test("merged validation: {mode:'model'} alone passes when the role already has a model", () => {
@@ -167,7 +167,7 @@ test("Git-tracked project config is ignored until the operator explicitly trusts
   const cwd = tmp();
   setRole(cwd, "executor", { mode: "model", model: "repo-model", promptOverride: "repo instructions" });
   execFileSync("git", ["init", "-q"], { cwd });
-  execFileSync("git", ["add", "-f", ".codexclaw/subagents.json"], { cwd });
+  execFileSync("git", ["add", "-f", ".cursorclaw/subagents.json"], { cwd });
 
   const denied = resolveSpawnConfig(cwd, "executor", { CODEXCLAW_HOME: join(cwd, "test-global") });
   assert.equal(denied.usesMainModel, true);
@@ -183,11 +183,11 @@ test("Git-tracked project config is ignored until the operator explicitly trusts
   const other = tmp();
   setRole(other, "executor", { mode: "model", model: "repo-model", promptOverride: "repo instructions" });
   execFileSync("git", ["init", "-q"], { cwd: other });
-  execFileSync("git", ["add", "-f", ".codexclaw/subagents.json"], { cwd: other });
+  execFileSync("git", ["add", "-f", ".cursorclaw/subagents.json"], { cwd: other });
   assert.notEqual(projectConfigTrustToken(other), token, "the same bytes in another repository need separate review");
   assert.equal(resolveSpawnConfig(other, "executor", { CODEXCLAW_HOME: join(cwd, "test-global"), CODEXCLAW_TRUST_PROJECT_SUBAGENTS: token! }).model, null);
 
-  writeFileSync(join(cwd, ".codexclaw", "subagents.json"), JSON.stringify({ roles: {} }));
+  writeFileSync(join(cwd, ".cursorclaw", "subagents.json"), JSON.stringify({ roles: {} }));
   assert.notEqual(projectConfigTrustToken(cwd), token, "editing the reviewed config invalidates trust");
   assert.equal(resolveSpawnConfig(cwd, "executor", { CODEXCLAW_HOME: join(cwd, "test-global"), CODEXCLAW_TRUST_PROJECT_SUBAGENTS: token! }).model, null);
 });

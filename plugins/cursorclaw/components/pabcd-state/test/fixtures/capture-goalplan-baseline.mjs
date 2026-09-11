@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 import { GOALPLAN_FILE, goalplanDir, readGoalplanDetailed } from "../../src/goalplan.ts";
 
 const repo = process.cwd();
-const sourceRoot = join(repo, ".codexclaw", "goalplans");
+const sourceRoot = join(repo, ".cursorclaw", "goalplans");
 const output = join(dirname(fileURLToPath(import.meta.url)), "goalplans-pre-change-baseline.json");
 const measuredOn = "2026-08-29";
 

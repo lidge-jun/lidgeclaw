@@ -1,6 +1,6 @@
 /**
  * session-split.test.ts — issue #48: session files live at
- * `<cwd>/.codexclaw/sessions/<id>.json`, so the same `--session` id resolves to
+ * `<cwd>/.cursorclaw/sessions/<id>.json`, so the same `--session` id resolves to
  * different state depending on where the process started.
  *
  * Reported symptom: a thread whose cwd was `~/.cli-jaw` while its work was in

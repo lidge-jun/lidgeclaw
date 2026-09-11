@@ -103,7 +103,7 @@ for (const role of ROLES) test(`${role}: primary -> first fallback -> main-direc
   assert.equal(end.independentReviewRequired, role === "reviewer");
   assert.equal(end.attempts[0].observedModel, null);
   assert.equal(call({ action: "status" }).action, "main-direct");
-  const raw = readFileSync(join(cwd, ".codexclaw", "dispatches", base.sessionId, base.dispatchId + ".json"), "utf8");
+  const raw = readFileSync(join(cwd, ".cursorclaw", "dispatches", base.sessionId, base.dispatchId + ".json"), "utf8");
   assert.equal(JSON.parse(raw).attempts.length, 2);
 });
 test("managed hook preserves fallback null effort and logical reviewer role", () => {
@@ -121,7 +121,7 @@ test("invalid IDs, foreign sessions and concurrent lock fail closed", () => {
   const { call, start, cwd, base } = fixture();
   assert.throws(() => call({ action: "status", dispatchId: "../escape" }), /invalid/);
   assert.throws(() => runDispatch(cwd, { ...base, action: "status" }, { CODEX_THREAD_ID: "other" }), /native main session/);
-  mkdirSync(join(cwd, ".codexclaw", "dispatches", base.sessionId, base.dispatchId + ".json.lock"));
+  mkdirSync(join(cwd, ".cursorclaw", "dispatches", base.sessionId, base.dispatchId + ".json.lock"));
   assert.throws(() => call({ action: "claim", attemptId: start.attemptId }), /EEXIST/);
 });
 test("error decoder honors envelope code and does not mine quoted task content", () => {

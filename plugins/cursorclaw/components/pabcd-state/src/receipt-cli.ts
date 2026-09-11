@@ -84,7 +84,7 @@ export function runReceiptCli(args: ReceiptCliArgs): ReceiptCliResult {
         "Notes:",
         "  Everything after `--` is the command; nothing before it is.",
         "  The session must be at phase C — a receipt is produced during Check.",
-        "  The receipt is written to <cwd>/.codexclaw/evidence/<session>/test-receipt.json",
+        "  The receipt is written to <cwd>/.cursorclaw/evidence/<session>/test-receipt.json",
         "  and is refused if the command changes the source while it runs.",
         "  --generated declares paths the check REGENERATES by design (a validator that",
         "  rebuilds its own artifacts). Repeatable. Undeclared rewrites are still refused.",

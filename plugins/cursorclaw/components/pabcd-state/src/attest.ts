@@ -49,7 +49,7 @@ export interface Attestation {
   /** Gated edges (260714 wp4): the ONE work-phase this cycle advances. Must match the
    *  bound goalplan's effective active work-phase (LOOP-UNIT-CHAIN-01 binding). */
   workPhaseId?: string;
-  /** C>D (075): path to a test receipt under .codexclaw/evidence, produced by
+  /** C>D (075): path to a test receipt under .cursorclaw/evidence, produced by
    *  `cxc receipt test`. Verified by check-gate.ts — attest stays IO-free. */
   testReceiptPath?: string;
 }

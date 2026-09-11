@@ -1,5 +1,5 @@
 /**
- * store.ts — `.codexclaw/subagents.json` config store (L24 / 240-242).
+ * store.ts — `.cursorclaw/subagents.json` config store (L24 / 240-242).
  *
  * Per-role subagent model mode + prompt override for the configurable roles
  * (explorer/reviewer/executor/architect). Missing file -> defaults; malformed values are
@@ -15,7 +15,7 @@ import { homedir } from "node:os";
 import { createHash, randomUUID } from "node:crypto";
 import { renameWithRetry } from "./atomic-write.ts";
 
-export const STATE_DIR = ".codexclaw";
+export const STATE_DIR = ".cursorclaw";
 export const STORE_FILE = "subagents.json";
 export const ROLES = ["explorer", "reviewer", "executor", "architect"] as const;
 export type RoleName = (typeof ROLES)[number];
@@ -126,7 +126,7 @@ export function configScope(value: unknown = "project"): ConfigScope {
 }
 
 export function cxcHome(env: NodeJS.ProcessEnv = process.env): string {
-  return env.CODEXCLAW_HOME?.trim() || join(homedir(), ".codexclaw");
+  return (env.CURSORCLAW_HOME || env.CODEXCLAW_HOME)?.trim() || join(homedir(), ".cursorclaw");
 }
 
 export function globalStorePath(env: NodeJS.ProcessEnv = process.env): string {
@@ -136,7 +136,7 @@ export function globalStorePath(env: NodeJS.ProcessEnv = process.env): string {
 /** Compatibility with the unpublished first scoped-settings patch. Reads never migrate. */
 function readGlobalRaw(env: NodeJS.ProcessEnv, forWrite = false): RawConfig {
   const canonical = globalStorePath(env);
-  if (!existsSync(canonical) && !env.CODEXCLAW_HOME?.trim()) {
+  if (!existsSync(canonical) && !(env.CURSORCLAW_HOME || env.CODEXCLAW_HOME)?.trim()) {
     const legacy = join(env.CODEX_HOME?.trim() || join(homedir(), ".codex"), "codexclaw", STORE_FILE);
     if (existsSync(legacy)) return readRaw(legacy, forWrite);
   }
@@ -169,7 +169,7 @@ function projectTrustWarning(cwd: string, env: NodeJS.ProcessEnv): string | unde
   if (!isTrackedProjectConfig(cwd)) return undefined;
   const token = projectConfigTrustToken(cwd);
   if (token !== null && env.CODEXCLAW_TRUST_PROJECT_SUBAGENTS === token) return undefined;
-  return "ignored Git-tracked .codexclaw/subagents.json; review it, then run `cxc subagents trust-token` and export the printed project-bound value";
+  return "ignored Git-tracked .cursorclaw/subagents.json; review it, then run `cxc subagents trust-token` and export the printed project-bound value";
 }
 
 /** Resolve whole roles, preserving explicit null as original-session inheritance. */

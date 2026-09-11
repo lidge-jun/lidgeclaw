@@ -358,11 +358,11 @@ test("handleUserPromptSubmit: agbrowse request injects search directive without 
 // Platform is injected so Linux CI drives the win32 branch (atomic-write.test.ts §1).
 test("win32 arming directive teaches the file flag, not inline attest", () => {
   const win = loopArmDirective("win32");
-  assert.match(win, /--attest-file \.codexclaw\/attest\.json/);
+  assert.match(win, /--attest-file \.cursorclaw\/attest\.json/);
   assert.doesNotMatch(win, /--attest <json>/);
   // A negative alone would pass on text that is merely DIFFERENT. Assert the agent
   // actually receives the two-step recipe it needs.
-  assert.match(win, /Set-Content -Encoding utf8 \.codexclaw\/attest\.json/);
+  assert.match(win, /Set-Content -Encoding utf8 \.cursorclaw\/attest\.json/);
   // Everything else must survive the branch.
   assert.match(win, /ORCH-MANDATE-01/);
   assert.match(win, /LOOP-UNIT-CHAIN-01/);
@@ -595,7 +595,7 @@ test("wp3: arming limits precede recipes on both platforms and never arm a phase
         assert.match(ctx, /do not bypass a gate or fabricate an attestation\/receipt/);
         if (platform === "win32") {
           assert.match(ctx, /Set-Content -Encoding utf8/);
-          assert.match(ctx, /--attest-file \.codexclaw\/attest\.json/);
+          assert.match(ctx, /--attest-file \.cursorclaw\/attest\.json/);
           assert.doesNotMatch(ctx, /--attest <json>/);
         } else assert.match(ctx, /--attest <json>/);
         const state = readState(cwd, "wp3-arm");
@@ -881,7 +881,7 @@ test("chat D-close is refused while the work-phase has open tasks, and writes no
     writeState(cwd, { ...defaultState("chat-c"), phase: "C", slug, orchestrationActive: true, checkEpoch: "c-test", flags: { interview: false, auditPassed: true, checkPassed: true } });
     seedChatReceipt(cwd, "chat-c", "c-test");
 
-    const attest = JSON.stringify({ from: "C", to: "D", did: "ran the suite", checkOutput: "ok", exitCode: 0, workPhaseId: "wp-1", testReceiptPath: ".codexclaw/evidence/chat-c/test-receipt.json" });
+    const attest = JSON.stringify({ from: "C", to: "D", did: "ran the suite", checkOutput: "ok", exitCode: 0, workPhaseId: "wp-1", testReceiptPath: ".cursorclaw/evidence/chat-c/test-receipt.json" });
     const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, "chat-c", "t1"));
 
     assert.match(out, /refused/);
@@ -907,7 +907,7 @@ test("chat D-close succeeds once the tasks are done", () => {
     writeState(cwd, { ...defaultState("chat-d"), phase: "C", slug, orchestrationActive: true, checkEpoch: "c-test", flags: { interview: false, auditPassed: true, checkPassed: true } });
     seedChatReceipt(cwd, "chat-d", "c-test");
 
-    const attest = JSON.stringify({ from: "C", to: "D", did: "ran the suite", checkOutput: "ok", exitCode: 0, workPhaseId: "wp-1", testReceiptPath: ".codexclaw/evidence/chat-d/test-receipt.json" });
+    const attest = JSON.stringify({ from: "C", to: "D", did: "ran the suite", checkOutput: "ok", exitCode: 0, workPhaseId: "wp-1", testReceiptPath: ".cursorclaw/evidence/chat-d/test-receipt.json" });
     const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, "chat-d", "t1"));
 
     assert.ok(!/refused/.test(out));
@@ -1172,7 +1172,7 @@ test("bound chat D-close without workPhaseId is refused after empty and all-done
       did: "ran the suite",
       checkOutput: "ok",
       exitCode: 0,
-      testReceiptPath: ".codexclaw/evidence/chat-missing-target/test-receipt.json",
+      testReceiptPath: ".cursorclaw/evidence/chat-missing-target/test-receipt.json",
     });
 
     const output = handleUserPromptSubmit(
@@ -1216,7 +1216,7 @@ for (const workPhaseId of [undefined, "wp-finished"] as const) {
         checkOutput: "ok",
         exitCode: 0,
         ...(workPhaseId ? { workPhaseId } : {}),
-        testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+        testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
       });
       const planPath = join(cwd, STATE_DIR, "goalplans", slug, "goalplan.json");
       const beforePlan = readFileSync(planPath, "utf8");
@@ -1262,7 +1262,7 @@ test("all-done bound chat records closedWorkPhaseId null even when workPhaseId i
       checkOutput: "ok",
       exitCode: 0,
       workPhaseId: "wp-finished",
-      testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+      testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
     });
     const planPath = join(cwd, STATE_DIR, "goalplans", slug, "goalplan.json");
     const beforePlan = readFileSync(planPath, "utf8");
@@ -1315,7 +1315,7 @@ test("chat D-close rejects an invalid v3 dependency plan before every write", ()
     const attest = JSON.stringify({
       from: "C", to: "D", did: "ran the suite", checkOutput: "ok", exitCode: 0,
       workPhaseId: "wp-1",
-      testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+      testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
     });
 
     const output = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id));
@@ -1513,7 +1513,7 @@ function seedChatCycleAtC(cwd: string, id: string, slug: string): string {
     checkOutput: "ok",
     exitCode: 0,
     workPhaseId: "wp-1",
-    testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+    testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
   });
 }
 
@@ -1604,7 +1604,7 @@ test("chat recovery is refused when a pending task is hidden under the closed ta
           : wp
       ),
     });
-    const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+    const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
 
     const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
 
@@ -1612,7 +1612,7 @@ test("chat recovery is refused when a pending task is hidden under the closed ta
     assert.match(out, /The recovery marker was kept/);
     assert.equal(readState(cwd, id).phase, "C");
     assert.notEqual(readState(cwd, id).dcloseRecovery, null);
-    assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+    assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   } finally { rmSync(cwd, { recursive: true, force: true }); }
 });
 
@@ -1699,14 +1699,14 @@ for (const scenario of [
         /stop at the marker/,
       );
       writeGoalplan(cwd, scenario.mutate(readGoalplan(cwd, slug)!));
-      const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+      const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
 
       const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
       assert.match(out, scenario.pattern);
       assert.match(out, /The recovery marker was kept/);
       assert.equal(readState(cwd, id).phase, "C");
       assert.notEqual(readState(cwd, id).dcloseRecovery, null);
-      assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+      assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
       assert.deepEqual(goalplanLedgerRows(cwd, slug).filter((row) => row.event === "workphase_done"), []);
     } finally { rmSync(cwd, { recursive: true, force: true }); }
   });
@@ -1746,7 +1746,7 @@ test("chat D-close keeps same-turn dedup and clears the Stop guard", () => {
       did: "ran the suite",
       checkOutput: "ok",
       exitCode: 0,
-      testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+      testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
       workPhaseId: "wp-1",
     });
 
@@ -1802,7 +1802,7 @@ test("chat D-close lock timeout keeps phase C, emits a warning, and writes no le
       checkOutput: "ok",
       exitCode: 0,
       workPhaseId: "wp-1",
-      testReceiptPath: ".codexclaw/evidence/chat-lock/test-receipt.json",
+      testReceiptPath: ".cursorclaw/evidence/chat-lock/test-receipt.json",
     });
 
     let output = "";
@@ -1852,7 +1852,7 @@ test("hook CLI exits 0 when chat D-close cannot acquire the goalplan lock", () =
       checkOutput: "ok",
       exitCode: 0,
       workPhaseId: "wp-1",
-      testReceiptPath: ".codexclaw/evidence/chat-process/test-receipt.json",
+      testReceiptPath: ".cursorclaw/evidence/chat-process/test-receipt.json",
     });
     const payload = JSON.stringify(ups(
       `orchestrate d --attest ${attest}`,
@@ -2036,7 +2036,7 @@ test("wp7 preservation: chat D-close keeps dependsOn and outcome", () => {
     const attest = JSON.stringify({
       from: "C", to: "D", did: "ran wp7 suite", checkOutput: "12 passed", exitCode: 0,
       workPhaseId: "wp-1",
-      testReceiptPath: ".codexclaw/evidence/wp7-chat-d/test-receipt.json",
+      testReceiptPath: ".cursorclaw/evidence/wp7-chat-d/test-receipt.json",
     });
 
     const output = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, "wp7-chat-d", "turn-1"));

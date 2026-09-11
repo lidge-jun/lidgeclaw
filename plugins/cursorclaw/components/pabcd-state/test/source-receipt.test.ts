@@ -16,12 +16,12 @@ const IDENTITY = { kind: "resolved", commitSha: "abc1234", dirty: false, capture
 
 function workspace(): string {
   const cwd = mkdtempSync(join(tmpdir(), "cxc-receipt-"));
-  mkdirSync(join(cwd, ".codexclaw", "evidence"), { recursive: true });
+  mkdirSync(join(cwd, ".cursorclaw", "evidence"), { recursive: true });
   return cwd;
 }
 
 function writeReceipt(cwd: string, name: string, body: unknown): string {
-  const rel = join(".codexclaw", "evidence", name);
+  const rel = join(".cursorclaw", "evidence", name);
   writeFileSync(join(cwd, rel), typeof body === "string" ? body : JSON.stringify(body));
   return rel;
 }
@@ -75,9 +75,9 @@ test("a receipt reached through a linked directory inside the evidence root is r
   const cwd = workspace();
   const outside = mkdtempSync(join(tmpdir(), "cxc-receipt-outside-"));
   writeFileSync(join(outside, "r.json"), JSON.stringify({ kind: "test", sourceIdentity: IDENTITY, createdAt: "x" }));
-  symlinkDirSync(outside, join(cwd, ".codexclaw", "evidence", "linked"));
+  symlinkDirSync(outside, join(cwd, ".cursorclaw", "evidence", "linked"));
   // Lexically inside the evidence root; the realpath still lands outside it.
-  const r = parseSourceBoundReceipt(join(".codexclaw", "evidence", "linked", "r.json"), cwd, "test");
+  const r = parseSourceBoundReceipt(join(".cursorclaw", "evidence", "linked", "r.json"), cwd, "test");
   assert.ok(isReceiptError(r));
   assert.match(r.error, /evidence-root guard/);
 });
@@ -140,7 +140,7 @@ test("a symlink into the evidence root is rejected", (t) => {
   const cwd = workspace();
   const real = join(cwd, "elsewhere.json");
   writeFileSync(real, JSON.stringify({ kind: "test", sourceIdentity: IDENTITY, createdAt: "x" }));
-  const rel = join(".codexclaw", "evidence", "link.json");
+  const rel = join(".cursorclaw", "evidence", "link.json");
   symlinkSync(real, join(cwd, rel));
   const r = parseSourceBoundReceipt(rel, cwd, "test");
   assert.ok(isReceiptError(r));
@@ -149,7 +149,7 @@ test("a symlink into the evidence root is rejected", (t) => {
 
 test("a directory is not a receipt", () => {
   const cwd = workspace();
-  const rel = join(".codexclaw", "evidence", "dir.json");
+  const rel = join(".cursorclaw", "evidence", "dir.json");
   mkdirSync(join(cwd, rel), { recursive: true });
   const r = parseSourceBoundReceipt(rel, cwd, "test");
   assert.ok(isReceiptError(r));

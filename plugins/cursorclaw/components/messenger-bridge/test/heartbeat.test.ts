@@ -159,7 +159,7 @@ test("DiscordThreadSweepScheduler archives and removes idle task-thread bindings
   db.addAgentAllowlist(agent.id, "thread-fresh", "task-thread");
   const oldBinding = db.getOrCreateAgentBinding(agent.id, "discord", "thread-old", cwd);
   const freshBinding = db.getOrCreateAgentBinding(agent.id, "discord", "thread-fresh", cwd);
-  const raw = new DatabaseSync(join(cwd, ".codexclaw", "bridge.db"));
+  const raw = new DatabaseSync(join(cwd, ".cursorclaw", "bridge.db"));
   raw.prepare("UPDATE bindings SET updated_at = ? WHERE id = ?").run("2026-07-06T10:59:59.000Z", oldBinding.id);
   raw.prepare("UPDATE bindings SET updated_at = ? WHERE id = ?").run("2026-07-06T12:30:00.000Z", freshBinding.id);
   raw.close();
@@ -191,7 +191,7 @@ test("DiscordThreadSweepScheduler preserves backdated running task threads until
   const agent = db.createAgent("dc-running", "discord", "tok-dc");
   db.addAgentAllowlist(agent.id, "thread-running", "task-thread");
   const binding = db.getOrCreateAgentBinding(agent.id, "discord", "thread-running", cwd);
-  const raw = new DatabaseSync(join(cwd, ".codexclaw", "bridge.db"));
+  const raw = new DatabaseSync(join(cwd, ".cursorclaw", "bridge.db"));
   raw.prepare("UPDATE bindings SET status = 'running', updated_at = ? WHERE id = ?")
     .run("2026-07-06T10:59:59.000Z", binding.id);
   raw.close();
@@ -213,7 +213,7 @@ test("DiscordThreadSweepScheduler preserves backdated running task threads until
   assert.equal(db.getBinding(binding.id)?.status, "running");
   assert.equal(db.isAgentAllowed(agent.id, "thread-running"), true);
 
-  const rawIdle = new DatabaseSync(join(cwd, ".codexclaw", "bridge.db"));
+  const rawIdle = new DatabaseSync(join(cwd, ".cursorclaw", "bridge.db"));
   rawIdle.prepare("UPDATE bindings SET status = 'idle', updated_at = ? WHERE id = ?")
     .run("2026-07-06T10:59:59.000Z", binding.id);
   rawIdle.close();
@@ -231,7 +231,7 @@ test("DiscordThreadSweepScheduler compensates when a turn starts mid-archive (un
   const agent = db.createAgent("dc-race", "discord", "tok-dc");
   db.addAgentAllowlist(agent.id, "thread-race", "task-thread");
   const binding = db.getOrCreateAgentBinding(agent.id, "discord", "thread-race", cwd);
-  const raw = new DatabaseSync(join(cwd, ".codexclaw", "bridge.db"));
+  const raw = new DatabaseSync(join(cwd, ".cursorclaw", "bridge.db"));
   raw.prepare("UPDATE bindings SET updated_at = ? WHERE id = ?").run("2026-07-06T10:59:59.000Z", binding.id);
   raw.close();
 

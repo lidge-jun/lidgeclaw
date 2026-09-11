@@ -83,7 +83,7 @@ test("CR-B sandbox: payload-only install runs the full orchestrate lifecycle wit
   const status = run([simBin, "orchestrate", "status", "--session", "sim"]);
   assert.equal(status.status, 1, `stderr: ${status.stderr}`);
   assert.match(status.stdout, /state is missing/);
-  assert.equal(existsSync(join(work, ".codexclaw", "sessions", "sim.json")), false);
+  assert.equal(existsSync(join(work, ".cursorclaw", "sessions", "sim.json")), false);
 
   // 2. SessionStart hook bootstraps the session file (the real fresh-install path).
   const hook = run(

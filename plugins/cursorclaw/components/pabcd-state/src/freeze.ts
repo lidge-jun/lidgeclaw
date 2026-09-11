@@ -2,7 +2,7 @@
  * freeze.ts — interview freeze manifest + stale detection (L10.3 / 103).
  *
  * Exact manifest pin (103 Hardening pins):
- *   path  = .codexclaw/interview/freeze.json (per-session; plan content under .codexclaw/plan/)
+ *   path  = .cursorclaw/interview/freeze.json (per-session; plan content under .cursorclaw/plan/)
  *   shape = { frozenAt, planFiles:[{path,sha256}], planHash, objective, slug, evidenceBundle }
  *   planHash = sha256(concat of per-file sha256 in path order)
  *
@@ -11,7 +11,7 @@
  * assumption changes the file sha256 -> changes planHash -> stale at goal start).
  *
  * Pure hashing + manifest shaping live here; file IO is the caller's job so this
- * stays testable without touching the real .codexclaw/.
+ * stays testable without touching the real .cursorclaw/.
  */
 import { createHash } from "node:crypto";
 import type { InterviewTracker } from "./interview.ts";
@@ -127,8 +127,8 @@ export const GOAL_ACTIVATION_DIRECTIVE = [
   "1. Call get_goal to confirm no goal is already active for this thread.",
   "2. Call create_goal with objective ONLY (no token_budget — the L3 gate denies budgeted goals).",
   "3. Verify a goal row was actually created (codex owns goal lifecycle in goals_1.sqlite).",
-  "The frozen plan under .codexclaw/plan/ is the READ-ONLY spec the goal consumes; do not reopen",
+  "The frozen plan under .cursorclaw/plan/ is the READ-ONLY spec the goal consumes; do not reopen",
   "Interview once the goal is active (L11 hard-deny). If create_goal fails, report that goal mode",
   "did not start — do not proceed as if it did. On goal start, recompute planHash and compare to",
-  ".codexclaw/interview/freeze.json; on mismatch, re-freeze the current plan before proceeding.",
+  ".cursorclaw/interview/freeze.json; on mismatch, re-freeze the current plan before proceeding.",
 ].join("\n");

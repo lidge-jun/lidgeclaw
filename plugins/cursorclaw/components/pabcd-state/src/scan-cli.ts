@@ -10,7 +10,7 @@
  * contract (the gate reads the tracker cache, the ledger is the durable proof):
  *
  *   1. Append a `scan_completed` InterviewEvent to the per-session interview
- *      ledger (`.codexclaw/interviews/<id>.jsonl`), roundId derived via
+ *      ledger (`.cursorclaw/interviews/<id>.jsonl`), roundId derived via
  *      computeNextScanRound (monotonic, scanRounds+1).
  *   2. writeState: init the empty tracker when `state.interview` is null, then
  *      increment `scanRounds` AND set `lastScanRoundId = roundId` so the two
@@ -309,7 +309,7 @@ export function runScanCli(args: ScanCliArgs): { output: string; code: number } 
         "Notes:",
         "  --session is required; there is no latest-session fallback for a mutating command.",
         "  --cwd matters when the answer ledger lives outside the process cwd:",
-        "  answers are read from <cwd>/.codexclaw/interviews/<session>.jsonl.",
+        "  answers are read from <cwd>/.cursorclaw/interviews/<session>.jsonl.",
         "  --derive folds captured answers in; --map attributes a questionId to a dimension.",
         "  --derive is what makes a dimension count for I->P readiness: the gate re-reads the",
         "  ledger and requires an asked+answered+mapped question per dimension. --known records",

@@ -158,7 +158,7 @@ test("doctor: skill missing openai.yaml -> FAIL on skills", () => {
 
 function makeStateTree(): string {
   const cwd = mkdtempSync(join(tmpdir(), "cxc-reset-"));
-  const sd = join(cwd, ".codexclaw");
+  const sd = join(cwd, ".cursorclaw");
   mkdirSync(join(sd, "sessions"), { recursive: true });
   writeFileSync(join(sd, "sessions", "s1.json"), "{}");
   writeFileSync(join(sd, "sessions", "s2.json"), "{}");
@@ -186,25 +186,25 @@ test("reset --state: removes only session json + ledger, leaves interview/ intac
   const r = runReset(cwd, "state");
   assert.equal(r.removed.filter((p) => p.endsWith(".json") || p.endsWith(".jsonl")).length, 3);
   // interview/ must survive
-  assert.ok(existsSync(join(cwd, ".codexclaw", "interview", "freeze.json")), "interview/ must be untouched by --state");
+  assert.ok(existsSync(join(cwd, ".cursorclaw", "interview", "freeze.json")), "interview/ must be untouched by --state");
   // 131/D2': plural interviews/ (scan-evidence) IS session state -> removed by --state
-  assert.ok(!existsSync(join(cwd, ".codexclaw", "interviews")), "interviews/ scan-evidence must be cleaned by --state");
+  assert.ok(!existsSync(join(cwd, ".cursorclaw", "interviews")), "interviews/ scan-evidence must be cleaned by --state");
   // sessions dir emptied of json
-  assert.equal(readdirSync(join(cwd, ".codexclaw", "sessions")).length, 0);
+  assert.equal(readdirSync(join(cwd, ".cursorclaw", "sessions")).length, 0);
 });
 
 test("reset --generated: removes interview/ only, leaves session state", () => {
   const cwd = makeStateTree();
   runReset(cwd, "generated");
-  assert.ok(!existsSync(join(cwd, ".codexclaw", "interview")), "interview/ should be gone");
-  assert.ok(existsSync(join(cwd, ".codexclaw", "sessions", "s1.json")), "session state must survive --generated");
+  assert.ok(!existsSync(join(cwd, ".cursorclaw", "interview")), "interview/ should be gone");
+  assert.ok(existsSync(join(cwd, ".cursorclaw", "sessions", "s1.json")), "session state must survive --generated");
 });
 
 test("reset --state: leaves goalplans/ intact (a plan outlives a session reset)", () => {
   const cwd = makeStateTree();
   runReset(cwd, "state");
   assert.ok(
-    existsSync(join(cwd, ".codexclaw", "goalplans", "demo", "goalplan.json")),
+    existsSync(join(cwd, ".cursorclaw", "goalplans", "demo", "goalplan.json")),
     "goalplans/ must survive --state",
   );
 });
@@ -212,19 +212,19 @@ test("reset --state: leaves goalplans/ intact (a plan outlives a session reset)"
 test("reset --goalplans: removes goalplans/ only, leaves session + interview state", () => {
   const cwd = makeStateTree();
   const r = runReset(cwd, "goalplans");
-  assert.ok(!existsSync(join(cwd, ".codexclaw", "goalplans")), "goalplans/ should be gone");
-  assert.ok(existsSync(join(cwd, ".codexclaw", "sessions", "s1.json")), "session state must survive --goalplans");
-  assert.ok(existsSync(join(cwd, ".codexclaw", "interview", "freeze.json")), "interview/ must survive --goalplans");
+  assert.ok(!existsSync(join(cwd, ".cursorclaw", "goalplans")), "goalplans/ should be gone");
+  assert.ok(existsSync(join(cwd, ".cursorclaw", "sessions", "s1.json")), "session state must survive --goalplans");
+  assert.ok(existsSync(join(cwd, ".cursorclaw", "interview", "freeze.json")), "interview/ must survive --goalplans");
   assert.equal(r.scope, "goalplans");
 });
 
-test("reset --all: removes the whole .codexclaw subtree and nothing above it", () => {
+test("reset --all: removes the whole .cursorclaw subtree and nothing above it", () => {
   const cwd = makeStateTree();
-  // a sibling file outside .codexclaw must never be touched
+  // a sibling file outside .cursorclaw must never be touched
   writeFileSync(join(cwd, "sibling.txt"), "keep me");
   runReset(cwd, "all");
-  assert.ok(!existsSync(join(cwd, ".codexclaw")), ".codexclaw should be gone");
-  assert.ok(existsSync(join(cwd, "sibling.txt")), "files outside .codexclaw must never be touched");
+  assert.ok(!existsSync(join(cwd, ".cursorclaw")), ".cursorclaw should be gone");
+  assert.ok(existsSync(join(cwd, "sibling.txt")), "files outside .cursorclaw must never be touched");
 });
 
 // ---- chat-search removed (D1', L13/WP1) -----------------------------------
@@ -310,7 +310,7 @@ test("doctor PABCD state check passes on clean state", () => {
 test("doctor repair field appears in rendered output for non-PASS checks", () => {
   const root = makePluginRoot();
   // Create a corrupt session file
-  const sessDir = join(root, ".codexclaw", "sessions");
+  const sessDir = join(root, ".cursorclaw", "sessions");
   mkdirSync(sessDir, { recursive: true });
   writeFileSync(join(sessDir, "corrupt.json"), "NOT JSON");
   // Override process.cwd to point at root

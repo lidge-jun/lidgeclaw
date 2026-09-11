@@ -25,8 +25,8 @@ cxc service install --port 7717
 cxc service status      # uninstall with: cxc service uninstall
 ```
 
-The plist lands at `~/Library/LaunchAgents/com.codexclaw.serve.plist`; logs at
-`~/.codexclaw/serve.out.log` and `~/.codexclaw/serve.err.log`. There is no
+The plist lands at `~/Library/LaunchAgents/com.cursorclaw.serve.plist`; logs at
+`~/.cursorclaw/serve.out.log` and `~/.cursorclaw/serve.err.log`. There is no
 `cxc serve status` — check `/api/health`.
 
 ## Connect a messenger

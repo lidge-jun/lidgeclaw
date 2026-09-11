@@ -34,7 +34,7 @@ test('Vite scoped query, effort persistence and trust metadata match spawn resol
     assert.equal(readFileSync(globalPath, 'utf8'), before);
     await post({ role: 'explorer', effort: null });
     execFileSync('git', ['init', '-q', cwd]);
-    execFileSync('git', ['-C', cwd, 'add', '-f', '.codexclaw/subagents.json']);
+    execFileSync('git', ['-C', cwd, 'add', '-f', '.cursorclaw/subagents.json']);
     const effective = await (await fetch(`${base}/api/subagents`)).json();
     assert.equal(effective.sources.explorer, 'global');
     assert.equal(effective.roles.explorer.effort, resolveSpawnConfig(cwd, 'explorer').effort);

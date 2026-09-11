@@ -52,7 +52,7 @@ export const TRAIN_RECEIPTS: RequiredReceipt[] = [
 /** Why each MLB 1.0 receipt may be deferred on a 0.2.x train. */
 const MLB_DEFERRAL_REASON = "target: MLB 1.0, not required for 0.2.x";
 
-export const RELEASE_DIR = join(".codexclaw", "release");
+export const RELEASE_DIR = join(".cursorclaw", "release");
 
 function usage(): ReleaseCliResult {
   return {

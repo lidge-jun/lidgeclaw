@@ -344,7 +344,7 @@ test("/sessions renders chat bindings with Telegram HTML and Discord embed", asy
     const topic = db.getOrCreateAgentBinding(agent.id, "telegram", "100", cwd, "3");
     db.setBindingThread(topic.id, "thread-abcdefghi");
     db.setBindingStatus(topic.id, "running");
-    const raw = new DatabaseSync(join(cwd, ".codexclaw", "bridge.db"));
+    const raw = new DatabaseSync(join(cwd, ".cursorclaw", "bridge.db"));
     raw.prepare("UPDATE bindings SET updated_at = ? WHERE id = ?").run("2026-07-07T00:00:00.000Z", plain.id);
     raw.prepare("UPDATE bindings SET updated_at = ? WHERE id = ?").run("2026-07-07T00:01:00.000Z", topic.id);
     raw.close();

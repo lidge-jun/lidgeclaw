@@ -35,12 +35,12 @@ function pngBytes(width = 8, height = 8) {
 
 function workspace() {
   const root = mkdtempSync(join(tmpdir(), "cxc-qa-"));
-  mkdirSync(join(root, ".codexclaw", "evidence", "s1", "qa"), { recursive: true });
+  mkdirSync(join(root, ".cursorclaw", "evidence", "s1", "qa"), { recursive: true });
   return root;
 }
 
 function qaDir(root) {
-  return join(root, ".codexclaw", "evidence", "s1", "qa");
+  return join(root, ".cursorclaw", "evidence", "s1", "qa");
 }
 
 /**
@@ -324,7 +324,7 @@ test("bound QA receipt survives final goalplan validation and root removal fails
   scenario(root, "a", webVerdict({ sourceSnapshotAt: source }), { "shot.png": pngBytes() });
   const qa = validateEvidence(qaDir(root), { emitReceipt: true });
   assert.equal(qa.ok, true, qa.errors.join("; "));
-  const testPath = join(root, ".codexclaw", "evidence", "test.json");
+  const testPath = join(root, ".cursorclaw", "evidence", "test.json");
   writeFileSync(testPath, JSON.stringify({ kind: "test", sourceIdentity: source }));
   const base = buildGoalplan({ objective: "bound final QA" });
   const plan = { ...base, schemaVersion: 2,

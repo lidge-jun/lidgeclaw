@@ -2,7 +2,7 @@
  * subagent-evidence.ts — SubagentStop evidence-receipt gate (lazygap_impl 010).
  *
  * A dispatched WRITE/verify subagent (agent_type "executor", or legacy "worker") cannot "finish" without a
- * non-empty evidence receipt under `.codexclaw/evidence/`. Missing/invalid receipt ->
+ * non-empty evidence receipt under `.cursorclaw/evidence/`. Missing/invalid receipt ->
  * `decision:"block"` with a verifier directive that re-prompts the CHILD (codex-rs
  * turn.rs:323). After MAX_ATTEMPTS the directive escalates but remains fail-closed;
  * untrusted child transcript text can never exempt itself from verification.
@@ -10,7 +10,7 @@
  * EVIDENCE-TERMINAL-01 (260826): "fail-closed" used to mean the escalation branch
  * returned a block FOREVER. That trapped exactly the population it could not help — a
  * child dispatched read-only cannot create a file under the parent's
- * `.codexclaw/evidence/`, so it could never satisfy the demand and never stop being
+ * `.cursorclaw/evidence/`, so it could never satisfy the demand and never stop being
  * asked. A real transcript shows 15+ identical escalation blocks.
  *
  * The budget is now terminal: at the cap the gate records an unresolved TOMBSTONE in
@@ -146,7 +146,7 @@ function realPathSafe(p: string): string {
 }
 
 /**
- * The receipt must resolve INSIDE `.codexclaw/evidence/`, be a real (non-symlink) file,
+ * The receipt must resolve INSIDE `.cursorclaw/evidence/`, be a real (non-symlink) file,
  * and be non-empty. Resolves both the lexical path and the realpath to defeat symlink
  * escape. Any failure fails open by returning false (treated as "no valid receipt").
  */
@@ -378,7 +378,7 @@ export function unrecordableVerdictStatus(cwd: string, sessionId: string): { pre
     const code = (err as NodeJS.ErrnoException)?.code;
     // ENOENT is normally a genuine "nothing was ever recorded" — but it is also what
     // you see when marker creation FAILED because the directory could not be created
-    // at all (an unwritable .codexclaw). So an absent directory is only clean if we
+    // at all (an unwritable .cursorclaw). So an absent directory is only clean if we
     // can prove we could have written a marker into it.
     if (code === "ENOENT") return { present: false, unreadable: !markerDirWritable(cwd) };
     return { present: false, unreadable: true };
@@ -446,7 +446,7 @@ function verifierDirective(attempt: number): string {
     "Your completion is unverified — no evidence receipt was recorded.",
     `This is attempt ${attempt} of ${MAX_ATTEMPTS}.`,
     "Actually run the relevant checks (build/tests/commands), write the output and your",
-    "judgement to a file under `.codexclaw/evidence/`, and make the LAST line of your reply",
+    "judgement to a file under `.cursorclaw/evidence/`, and make the LAST line of your reply",
     "exactly `EVIDENCE_RECORDED: <path>` pointing at that file. Do not claim done without it.",
     // The read-only trap, named at attempt 1 instead of after 3 confusing retries.
     "If you were dispatched READ-ONLY and cannot write there, say so plainly in your final",
@@ -458,7 +458,7 @@ function verifierDirective(attempt: number): string {
 export function escalationDirective(): string {
   return [
     `Evidence verification failed ${MAX_ATTEMPTS} times and is now fail-closed.`,
-    "Do not claim completion. Record the actual validation under `.codexclaw/evidence/`",
+    "Do not claim completion. Record the actual validation under `.cursorclaw/evidence/`",
     "and finish with `EVIDENCE_RECORDED: <path>`. If validation cannot run, record",
     "the blocker and diagnostics in that receipt so the parent can decide safely.",
   ].join(" ");

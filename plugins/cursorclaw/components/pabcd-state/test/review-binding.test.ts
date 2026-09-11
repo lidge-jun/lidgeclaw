@@ -141,10 +141,10 @@ test("review-round abort is fail-closed when the common lock is held", () => {
   const { cwd, slug } = seedAtA();
   try {
     assert.equal(open(cwd, "devlog/_plan/260815_probe/000_plan.md").code, 0);
-    const lock = join(cwd, ".codexclaw", "goalplans", slug, ".goalplan.lock");
+    const lock = join(cwd, ".cursorclaw", "goalplans", slug, ".goalplan.lock");
     mkdirSync(lock, { recursive: false });
     writeFileSync(join(lock, "owner.json"), `${JSON.stringify({ pid: 4242 })}\n`);
-    const before = readFileSync(join(cwd, ".codexclaw", "goalplans", slug, "goalplan.json"), "utf8");
+    const before = readFileSync(join(cwd, ".cursorclaw", "goalplans", slug, "goalplan.json"), "utf8");
     const parsed = parseReviewRoundCliArgs(
       ["abort", "--session", "rb", "--cwd", cwd, "--reason", "reviewer died"],
       cwd,
@@ -155,7 +155,7 @@ test("review-round abort is fail-closed when the common lock is held", () => {
 
     assert.equal(result.code, 1);
     assert.match(result.output, /\.goalplan\.lock/);
-    assert.equal(readFileSync(join(cwd, ".codexclaw", "goalplans", slug, "goalplan.json"), "utf8"), before);
+    assert.equal(readFileSync(join(cwd, ".cursorclaw", "goalplans", slug, "goalplan.json"), "utf8"), before);
     assert.equal(latestRound(readGoalplan(cwd, slug)!, "plan_audit")!.status, "in_flight");
   } finally {
     rmSync(cwd, { recursive: true, force: true });
@@ -168,10 +168,10 @@ test("review observer is fail-open on lock timeout and leaves verdict unrecorded
     const opened = open(cwd, "devlog/_plan/260815_probe/000_plan.md");
     assert.equal(opened.code, 0);
     const launchId = opened.output.split("\n")[0];
-    const lock = join(cwd, ".codexclaw", "goalplans", slug, ".goalplan.lock");
+    const lock = join(cwd, ".cursorclaw", "goalplans", slug, ".goalplan.lock");
     mkdirSync(lock, { recursive: false });
     writeFileSync(join(lock, "owner.json"), `${JSON.stringify({ pid: 4242 })}\n`);
-    const before = readFileSync(join(cwd, ".codexclaw", "goalplans", slug, "goalplan.json"), "utf8");
+    const before = readFileSync(join(cwd, ".cursorclaw", "goalplans", slug, "goalplan.json"), "utf8");
 
     let output = "not-called";
     assert.doesNotThrow(() => {
@@ -186,7 +186,7 @@ test("review observer is fail-open on lock timeout and leaves verdict unrecorded
     });
 
     assert.equal(output, "");
-    assert.equal(readFileSync(join(cwd, ".codexclaw", "goalplans", slug, "goalplan.json"), "utf8"), before);
+    assert.equal(readFileSync(join(cwd, ".cursorclaw", "goalplans", slug, "goalplan.json"), "utf8"), before);
     const round = latestRound(readGoalplan(cwd, slug)!, "plan_audit")!;
     assert.equal(round.status, "in_flight");
     assert.equal(round.lane.verdict, undefined);

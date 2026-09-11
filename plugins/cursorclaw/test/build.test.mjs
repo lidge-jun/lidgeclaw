@@ -56,7 +56,7 @@ test("every manifest-referenced dist + skill path exists post-build", () => {
   }
   // .mcp.json server entry
   const mcp = JSON.parse(readFileSync(join(pluginRoot, ".mcp.json"), "utf8"));
-  const args = mcp.mcpServers.codexclaw.args.join(" ");
+  const args = mcp.mcpServers.cursorclaw.args.join(" ");
   const mcpEntry = args.match(/components\/[^ ]+?\/dist\/[A-Za-z0-9._-]+\.js/);
   assert.ok(mcpEntry && existsSync(join(pluginRoot, mcpEntry[0])), "missing mcp dist entry");
   // skills
@@ -103,14 +103,14 @@ test("compiled pabcd-state natural I hint emits advice and dedup without phase e
     assert.match(ctx, /codexclaw: INTERVIEW/);
     assert.match(ctx, /PHASE UNCHANGED/);
     assert.match(ctx, /IPABCD: IDLE \(IDLE\)/);
-    const stateFile = join(tmp, ".codexclaw", "sessions", "s-build-test.json");
+    const stateFile = join(tmp, ".cursorclaw", "sessions", "s-build-test.json");
     assert.ok(existsSync(stateFile), "turn dedup state must still be written");
     const state = JSON.parse(readFileSync(stateFile, "utf8"));
     assert.equal(state.phase, "IDLE");
     assert.equal(state.orchestrationActive, false);
     assert.equal(state.lastInjectedPhase, null);
     assert.deepEqual(state.injectedTurns, ["t1"]);
-    assert.equal(existsSync(join(tmp, ".codexclaw", "ledger.jsonl")), false);
+    assert.equal(existsSync(join(tmp, ".cursorclaw", "ledger.jsonl")), false);
   } finally {
     rmSync(tmp, { recursive: true, force: true });
     rmSync(home, { recursive: true, force: true });

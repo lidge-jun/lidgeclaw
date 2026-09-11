@@ -2,7 +2,7 @@
  * friction.ts — project-local friction ledger (lazygap_impl 080.1).
  *
  * Ports cli-jaw's normalize + sha256 + retry/escalate/stop verdict into a daemon-free
- * `.codexclaw/friction.jsonl` ledger. A repeated (tool, normalized-error) signature
+ * `.cursorclaw/friction.jsonl` ledger. A repeated (tool, normalized-error) signature
  * escalates: 1st occurrence -> retry, 2nd -> escalate, 3rd+ -> stop.
  *
  * HONEST OBSERVABILITY LIMIT (verified against codex-rs):
@@ -21,7 +21,7 @@ import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { splitLines } from "./text-lines.ts";
 
-export const STATE_DIR = ".codexclaw";
+export const STATE_DIR = ".cursorclaw";
 export const FRICTION_FILE = "friction.jsonl";
 
 export type FrictionVerdict = "retry" | "escalate" | "stop";

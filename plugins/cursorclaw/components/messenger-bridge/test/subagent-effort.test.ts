@@ -58,7 +58,7 @@ test("serve persists effort across GET and process restart, preserves models, ac
       assert.deepEqual(await res.json(), snapshot(effort));
       assert.deepEqual(await (await fetch(`${server.base}/api/subagents`)).json(), snapshot(effort));
     }
-    const storePath = join(cwd, ".codexclaw/subagents.json");
+    const storePath = join(cwd, ".cursorclaw/subagents.json");
     assert.deepEqual(JSON.parse(readFileSync(storePath, "utf8")), { roles: snapshot("xhigh").roles });
     await server.stop();
     server = await startServer(cwd);

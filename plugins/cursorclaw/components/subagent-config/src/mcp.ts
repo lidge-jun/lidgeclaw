@@ -4,7 +4,7 @@
  *
  * Responsibility (full feature, Phase 2 / devlog 032):
  *  - Persist per-role subagent config: default-model vs multi-model mapping,
- *    and per-role prompt overrides (store: .codexclaw/subagents.json).
+ *    and per-role prompt overrides (store: .cursorclaw/subagents.json).
  *  - Expose the config to the codexclaw GUI and as MCP tools.
  *  - Model catalog uses read-only OCX discovery and a shared CXC cache.
  *    When OCX is absent, the configured Codex catalog is read instead.

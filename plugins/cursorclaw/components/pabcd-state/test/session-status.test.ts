@@ -35,14 +35,14 @@ test("status does not invent IDLE for explicit missing state", t => {
   assert.equal(r.status, 1, r.stderr);
   assert.equal(JSON.parse(r.stdout).phase, null);
   assert.equal(JSON.parse(r.stdout).stateExists, false);
-  assert.equal(existsSync(join(cwd, ".codexclaw")), false);
+  assert.equal(existsSync(join(cwd, ".cursorclaw")), false);
 });
 
 test("implicit status selects the native root fork, not a newer parent file", t => {
   const { cwd, run } = fixture(t);
   writeState(cwd, { ...defaultState(id), phase: "P" });
   writeState(cwd, { ...defaultState(other), phase: "B" });
-  const parent = join(cwd, ".codexclaw", "sessions", `${other}.json`);
+  const parent = join(cwd, ".cursorclaw", "sessions", `${other}.json`);
   utimesSync(parent, new Date(2000000000000), new Date(2000000000000));
   const before = readFileSync(parent);
   const r = run(["orchestrate", "status", "--json"]);
@@ -73,7 +73,7 @@ test("invalid native environment or newer unsupported DB fails without fallback"
   const r = run(["orchestrate", "status", "--json"]);
   assert.equal(r.status, 1, r.stderr);
   assert.equal(JSON.parse(r.stdout).phase, null);
-  assert.equal(existsSync(join(cwd, ".codexclaw", "sessions", `${id}.json`)), false);
+  assert.equal(existsSync(join(cwd, ".cursorclaw", "sessions", `${id}.json`)), false);
 });
 
 test("plain terminal retains read-only latest-state fallback", t => {
@@ -102,5 +102,5 @@ test("repository and installed-payload dispatch session recovery end to end", t 
     assert.equal(JSON.parse(status.stdout).phase, "IDLE");
     assert.equal(JSON.parse(status.stdout).sessionId, id);
   }
-  assert.ok(existsSync(resolve(cwd, ".codexclaw", "sessions", `${id}.json`)));
+  assert.ok(existsSync(resolve(cwd, ".cursorclaw", "sessions", `${id}.json`)));
 });

@@ -16,7 +16,7 @@
  *    the nag risk down.
  *  - FAIL-OPEN: any parse/IO error -> "" (no output, never blocks codex).
  *
- * Ledger: `.codexclaw/edit-shapes.jsonl` (append-only, project-local, no server).
+ * Ledger: `.cursorclaw/edit-shapes.jsonl` (append-only, project-local, no server).
  * PostToolUse additionalContext envelope parity: omo lsp/src/codex-hook.ts:36-42.
  */
 import { createHash } from "node:crypto";
@@ -25,7 +25,7 @@ import { join } from "node:path";
 import type { PostToolUsePayload } from "./hook.ts";
 import { splitLines } from "./text-lines.ts";
 
-export const STATE_DIR = ".codexclaw";
+export const STATE_DIR = ".cursorclaw";
 export const EDIT_SHAPE_FILE = "edit-shapes.jsonl";
 
 /** Distinct-file count at which the one-time advisory fires (mirrors friction "stop"). */

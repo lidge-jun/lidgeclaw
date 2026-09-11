@@ -59,7 +59,7 @@ export type ChatSearchOptions = {
   order?: ChatOrder;
   /** clock override for deterministic recency scoring in tests. */
   nowMs?: number;
-  /** sidecar index location override (tests); defaults to ~/.codexclaw/recall/index.sqlite. */
+  /** sidecar index location override (tests); defaults to ~/.cursorclaw/recall/index.sqlite. */
   indexPath?: string;
 };
 

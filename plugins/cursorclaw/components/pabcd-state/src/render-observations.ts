@@ -1,7 +1,7 @@
 /**
  * render-observations.ts — L2 render-observation ledger (C-RENDER-GROUNDING-01).
  *
- * Records two kinds of events to `.codexclaw/render-observations.jsonl`:
+ * Records two kinds of events to `.cursorclaw/render-observations.jsonl`:
  *
  *  1. **Observation tool calls** (PostToolUse matcher): when the agent invokes
  *     view_image, browser:control-in-app-browser, chrome:control-chrome, or
@@ -24,7 +24,7 @@ import type { PostToolUsePayload } from "./hook.ts";
 import { fileEditShapes } from "./edit-shape.ts";
 import { splitLines } from "./text-lines.ts";
 
-export const STATE_DIR = ".codexclaw";
+export const STATE_DIR = ".cursorclaw";
 export const RENDER_OBS_FILE = "render-observations.jsonl";
 
 /**

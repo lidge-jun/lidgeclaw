@@ -39,7 +39,7 @@ function gitIdentity(cwd: string): { root: string; commonDir: string; gitDir: st
 
 function bindingPath(cwd: string, sessionId: string): string {
   if (!isCanonicalSessionId(sessionId)) throw new Error("Invalid source-binding session ID.");
-  for (const path of [join(cwd, ".codexclaw"), join(cwd, ".codexclaw", "sources")]) {
+  for (const path of [join(cwd, ".cursorclaw"), join(cwd, ".cursorclaw", "sources")]) {
     try {
       const stat = lstatSync(path);
       if (!stat.isDirectory() || stat.isSymbolicLink()) throw new Error("Source-binding directories must be real directories.");
@@ -47,7 +47,7 @@ function bindingPath(cwd: string, sessionId: string): string {
       if ((err as NodeJS.ErrnoException).code !== "ENOENT") throw err;
     }
   }
-  return join(cwd, ".codexclaw", "sources", `${sessionId}.json`);
+  return join(cwd, ".cursorclaw", "sources", `${sessionId}.json`);
 }
 
 function readBinding(cwd: string, sessionId: string): SourceBinding | null {
@@ -115,7 +115,7 @@ export function bindSessionSource(cwd: string, sessionId: string, target: string
   }
   const binding: SourceBinding = { version: 1, ownerSessionId: sessionId, nativeCwd, sourceRoot, commonDir: source.commonDir, gitDir: source.gitDir };
   const path = bindingPath(cwd, sessionId);
-  mkdirSync(join(cwd, ".codexclaw", "sources"), { recursive: true });
+  mkdirSync(join(cwd, ".cursorclaw", "sources"), { recursive: true });
   bindingPath(cwd, sessionId);
   const tmp = `${path}.${randomUUID()}.tmp`;
   writeFileSync(tmp, `${JSON.stringify(binding, null, 2)}\n`, { flag: "wx", mode: 0o600 });

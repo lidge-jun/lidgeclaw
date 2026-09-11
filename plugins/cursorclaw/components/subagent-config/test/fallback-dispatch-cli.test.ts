@@ -39,7 +39,7 @@ test("real CLI refuses corrupt state and invalid JSON rather than resetting it",
   const run = (input: string) => spawnSync(process.execPath, [cli], { cwd, env, input, encoding: "utf8" });
   assert.equal(run("{").status, 1);
   assert.equal(run(JSON.stringify({ ...base, action: "start", role: "executor" })).status, 0);
-  writeFileSync(join(cwd, ".codexclaw/dispatches/fixture/one.json"), "{}");
+  writeFileSync(join(cwd, ".cursorclaw/dispatches/fixture/one.json"), "{}");
   const out = run(JSON.stringify({ ...base, action: "status" }));
   assert.equal(out.status, 1); assert.match(out.stdout, /invalid dispatch identity/);
 });

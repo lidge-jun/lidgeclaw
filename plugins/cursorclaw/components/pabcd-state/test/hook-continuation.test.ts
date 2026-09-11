@@ -146,7 +146,7 @@ test("WP4: the emitted interview directive names the state-grounding loop", () =
   assert.match(d, /--map/, "must show how questions are attributed to a dimension");
   assert.match(d, /known\[\]/, "must name where answers land");
   assert.match(d, /unknown\[\]/, "must name where gaps land");
-  assert.match(d, /\.codexclaw\/sessions/, "must say where to read the state back");
+  assert.match(d, /\.cursorclaw\/sessions/, "must say where to read the state back");
   assert.match(d, /INTERVIEW-GROUND-01/);
 });
 
@@ -539,10 +539,10 @@ test("GOAL-IDLE-CONTINUE-01: the win32 block teaches the file flag, not inline a
       const parsed = JSON.parse(handleStop(stop(cwd, "gi1"), "win32").trim());
       assert.equal(parsed.decision, "block");
       assert.doesNotMatch(parsed.reason, /--attest '\{/);
-      assert.match(parsed.reason, /--attest-file \.codexclaw\/attest\.json/);
+      assert.match(parsed.reason, /--attest-file \.cursorclaw\/attest\.json/);
       // The recipe, not just the flag: a negative alone would pass on text that is
       // merely different rather than usable.
-      assert.match(parsed.reason, /Set-Content -Encoding utf8 \.codexclaw\/attest\.json/);
+      assert.match(parsed.reason, /Set-Content -Encoding utf8 \.cursorclaw\/attest\.json/);
       // The rest of the block must survive the branch.
       assert.match(parsed.reason, /GOAL-IDLE-CONTINUE-01/);
       assert.match(parsed.reason, /update_goal/);
@@ -770,7 +770,7 @@ test("040: with a session-bound slug + goalplan, the block reason names remainin
       assert.match(reason, /Ready tasks: wp-1\/t-1 \(add endpoint\)/);
       assert.doesNotMatch(reason, /Remaining work:/);
       assert.match(reason, /Required evidence: npm test green/);
-      assert.match(reason, new RegExp(`Record progress in: \\.codexclaw/goalplans/${plan.slug}/ledger\\.jsonl`));
+      assert.match(reason, new RegExp(`Record progress in: \\.cursorclaw/goalplans/${plan.slug}/ledger\\.jsonl`));
       // enrichment never replaces the phase command or the closing note
       assert.match(reason, /cxc orchestrate C --session [-\w]+ --attest/);
       assert.match(reason, /D is not a resting state/);
@@ -849,8 +849,8 @@ test("emergence 020: malformed metric ledger fails open to normal continuation",
   try {
     withGoalsDb([{ thread_id: "badmetric", status: "active" }], () => {
       midCycle(cwd, "badmetric", "B");
-      mkdirSync(join(cwd, ".codexclaw"), { recursive: true });
-      writeFileSync(join(cwd, ".codexclaw", "metrics.jsonl"), "{not json}\n", { flag: "a" });
+      mkdirSync(join(cwd, ".cursorclaw"), { recursive: true });
+      writeFileSync(join(cwd, ".cursorclaw", "metrics.jsonl"), "{not json}\n", { flag: "a" });
       const reason = JSON.parse(handleStop(stop(cwd, "badmetric")).trim()).reason;
       assert.match(reason, /continue PABCD/);
       assert.doesNotMatch(reason, /objective plateau/);
@@ -1065,7 +1065,7 @@ test("050 S15: a truncated ledger cannot replay old observations", () => {
       const cursor = readState(cwd, "s15").stopMetricCursor;
       assert.equal(cursor, 2);
 
-      const ledger = join(cwd, ".codexclaw", "metrics.jsonl");
+      const ledger = join(cwd, ".cursorclaw", "metrics.jsonl");
       const kept = readFileSync(ledger, "utf8").split("\n").filter((l) => l.trim()).slice(0, 1);
       writeFileSync(ledger, `${kept.join("\n")}\n`);
 
@@ -1091,7 +1091,7 @@ test("050 S9: a pre-upgrade session file reads as a fresh counter", () => {
   const cwd = freshCwd();
   try {
     withGoalsDb([{ thread_id: "s9", status: "active" }], () => {
-      const dir = join(cwd, ".codexclaw", "sessions");
+      const dir = join(cwd, ".cursorclaw", "sessions");
       mkdirSync(dir, { recursive: true });
       writeFileSync(
         join(dir, "s9.json"),
@@ -1220,7 +1220,7 @@ test("wp6: legacy plan Stop context uses the ready arrays shape", () => {
       readyTasks: [{ workPhaseId: "legacy", id: "t-1", title: "first task" }],
       waitingOn: [],
       expectedEvidence: "node --test green",
-      ledgerPath: `.codexclaw/goalplans/${plan.slug}/ledger.jsonl`,
+      ledgerPath: `.cursorclaw/goalplans/${plan.slug}/ledger.jsonl`,
     });
   } finally {
     rmSync(cwd, { recursive: true, force: true });

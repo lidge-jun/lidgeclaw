@@ -77,7 +77,7 @@ export const MIND_DISPATCH_DIRECTIVE = [
   "Keep read-only explorer intent, mind_<mindname> labels, NON-full-history tasks and explicit user settings.",
   "Minds are stateless: pack the lens prompt PLUS a compact interview snapshot (dimension scores,",
   "knowns, open assumptions, draft plan path) into each task message.",
-  "State + plan artifacts live under .codexclaw/ (session tracker + .codexclaw/plan/).",
+  "State + plan artifacts live under .cursorclaw/ (session tracker + .cursorclaw/plan/).",
 ].join("\n");
 
 export interface MindContradiction {

@@ -28,8 +28,8 @@ function rmRfRetry(path: string): void {
 test("migrates a legacy v1 database to current without losing rows", () => {
   const cwd = mkdtempSync(join(tmpdir(), "bridge-migrate-test-"));
   try {
-    mkdirSync(join(cwd, ".codexclaw"), { recursive: true });
-    const file = join(cwd, ".codexclaw", "bridge.db");
+    mkdirSync(join(cwd, ".cursorclaw"), { recursive: true });
+    const file = join(cwd, ".cursorclaw", "bridge.db");
     const raw = new DatabaseSync(file);
     raw.exec(`
       CREATE TABLE channels (

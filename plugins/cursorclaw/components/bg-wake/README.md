@@ -53,4 +53,4 @@ Windows 경로는 2026-09-10에 실제 Windows 머신(10.0.26200)에서 측정�
 - Windows에서 기록되는 pid는 셸이 아니라 헬퍼의 것이다. `cancel`은 헬퍼를 죽인다. 측정한 실행에서는 자식도 함께 멈췄지만, 그 측정이 OpenSSH 세션에서 이뤄져 잡 오브젝트가 개입했을 수 있다. **대화형 로컬 세션은 확인하지 않았다.**
 - 서브에이전트는 SubagentStop을 타므로 루트 Stop 훅과 세션 id가 어긋난다. `cxc bg run`은 메인 세션에서 쓰는 것을 전제로 한다.
 - `deliveredAt`을 찍은 뒤 런타임이 block을 버리면 그 완료는 유실된다. 무한 block을 막는 대가로 받아들인 손실이다.
-- `.codexclaw/bg/`는 `cxc reset --state`로 지워지지 않는다. `reset all`에서만 사라진다.
+- `.cursorclaw/bg/`는 `cxc reset --state`로 지워지지 않는다. `reset all`에서만 사라진다.

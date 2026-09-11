@@ -6,7 +6,7 @@
  * explicit agent override (`override:true` in attest) that bypasses the interview
  * readiness gate, mirroring the human override in `orchestrate-apply.ts`.
  *
- * Shares the SAME `.codexclaw/sessions/<id>.json` state as the hook — but only when
+ * Shares the SAME `.cursorclaw/sessions/<id>.json` state as the hook — but only when
  * the same session id is used. A mutating call therefore requires explicit
  * `--session`; it never silently invents or selects a divergent session.
  *
@@ -181,15 +181,15 @@ export function renderOrchestrateHelp(platform: NodeJS.Platform = process.platfo
     ? [
         "Attestation examples (PowerShell single quotes do NOT protect embedded double",
         "quotes and cmd.exe ignores them entirely, so write the JSON to a file):",
-        "  '{\"from\":\"P\",\"to\":\"A\",\"did\":\"wrote and audited the plan\",\"planUnit\":\"devlog/_plan/260714_slug\",\"workPhaseId\":\"wp1\"}' | Set-Content -Encoding utf8 .codexclaw/attest.json",
-        "  cxc orchestrate A --session <id> --attest-file .codexclaw/attest.json",
+        "  '{\"from\":\"P\",\"to\":\"A\",\"did\":\"wrote and audited the plan\",\"planUnit\":\"devlog/_plan/260714_slug\",\"workPhaseId\":\"wp1\"}' | Set-Content -Encoding utf8 .cursorclaw/attest.json",
+        "  cxc orchestrate A --session <id> --attest-file .cursorclaw/attest.json",
       ]
     : [
         "Attestation examples:",
         "  cxc orchestrate A --session <id> --attest '{\"from\":\"P\",\"to\":\"A\",\"did\":\"wrote and audited the plan\",\"planUnit\":\"devlog/_plan/260714_slug\",\"workPhaseId\":\"wp1\"}'",
         "  cxc orchestrate B --session <id> --attest '{\"from\":\"A\",\"to\":\"B\",\"did\":\"audit passed\",\"auditOutput\":\"VERDICT: PASS\",\"auditVerdict\":\"pass\",\"workPhaseId\":\"wp1\"}'",
         "  cxc orchestrate C --session <id> --attest '{\"from\":\"B\",\"to\":\"C\",\"did\":\"implemented <files>\",\"workPhaseId\":\"wp1\"}'",
-        "  cxc orchestrate D --session <id> --attest '{\"from\":\"C\",\"to\":\"D\",\"did\":\"verified\",\"checkOutput\":\"tests passed\",\"exitCode\":0,\"testReceiptPath\":\".codexclaw/evidence/<session>/test-receipt.json\",\"workPhaseId\":\"wp1\"}'",
+        "  cxc orchestrate D --session <id> --attest '{\"from\":\"C\",\"to\":\"D\",\"did\":\"verified\",\"checkOutput\":\"tests passed\",\"exitCode\":0,\"testReceiptPath\":\".cursorclaw/evidence/<session>/test-receipt.json\",\"workPhaseId\":\"wp1\"}'",
       ];
   return [
     "cxc orchestrate — agent-gated IPABCD phase control",
@@ -294,7 +294,7 @@ export function parseOrchestrateCliArgs(argv: string[], cwd: string): Orchestrat
 
 /**
  * Resolve the target session id. Explicit `--session` wins; else the most-recently
- * modified `.codexclaw/sessions/*.json` (ties broken by filename); else null when no
+ * modified `.cursorclaw/sessions/*.json` (ties broken by filename); else null when no
  * session exists. Never throws on a missing/empty dir.
  */
 export function resolveSession(cwd: string, explicit?: string): string | null {
@@ -532,7 +532,7 @@ export function runOrchestrateCli(args: OrchestrateCliArgs | OrchestrateCliHelpA
   if (args.session && !sessionFileExists(args.cwd, sessionId) && !RESERVED_SESSION_KEYS.has(sessionId)) {
     return {
       code: 1,
-      output: `orchestrate ${args.verb}: unknown session '${sessionId}' — no .codexclaw/sessions/${sessionId}.json exists. Run cxc session current and cxc session bind in the native session cwd; use 'cli' only for a standalone terminal.`,
+      output: `orchestrate ${args.verb}: unknown session '${sessionId}' — no .cursorclaw/sessions/${sessionId}.json exists. Run cxc session current and cxc session bind in the native session cwd; use 'cli' only for a standalone terminal.`,
     };
   }
   const state = readState(args.cwd, sessionId);

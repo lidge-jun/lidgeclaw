@@ -20,7 +20,7 @@ function fixture(t: TestContext) {
   mkdirSync(cwd);
   mkdirSync(home);
   const env = { CODEX_THREAD_ID: CHILD, CODEX_HOME: home };
-  const dir = join(cwd, ".codexclaw", "sessions");
+  const dir = join(cwd, ".cursorclaw", "sessions");
   const path = join(dir, `${CHILD}.json`);
   return { root, cwd, home, env, dir, path };
 }
@@ -76,7 +76,7 @@ test("current with no state directory is read-only; bind creates only the child 
   const before = snapshot(f.root);
   assert.equal(jsonResult(["current"], f).code, 0);
   assert.deepEqual(snapshot(f.root), before);
-  assert.equal(existsSync(join(f.cwd, ".codexclaw")), false);
+  assert.equal(existsSync(join(f.cwd, ".cursorclaw")), false);
   const first = jsonResult(["bind"], f);
   assert.equal(first.code, 0);
   assert.equal(first.body.created, true);
@@ -101,7 +101,7 @@ test("current with no state directory is read-only; bind creates only the child 
     assert.equal(readFileSync(f.path, "utf8"), resumed);
     assert.deepEqual(readFileSync(parentPath), parent);
   }
-  assert.deepEqual(readdirSync(join(f.cwd, ".codexclaw")), ["sessions"]);
+  assert.deepEqual(readdirSync(join(f.cwd, ".cursorclaw")), ["sessions"]);
   assert.deepEqual(readdirSync(f.dir).sort(), [`${CHILD}.json`, `${PARENT}.json`]);
 });
 
@@ -129,7 +129,7 @@ for (const id of [undefined, "", "invalid-private-id", `${CHILD}\n`, ` ${CHILD}`
       assert.equal(JSON.parse(result.output).hooksVerified, false);
       assert.doesNotMatch(result.output, /invalid-private-id/);
     }
-    assert.equal(existsSync(join(f.cwd, ".codexclaw")), false);
+    assert.equal(existsSync(join(f.cwd, ".cursorclaw")), false);
   });
 }
 
@@ -156,7 +156,7 @@ for (const [name, row] of Object.entries({
     const result = jsonResult(["bind"], f);
     assert.equal(result.code, 1);
     assert.doesNotMatch(JSON.stringify(result.body), /PRIVATE_TRANSCRIPT/);
-    assert.equal(existsSync(join(f.cwd, ".codexclaw")), false);
+    assert.equal(existsSync(join(f.cwd, ".cursorclaw")), false);
   });
 }
 
@@ -225,10 +225,10 @@ for (const target of ["root", "sessions", "file", "dangling-file", "root-file", 
     const externalFile = join(external, "private.json");
     writeFileSync(externalFile, '{"sessionId":"' + CHILD + '","phase":"B"}');
     const before = snapshot(external);
-    if (target === "root") symlinkSync(external, join(f.cwd, ".codexclaw"), "dir");
-    else if (target === "root-file") writeFileSync(join(f.cwd, ".codexclaw"), "private");
+    if (target === "root") symlinkSync(external, join(f.cwd, ".cursorclaw"), "dir");
+    else if (target === "root-file") writeFileSync(join(f.cwd, ".cursorclaw"), "private");
     else if (target === "sessions" || target === "sessions-file") {
-      mkdirSync(join(f.cwd, ".codexclaw"));
+      mkdirSync(join(f.cwd, ".cursorclaw"));
       if (target === "sessions") symlinkSync(external, f.dir, "dir");
       else writeFileSync(f.dir, "private");
     } else {
@@ -248,7 +248,7 @@ for (const args of [[], ["other"], ["--json", "current"], ["current", "--session
     const f = fixture(t);
     nativeDb(f.home, f.cwd);
     assert.equal(runSessionCli(args, f.cwd, f.env).code, 1);
-    assert.equal(existsSync(join(f.cwd, ".codexclaw")), false);
+    assert.equal(existsSync(join(f.cwd, ".cursorclaw")), false);
   });
 }
 

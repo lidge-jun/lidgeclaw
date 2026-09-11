@@ -88,7 +88,7 @@ function parseIdentity(raw: unknown): SourceIdentity | null {
  * it a test receipt dropped at qaReceiptPath satisfies the QA requirement, and
  * a check that lives at the call site is a check that gets forgotten.
  *
- * The path guards (inside .codexclaw/evidence, not a symlink, realpath still
+ * The path guards (inside .cursorclaw/evidence, not a symlink, realpath still
  * inside, a regular file, non-empty) are delegated to hasValidReceipt, which
  * already implements all five. It returns a bare boolean, so the five reasons
  * collapse into one message here — better than duplicating the guard to get
@@ -102,7 +102,7 @@ export function parseSourceBoundReceipt(
   if (!path) return { error: "receipt path is empty" };
   if (!hasValidReceipt(cwd, path)) {
     return {
-      error: `receipt failed the evidence-root guard (outside .codexclaw/evidence, symlink, not a regular file, or empty): ${path}`,
+      error: `receipt failed the evidence-root guard (outside .cursorclaw/evidence, symlink, not a regular file, or empty): ${path}`,
     };
   }
   const abs = isAbsolute(path) ? resolve(path) : resolve(cwd, path);

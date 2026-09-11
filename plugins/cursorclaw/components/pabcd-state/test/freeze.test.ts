@@ -67,7 +67,7 @@ test("L10.3 R-7: activation directive instructs get_goal -> objective-only creat
 test("L10.3 runtime: freeze --dry-run produces a summary without writing", () => {
   const cwd = mkdtempSync(join(tmpdir(), "cxc-frz-"));
   try {
-    const planDir = join(cwd, ".codexclaw", "plan", "default");
+    const planDir = join(cwd, ".cursorclaw", "plan", "default");
     mkdirSync(planDir, { recursive: true });
     writeFileSync(join(planDir, "plan.md"), "# Plan\n## OPEN ASSUMPTIONS\n- A1");
     const out = runFreeze({ cwd, sessionId: "default", dryRun: true });
@@ -105,9 +105,9 @@ function readyTrackerJson(): string {
 test("L14.2: freeze emits GOAL_ACTIVATION_DIRECTIVE when the interview is ready", () => {
   const cwd = mkdtempSync(join(tmpdir(), "cxc-frz-ready-"));
   try {
-    mkdirSync(join(cwd, ".codexclaw", "sessions"), { recursive: true });
-    writeFileSync(join(cwd, ".codexclaw", "sessions", "s1.json"), readyTrackerJson());
-    const planDir = join(cwd, ".codexclaw", "plan", "demo");
+    mkdirSync(join(cwd, ".cursorclaw", "sessions"), { recursive: true });
+    writeFileSync(join(cwd, ".cursorclaw", "sessions", "s1.json"), readyTrackerJson());
+    const planDir = join(cwd, ".cursorclaw", "plan", "demo");
     mkdirSync(planDir, { recursive: true });
     writeFileSync(join(planDir, "plan.md"), "# Plan");
     const out = runFreeze({ cwd, sessionId: "s1", dryRun: true });
@@ -121,7 +121,7 @@ test("L14.2: freeze emits GOAL_ACTIVATION_DIRECTIVE when the interview is ready"
 test("L14.2: freeze does NOT emit the directive when the interview is not ready", () => {
   const cwd = mkdtempSync(join(tmpdir(), "cxc-frz-notready-"));
   try {
-    const planDir = join(cwd, ".codexclaw", "plan", "default");
+    const planDir = join(cwd, ".cursorclaw", "plan", "default");
     mkdirSync(planDir, { recursive: true });
     writeFileSync(join(planDir, "plan.md"), "# Plan");
     const out = runFreeze({ cwd, sessionId: "default", dryRun: true });
