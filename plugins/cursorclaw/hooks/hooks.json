@@ -3,17 +3,29 @@
   "hooks": {
     "sessionStart": [
       {
-        "command": "./scripts/session-start.sh"
+        "command": "node ./scripts/cursor-bridge.mjs session-start"
       }
     ],
     "beforeSubmitPrompt": [
       {
-        "command": "./scripts/passthrough-allow.sh"
+        "command": "node ./scripts/cursor-bridge.mjs beforeSubmitPrompt"
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "node ./scripts/cursor-bridge.mjs inject-pending"
       }
     ],
     "stop": [
       {
-        "command": "./scripts/passthrough-allow.sh"
+        "command": "node ./scripts/cursor-bridge.mjs stop",
+        "loop_limit": 5
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "node ./scripts/cursor-bridge.mjs subagent-stop",
+        "loop_limit": 5
       }
     ]
   }

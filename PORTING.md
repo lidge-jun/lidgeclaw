@@ -11,11 +11,11 @@ Ship the same development discipline (dev skill family, PABCD, multi-model subag
 | codexclaw (Codex) | cursorclaw (Cursor) | Status |
 | --- | --- | --- |
 | `plugins/codexclaw/.codex-plugin/plugin.json` | `plugins/cursorclaw/.cursor-plugin/plugin.json` + repo `.cursor-plugin/marketplace.json` | Scaffolded |
-| `skills/*/SKILL.md` (+ `agents/openai.yaml`) | `skills/*/SKILL.md` (Cursor discovery) | Copied; rename/rebrand TBD |
-| Codex `hooks/*.json` event names | `hooks/hooks.json` Cursor events | Legacy stored in `hooks/codex-legacy/`; thin Cursor bridge wired |
+| `skills/*/SKILL.md` (+ `agents/openai.yaml`) | `skills/*/SKILL.md` (Cursor discovery) | Copied; `crc-dev` / `crc-pabcd` alias skills added |
+| Codex `hooks/*.json` event names | `hooks/hooks.json` Cursor events | **Bridge live**: `scripts/cursor-bridge.mjs` maps sessionStart / beforeSubmitPrompt / preToolUse(pending inject) / stop / subagentStop; legacy JSON in `hooks/codex-legacy/` |
 | `agents/*.toml` | `agents/*.md` (+ toml kept for provenance) | Scaffolded |
 | `cxc` / `codexclaw` CLI | `crc` / `cursorclaw` CLI | Entry renamed; component paths still Codex-era |
-| `.codexclaw/` state | `.cursorclaw/` | Docs/rule acknowledge dual name during port |
+| `.codexclaw/` state | `.cursorclaw/` | Bridge migrates legacy → modern on first hook; component `STATE_DIR` still writes `.codexclaw` until src rename lands |
 | Codex feature-flag config-guard | Cursor settings / plugin variables | Deferred |
 | `~/.codex` recall artifacts | Cursor conversation / memory surfaces | Deferred |
 | Messenger GUI / serve | Optional later | Deferred |
@@ -39,8 +39,8 @@ Ship the same development discipline (dev skill family, PABCD, multi-model subag
 
 ## Next port slices
 
-1. Rewire high-value hooks (`beforeSubmitPrompt` PABCD trigger, `stop` continuation, `subagentStop` evidence) onto Cursor JSON I/O.
-2. Rename CLI package paths and state dir to `.cursorclaw`.
-3. Soft-rebrand skill frontmatter (`cxc-*` → `crc-*` or keep dual aliases).
+1. ~~Rewire high-value hooks onto Cursor JSON I/O.~~ Done via `scripts/cursor-bridge.mjs` (prompt context deferred to `preToolUse` because Cursor `beforeSubmitPrompt` has no `additional_context`).
+2. Rename component `STATE_DIR` (and siblings) from `.codexclaw` → `.cursorclaw` in source + rebuild dist; keep one-shot migration.
+3. Expand soft-rebrand beyond `crc-dev` / `crc-pabcd` aliases (or dual frontmatter names).
 4. Replace Codex-only recall roots with Cursor-compatible stores.
 5. Docs-site + README localization pass for Cursor install instructions.
