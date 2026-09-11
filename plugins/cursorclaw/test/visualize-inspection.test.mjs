@@ -25,7 +25,7 @@ test('visualize inspection uses explicit root, version order, and failure states
     };
     const run = env => spawnSync('bash', [join(root, 'sync-check.sh')], {
       encoding: 'utf8', env: { ...process.env, HOME: join(root, 'unused-home'),
-        CODEX_HOME: join(root, 'wrong-default'), CXC_VISUALIZE_ROOT: cache, ...env }
+        CURSOR_HOME: join(root, 'wrong-default'), CXC_VISUALIZE_ROOT: cache, ...env }
     });
     let result = run({});
     assert.equal(result.status, 1, result.stdout + result.stderr);
@@ -46,17 +46,17 @@ test('visualize inspection uses explicit root, version order, and failure states
       mkdirSync(dir, { recursive: true });
       writeFileSync(join(dir, 'SKILL.md'), 'current-contract');
     }
-    // Explicit override still wins over a populated, different CODEX_HOME.
-    result = run({ CODEX_HOME: defaultRoot, HOME: homeRoot });
+    // Explicit override still wins over a populated, different CURSOR_HOME.
+    result = run({ CURSOR_HOME: defaultRoot, HOME: homeRoot });
     assert.equal(result.status, 1, result.stdout + result.stderr);
     assert.match(result.stdout, /1\.0\.11/);
     for (const override of ['', undefined]) {
-      result = run({ CXC_VISUALIZE_ROOT: override, CODEX_HOME: defaultRoot, HOME: homeRoot });
+      result = run({ CXC_VISUALIZE_ROOT: override, CURSOR_HOME: defaultRoot, HOME: homeRoot });
       assert.equal(result.status, 0, result.stdout + result.stderr);
       assert.match(result.stdout, /version 2\.0\.0/);
     }
     for (const codexHome of ['', undefined]) {
-      result = run({ CXC_VISUALIZE_ROOT: undefined, CODEX_HOME: codexHome, HOME: homeRoot });
+      result = run({ CXC_VISUALIZE_ROOT: undefined, CURSOR_HOME: codexHome, HOME: homeRoot });
       assert.equal(result.status, 0, result.stdout + result.stderr);
       assert.match(result.stdout, /version 3\.0\.0/);
     }

@@ -24,7 +24,7 @@ for browse/QA tasks because:
 
 ## File Change Map
 
-### MODIFY: `plugins/codexclaw/skills/dev/SKILL.md`
+### MODIFY: `plugins/cursorclaw/skills/dev/SKILL.md`
 
 Insert a new `### Browse / QA Tool Routing` subsection after line 180
 (Capability Routing Hub paragraph) and before line 182 (Skill Ownership Map).
@@ -58,6 +58,6 @@ cross-references both. Confirm no stale references.
 
 ## Scope Boundary
 
-- **IN:** `plugins/codexclaw/skills/dev/SKILL.md`
+- **IN:** `plugins/cursorclaw/skills/dev/SKILL.md`
 - **IN (review only):** `structure/60_native_capabilities.md`
 - **OUT:** All other skill files, hook code, agent configs, openai.yaml files

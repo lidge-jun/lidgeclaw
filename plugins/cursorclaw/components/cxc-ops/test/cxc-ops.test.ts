@@ -17,8 +17,8 @@ import { main } from "../src/cli.ts";
 // module" and reports nothing. Doctor is the only place that can notice.
 function payloadAt(version: string): string {
   const root = mkdtempSync(join(tmpdir(), "cxc-payload-"));
-  mkdirSync(join(root, ".codex-plugin"), { recursive: true });
-  writeFileSync(join(root, ".codex-plugin", "plugin.json"), JSON.stringify({ name: "codexclaw", version }));
+  mkdirSync(join(root, ".cursor-plugin"), { recursive: true });
+  writeFileSync(join(root, ".cursor-plugin", "plugin.json"), JSON.stringify({ name: "codexclaw", version }));
   return root;
 }
 
@@ -52,10 +52,10 @@ test("install-root: an uninstalled plugin warns rather than failing", () => {
 
 function makePluginRoot(opts: { hooks?: string[]; skills?: string[]; brokenSkill?: boolean; roles?: string[] } = {}): string {
   const root = mkdtempSync(join(tmpdir(), "cxc-doctor-"));
-  mkdirSync(join(root, ".codex-plugin"), { recursive: true });
+  mkdirSync(join(root, ".cursor-plugin"), { recursive: true });
   const hooks = opts.hooks ?? ["./hooks/a.json"];
   writeFileSync(
-    join(root, ".codex-plugin", "plugin.json"),
+    join(root, ".cursor-plugin", "plugin.json"),
     JSON.stringify({ name: "test", version: "0.0.1", hooks, mcpServers: "./.mcp.json" }),
   );
   writeFileSync(join(root, ".mcp.json"), JSON.stringify({ mcpServers: { test: { command: "node" } } }));
@@ -140,7 +140,7 @@ test("doctor: healthy plugin root -> PASS with evidence on every check", () => {
 test("doctor: missing hook file -> FAIL on hooks", () => {
   const root = makePluginRoot({ hooks: ["./hooks/present.json"] });
   // add a manifest hook that points at a missing file
-  writeFileSync(join(root, ".codex-plugin", "plugin.json"), JSON.stringify({ hooks: ["./hooks/present.json", "./hooks/ghost.json"] }));
+  writeFileSync(join(root, ".cursor-plugin", "plugin.json"), JSON.stringify({ hooks: ["./hooks/present.json", "./hooks/ghost.json"] }));
   const report = runDoctor(root);
   const hooks = report.checks.find((c) => c.name === "hooks");
   assert.equal(hooks?.severity, "FAIL");

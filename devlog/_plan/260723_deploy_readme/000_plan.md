@@ -20,7 +20,7 @@ Session: 019f8f1b-b356-7443-a937-b839f17b7ac6 (HITL cxc-loop, cycle 1 = docs-fir
   versioning/update mechanics, 10 takeaways. Source: Sol subagent "Heisenberg",
   2026-07-23, VERDICT: COMPLETE.
 - Live CLI verification (main agent, 2026-07-23): `codex plugin --help` →
-  `add|list|remove`; `codex plugin marketplace --help` → `add|list|upgrade|remove`.
+  `add|list|remove`; `Cursor plugin install --help` → `add|list|upgrade|remove`.
 - Marketplace manifest discovery: `.agents/plugins/marketplace.json` is a supported
   root manifest path (codex-rs `MARKETPLACE_MANIFEST_RELATIVE_PATHS`, mirrored in
   opencodex `src/codex/plugins-doctor.ts:9`).
@@ -33,7 +33,7 @@ Session: 019f8f1b-b356-7443-a937-b839f17b7ac6 (HITL cxc-loop, cycle 1 = docs-fir
 - **WP2 (next cycle):** execute `020` — optimize `README.md` + `README.ko.md` +
   `README.zh.md` (factual corrections, install/update/uninstall UX, docs links).
   Verifier: count commands re-run, link existence checks, i18n structural parity,
-  `node plugins/codexclaw/scripts/gate.mjs`.
+  `node plugins/cursorclaw/scripts/gate.mjs`.
 - **WP3 (appended at A, LOOP-UNIT-CHAIN-01):** execute `030_docssite_sync.md` —
   the primary docs site (`lidge-jun.github.io/codexclaw/`) is MORE stale than the
   README (25 skills / twelve hooks / 801 tests, shipped-GUI claims). Linking the
@@ -58,7 +58,7 @@ Session: 019f8f1b-b356-7443-a937-b839f17b7ac6 (HITL cxc-loop, cycle 1 = docs-fir
 
 ## A-phase amendments (folded from reviewer "Ampere", GO-WITH-FIXES blockers=3)
 
-1. B-CLI (High, accepted): the marketplace payload `plugins/codexclaw/` contains
+1. B-CLI (High, accepted): the marketplace payload `plugins/cursorclaw/` contains
    no `bin/`/`cli/` — a clean install gets hooks/MCP but no `cxc` on PATH.
    Recorded as deploy blocker + decision D6 in 010; README CLI section scoped
    accordingly in 020.

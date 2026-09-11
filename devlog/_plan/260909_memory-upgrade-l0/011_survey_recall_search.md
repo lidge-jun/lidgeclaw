@@ -2,7 +2,7 @@
 
 - 작성: 2026-09-09
 - 워크트리: `/Users/jun/.codex/worktrees/1fa9/codexclaw` (브랜치 `codex/memory-upgrade-l0`, `6e97e73d`)
-- 대상: `plugins/codexclaw/components/recall/` — src 14파일 1,996줄 / test 8파일 1,110줄
+- 대상: `plugins/cursorclaw/components/recall/` — src 14파일 1,996줄 / test 8파일 1,110줄
 - 성격: P 페이즈 조사. 코드는 수정하지 않았다. 실측 명령은 모두 읽기 전용.
 - 선행 노트: 이 디렉터리의 `research/01`(cli-jaw 랭킹), `research/05`(네이티브 결함), `research/08`(설계). 중복 서술은 참조로 대체한다.
 
@@ -200,7 +200,7 @@ cxc memory search "3956" --limit 3
 
 ```bash
 node -e "const{DatabaseSync}=require('node:sqlite');
-const db=new DatabaseSync('/Users/jun/.codexclaw/recall/index.sqlite',{readOnly:true});
+const db=new DatabaseSync('/Users/jun/.cursorclaw/recall/index.sqlite',{readOnly:true});
 const r=db.prepare(\"SELECT m.text t FROM msgs_tri JOIN msgs m ON m.id=msgs_tri.rowid WHERE msgs_tri MATCH '\\\"git\\\"' LIMIT 300\").all();
 console.log(r.length, r.filter(x=>!/\bgit\b/i.test(x.t)).length)"
 # → 300 48   (16%가 digit / legitimate 등 단어 내부)
@@ -557,7 +557,7 @@ WHERE 조건 조립 (`:58-80`):
 
 ```bash
 node -e "const{DatabaseSync}=require('node:sqlite');
-const db=new DatabaseSync('/Users/jun/.codexclaw/recall/index.sqlite',{readOnly:true});
+const db=new DatabaseSync('/Users/jun/.cursorclaw/recall/index.sqlite',{readOnly:true});
 let s=Date.now();
 const a=db.prepare('SELECT rowid, bm25(msgs_fts) sc FROM msgs_fts WHERE msgs_fts MATCH ? ORDER BY sc LIMIT 20')
           .all('\"opencodex\" AND \"release\"');
@@ -610,7 +610,7 @@ RRF 파라미터는 cli-jaw `indexing.ts:591-602` 기준 `k=60`, 가중 BM25 1.0
 
 ### 7.1 감점 테이블 위치
 
-`~/.codexclaw/recall/index.sqlite` 안에 새 테이블을 두는 게 맞다. 근거는 `index-db.ts:3-11`의 파생 캐시 계약이다 — 삭제해도 재빌드 비용뿐. 별도 파일을 만들면 정리 대상이 하나 늘고 P4(되돌릴 수 있음)의 "지우면 중립으로 복귀"가 두 곳으로 흩어진다.
+`~/.cursorclaw/recall/index.sqlite` 안에 새 테이블을 두는 게 맞다. 근거는 `index-db.ts:3-11`의 파생 캐시 계약이다 — 삭제해도 재빌드 비용뿐. 별도 파일을 만들면 정리 대상이 하나 늘고 P4(되돌릴 수 있음)의 "지우면 중립으로 복귀"가 두 곳으로 흩어진다.
 
 ```sql
 CREATE TABLE IF NOT EXISTS recall_hit_counts (
@@ -717,10 +717,10 @@ jawcode `memory-quality.ts:45-59` (research/02 §2.5): `penalty = (count - thres
 ### 8.3 테스트 러너와 패턴
 
 - 러너는 **node:test**다. vitest 아님 — `recall/package.json:8`이 `"test": "node --test"`
-- 루트 `package.json`의 `test` 스크립트가 `plugins/codexclaw/scripts/test.mjs`에 glob을 넘긴다. recall 몫은 `plugins/codexclaw/components/recall/test/*.test.ts`
-- `test.mjs`는 `--test-concurrency=1`로 직렬 실행하고 `CODEXCLAW_HOME`을 임시 디렉터리로 덮는다 (운영자 설정 오염 방지)
+- 루트 `package.json`의 `test` 스크립트가 `plugins/cursorclaw/scripts/test.mjs`에 glob을 넘긴다. recall 몫은 `plugins/cursorclaw/components/recall/test/*.test.ts`
+- `test.mjs`는 `--test-concurrency=1`로 직렬 실행하고 `CURSORCLAW_HOME`을 임시 디렉터리로 덮는다 (운영자 설정 오염 방지)
 - import 스타일: `import test from "node:test"` + `import assert from "node:assert/strict"`, 소스는 `../src/x.ts` (확장자 포함, Node 타입 스트리핑)
-- 픽스처는 `test/fixtures.ts`의 `buildCodexHome(home)`이 합성 CODEX_HOME을 만든다. 날짜가 `Date.now()` 상대(`fixtures.ts:16-22`)라 `--days` 테스트가 가능하다
+- 픽스처는 `test/fixtures.ts`의 `buildCodexHome(home)`이 합성 CURSOR_HOME을 만든다. 날짜가 `Date.now()` 상대(`fixtures.ts:16-22`)라 `--days` 테스트가 가능하다
 - 랭킹 테스트는 **공유 픽스처 home의 mtime을 절대 안 건드린다** — `ranking.test.ts:1-5` 헤더가 명시. 격리 temp home + `utimesSync`를 쓴다
 - 결정론: `MemorySearchOptions.nowMs`(`memory-search.ts:29`)가 시계 주입 seam이다. 새 랭킹 테스트도 이걸 써야 한다
 - 빌드는 `scripts/build.mjs`가 `stripTypeScriptTypes`로 `src/*.ts → dist/*.js`. **써드파티 import 금지**이므로 RRF/BM25는 순수 SQL + JS로만 짜야 한다(`build.mjs:5-8` 주석이 계약을 명시)

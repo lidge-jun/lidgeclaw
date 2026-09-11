@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, pabcd-initiative, dispatch-economy, reflection, plan, diff-level]
+tags: [cursorclaw, pabcd-initiative, dispatch-economy, reflection, plan, diff-level]
 ---
 
 # Loop 2 — reflect Loop-1 findings + port economy to pabcd (diff-level plan)
@@ -42,8 +42,8 @@ Status: PLANNED (rev 3 — A-gate rounds 1-2: 5 blockers total, all ACCEPT)
 - Expected terminal outcome: DONE.
 - Escalation condition: upward — reviewer FAIL x3 -> replan; downward — none
   (small coupled text edits, main-owned).
-- Write scope: `plugins/codexclaw/skills/loop/SKILL.md`,
-  `plugins/codexclaw/skills/pabcd/SKILL.md`,
+- Write scope: `plugins/cursorclaw/skills/loop/SKILL.md`,
+  `plugins/cursorclaw/skills/pabcd/SKILL.md`,
   `../pabcd_initiative/skills/dev-pabcd/SKILL.md`, this devlog unit, commits.
 
 ## Delegation plan (DISPATCH-ECONOMY-01)
@@ -56,7 +56,7 @@ Status: PLANNED (rev 3 — A-gate rounds 1-2: 5 blockers total, all ACCEPT)
 
 ## File change map (diff-level)
 
-1. `plugins/codexclaw/skills/loop/SKILL.md`
+1. `plugins/cursorclaw/skills/loop/SKILL.md`
    - ORCH-MANDATE step 4 (line ~27): "Advance every forward edge with
      `--attest`" -> "Advance the four gated work edges (P>A, A>B, B>C, C>D)
      with `cxc orchestrate <phase> --attest <json>` ...; entry edges (IDLE→P,
@@ -69,7 +69,7 @@ Status: PLANNED (rev 3 — A-gate rounds 1-2: 5 blockers total, all ACCEPT)
      DISPATCH-RETIRE-01 same-agent retry: after ~3 empty wait cycles go
      straight to fresh-spawn with the failure folded into the new packet —
      do not grant the silent agent a second retry."
-2. `plugins/codexclaw/skills/pabcd/SKILL.md` line ~92: "additionally needs
+2. `plugins/cursorclaw/skills/pabcd/SKILL.md` line ~92: "additionally needs
    `checkOutput` + a passing `exitCode`" -> "additionally needs a non-empty
    `checkOutput`; `exitCode` is optional but, when supplied, must be `0`"
    (matches :73 and the shipped gate).

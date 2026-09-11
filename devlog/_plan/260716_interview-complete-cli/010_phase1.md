@@ -22,7 +22,7 @@ CLI path, recording `actor:"agent"` instead of `actor:"human"`.
 The tracker stays UNTOUCHED. The override is at the transition level.
 The ledger records full provenance. The `did` narrative provides the reason.
 
-## MODIFY: `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts`
+## MODIFY: `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts`
 
 Before the `const result = transition(state, to, args.attest)` call (~line 286),
 add the I→P agent override path:
@@ -74,7 +74,7 @@ Import additions at top: `evaluateInterviewGate` from `"./interview.ts"`,
 Also import `resetRenderLedger` from `"./render-observations.ts"` (existing
 pattern at line 343).
 
-## MODIFY: `plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts`
+## MODIFY: `plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts`
 
 Add after the existing "G20: I->P needs the interview flag" test (~line 471):
 
@@ -94,7 +94,7 @@ Add after the existing "G20: I->P needs the interview flag" test (~line 471):
 4. **Agent override records scanEvidence**: verify ledger entry after override
    contains `scanRounds: 0` and correct `highContradictionCount`.
 
-## MODIFY: `plugins/codexclaw/skills/interview/SKILL.md`
+## MODIFY: `plugins/cursorclaw/skills/interview/SKILL.md`
 
 In "## Runtime Status (shipped)", after readiness gating:
 
@@ -118,7 +118,7 @@ In "## Runtime Status (shipped)", after readiness gating:
 
 ## Verification (C)
 
-1. `node plugins/codexclaw/scripts/build.mjs` — exit 0
+1. `node plugins/cursorclaw/scripts/build.mjs` — exit 0
 2. `npm test` — all existing tests pass (pre-existing repo-map failure excluded)
 3. New test cases pass in `orchestrate-cli.test.ts`
 4. Manual: from phase=I with null tracker, `cxc orchestrate P --session <id> --attest '{"from":"I","to":"P","did":"test","override":true}'` succeeds

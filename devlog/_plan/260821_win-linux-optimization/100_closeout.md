@@ -16,7 +16,7 @@ everything deliberately deferred, and the closing docs.
 
 ## MODIFY / NEW / DELETE map
 
-### 1. MODIFY plugins/codexclaw/components/cxc-ops/src/doctor.ts - defect #16
+### 1. MODIFY plugins/cursorclaw/components/cxc-ops/src/doctor.ts - defect #16
 
 BEFORE (:73)
 ```ts
@@ -35,7 +35,7 @@ AFTER
 Broken on every platform, not just Windows, but it sits in the doctor path Windows users
 lean on hardest.
 
-### 2. MODIFY plugins/codexclaw/components/pabcd-state/src/worktree-guard.ts - defect #17
+### 2. MODIFY plugins/cursorclaw/components/pabcd-state/src/worktree-guard.ts - defect #17
 
 The guard tokenizes POSIX shell syntax and recognizes `rm`, `rmdir`, and
 `git worktree remove`. On Windows the destructive verbs are `Remove-Item` and its aliases
@@ -229,7 +229,7 @@ const DESTRUCTIVE_HINT =
 
 The `i` flag is new and load-bearing: `Remove-Item` is conventionally capitalized.
 
-### 3. MODIFY plugins/codexclaw/components/pabcd-state/src/friction.ts - defect #18
+### 3. MODIFY plugins/cursorclaw/components/pabcd-state/src/friction.ts - defect #18
 
 BEFORE (:43-52)
 ```ts
@@ -385,23 +385,23 @@ Windows:
 ```powershell
 npm test
 npm run smoke
-node plugins/codexclaw/scripts/gate.mjs
-node plugins/codexclaw/scripts/inventory.mjs --check
-node plugins/codexclaw/scripts/hook-bench.mjs --iterations 15 --json > bench-final.json
-node plugins/codexclaw/scripts/hook-bench-compare.mjs devlog/_plan/260821_win-linux-optimization/bench-baseline.json bench-final.json --max-regression-pct 10
+node plugins/cursorclaw/scripts/gate.mjs
+node plugins/cursorclaw/scripts/inventory.mjs --check
+node plugins/cursorclaw/scripts/hook-bench.mjs --iterations 15 --json > bench-final.json
+node plugins/cursorclaw/scripts/hook-bench-compare.mjs devlog/_plan/260821_win-linux-optimization/bench-baseline.json bench-final.json --max-regression-pct 10
 ```
 
 WSL, both tiers:
 ```bash
-wsl -d Ubuntu -- bash -lc "cd ~/codexclaw-wsl-checkout && npm test && npm run smoke && node plugins/codexclaw/scripts/gate.mjs"
+wsl -d Ubuntu -- bash -lc "cd ~/codexclaw-wsl-checkout && npm test && npm run smoke && node plugins/cursorclaw/scripts/gate.mjs"
 wsl -d Ubuntu -- bash -lc "cd /mnt/c/Users/super/Downloads/codexclaw && npm test"
 ```
 
 The three manual reproductions from the original issues, which must now all succeed:
 
 ```powershell
-'{"from":"P","to":"A","did":"campaign closeout","planUnit":"devlog/_plan/260821_win-linux-optimization","workPhaseId":"wp11-closeout"}' | Set-Content -Encoding utf8 .codexclaw/attest.json
-node bin/codexclaw.mjs orchestrate A --session cli --attest-file .codexclaw/attest.json
+'{"from":"P","to":"A","did":"campaign closeout","planUnit":"devlog/_plan/260821_win-linux-optimization","workPhaseId":"wp11-closeout"}' | Set-Content -Encoding utf8 .cursorclaw/attest.json
+node bin/codexclaw.mjs orchestrate A --session cli --attest-file .cursorclaw/attest.json
 node bin/codexclaw.mjs plan init 260821_win-linux-optimization
 node bin/codexclaw.mjs loop add-criterion --session cli --criterion "dual-platform gates green" --surface logic
 ```

@@ -152,9 +152,9 @@ The existing assertions at attest.test.ts:33 (`/auditOutput/`) and :64
 
 ### F6 [P3] 040 mislocates a file, and line citations will drift
 
-040's rename table lists `plugins/codexclaw/components/recall/src/store.ts:132`. No
+040's rename table lists `plugins/cursorclaw/components/recall/src/store.ts:132`. No
 such file exists; the real site is
-`plugins/codexclaw/components/subagent-config/src/store.ts:132` (line correct, package
+`plugins/cursorclaw/components/subagent-config/src/store.ts:132` (line correct, package
 wrong). Section 6's package-wiring paragraph inherits the error. Inherited from 002 B11.
 
 Separately, sequential phases will invalidate later citations: 030 inserts ~60 lines into

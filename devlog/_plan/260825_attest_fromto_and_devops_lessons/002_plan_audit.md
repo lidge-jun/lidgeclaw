@@ -105,7 +105,7 @@ example into the skill and call the result consistent.
 | 5 | Freeze-train rules belong in a new §2.8, not §2.7 | **Accepted.** §2.7 is a 3-line published-artifact contract; the GO-report rules are a different shelf |
 | 6 | Draft the `skill-ownership.md` row; name `N` for FLAKE-STABILITY | **Accepted.** Row drafted in 030; `N` is "declared in the GO report, minimum 3" — opencodex's own number, not invented |
 | 7 | Test 6 must bind to the attest table rows, not a repo-wide `rg` | **Accepted.** A 37k-character file will contain any key name somewhere |
-| 8 | Accept-criteria paths need the `plugins/codexclaw/` prefix | **Accepted** |
+| 8 | Accept-criteria paths need the `plugins/cursorclaw/` prefix | **Accepted** |
 | 9 | `scan-cli.ts:146` teaches `{"override":true,...}` without from/to | **IN.** Same cascade, one line, and it is a runtime error handing the agent a command |
 
 ## Citation corrections to 001
@@ -129,7 +129,7 @@ than left to rot:
   `evidence`-instead-of-`did` bug at `hook.ts:1163`, the invalid-JSON doctrine
   line, the `:218` vs `:77` flaky contradiction, and the `ci-pipeline.md:96-102`
   duplication.
-- The dist/build note: `plugins/codexclaw/test/dist-freshness.test.mjs` exists,
+- The dist/build note: `plugins/cursorclaw/test/dist-freshness.test.mjs` exists,
   compares compiled src against tracked dist, and pabcd-state's `dist/*.js` IS
   tracked despite the root `.gitignore` entry. `npm run build` stays in wp1.
 - The 11 DEVOPS-* rules: no overlap with the three existing ids.

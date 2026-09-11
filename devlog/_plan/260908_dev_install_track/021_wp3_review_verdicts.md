@@ -28,7 +28,7 @@ passed.
 
 | # | Sev | Finding | Decision |
 |---|---|---|---|
-| 1 | **BLOCKER** | `ROLE_AGENT_TYPE.executor` unconditionally emits `agent_type: "executor"` (`spawn-wrapper.ts:24`, read with no fallback at `:377`), but `executor` is not a codex-rs built-in. It resolves only after a manual `cxc subagents register executor` plus a session restart. Every existing install's first executor dispatch after upgrade fails with `unknown agent_type 'executor'`. | **ACCEPTED — blocking.** Verified independently: `dev` currently declares `Record<RoleName, "explorer" | "worker">` at `spawn-wrapper.ts:24` and the PR changes it to `"executor"`; `~/.codex/agents/` on this machine is EMPTY, so this host is exactly the affected population. |
+| 1 | **BLOCKER** | `ROLE_AGENT_TYPE.executor` unconditionally emits `agent_type: "executor"` (`spawn-wrapper.ts:24`, read with no fallback at `:377`), but `executor` is not a codex-rs built-in. It resolves only after a manual `cxc subagents register executor` plus a session restart. Every existing install's first executor dispatch after upgrade fails with `unknown agent_type 'executor'`. | **ACCEPTED — blocking.** Verified independently: `dev` currently declares `Record<RoleName, "explorer" | "worker">` at `spawn-wrapper.ts:24` and the PR changes it to `"executor"`; `~/.cursor/agents/` on this machine is EMPTY, so this host is exactly the affected population. |
 | 2 | MAJOR | README registration command uses an unexpanded `<plugin-root>` placeholder and is placed before hook approval. | Accepted; compounds finding 1. |
 | 3 | MAJOR | Registration has no upgrade path: byte-inequality is the only "differs" signal, no `--force`, no provenance marker (`role-registration.ts:36`, `cli.ts:39-43`). A later prompt change pins every registered user to the old prompt. | Accepted as a real design gap. |
 | 4 | MINOR | After registration the role prompt is delivered twice — natively and inlined (`spawn-wrapper.ts:378`). | Accepted; context waste, not incorrectness. |
@@ -50,7 +50,7 @@ path of the workflow rather than a peripheral feature. Merging it would leave `d
 where this very session's delegation surface breaks after the next reinstall.
 
 A one-line fallback in `resolveSpawnPayload` — emit `"worker"` when
-`$CODEX_HOME/agents/executor.toml` is absent — resolves it, since both the gate and
+`$CURSOR_HOME/agents/executor.toml` is absent — resolves it, since both the gate and
 `inferRole` already accept `worker`. That belongs to the PR author, not to this merge pass.
 
 ## PR 93 — fix(subagents): persist effort and add global defaults with live OCX models
@@ -99,7 +99,7 @@ then 2,697 after adding the four regression tests, written through
 
 PR 91's hold was communicated to its author rather than left silent:
 [#91 comment](https://github.com/lidge-jun/codexclaw/pull/91#issuecomment-5585802286). The comment
-carries the blocker with its anchors, the independent confirmation that `~/.codex/agents/` is empty
+carries the blocker with its anchors, the independent confirmation that `~/.cursor/agents/` is empty
 on this host, the suggested `resolveSpawnPayload` fallback, the two MAJOR follow-ons, and the
 explicit record of what the reviewer confirmed as correct. It also notes that `dev` has moved and
 the branch needs a rebase.

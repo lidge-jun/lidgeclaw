@@ -164,7 +164,7 @@ policy forbids:
 - `subagent-config/test/mcp.test.ts` justified a 30s ceiling as absorbing
   scheduling jitter — timeout-raising as flake absorption, in the very file C10
   cites.
-- `plugins/codexclaw/test/hook-e2e.test.mjs` said "skip rather than flake".
+- `plugins/cursorclaw/test/hook-e2e.test.mjs` said "skip rather than flake".
 
 Neither behavior changed; both comments did. The first is now named as a hang
 detector with the unfixed contention tracked as C10 and the honest fixes listed;

@@ -13,7 +13,7 @@ parallel after audit-gate PASS (see 030_impl_audit_synthesis.md).
 - Incident: an orphaned repo-wide `node --test --test-concurrency=1 <all components>`
   run (started by a worker at 11:57) caused 60s timeouts in agent-service/heartbeat/
   runner tests during the first main-session verification; killed PIDs 6387/14574 and
-  re-ran clean. Worker receipts in `.codexclaw/evidence/` (wp1-telegram-surface-*.txt,
+  re-ran clean. Worker receipts in `.cursorclaw/evidence/` (wp1-telegram-surface-*.txt,
   wp2-discord-interaction-engine/, wp8-gui-observability-session-mgmt-evidence.md).
 
 ## Diff-level change map

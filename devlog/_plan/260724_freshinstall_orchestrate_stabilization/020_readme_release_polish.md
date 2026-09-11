@@ -6,7 +6,7 @@ terminal surface on marketplace installs.
 P-recheck (2026-07-24, post-WP1 at 2d0e807b): facts refreshed against tree —
 tests badge 1,201 → 1,213; skills 27 (dir has 28 entries incl. README.md);
 hooks 18 (manifest length verified); new truth to document: payload bin
-`bin/cxc.mjs`, SessionStart banner announces resolved invocation when `cxc`
+`bin/cursorclaw.mjs`, SessionStart banner announces resolved invocation when `cxc`
 absent, `scan record` exists, version 0.1.1.
 
 ## File change map
@@ -17,20 +17,20 @@ absent, `scan record` exists, version 0.1.1.
    from chat, no CLI needed" framing with the WP1 reality: chat surface works
    out of the box AND the terminal surface resolves via the payload
    dispatcher; add one line for the no-PATH case (the SessionStart banner
-   names the exact `node .../bin/cxc.mjs` invocation) and one line for
+   names the exact `node .../bin/cursorclaw.mjs` invocation) and one line for
    optional PATH-level `cxc` (repo checkout + `npm link`, or alias).
    Exact edits: the collapsible "Update / uninstall / optional CLI" section's
    claim "The `cxc` CLI ships with a repository checkout" becomes the
    two-tier story (payload dispatcher ships with EVERY install at
-   `bin/cxc.mjs` under the plugin root; PATH-level `cxc` optional via
-   checkout). Architecture tree gains `bin/cxc.mjs` line; the footer italic
+   `bin/cursorclaw.mjs` under the plugin root; PATH-level `cxc` optional via
+   checkout). Architecture tree gains `bin/cursorclaw.mjs` line; the footer italic
    line ("lives at the repository root, outside the plugin payload") is now
    FALSE for the dispatcher — rewrite. CLI section: note both invocations +
    `scan record` verb.
 2. Verify every remaining factual badge/claim against the tree at WP2 time:
    tests badge → 1,213; skills 27, hooks 18 (verified); GUI wording stays
    "repo checkout for now" (D1 unchanged).
-3. Update section: document `codex plugin marketplace upgrade codexclaw` +
+3. Update section: document `Cursor plugin install upgrade codexclaw` +
    hook re-approval one-liner (already present — keep) + one line: upgrading
    to 0.1.1 delivers the new `bin/` (existing installs must upgrade or
    re-add; per-entry symlink cache won't pick up new top-level dirs).

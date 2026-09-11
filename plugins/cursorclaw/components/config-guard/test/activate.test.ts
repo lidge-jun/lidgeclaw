@@ -113,10 +113,10 @@ test("activate enables only not-already-true declared flags + writes manifest + 
   // only the two off flags get enable calls
   const enableCalls = fake.calls.filter((c) => c[1] === "enable").map((c) => c[2]);
   assert.deepEqual(enableCalls.sort(), ["default_mode_request_user_input", "hooks"]);
-  assert.equal(m.flags.multi_agent.enabledByCodexclaw, false);
+  assert.equal(m.flags.multi_agent.enabledByCursorclaw, false);
   assert.equal(m.flags.multi_agent.priorEnabled, true);
-  assert.equal(m.flags.hooks.enabledByCodexclaw, true);
-  assert.equal(m.flags.default_mode_request_user_input.enabledByCodexclaw, true);
+  assert.equal(m.flags.hooks.enabledByCursorclaw, true);
+  assert.equal(m.flags.default_mode_request_user_input.enabledByCursorclaw, true);
   assert.ok(existsSync(manifestPath(home)));
   // backup created
   assert.ok(m.backupPath && existsSync(m.backupPath));
@@ -222,8 +222,8 @@ test("soft flag enable failure does not abort activation", () => {
   };
   const m: InstallManifest = activate({ run, codexHome: home, configPath, now: () => "2026-06-30T00:00:00.000Z" });
   assert.equal(m.flags.default_mode_request_user_input.enableFailed, true);
-  assert.equal(m.flags.default_mode_request_user_input.enabledByCodexclaw, false);
-  assert.equal(m.flags.hooks.enabledByCodexclaw, true);
+  assert.equal(m.flags.default_mode_request_user_input.enabledByCursorclaw, false);
+  assert.equal(m.flags.hooks.enabledByCursorclaw, true);
 });
 
 test("preserveMultiAgentV2Table preserves CRLF line endings", () => {

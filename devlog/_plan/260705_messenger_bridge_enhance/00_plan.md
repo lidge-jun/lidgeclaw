@@ -150,7 +150,7 @@
  - SQLite-backed rolling counters (hourly buckets, 7-day retention).
  
  ### Event Log
- - Structured JSON log file (`~/.codexclaw/bridge-events.jsonl`): every
+ - Structured JSON log file (`~/.cursorclaw/bridge-events.jsonl`): every
    incoming message, dispatch result, error, rate-limit hit, reconnect.
  - Log rotation: max 50MB, 3 files.
  - `/api/events` endpoint: last N events (GUI consumption).

@@ -121,7 +121,7 @@ which means `buildGoalIdleBlock` takes a `platform` parameter.
 
 `dist/` is committed and `test/dist-freshness.test.mjs:28` fails on src/dist
 drift. Editing only `src/` ships nothing and reddens CI. The installed payload
-at `~/.codex/plugins/cache/.../dist/hook.js:469` still carries the stale line,
+at `~/.cursor/plugins/cache/.../dist/hook.js:469` still carries the stale line,
 which is what produced the bad directive in this very session.
 
 ### 8. `components/pabcd-state/src/plan-gate.ts` - line 41

@@ -1,6 +1,6 @@
 # 002 - codexclaw win32 risk audit (read-only)
 
-Scope: `plugins/codexclaw/{components,skills,scripts,bin,hooks}`, `cli/`, `bin/`, `scripts/`.
+Scope: `plugins/cursorclaw/{components,skills,scripts,bin,hooks}`, `cli/`, `bin/`, `scripts/`.
 Method: static read + targeted pattern scan (node walker over non-test, non-dist sources)
 plus manual reads of every spawn site, atomic-write path, and the three named GitHub issues.
 Nothing was fixed. Line numbers are from the working tree at audit time.
@@ -13,7 +13,7 @@ Severity key: **P0** breaks/corrupts on Windows, **P1** wrong behavior or blocke
 ## A. Known open issues (gh #29 / #30 / #31)
 
 ### [P1] #30 - `plan init` doubles the date prefix
-`plugins/codexclaw/components/pabcd-state/src/plan-cli.ts:54` and `:110`
+`plugins/cursorclaw/components/pabcd-state/src/plan-cli.ts:54` and `:110`
 
 Problem: `parsePlanCliArgs` runs the raw positional through `deriveSlug` (line 54), and
 `runPlanCli` then unconditionally prepends `yymmdd()` (line 110). Users copy the directory
@@ -35,15 +35,15 @@ Minimal fix: in `plan-cli.ts`, strip a leading `YYMMDD[_-]` from the positional 
 `splitDatePrefix(raw): { date: string | null; rest: string }` helper matching
 `/^(\d{6})[_-](.+)$/`, pass `rest` to `deriveSlug`, carry `date` on `PlanCliArgs`, and at
 line 110 use `args.date ?? yymmdd()`. Tests belong in
-`plugins/codexclaw/components/pabcd-state/test/plan-cli.test.ts`: bare slug, prefixed slug,
+`plugins/cursorclaw/components/pabcd-state/test/plan-cli.test.ts`: bare slug, prefixed slug,
 and a `260821-` hyphen-prefixed variant.
 
 Secondary (same file, [P3]): line 118 writes `0${n}0_phase${n}.md`, so `--phases` above 9
 would break the 3-digit convention. Line 48 already caps at 9, so this is latent only.
 
 ### [P1] #31 - attest gates reveal required fields one at a time; no `--attest-file`
-`plugins/codexclaw/components/pabcd-state/src/attest.ts:174-193` (A>B) and `:194-215` (C>D);
-`plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts:204-214`
+`plugins/cursorclaw/components/pabcd-state/src/attest.ts:174-193` (A>B) and `:194-215` (C>D);
+`plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts:204-214`
 
 Problem 1 (drip-feed): `validateAttest` is a chain of early returns. A>B checks
 `auditOutput` (175), then `auditVerdict` (181), then the fail verdict (184), then
@@ -73,8 +73,8 @@ Minimal fix: add `--attest-file <path>` in the same argv loop (after line 214), 
 inline.
 
 ### [P1] #29 - loop criteria are unregistrable after init
-`plugins/codexclaw/components/pabcd-state/src/goalplan-cli.ts:69-71`, `:181-184`;
-`plugins/codexclaw/components/pabcd-state/src/steering.ts:45`
+`plugins/cursorclaw/components/pabcd-state/src/goalplan-cli.ts:69-71`, `:181-184`;
+`plugins/cursorclaw/components/pabcd-state/src/steering.ts:45`
 
 Problem: `--criterion` is only read by `init` (parsed at 69, consumed at 183). There is no
 `add-criterion`, no `add-work-phase`, and `VERBS` (line 56) is
@@ -86,7 +86,7 @@ This is not cosmetic. `buildGoalplan` (`goalplan.ts:584-608`) always sets
 `workPhases: []`, and `validateGoalplan` fails an empty plan
 (`goalplan.ts:705-708`: "plan is empty: no workPhases[] and no criteria[]"). The
 hook tells the agent to "register workPhases[]/criteria[]"
-(`hook.ts:1128`) but points at hand-editing `.codexclaw/goalplans/<slug>/goalplan.json`,
+(`hook.ts:1128`) but points at hand-editing `.cursorclaw/goalplans/<slug>/goalplan.json`,
 because no CLI verb exists. Worse, `schemaVersion 2` requires a `surface` per criterion
 (`goalplan.ts:801-803`), and `buildGoalplan` never sets one - so even init-time criteria
 fail v2 validation.
@@ -107,9 +107,9 @@ command the user cannot run - **[P1]**, same family as #29.
 ## B. Windows-specific defects
 
 ### B1. [P0] `--attest` JSON is effectively unusable from PowerShell
-`plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts:204-214`;
+`plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts:204-214`;
 help text at `:171-173`; hook-emitted commands at
-`plugins/codexclaw/components/pabcd-state/src/hook.ts:1009`
+`plugins/cursorclaw/components/pabcd-state/src/hook.ts:1009`
 
 Every documented invocation uses POSIX single quotes:
 
@@ -131,7 +131,7 @@ emit the file form. `hook.ts:1009` and the `ORCHESTRATE_HELP` block at
 here-string/file example instead of the single-quoted JSON.
 
 ### B2. [P0] `redactPaths` corrupts output on Windows (double-replacement)
-`plugins/codexclaw/components/cxc-ops/src/scouting-bundle.ts:30-42`
+`plugins/cursorclaw/components/cxc-ops/src/scouting-bundle.ts:30-42`
 
 ```ts
 const normalizedHome = homeDir.split(sep).join("/");   // C:/Users/x
@@ -155,7 +155,7 @@ flag when `process.platform === "win32"`. Additionally resolve
 `realpathSync.native(homeDir)` once and redact that too, to cover the short-name form.
 
 ### B3. [P0] `process.env.HOME` is undefined on Windows
-`plugins/codexclaw/components/cxc-ops/src/scouting-bundle.ts:75`
+`plugins/cursorclaw/components/cxc-ops/src/scouting-bundle.ts:75`
 
 `const home = opts.homeDir ?? process.env.HOME ?? "";`
 
@@ -192,7 +192,7 @@ containing spaces. Also surface `res.error.code === "ENOENT"` with an install hi
 mirroring the repo's own precedent at `bin/codexclaw.mjs:289-292`.
 
 ### B5. [P2] `gh` spawn is install-shape dependent; launch error misattributed
-`plugins/codexclaw/components/skill-search/src/cli.ts:77-81`
+`plugins/cursorclaw/components/skill-search/src/cli.ts:77-81`
 
 **Measured on this machine:** `spawnSync("gh", ["--version"])` succeeds (`status=0`),
 because the official GitHub CLI installs `gh.exe` and Node resolves `.exe` via PATHEXT.
@@ -209,7 +209,7 @@ the auth wording for a genuine non-zero exit. Optionally probe `gh.cmd` as a fal
 
 ### B6. [P1] `python3` hits the Store stub, exits 9009, and bypasses the ENOENT hint
 `bin/codexclaw.mjs:274` (venv bootstrap), `bin/codexclaw.mjs:253` (ladder default),
-`plugins/codexclaw/components/cxc-ops/src/doctor.ts:409` (ast-grep helper)
+`plugins/cursorclaw/components/cxc-ops/src/doctor.ts:409` (ast-grep helper)
 
 **Measured on this machine:** `spawnSync("python3", ["--version"])` returns
 `error=none, status=9009`. It resolves to
@@ -227,7 +227,7 @@ missing helper).
 Minimal fix: in `selectRepoMapCommand` (`bin/codexclaw.mjs:238`), make the final rung
 platform-aware - on win32 prefer `py -3`, then `python`, then `python3`. That function is
 pure and already test-covered offline, so this is contained plus a case in
-`plugins/codexclaw/test/repo-map-packaging.test.mjs`. Separately widen the `runRepoMap`
+`plugins/cursorclaw/test/repo-map-packaging.test.mjs`. Separately widen the `runRepoMap`
 failure branch (line 289) to fire the install hint on status 9009/127 too, so the
 silent-exit case gains a message.
 
@@ -248,7 +248,7 @@ takes `env` and `home` as parameters for testability; add a platform parameter w
 `process.platform` default so the packaging test can assert both shapes.
 
 ### B8. [P2] Hard-coded `/tmp` in the hook bench
-`plugins/codexclaw/scripts/hook-bench.mjs:64` (`cwd: "/tmp/bench-cwd"`) and `:85` (`cwd: "/tmp"`)
+`plugins/cursorclaw/scripts/hook-bench.mjs:64` (`cwd: "/tmp/bench-cwd"`) and `:85` (`cwd: "/tmp"`)
 
 `/tmp` does not exist on Windows. Line 85 passes it as `spawnSync` `cwd`, which throws
 ENOENT and fails the bench outright. Ironically line 114 already does the right thing:
@@ -260,18 +260,18 @@ pattern already in the file.
 ### B9. [P2] CRLF-blind parsers - 29 call sites split on `"\n"` only
 Highest-impact instances (user-authored or foreign-tool text):
 
-- `plugins/codexclaw/components/config-guard/src/multi-agent-v2.ts:56` - parses the user's
-  `~/.codex/config.toml`. A CRLF file leaves `\r` on every line, so the table-header regex
+- `plugins/cursorclaw/components/config-guard/src/multi-agent-v2.ts:56` - parses the user's
+  `~/.cursor/config.toml`. A CRLF file leaves `\r` on every line, so the table-header regex
   `/^\s*\[features\.multi_agent_v2\]\s*(?:#.*)?$/` still matches (`\s` eats `\r`), but
   `tomlBoolInBody` at line 66 uses `(true|false)\s*(?:#.*)?$` which also tolerates it.
   Fragile rather than broken - but the same file's `activate.ts:63` deliberately handles
   `\r?\n`, so the inconsistency is the real smell.
-- `plugins/codexclaw/components/pabcd-state/src/review-round-cli.ts:30` - same TOML parser,
+- `plugins/cursorclaw/components/pabcd-state/src/review-round-cli.ts:30` - same TOML parser,
   duplicated.
-- `plugins/codexclaw/components/messenger-bridge/src/api-compat.ts:38` and
-  `plugins/codexclaw/gui/src/server/middleware.ts:61` - `res.stdout.split("\n")[0].trim()`
+- `plugins/cursorclaw/components/messenger-bridge/src/api-compat.ts:38` and
+  `plugins/cursorclaw/gui/src/server/middleware.ts:61` - `res.stdout.split("\n")[0].trim()`
   on `where` output. `where.exe` emits CRLF; `.trim()` saves it, but only by accident.
-- `plugins/codexclaw/components/pabcd-state/src/comment-lint.ts:54` and
+- `plugins/cursorclaw/components/pabcd-state/src/comment-lint.ts:54` and
   `edit-shape.ts:83` - split `patchText` from an `apply_patch` tool payload. A CRLF patch
   leaves `\r` on each line, which corrupts the FILE-directive regex match at
   `edit-shape.ts:84` and the lint line content.
@@ -282,7 +282,7 @@ Highest-impact instances (user-authored or foreign-tool text):
   rewrites them.
 
 Note `.gitattributes` is `* text=auto eol=lf`, which protects checked-in files but does
-**not** protect runtime-generated state under `.codexclaw/` or the user's `config.toml`.
+**not** protect runtime-generated state under `.cursorclaw/` or the user's `config.toml`.
 
 Minimal fix: sweep `.split("\n")` to `.split(/\r?\n/)` at the sites that read foreign
 input (TOML, subprocess stdout, patch text) as one mechanical change; leave the
@@ -291,7 +291,7 @@ precedent already exists at `attest.ts:116`, `orchestrate-grammar.ts:100`,
 `review-round.ts:374`, and `output-formatter.ts:201`.
 
 ### B10. [P2] `memory-search` hand-rolls CR stripping instead of splitting correctly
-`plugins/codexclaw/components/recall/src/memory-search.ts:202`
+`plugins/cursorclaw/components/recall/src/memory-search.ts:202`
 
 `content.split("\n").map((l) => (l.endsWith("\r") ? l.slice(0, -1) : l))` - correct, but
 it is a workaround for the pattern in B9, applied in exactly one place. Worth folding
@@ -319,7 +319,7 @@ sites through it. Note `state.ts:295-314` already has the tmp-cleanup `catch`, s
 helper slots in without changing error semantics.
 
 ### B12. [P2] `ensureState` relies on `linkSync` semantics
-`plugins/codexclaw/components/pabcd-state/src/state.ts:200-209`
+`plugins/cursorclaw/components/pabcd-state/src/state.ts:200-209`
 
 The exclusive-create publish uses `linkSync(tmp, finalPath)` and treats `EEXIST` as
 "someone else won" (line 205). Hard links work on NTFS, but fail on FAT32/exFAT (USB
@@ -332,7 +332,7 @@ retry with `writeFileSync(finalPath, ..., { flag: "wx" })`, mapping its `EEXIST`
 same `return false`. Keep the `EEXIST` fast path unchanged so NTFS behavior is untouched.
 
 ### B13. [P2] POSIX-only process-tree termination
-`plugins/codexclaw/components/messenger-bridge/src/runner.ts:263-274` and `:306-318`
+`plugins/cursorclaw/components/messenger-bridge/src/runner.ts:263-274` and `:306-318`
 
 `terminateChild` sends SIGTERM then escalates to SIGKILL only when
 `process.platform !== "win32"` (line 268), and `signalProcessTree` falls back to
@@ -348,7 +348,7 @@ Minimal fix: on win32, escalate via `taskkill /pid <pid> /T /F` (spawned with
 the grace semantics match POSIX.
 
 ### B14. [P3] `detectCodexVersion` regex is broken on every platform
-`plugins/codexclaw/components/cxc-ops/src/doctor.ts:73`
+`plugins/cursorclaw/components/cxc-ops/src/doctor.ts:73`
 
 `res.stdout.match(/(d+.d+.d+)/)` - the backslashes are missing, so this matches a literal
 `d` followed by any char, `d`, any char, `d`. For `codex 1.2.3` there is no `d` sequence,
@@ -359,7 +359,7 @@ Minimal fix: `/(\d+\.\d+\.\d+)/`. Compare with the correct sibling at line 411
 (`/ast-grep\s+(\d+\.\d+\.\d+)/`), which shows the intended form.
 
 ### B15. [P3] `friction.normalizeError` lowercases before matching Windows paths
-`plugins/codexclaw/components/pabcd-state/src/friction.ts:44-49`
+`plugins/cursorclaw/components/pabcd-state/src/friction.ts:44-49`
 
 Line 44 lowercases, so the `[a-z]:\\` drive-letter pattern at line 48 works by
 construction - fine. But line 49's `/(\/[^\s:]+)+/g` runs after and will also chew
@@ -371,7 +371,7 @@ corporate Windows.
 Minimal fix: add a UNC branch `/\\\\[^\s]+/g -> "/PATH"` before the drive-letter rule.
 
 ### B16. [P3] `worktree-guard` command parsing assumes POSIX shell syntax
-`plugins/codexclaw/components/pabcd-state/src/worktree-guard.ts:220-253` (`tokenize`),
+`plugins/cursorclaw/components/pabcd-state/src/worktree-guard.ts:220-253` (`tokenize`),
 `:262-277` (`stripPrefixes`), `:310-344` (`rm`/`rmdir` handling)
 
 The guard tokenizes on POSIX quoting, strips `sudo`/`env`/`command`/`builtin`, and
@@ -412,8 +412,8 @@ additive - the POSIX path must not change. Also extend `DESTRUCTIVE_HINT` (:375)
 verbs. See 100_closeout.md section 2 for the diff-level version.
 
 ### B17. [P3] `skill-search` splits remote paths with `split("/")`
-`plugins/codexclaw/components/skill-search/src/cli.ts:96-98`,
-`plugins/codexclaw/components/skill-search/src/sources.ts:73`
+`plugins/cursorclaw/components/skill-search/src/cli.ts:96-98`,
+`plugins/cursorclaw/components/skill-search/src/sources.ts:73`
 
 `dir.split("/").pop()` and `path.split("/")[0]`. These operate on GitHub API paths and
 catalog markdown, which are always forward-slash, so this is **correct as written** and
@@ -425,7 +425,7 @@ reference, and `scouting-bundle.ts:32`/`memory-search.ts:282`, which deliberatel
 normalize `sep` to `/` for stable output.
 
 ### B18. [P3] `cxc gui` dependency probe and `plan init` output path
-`bin/codexclaw.mjs:396` prints "Run \`npm install\` in plugins/codexclaw/gui first" with a
+`bin/codexclaw.mjs:396` prints "Run \`npm install\` in plugins/cursorclaw/gui first" with a
 POSIX-looking relative path; `plan-cli.ts:123-127` returns `unitDir` (absolute) as `rel`,
 so the success message prints a full `C:\Users\...` path where the variable name promises
 a relative one. Cosmetic, but the `rel` naming is actively misleading for whoever fixes
@@ -435,7 +435,7 @@ a relative one. Cosmetic, but the `rel` naming is actively misleading for whoeve
 
 ## C. Verified non-issues (do not "fix" these)
 
-- **Hook manifests** (`plugins/codexclaw/hooks/*.json`) use
+- **Hook manifests** (`plugins/cursorclaw/hooks/*.json`) use
   `node "${PLUGIN_ROOT}/components/.../cli.js"` with forward slashes inside quotes. Node on
   Windows accepts forward slashes, and the path is quoted, so spaces are safe. Correct.
 - **`cxc-resolve.ts:37,47`** already handles `WIN_EXTS` (`.cmd/.exe/.bat/.ps1`) and uses
@@ -450,7 +450,7 @@ a relative one. Cosmetic, but the `rel` naming is actively misleading for whoeve
   command must be the argv that actually ran"). Note the consequence: on Windows,
   `cxc receipt test -- npm test` hits the same `.cmd` problem as B4, but the fix belongs in
   a documented wrapper, not by turning on `shell: true` here.
-- **All internal CLI delegation** (`bin/codexclaw.mjs:127-171`, `plugins/codexclaw/bin/cxc.mjs:96`)
+- **All internal CLI delegation** (`bin/codexclaw.mjs:127-171`, `plugins/cursorclaw/bin/cursorclaw.mjs:96`)
   spawns `process.execPath` with an argv array. Immune to shell quoting. Correct.
 - **`chmod`/`mode: 0o600`** usage is a silent no-op on Windows rather than an error, and
   `index-db.ts:74,93` already wraps it in try/catch with a "non-POSIX filesystem" comment.

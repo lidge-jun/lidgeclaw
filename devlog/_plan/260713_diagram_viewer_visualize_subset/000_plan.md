@@ -43,7 +43,7 @@ inline-vis는 기존 렌더링 경로를 대체하지 않는다. Desktop 호스�
 ## 변경 파일
 
 ```text
-plugins/codexclaw/skills/dev-diagram-viewer/
+plugins/cursorclaw/skills/dev-diagram-viewer/
   SKILL.md                              MODIFY — Desktop inline-vis 라우팅 추가
   reference/
     visualize-contract.md              NEW — visualize inline 계약의 로컬 서브셋
@@ -149,10 +149,10 @@ drift 감지는 업데이트 필요성을 알리는 장치다. upstream 변경�
 
 다음 파일은 이번 통합 범위 밖이며 그대로 유지한다.
 
-- `plugins/codexclaw/skills/dev-diagram-viewer/reference/environment-detection.md` — 현재 환경 감지 기준을 계속 사용한다.
-- `plugins/codexclaw/skills/dev-diagram-viewer/reference/html-templates.md` — browser-render fallback의 템플릿 원본으로 유지한다.
-- `plugins/codexclaw/skills/dev-diagram-viewer/scripts/diagram-to-html.sh` — 기존 browser-render 실행 경로를 유지한다.
-- `plugins/codexclaw/skills/dev-diagram-viewer/agents/openai.yaml` — skill 등록 및 트리거 메타데이터를 변경하지 않는다.
+- `plugins/cursorclaw/skills/dev-diagram-viewer/reference/environment-detection.md` — 현재 환경 감지 기준을 계속 사용한다.
+- `plugins/cursorclaw/skills/dev-diagram-viewer/reference/html-templates.md` — browser-render fallback의 템플릿 원본으로 유지한다.
+- `plugins/cursorclaw/skills/dev-diagram-viewer/scripts/diagram-to-html.sh` — 기존 browser-render 실행 경로를 유지한다.
+- `plugins/cursorclaw/skills/dev-diagram-viewer/agents/openai.yaml` — skill 등록 및 트리거 메타데이터를 변경하지 않는다.
 
 또한 이번 단위에서는 Desktop 호스트 런타임, 번들 `visualize` skill 원본, jaw 렌더러를 수정하지 않는다.
 
@@ -181,24 +181,24 @@ drift 감지는 업데이트 필요성을 알리는 장치다. upstream 변경�
 ## 구현 단계 검증 명령
 
 ```bash
-bash plugins/codexclaw/skills/dev-diagram-viewer/upstream/sync-check.sh
-bash -n plugins/codexclaw/skills/dev-diagram-viewer/upstream/sync-check.sh
+bash plugins/cursorclaw/skills/dev-diagram-viewer/upstream/sync-check.sh
+bash -n plugins/cursorclaw/skills/dev-diagram-viewer/upstream/sync-check.sh
 git diff --check
 
 rg -n "fragment|codex-inline-vis|CSS|utility|composition|layout|typography|color|chart|icon" \
-  plugins/codexclaw/skills/dev-diagram-viewer/reference/visualize-contract.md
+  plugins/cursorclaw/skills/dev-diagram-viewer/reference/visualize-contract.md
 
 rg -n "version|hash|changelog|sync" \
-  plugins/codexclaw/skills/dev-diagram-viewer/upstream/visualize-upstream.md
+  plugins/cursorclaw/skills/dev-diagram-viewer/upstream/visualize-upstream.md
 
 rg -n "codex-inline-vis|visualize-contract|browser render|browser-render|3D|audio|physics|jaw" \
-  plugins/codexclaw/skills/dev-diagram-viewer/SKILL.md
+  plugins/cursorclaw/skills/dev-diagram-viewer/SKILL.md
 
 git diff --exit-code -- \
-  plugins/codexclaw/skills/dev-diagram-viewer/reference/environment-detection.md \
-  plugins/codexclaw/skills/dev-diagram-viewer/reference/html-templates.md \
-  plugins/codexclaw/skills/dev-diagram-viewer/scripts/diagram-to-html.sh \
-  plugins/codexclaw/skills/dev-diagram-viewer/agents/openai.yaml
+  plugins/cursorclaw/skills/dev-diagram-viewer/reference/environment-detection.md \
+  plugins/cursorclaw/skills/dev-diagram-viewer/reference/html-templates.md \
+  plugins/cursorclaw/skills/dev-diagram-viewer/scripts/diagram-to-html.sh \
+  plugins/cursorclaw/skills/dev-diagram-viewer/agents/openai.yaml
 ```
 
 drift 실패 경로는 upstream 원본의 임시 복사본을 입력으로 쓸 수 있게 만든 뒤, 내용 한 줄을 바꾼 복사본으로 비정상 종료와 진단 메시지를 확인한다. 실제 번들 원본은 검증 과정에서 수정하지 않는다.

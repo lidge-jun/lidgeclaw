@@ -13,7 +13,7 @@ still found stale sub-loop Status lines:
 - L26.1/L26.2 stayed PLANNED (impl pending) even though L26 shipped and `cxc gui`
   starts the dashboard.
 - L20.3 still described an unshipped dry-run-style reset contract, while the
-  shipped reset is scope-limited to `.codexclaw/` and prints removed paths.
+  shipped reset is scope-limited to `.cursorclaw/` and prints removed paths.
 - The old decade-themed `260629_codexclaw_mvp/` source docs still carry TODO and
   superseded `ocx ensure` wording; those files are historical inputs, not current
   status authority.

@@ -3,7 +3,7 @@
 Files: `README.md` (source of truth), `README.ko.md`, `README.zh.md` (mirror edits,
 translated; keep section order + code fences identical).
 Verifier: re-run count commands, check every linked path/URL exists, confirm 3-file
-structural parity, run `node plugins/codexclaw/scripts/gate.mjs`.
+structural parity, run `node plugins/cursorclaw/scripts/gate.mjs`.
 
 ## E1 — badge row (all 3 files)
 
@@ -56,7 +56,7 @@ structural parity, run `node plugins/codexclaw/scripts/gate.mjs`.
   Metric: 18 active manifest registrations; 3 deprecated JSONs under
   `hooks/_deprecated/` not counted — 001 #13.)
 - Replace the bogus tail `└── cli/  cxc orchestrate | map | loop | skill | ...`
-  (no such dir inside `plugins/codexclaw/`) with an explicit ownership boundary:
+  (no such dir inside `plugins/cursorclaw/`) with an explicit ownership boundary:
   ```
   └── gui/                         local dashboard (Vite + React)
 
@@ -70,11 +70,11 @@ structural parity, run `node plugins/codexclaw/scripts/gate.mjs`.
 Expand from 2 lines to the full lifecycle (verified against live CLI 2026-07-23):
 
 ```bash
-codex plugin marketplace add https://github.com/lidge-jun/codexclaw
+Cursor plugin install add https://github.com/lidge-jun/codexclaw
 codex plugin add codexclaw@codexclaw
 
 # update
-codex plugin marketplace upgrade codexclaw
+Cursor plugin install upgrade codexclaw
 
 # uninstall
 codex plugin remove codexclaw@codexclaw

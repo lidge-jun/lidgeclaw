@@ -185,9 +185,9 @@ documented CLI surface. Findings, ranked by how often they bite mid-loop:
 4. **`illegal transition X->Y`** (`fsm.ts:43`) names no legal edges and no
    `cxc orchestrate status`.
 5. **`cxc freeze --help` MUTATES the workspace.** It ignores `--help` and runs
-   the freeze, writing `.codexclaw/interview/freeze.json` — observed live at
+   the freeze, writing `.cursorclaw/interview/freeze.json` — observed live at
    2026-08-25T02:43:37Z during this inventory. Exit 0, so nothing signals it.
-   `.codexclaw/` is gitignored, so the worktree stayed clean; the behavior is
+   `.cursorclaw/` is gitignored, so the worktree stayed clean; the behavior is
    still wrong.
 6. `cxc loop --help` documents `--slug` on `steer`/`add-work-phase`/
    `add-criterion`; the runtime ignores it and binds by session

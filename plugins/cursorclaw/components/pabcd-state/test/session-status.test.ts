@@ -11,7 +11,7 @@ import { defaultState, writeState } from "../src/state.ts";
 const id = "11111111-1111-4111-8111-111111111111";
 const other = "22222222-2222-4222-8222-222222222222";
 const cli = fileURLToPath(new URL("../src/cli.ts", import.meta.url));
-const payload = fileURLToPath(new URL("../../../bin/cxc.mjs", import.meta.url));
+const payload = fileURLToPath(new URL("../../../bin/cursorclaw.mjs", import.meta.url));
 const rootBin = fileURLToPath(new URL("../../../../../bin/codexclaw.mjs", import.meta.url));
 function fixture(t: { after: (fn: () => void) => void }) {
   const base = mkdtempSync(join(tmpdir(), "cxc-native-status-"));
@@ -22,7 +22,7 @@ function fixture(t: { after: (fn: () => void) => void }) {
   db.prepare("INSERT INTO threads VALUES (?, ?, 0, 'vscode')").run(id, cwd);
   db.close();
   t.after(() => rmSync(base, { recursive: true, force: true }));
-  const env = { ...process.env, CODEX_HOME: home, CODEX_SQLITE_HOME: home, CODEX_THREAD_ID: id };
+  const env = { ...process.env, CURSOR_HOME: home, CODEX_SQLITE_HOME: home, CODEX_THREAD_ID: id };
   const run = (args: string[], binary = cli, overrides: NodeJS.ProcessEnv = {}) => spawnSync(process.execPath, [binary, ...args], {
     cwd, env: { ...env, ...overrides }, encoding: "utf8", timeout: 10000,
   });

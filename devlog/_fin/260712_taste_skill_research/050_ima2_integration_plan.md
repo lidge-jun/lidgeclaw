@@ -1,6 +1,6 @@
 ---
 created: 2026-07-12
-tags: [codexclaw, ima2, improvement-plan]
+tags: [cursorclaw, ima2, improvement-plan]
 ---
 
 # ima2 Integration Improvement Plan

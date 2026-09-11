@@ -2,7 +2,7 @@
 
 Date: 2026-07-09
 Phase: I (Interview) — session `019f4754-031e-7fc0-b53e-cf146a123cee`
-Targets: `plugins/codexclaw/skills/dev-frontend/` + `plugins/codexclaw/skills/dev-uiux-design/`
+Targets: `plugins/cursorclaw/skills/dev-frontend/` + `plugins/cursorclaw/skills/dev-uiux-design/`
 Related research (same day): `_plan/260709_opaque_gradient_discipline/`, `_plan/260709_design_grammar_research/`
 
 ---

@@ -19,7 +19,7 @@ Status: DONE (shipped + tested) · 2026-07-09 · class C3 (hook/runtime semantic
    `workPhases` AND zero `criteria` now fails with a register-the-plan reason.
 2. **GOAL-COMPLETE-GATE-01** — `goal-gate.ts applyGoalCompleteGuard`, wired into
    `handlePreToolUseFailClosed` + new `hooks/pre-tool-use-guarding-goal-complete.json`
-   (matcher `^update_goal$`, declared in `.codex-plugin/plugin.json`, now 13 hooks).
+   (matcher `^update_goal$`, declared in `.cursor-plugin/plugin.json`, now 13 hooks).
    Denies `update_goal {status:"complete"}` when a PABCD cycle is in flight or the
    session-bound goalplan fails E8. `blocked` always passes. Fail-open on IO errors.
 3. **Stop guard rework** — `hook.ts handleStop`:

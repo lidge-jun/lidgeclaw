@@ -5,7 +5,7 @@ Status: DONE · 2026-06-30 · parity audit complete; feeds L2+ hardening loops
 > Source: two parallel read-only research dispatches (gpt-5.5 parity auditor + cross-reference
 > researcher) against cli-jaw, jawcode, and lazycodex/omo. All findings are file:line backed.
 > Goal: map what it takes to give codexclaw a **user-drivable PABCD control surface in chat**,
-> using the codex-native `$cxc-*` mention + hook + `cxc` CLI model only (no codex-rs fork,
+> using the codex-native `$crc-*` mention + hook + `cxc` CLI model only (no codex-rs fork,
 > no server runtime).
 
 ## The core finding
@@ -15,7 +15,7 @@ file state, ledger, directive-injection hook) but has **no wire** connecting a u
 real phase transition. The current `UserPromptSubmit` hook detects loose triggers (`plan this`,
 `orchestrate p`) and injects a directive, but it never calls `transition()` and never changes
 `state.phase` — it only flips `orchestrationActive`/`lastInjectedPhase`
-([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/hook.ts:189)).
+([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/hook.ts:189)).
 So "the agent is told to act like it's in Plan" but the state machine itself never moves. That is
 the parity gap.
 
@@ -39,26 +39,26 @@ the parity gap.
 ## B. codexclaw today
 
 Present primitives:
-- State shape with `phase`/flags/`orchestrationActive`, persisted at `.codexclaw/sessions/<id>.json`;
-  `appendLedger()` exists ([state.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/state.ts:18)).
+- State shape with `phase`/flags/`orchestrationActive`, persisted at `.cursorclaw/sessions/<id>.json`;
+  `appendLedger()` exists ([state.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/state.ts:18)).
 - Pure FSM `transition()` flips `auditPassed` on A>B, `checkPassed` on C>D, resets on D>IDLE
-  ([fsm.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/fsm.ts:78)).
+  ([fsm.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/fsm.ts:78)).
 - Attest validation exists but only gates A>B and C>D
-  ([attest.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/attest.ts:27)).
+  ([attest.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/attest.ts:27)).
 - Directive-injection hook + passive continuation
-  ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/hook.ts:224)).
+  ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/hook.ts:224)).
 
 Not wired / not parity:
 - No command parses a transition and calls `transition()+writeState()+appendLedger()`.
 - No `D`, `status`, or phase-`reset` chat affordance in `detectTrigger()`.
 - `canEnter("A")`/`canEnter("C")` are unconditionally true — no adjacency table, so `IDLE->A`
   type jumps are not blocked the way cli-jaw blocks them
-  ([fsm.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/fsm.ts:8)).
+  ([fsm.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/fsm.ts:8)).
 - `cxc` CLI has no `orchestrate` subcommand; its `reset` is cxc-ops file cleanup, not a phase reset
   ([bin/codexclaw.mjs](/Users/jun/Developer/new/700_projects/codexclaw/bin/codexclaw.mjs:56),
-  [reset.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/cxc-ops/src/reset.ts:52)).
+  [reset.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/cxc-ops/src/reset.ts:52)).
 - Stop hook is a no-op — no continuation loop yet
-  ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/hook.ts:247)).
+  ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/hook.ts:247)).
 
 ## C. The serverless precedent (omo / jawcode) — the template to copy
 
@@ -87,7 +87,7 @@ read stdin JSON, read/write a file, print one JSON line.
 
 Must-have for chat-driven parity (proposed L2-L6):
 
-1. `$cxc-orchestrate` command grammar — parse `$cxc-orchestrate <I|P|A|B|C|D|status|reset>
+1. `$crc-orchestrate` command grammar — parse `$crc-orchestrate <I|P|A|B|C|D|status|reset>
    [--attest <json>]` from the submitted prompt. New parser module + `hook.ts`. Mirrors
    `jaw orchestrate <phase>`. (Inline-token style like omo's steering token, since the hook can
    only append context, not swallow the turn.)
@@ -97,21 +97,21 @@ Must-have for chat-driven parity (proposed L2-L6):
    `canEnter()` from allowing illegal jumps.
 4. Full four-transition attest gate (`P>A, A>B, B>C, C>D`) for agent-driven transitions
    (currently only A>B, C>D).
-5. Human free-pass vs agent-gated split — chat-submitted `$cxc-orchestrate X` = free pass;
+5. Human free-pass vs agent-gated split — chat-submitted `$crc-orchestrate X` = free pass;
    `cxc orchestrate X` invoked by the agent/tool = gated, `--attest` required for forward moves.
    (Codex has no boss-token equivalent, so the discriminator must be invocation-source, not a token.)
 6. `D` / `status` / phase-`reset` chat affordances; `reset` returns phase to IDLE + ledger entry
    (distinct from cxc-ops file cleanup).
 7. `cxc orchestrate <phase|status|reset> [--session][--cwd][--attest][--json]` CLI writing the
-   same `.codexclaw` state (new `pabcd-state/src/orchestrate-cli.ts`, wired in `bin/codexclaw.mjs`).
+   same `.cursorclaw` state (new `pabcd-state/src/orchestrate-cli.ts`, wired in `bin/codexclaw.mjs`).
 8. Stop-continuation loop with the two omo termination guards (`stop_hook_active` + remaining/idle).
 9. Ledger entry on every successful transition (chat or CLI) — `appendLedger()` is currently unused.
 
 Nice-to-have:
 - `--json` status formatting.
-- `skills/pabcd/SKILL.md` rewrite: document `$cxc-orchestrate` + `cxc orchestrate` (it currently
-  says "no external phase commands") and fix the stale `.codexclaw/state.json` path (real path is
-  `.codexclaw/sessions/<id>.json`).
+- `skills/pabcd/SKILL.md` rewrite: document `$crc-orchestrate` + `cxc orchestrate` (it currently
+  says "no external phase commands") and fix the stale `.cursorclaw/state.json` path (real path is
+  `.cursorclaw/sessions/<id>.json`).
 
 ## Non-goals (server-only — explicitly fenced off)
 
@@ -126,7 +126,7 @@ Do NOT chase these; they fundamentally need a live server/process and have no co
 ## Proposed loop decomposition (to be split into 020+ docs)
 
 - L2 / 020 — FSM legal-transition table + four-transition attest gate (`fsm.ts`, `attest.ts`).
-- L3 / 030 — `$cxc-orchestrate` grammar + hook wiring via `applyHumanTransition()` (the missing wire).
+- L3 / 030 — `$crc-orchestrate` grammar + hook wiring via `applyHumanTransition()` (the missing wire).
 - L4 / 040 — `cxc orchestrate` CLI over the same file state.
 - L5 / 050 — `status` / `reset` / `D` affordances + ledger-on-transition.
 - L6 / 060 — Stop-continuation loop with omo termination guards.

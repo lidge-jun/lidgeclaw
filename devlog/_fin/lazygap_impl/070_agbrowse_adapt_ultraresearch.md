@@ -55,7 +55,7 @@ locked decision we do NOT rebuild omo's `engine/`.
 
 ### (A) Lazy agbrowse resolver (mirrors ast-grep, targets the shim)
 
-New `plugins/codexclaw/skills/search/scripts/agbrowse_helper.py` (or `.mjs`) resolving the
+New `plugins/cursorclaw/skills/search/scripts/agbrowse_helper.py` (or `.mjs`) resolving the
 executable in order, returning a runnable command (NOT copying a binary):
 
 ```
@@ -91,7 +91,7 @@ only); it is not bundled and not required." Keep the 3-tier structure (`:23-45`)
 
 ### (C) ultraresearch protocol as an explorer-attached skill (Tier 3)
 
-New on-demand skill `plugins/codexclaw/skills/ultraresearch/SKILL.md` carrying the EXPAND / wave /
+New on-demand skill `plugins/cursorclaw/skills/ultraresearch/SKILL.md` carrying the EXPAND / wave /
 journal / claim-ledger / verified-claims protocol + convergence rules (spawn-floor, 2-wave
 minimum, 3-no-lead / 5-wave cap). It is ATTACHED to base `explorer` subagents by the 020
 role×intent map (`research X` → `explorer` + `[cxc-search, ultraresearch]`) — NOT a new role.

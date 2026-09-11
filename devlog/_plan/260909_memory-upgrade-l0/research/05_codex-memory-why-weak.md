@@ -211,7 +211,7 @@ Quick-pass budget:
 
 문면은 "Skip ONLY when..."이라 보수적이지만, 실제 효과는 **탐색을 억제하는 방향**이다. 강한 명령형("MUST", "before answering")이 아니라 "It can save time", "Use it whenever it is likely to help" 같은 권유형이고, 판단 기준이 "likely to help"라는 모델 자체 추정에 위임돼 있다. 툴 콜이 아니라 shell 파이프라인을 직접 조립해야 하는 비용까지 겹치면, 애매한 상황에서 기본 선택은 "그냥 진행"이 된다.
 
-대조군으로 codexclaw recall 스킬은 같은 목적을 훨씬 강한 문구로 쓴다 (`plugins/codexclaw/skills/recall/SKILL.md`):
+대조군으로 codexclaw recall 스킬은 같은 목적을 훨씬 강한 문구로 쓴다 (`plugins/cursorclaw/skills/recall/SKILL.md`):
 
 ```
 description: "MUST USE for past-session recall — ..."
@@ -300,7 +300,7 @@ let (rollout_items, _, _) = RolloutRecorder::load_rollout_items(rollout_path).aw
 let rollout_contents = serialize_filtered_rollout_response_items(&rollout_items)?;
 ```
 
-**파일 전체를 읽어 모델에 한 번 던지고, 결과 텍스트만 DB에 남긴다.** 원본 jsonl에 대한 인덱스도, 이후 재조회 경로도 만들지 않는다. 검색 도구인 `ext/memories/src/local/search.rs`도 검색 대상이 `backend.root`(= `~/.codex/memories`)로 한정돼 있어서, 애초에 `sessions/`를 못 본다.
+**파일 전체를 읽어 모델에 한 번 던지고, 결과 텍스트만 DB에 남긴다.** 원본 jsonl에 대한 인덱스도, 이후 재조회 경로도 만들지 않는다. 검색 도구인 `ext/memories/src/local/search.rs`도 검색 대상이 `backend.root`(= `~/.cursor/memories`)로 한정돼 있어서, 애초에 `sessions/`를 못 본다.
 
 결과적으로 22GB 원본은 **read 경로에서 완전히 도달 불가**다. 유일한 연결고리는 `MEMORY.md`에 산문으로 적힌 `rollout_path=...` 문자열이고, 템플릿도 그렇게 안내한다:
 
@@ -312,7 +312,7 @@ let rollout_contents = serialize_filtered_rollout_response_items(&rollout_items)
 
 "broad full-content scans를 피하라"는 조언은 인덱스가 없기 때문에 나온 것이다. 22GB를 grep 하면 실제로 느리다. **인덱스 부재 → 스캔 금지 권고 → 사실상 접근 포기**의 사슬이다.
 
-codexclaw recall은 정확히 이 지점을 사이드카로 메운다. `~/.codexclaw/recall/index.sqlite`에 **12,735 파일 / 1,213,941 메시지**가 FTS로 적재돼 있고(`cxc chat index --status`, last ingest 2026-09-08T16:59:57Z), 스킬 문서는 `--days 0` 전체 이력 질의가 "tens of milliseconds"라고 명시한다. 네이티브가 세운 "스캔은 비싸다"는 전제를 인덱스로 무너뜨린 것이다.
+codexclaw recall은 정확히 이 지점을 사이드카로 메운다. `~/.cursorclaw/recall/index.sqlite`에 **12,735 파일 / 1,213,941 메시지**가 FTS로 적재돼 있고(`cxc chat index --status`, last ingest 2026-09-08T16:59:57Z), 스킬 문서는 `--days 0` 전체 이력 질의가 "tens of milliseconds"라고 명시한다. 네이티브가 세운 "스캔은 비싸다"는 전제를 인덱스로 무너뜨린 것이다.
 
 파일 수가 12,735로 세션 12,469 + archived 266 = 12,735와 정확히 일치한다 — 인덱스가 두 디렉터리를 모두 커버한다.
 

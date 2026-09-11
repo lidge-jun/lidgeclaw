@@ -5,19 +5,19 @@ rev2 changes (B1, B8, B9, B10): adopt-in-place is THE current-worktree procedure
 skill counts in README/structure/INDEX enter scope; version gates replaced by
 feature detection.
 
-Scope IN: one new skill folder `plugins/codexclaw/skills/worktree-guardian/`
+Scope IN: one new skill folder `plugins/cursorclaw/skills/worktree-guardian/`
 (`SKILL.md` + `agents/openai.yaml`, no references/ — the content fits one file);
 skill-count/list mentions in README.md / structure/INDEX.md / skills/README.md
 (whichever enumerate skills — check during B).
 Scope OUT: hook code (010), docs-site.
 
-## NEW `plugins/codexclaw/skills/worktree-guardian/SKILL.md`
+## NEW `plugins/cursorclaw/skills/worktree-guardian/SKILL.md`
 
 Frontmatter:
 ```yaml
 ---
 name: cxc-worktree-guardian
-description: "MUST USE when working inside or renaming Codex-app managed worktrees — hash-named dirs under ~/.codex/worktrees, detached-HEAD checkouts, thread-bound workspaces. Prevents delete-and-recreate: adopt in place with git switch -c / branch -m; git worktree move only for other inactive worktrees. Triggers: worktree, 워크트리, 워크트리 이름, rename worktree, 새 워크트리, 브랜치랑 워크트리, detached HEAD worktree, ~/.codex/worktrees."
+description: "MUST USE when working inside or renaming Codex-app managed worktrees — hash-named dirs under ~/.cursor/worktrees, detached-HEAD checkouts, thread-bound workspaces. Prevents delete-and-recreate: adopt in place with git switch -c / branch -m; git worktree move only for other inactive worktrees. Triggers: worktree, 워크트리, 워크트리 이름, rename worktree, 새 워크트리, 브랜치랑 워크트리, detached HEAD worktree, ~/.cursor/worktrees."
 metadata:
   short-description: "Managed-worktree identity safety: never delete/recreate; rename in place."
 ---
@@ -39,7 +39,7 @@ Body sections (concise, English; rule ids WG-*):
    sidebar, user-renames-in-app only). "Name the worktree" from a user can mean
    any of the three → confirm which; default = branch naming in place + tell the
    user to rename the thread in the app.
-2. **Managed-worktree facts (WG-FACTS-01)** — $CODEX_HOME/worktrees root,
+2. **Managed-worktree facts (WG-FACTS-01)** — $CURSOR_HOME/worktrees root,
    detached-HEAD start, per-chat disposable lifecycle, latest-15 retention,
    archive→snapshot+auto-delete; each fact one line with its source URL
    (developers.openai.com git-worktrees page; issues #10917, #14498).
@@ -62,7 +62,7 @@ Body sections (concise, English; rule ids WG-*):
 5. **Defense-in-depth limits (WG-LIMIT-01)** — the PreToolUse guard matches
    literal paths; variable/glob-indirected deletions that never mention the slot
    path are out of scope (residual risk, accepted). Detection covers the default
-   `$CODEX_HOME/worktrees` root + `CODEXCLAW_WORKTREE_ROOTS`; a custom app root
+   `$CURSOR_HOME/worktrees` root + `CODEXCLAW_WORKTREE_ROOTS`; a custom app root
    needs that env.
 6. **Hook interplay (WG-HOOK-01)** — what WORKTREE-GUARD-01/02/03 injections mean
    and that the PreToolUse deny is intentional; remedy = follow the procedures

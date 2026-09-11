@@ -30,7 +30,7 @@ agent reads referenced skills/reference files weakly.
 - The loop skill body is pure prose contract. It contains no `cxc orchestrate
   P/A/B/C/D` directive and no `spawn_agent` instruction; the only FSM-advancing
   command strings live in `STOP_NEXT_COMMAND`
-  (`plugins/codexclaw/components/pabcd-state/src/hook.ts:360`) and are emitted only
+  (`plugins/cursorclaw/components/pabcd-state/src/hook.ts:360`) and are emitted only
   by `buildStopBlock` (`hook.ts:373`).
 - `detectTrigger` (`hook.ts:64`) recognizes `interview/orchestrate i`,
   `orchestrate p|plan this|계획`, `a|audit|감사`, `b|build|구현`, `c|check|검증` — but
@@ -38,12 +38,12 @@ agent reads referenced skills/reference files weakly.
   no trigger, `orchestrationActive` stays false, and `handleStop` releases at
   `hook.ts:398`. PABCD never cycles.
 - `cxc-loop` is `allow_implicit_invocation: false`
-  (`plugins/codexclaw/skills/loop/agents/openai.yaml:5`), so it loads only on
+  (`plugins/cursorclaw/skills/loop/agents/openai.yaml:5`), so it loads only on
   explicit mention — yet explicit mention produces no `detectTrigger` match, so
   loading it has zero FSM effect.
 - Reference-reading is model-autonomous (progressive disclosure); no hook or loader
   compels it. The dev hub actively biases AGAINST reads
-  (`plugins/codexclaw/skills/dev/SKILL.md:43`, `:483`). The loop skill names no
+  (`plugins/cursorclaw/skills/dev/SKILL.md:43`, `:483`). The loop skill names no
   reference files and gives no `read X` directive.
 
 ### Contradiction
@@ -133,7 +133,7 @@ routing collapses to dev alone.
   make the per-surface mapping unambiguous enough that a single read of dev names the
   exact skills to pull.
 - Consider whether the highest-traffic surface skills should be promoted to
-  implicit-visible, or whether a `$cxc-dev` directive should explicitly enumerate the
+  implicit-visible, or whether a `$crc-dev` directive should explicitly enumerate the
   surface skills to load, trading a larger always-on set against routing reliability.
 
 ## Cross-cutting follow-up requested by the user

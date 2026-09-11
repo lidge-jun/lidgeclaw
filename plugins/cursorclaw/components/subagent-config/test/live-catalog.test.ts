@@ -17,8 +17,8 @@ const roster = (id: string) => JSON.stringify([
 function fixture(t: {after: (cb:()=>void)=>void}) {
   const root=mkdtempSync(join(tmpdir(),'cxc-live-catalog-'));
   t.after(()=>rmSync(root,{recursive:true,force:true}));
-  const env={...process.env,CODEX_HOME:join(root,'codex'),CODEXCLAW_HOME:join(root,'cxc')};
-  mkdirSync(env.CODEX_HOME);
+  const env={...process.env,CURSOR_HOME:join(root,'codex'),CURSORCLAW_HOME:join(root,'cxc')};
+  mkdirSync(env.CURSOR_HOME);
   return {root,env};
 }
 
@@ -53,23 +53,23 @@ test('coalesces concurrent refreshes; malformed payload without cache never inve
   const runOcx=()=>{calls++;return new Promise<string>(resolve=>release=resolve);};
   const a=readCatalog({env,runOcx,forceRefresh:true}),b=readCatalog({env,runOcx,forceRefresh:true});
   release('[]');await Promise.all([a,b]);assert.equal(calls,1);
-  rmSync(join(env.CODEXCLAW_HOME,'model-catalog.json'));
+  rmSync(join(env.CURSORCLAW_HOME,'model-catalog.json'));
   const bad=await readCatalog({env,runOcx:async()=> 'not JSON'});
   assert.equal(bad.status,'unavailable');assert.deepEqual(bad.entries,[]);
 });
 
 test('native fallback honors configured model_catalog_json and arbitrary IDs; explicit path wins; no OCX failure fallback',async t=>{
   const {env}=fixture(t);
-  writeFileSync(join(env.CODEX_HOME,'config.toml'),`model_catalog_json = 'custom.json' # selected catalog\n[profile]\nmodel_catalog_json = 'wrong.json'\n`);
-  writeFileSync(join(env.CODEX_HOME,'custom.json'),JSON.stringify({models:[{slug:'gpt-future',supported_reasoning_levels:[{effort:'high'}]},{slug:'hidden',visibility:'hide'}]}));
-  writeFileSync(join(env.CODEX_HOME,'models_cache.json'),JSON.stringify({models:['stale-default']}));
+  writeFileSync(join(env.CURSOR_HOME,'config.toml'),`model_catalog_json = 'custom.json' # selected catalog\n[profile]\nmodel_catalog_json = 'wrong.json'\n`);
+  writeFileSync(join(env.CURSOR_HOME,'custom.json'),JSON.stringify({models:[{slug:'gpt-future',supported_reasoning_levels:[{effort:'high'}]},{slug:'hidden',visibility:'hide'}]}));
+  writeFileSync(join(env.CURSOR_HOME,'models_cache.json'),JSON.stringify({models:['stale-default']}));
   assert.deepEqual(readNativeCatalog(env)?.map(e=>e.id),['gpt-future']);
   const missing=Object.assign(new Error('not installed'),{code:'ENOENT'});
   const native=await readCatalog({env,runOcx:async()=>{throw missing;}});
   assert.equal(native.source,'native');assert.deepEqual(native.entries[0].reasoningEfforts,['high']);
-  const explicit={...env,CODEX_MODELS_CACHE_PATH:join(env.CODEX_HOME,'models_cache.json')};
+  const explicit={...env,CODEX_MODELS_CACHE_PATH:join(env.CURSOR_HOME,'models_cache.json')};
   assert.equal(readNativeCatalog(explicit)?.[0].id,'stale-default');
-  rmSync(join(env.CODEXCLAW_HOME,'model-catalog.json'));
+  rmSync(join(env.CURSORCLAW_HOME,'model-catalog.json'));
   const failed=await readCatalog({env,runOcx:async()=>{throw new Error('OCX unavailable');}});
   assert.equal(failed.source,'ocx');assert.equal(failed.status,'unavailable');
 });

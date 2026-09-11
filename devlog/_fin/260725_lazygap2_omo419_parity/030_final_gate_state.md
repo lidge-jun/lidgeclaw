@@ -4,7 +4,7 @@
 
 ## 문제
 
-`validateGoalplan`(`plugins/codexclaw/components/pabcd-state/src/goalplan.ts:398-...`
+`validateGoalplan`(`plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:398-...`
 — WP11 P 실측 정정. 초안의 `:266-295`는 `010`/`020`이 타입을 추가하기 전 위치다)은
 work phase와 criteria/evidence만 본다. 그래서 "모든 작업 완료 + 증거 있음"이면
 최종 검증을 아직 받지 않았어도 `update_goal complete`가 통과한다. upstream은 이 상태를
@@ -60,7 +60,7 @@ fail-open이 v2 실패를 삼키지 않게), `src/goalplan-cli.ts`의 **쓰기 �
 ## 검증 경계 (4라운드 감사 2)
 
 현행 `validateGoalplan(plan)`은 순수 함수다
-(`plugins/codexclaw/components/pabcd-state/src/goalplan.ts:275-295` — IO도 cwd도 없다).
+(`plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:275-295` — IO도 cwd도 없다).
 호출자 `goal-gate.ts:216-220`은 plan만 넘기고, `:233-235`의 `catch`가 모든 예외를
 **fail-open**으로 삼킨다. 그런데 이 문서의 검증은 현재 트리 캡처와 영수증 파일 읽기를
 필요로 한다 — 순수 함수로는 불가능하고, 그냥 IO를 넣으면 예외가 fail-open으로 새어
@@ -95,14 +95,14 @@ export function validateGoalplan(plan: Goalplan, ctx?: GoalplanValidationCtx): G
 ## 영수증 스키마와 파서 (4라운드 감사 3)
 
 "영수증에서 `SourceIdentity`를 읽는다"만으로는 형식도, 안전 검사도 정의되지 않았다.
-기존 증거 검증기는 `.codexclaw/evidence` 경로 포함·심링크·realpath를 검사한다
+기존 증거 검증기는 `.cursorclaw/evidence` 경로 포함·심링크·realpath를 검사한다
 (`subagent-evidence.ts:98-116`, `hasValidReceipt` — WP11 P 실측). **그 함수를 그대로
 호출한다.** 경로 포함·심링크·realpath 이탈·일반 파일·0바이트 다섯 검사가 이미 거기
 있으므로 파서는 그 위에 JSON 파싱과 스키마 검사만 얹는다. 같은 가드를 두 번 쓰지 않는다.
 
 주의: `hasValidReceipt`는 실패 시 `false`를 반환하는 boolean이라 **어느 검사에서
 떨어졌는지 알려주지 않는다.** 파서는 `{error: "receipt failed the evidence-root guard
-(outside .codexclaw/evidence, symlink, non-file, or empty): <path>"}`처럼 한 덩어리로
+(outside .cursorclaw/evidence, symlink, non-file, or empty): <path>"}`처럼 한 덩어리로
 보고한다 — 다섯 사유를 구분하려고 가드를 복제하는 것보다 낫다.
 
 ```ts
@@ -124,7 +124,7 @@ export function parseSourceBoundReceipt(
 명시하게 하고, 파서가 `kind` 불일치를 `{error}`로 거부한다. 검증기 쪽에서 나중에
 `kind`를 한 번 더 확인하는 방식은 그 검사를 빠뜨리기 쉬워 택하지 않는다.
 
-파서는 fail-closed다. 다음이면 `{error}`를 반환한다 — 경로가 `.codexclaw/evidence` 밖,
+파서는 fail-closed다. 다음이면 `{error}`를 반환한다 — 경로가 `.cursorclaw/evidence` 밖,
 심링크 또는 realpath가 경로 밖으로 탈출, 일반 파일이 아님, 0바이트, JSON 파싱 실패,
 `sourceIdentity` 누락 또는 형식 불일치, `kind` 불일치.
 "존재하고 0바이트가 아님"만 보던 초기 초안을 이것으로 대체한다.
@@ -209,15 +209,15 @@ surface?: CriterionSurface;   // 없으면 "logic"으로 읽는다
 ### 다운그레이드 방어 (4라운드 감사 6)
 
 goalplan JSON을 직접 편집하는 것은 정상 워크플로다
-(`plugins/codexclaw/skills/loop/SKILL.md:147-150`;
-`plugins/codexclaw/components/pabcd-state/src/hook.ts:852-855`).
+(`plugins/cursorclaw/skills/loop/SKILL.md:147-150`;
+`plugins/cursorclaw/components/pabcd-state/src/hook.ts:852-855`).
 따라서 legacy 판정을 **계획 파일 안의 숫자 하나**에만 걸면, v2 계획에서 `schemaVersion`을
 지우거나 `1`로 낮추는 것이 그대로 gate 우회가 된다.
 
 정정: 승격 사실을 계획 파일 밖에도 기록한다.
 
 - `cxc loop init`(v2 생성)과 `final-gate open`(승격)은 goalplan 디렉터리에
-  `.codexclaw/goalplans/<slug>/schema-v2.marker`를 함께 쓴다 (내용: 승격 시각 + 이유).
+  `.cursorclaw/goalplans/<slug>/schema-v2.marker`를 함께 쓴다 (내용: 승격 시각 + 이유).
 - 검증 시 **유효 버전 = max(계획의 `schemaVersion`, 마커 존재 시 2)** 로 계산한다.
 - 마커가 있는데 계획의 `schemaVersion`이 2보다 작거나 없으면 → **거부**하고
   "이 계획은 v2로 승격됐다. `schemaVersion`을 복원하라"를 이유로 낸다. 조용히 v1으로 읽지 않는다.
@@ -261,7 +261,7 @@ goalplan JSON을 직접 편집하는 것은 정상 워크플로다
 
 "활성 work-phase의 criteria"를 기준으로 삼으면 마지막 D가 닫힌 뒤
 `advanceWorkPhase`가 `activeWorkPhaseId`를 null로 만들므로
-(`plugins/codexclaw/components/pabcd-state/src/goalplan.ts:313-329`)
+(`plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:313-329`)
 web/tui criterion이 있어도 활성 phase가 없어 QA 요구가 사라진다. 정확히 gate를 통과해야
 하는 시점에 조건이 소멸하는 셈이다.
 
@@ -315,7 +315,7 @@ after: 위를 유지하고 `schemaVersion >= 2`인 계획에 대해 추가 검�
 
 ### `hook.ts` — IDLE Stop 문구
 
-before (`plugins/codexclaw/components/pabcd-state/src/hook.ts:828-865`): 활성 goal + IDLE이면 다음 P 명령과 잔여 작업을 명명.
+before (`plugins/cursorclaw/components/pabcd-state/src/hook.ts:828-865`): 활성 goal + IDLE이면 다음 P 명령과 잔여 작업을 명명.
 
 after: 잔여 work phase와 미충족 criterion이 0인데 `finalGate.status !== "approved"`이면
 문구를 바꾼다 — "모든 작업이 끝났고 최종 gate만 남았다: <현재 status>. gate를 닫아라."
@@ -352,7 +352,7 @@ after: 잔여 work phase와 미충족 criterion이 0인데 `finalGate.status !==
 | `lane.verdict: "near-pass"` + 일치 | 허용 | O |
 | `testReceiptPath` 없이 `approved` 기록 시도 | 거부 | O |
 | test 영수증 0바이트 / malformed JSON / `sourceIdentity` 누락 | 각각 거부 | O |
-| 영수증 경로가 `.codexclaw/evidence` 밖 (절대경로) | 거부 | O |
+| 영수증 경로가 `.cursorclaw/evidence` 밖 (절대경로) | 거부 | O |
 | 영수증이 심링크로 밖을 가리킴 | 거부 | O |
 | 영수증이 일반 파일이 아님 (디렉터리/fifo) | 거부 | O |
 | `web` criterion 있는데 QA 영수증 없음 | 거부 | O |
@@ -389,8 +389,8 @@ after: 잔여 work phase와 미충족 criterion이 0인데 `finalGate.status !==
   ```
   npx tsc --noEmit --allowImportingTsExtensions --module nodenext --target es2022 \
     --moduleResolution nodenext --strict \
-    plugins/codexclaw/components/pabcd-state/src/source-receipt.ts \
-    plugins/codexclaw/components/pabcd-state/test/source-receipt.test.ts
+    plugins/cursorclaw/components/pabcd-state/src/source-receipt.ts \
+    plugins/cursorclaw/components/pabcd-state/test/source-receipt.test.ts
   ```
 
   이 명령은 의존 그래프를 타고 기존 `interview.ts`의 `TS2352` **4건**을 함께 낸다
@@ -420,7 +420,7 @@ after: 잔여 work phase와 미충족 criterion이 0인데 `finalGate.status !==
 | `FinalGateState.qaRequired` | gate-open 시점의 계획 전체 스캔 (후속이 쓴다) | 위와 동일 | 위와 동일. 불리언이 아니면 스키마 오류 | v2 규칙 7·11 — 고정값과 현재 스캔이 어긋나면 거부 |
 | `CriterionSurface` | 계획 작성자 (v2에서는 필수 입력) | `writeGoalplan` | `reviveGoalplan` — **유효 enum만 보존, 누락·미지 값은 `undefined`** (normalize하지 않는다) | v1: 소비 시 `?? "logic"`. v2: `undefined`면 검증 오류. 이후 `qaRequired` 계산 |
 | `schemaVersion` | 후속 `loop init`/`final-gate open` | 위와 동일 | 위와 동일. 없으면 `1` | 유효 버전 계산 = `max(plan.schemaVersion, 마커 있으면 2)` |
-| `SourceBoundReceipt` | 이 모듈이 아니라 **영수증을 쓰는 쪽**(테스트 러너/QA 도구) | `.codexclaw/evidence/*.json` | `parseSourceBoundReceipt` (fail-closed) | `validateGoalplan` v2 규칙 6·7·8 |
+| `SourceBoundReceipt` | 이 모듈이 아니라 **영수증을 쓰는 쪽**(테스트 러너/QA 도구) | `.cursorclaw/evidence/*.json` | `parseSourceBoundReceipt` (fail-closed) | `validateGoalplan` v2 규칙 6·7·8 |
 | `GoalplanValidationCtx` | 호출자 — 이 사이클에서는 테스트, 후속에서는 `goal-gate.ts` | N/A | N/A | `validateGoalplan` 내부 |
 
 ## 범위 밖

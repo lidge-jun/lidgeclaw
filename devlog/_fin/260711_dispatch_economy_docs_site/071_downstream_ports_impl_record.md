@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, pabcd-initiative, cli-jaw, jawcode, dispatch-economy, port, impl-record]
+tags: [cursorclaw, pabcd-initiative, cli-jaw, jawcode, dispatch-economy, port, impl-record]
 ---
 
 # Loop 3 impl record — downstream ports + GitHub publish (DONE)
@@ -51,7 +51,7 @@ already active.
 ## Dispatch-hygiene follow-up (recurring pattern, 3rd occurrence)
 
 All four sol dispatches this session ended their final message with the
-".codexclaw/evidence" confusion (a harness prompt urging evidence persistence
+".cursorclaw/evidence" confusion (a harness prompt urging evidence persistence
 collides with read-only/chat-only packets). Work quality was unaffected, but
 the RETURN channel degrades: deliverables must be pulled from earlier turns or
 the target files. Backlog: either (a) exempt subagent sessions from the

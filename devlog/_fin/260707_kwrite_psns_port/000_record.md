@@ -20,7 +20,7 @@ im-not-ai (epoko77-ai/im-not-ai) via the 260514 Korean-AI-voice research.
 
 ### Plugin (distributed)
 
-- NEW `plugins/codexclaw/skills/kwrite/SKILL.md` — name cxc-kwrite, EN
+- NEW `plugins/cursorclaw/skills/kwrite/SKILL.md` — name cxc-kwrite, EN
   description + KO/EN triggers (윤문/다듬어/교정/AI투/Korean polish), 4 prime
   directives (meaning frozen, span-only, <=30% change, register preserved),
   4-pass revision protocol (register consistency; translationese+AI idioms
@@ -39,18 +39,18 @@ im-not-ai (epoko77-ai/im-not-ai) via the 260514 Korean-AI-voice research.
   always-on SessionStart additionalContext line (pointer-not-payload, same
   policy as skill-search line): names the S1 anti-patterns inline
   (번역투 3종, AI 관용구/기대된다 endings, 첫째/둘째, register consistency)
-  and points 윤문/long-form Korean at $cxc-kwrite. Genre-free by test.
+  and points 윤문/long-form Korean at $crc-kwrite. Genre-free by test.
 - `components/cxc-ops/test/map-affordance.test.ts` — new test: affordance
   matches /cxc-kwrite/ + /윤문/, must NOT match /thread|쓰레드|SNS|블로그|DC/i,
   <600 chars, rides every SessionStart envelope (small-repo run).
 
 ### Personal (NOT distributed)
 
-- NEW `~/.codex/skills/cxc-psns/` — full copy of k-writing (SKILL.md +
+- NEW `~/.cursor/skills/cxc-psns/` — full copy of k-writing (SKILL.md +
   references{ai-tell-taxonomy, hooking, media-delivery, narrative-flow,
   structure-formats, tone-system, tones/15, tone-layers/3} + scripts/
   ai-tell-check.md + examples/3). Front-matter renamed to cxc-psns with
-  routing note: 새 SNS/커뮤니티 글 생성 = psns; 순수 윤문 = $cxc-kwrite.
+  routing note: 새 SNS/커뮤니티 글 생성 = psns; 순수 윤문 = $crc-kwrite.
   Self-references k-writing -> psns renamed. Kept self-contained (own
   taxonomy) so the personal skill works without the plugin.
 

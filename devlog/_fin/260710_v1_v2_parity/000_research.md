@@ -5,7 +5,7 @@
 - Phase: I (interview) — 구현 전 리서치 기록
 - Method: 커밋 히스토리 + devlog 정독(메인), sol/medium 탐색자 2기 병렬 조사
   (Volta: codexclaw 내부 갭 스윕 / Boole: codex-rs 업스트림 V1·V2 차이 조사,
-  둘 다 $cxc-search 스킬 첨부, SEARCH-ATTACH-01)
+  둘 다 $crc-search 스킬 첨부, SEARCH-ATTACH-01)
 
 ## 배경 (히스토리 타임라인)
 
@@ -57,7 +57,7 @@ phase directive, doctrine 안내)가 같아야 한다.
 3. **V1 items 빌더(buildSpawnItems) 미배선** — 테스트/문서에만 존재, 실제 진입점
    (`resolveSpawnPayloadWithSkills`/`routeDispatch`)은 message 멘션만 사용.
 4. (parity OK) 스킬 결정(ROLE_BASE_SKILLS/SURFACE_SKILL)은 표면 중립.
-5. **모델 라우팅 비대칭** — `.codexclaw/subagents.json` 역할 모델이 V1 훅
+5. **모델 라우팅 비대칭** — `.cursorclaw/subagents.json` 역할 모델이 V1 훅
    경로에서만 주입, V2는 명시적으로 미주입. 같은 설정, 다른 effective 모델.
    spawn-attach-hook.ts:425,449
 6. **effort는 양쪽 다 미주입인데 문서는 주입 주장** — agents/README.md:45 등.

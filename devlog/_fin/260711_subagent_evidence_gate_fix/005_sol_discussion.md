@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, subagent, evidence-gate, sol-discussion, design]
+tags: [cursorclaw, subagent, evidence-gate, sol-discussion, design]
 ---
 
 # Sol Discussion — Design Alternatives for Evidence-Gate Fix
@@ -19,7 +19,7 @@ Dispatched: gpt-5.6-sol (Bacon), agent_type: explorer.
 ## Recommendation (ACCEPTED)
 
 **Alternative B** — establish the invariant: chat-only audit/research dispatches
-use `agent_type:"explorer"`; tasks expected to write `.codexclaw/evidence/` use
+use `agent_type:"explorer"`; tasks expected to write `.cursorclaw/evidence/` use
 `agent_type:"worker"`. The existing gate (`GATED_AGENT_TYPES = Set(["worker"])`)
 and the hook matcher (`"^worker$"`) already implement the correct filtering.
 The fix is a convention/documentation change backed by explicit tests.

@@ -113,7 +113,7 @@ IN:
 
 OUT:
 
-- `~/.codex/plugins/cache/codexclaw/**` — the installed payload. The repo is the
+- `~/.cursor/plugins/cache/codexclaw/**` — the installed payload. The repo is the
   source of truth; a rebuild may be RUN, no cache file is authored.
 - the opencodex repo. It is read-only evidence this cycle: no branch, no PR, no
   commit there.

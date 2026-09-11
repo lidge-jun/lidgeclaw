@@ -2,7 +2,7 @@
 
 Dependency: owning decade plan. These exact edits run AFTER its original operations.
 
-## MODIFY plugins/codexclaw/skills/search/references/blocked-url-reader.md
+## MODIFY plugins/cursorclaw/skills/search/references/blocked-url-reader.md
 
 Before:
 
@@ -60,7 +60,7 @@ not a fixed plugin-name ladder. No optional browser is mandatory.
 
 `````
 
-## MODIFY plugins/codexclaw/skills/qa/SKILL.md
+## MODIFY plugins/cursorclaw/skills/qa/SKILL.md
 
 Before:
 
@@ -78,7 +78,7 @@ Browser selection (QA-TOOL-LADDER-01) is owned by
 Aside, agbrowse and native browser capabilities may drive built UI; none is required.
 `````
 
-## MODIFY plugins/codexclaw/skills/qa/SKILL.md
+## MODIFY plugins/cursorclaw/skills/qa/SKILL.md
 
 Before:
 
@@ -94,7 +94,7 @@ After:
   `dev-testing` §4.7 connects that policy to exploratory tests.
 `````
 
-## MODIFY plugins/codexclaw/skills/qa/SKILL.md
+## MODIFY plugins/cursorclaw/skills/qa/SKILL.md
 
 Before:
 

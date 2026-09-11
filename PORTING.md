@@ -16,7 +16,7 @@ Ship the **same** development discipline on Cursor that codexclaw ships on Codex
 | Dogfood | Repo `.cursor/hooks.json` + `.cursor/rules/` wired to the same bridge |
 | Agents | `explorer` / `reviewer` / `executor` / `architect` as Cursor `.md` agents |
 | Commands | orchestrate / status / doctor / map / interview / install-dev |
-| State | `.cursorclaw/` with legacy `.codexclaw/` migration |
+| State | `.cursorclaw/` with legacy `.cursorclaw/` migration |
 | CLI | `crc` / `cursorclaw` |
 | Tooling | gate/inventory retargeted to Cursor `hooks.json` + `.cursor-plugin` |
 
@@ -30,3 +30,7 @@ Ship the **same** development discipline on Cursor that codexclaw ships on Codex
 ## Legacy
 
 Original Codex hook JSON remains under `hooks/codex-legacy/` for provenance.
+
+## Global install
+
+`./scripts/global-install.sh` copies the plugin into `~/.cursor/plugins/local/cursorclaw`, links skills, writes user hooks, installs the core rule, and puts `crc` on `~/.local/bin`.

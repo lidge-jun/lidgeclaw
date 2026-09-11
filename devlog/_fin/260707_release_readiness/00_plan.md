@@ -12,13 +12,13 @@ release-ready — public repo, CI gates, Pages docs, marketplace submission prep
   public-grade README, marketplace-ready plugin metadata + submission checklist.
 - **Non-goals (OUT)**: component feature changes, skill doctrine changes, GUI
   features, docs-site redesign. Only metadata/docs/CI/visibility work.
-- **Verifier**: `npm test` (798+ pass), `node plugins/codexclaw/scripts/gate.mjs`,
+- **Verifier**: `npm test` (798+ pass), `node plugins/cursorclaw/scripts/gate.mjs`,
   `(cd docs-site && npm run build)` exit 0, `gh repo view --json visibility`,
   `gh run list` green, `curl -sI https://lidge-jun.github.io/codexclaw/` 200.
 - **Stop condition**: all goalplan criteria cr1-cr6 met, or terminal outcome
   BLOCKED/NEEDS_HUMAN/BUDGET_EXHAUSTED per goal text.
 - **Memory artifact**: this devlog dir + goalplan ledger
-  `.codexclaw/goalplans/codexclaw-release-readiness-secret-scan-history/`.
+  `.cursorclaw/goalplans/codexclaw-release-readiness-secret-scan-history/`.
 - **Expected terminal outcomes**: DONE; NEEDS_HUMAN only if history rewrite
   needed (secret found in tracked history — already ruled out, see below).
 - **Escalation condition**: real credential in tracked git history, GitHub API
@@ -36,15 +36,15 @@ promotes the affected slice. Full PABCD per work-phase.
 ## Evidence so far (C-grade, fresh)
 
 - `gitleaks git .` → "346 commits scanned … no leaks found"
-  (`.codexclaw/evidence/release_readiness/gitleaks_history.json`, empty).
+  (`.cursorclaw/evidence/release_readiness/gitleaks_history.json`, empty).
 - `gitleaks dir .` → 1045 findings, ALL in gitignored/untracked paths:
-  1037 `.codexclaw/` (session state), 5 `devlog/.lazycodex` +
+  1037 `.cursorclaw/` (session state), 5 `devlog/.lazycodex` +
   `devlog/_plan/260630_ouroboros…/.ouroboros` (reference clones, gitignored,
-  test fixtures with dummy keys), 3 `plugins/codexclaw/.codexclaw/friction.jsonl`
+  test fixtures with dummy keys), 3 `plugins/cursorclaw/.cursorclaw/friction.jsonl`
   (gitignored). `git check-ignore -v` confirms each path; `git ls-files` shows
   none tracked. → No tracked secret; public flip is safe from this angle.
 - `npm test` → 798 pass / 0 fail (fresh run 2026-07-07).
-- `node plugins/codexclaw/scripts/gate.mjs` → OK.
+- `node plugins/cursorclaw/scripts/gate.mjs` → OK.
 - Repo currently PRIVATE (`gh repo view` 2026-07-07), local main ahead 28.
 
 ## WP1 file change map
@@ -53,7 +53,7 @@ promotes the affected slice. Full PABCD per work-phase.
 |---|---|
 | `LICENSE` | NEW — MIT, copyright lidge-jun. package.json + plugin.json already say MIT. |
 | `README.md` | EDIT — add docs-site link (https://lidge-jun.github.io/codexclaw/), CI badge, license badge, quickstart install block already present; keep layout/status sections. |
-| `.github/workflows/ci.yml` | NEW — push/PR to main: setup-node (node 24, npm cache), `npm ci`, `npm test`, `node plugins/codexclaw/scripts/gate.mjs`. |
+| `.github/workflows/ci.yml` | NEW — push/PR to main: setup-node (node 24, npm cache), `npm ci`, `npm test`, `node plugins/cursorclaw/scripts/gate.mjs`. |
 | `.github/workflows/docs.yml` | NEW — push to main (docs-site/** + workflow path filter … plus manual dispatch): build Astro in docs-site, upload-pages-artifact, deploy-pages with `pages: write`/`id-token: write` permissions, environment github-pages. |
 | `devlog/_plan/260707_release_readiness/00_plan.md` | NEW — this doc. |
 
@@ -86,7 +86,7 @@ Per-blocker RCA + accept/rebut:
 
 1. **LICENSE misrepresents vendored code — ACCEPT.** Tracked third-party code:
    repo-map vendored RepoMapper (MIT, (c) 2025 Pete Davis,
-   `plugins/codexclaw/skills/repo-map/scripts/LICENSE`) and Aider-derived
+   `plugins/cursorclaw/skills/repo-map/scripts/LICENSE`) and Aider-derived
    `queries/*.scm` (Apache-2.0, `.../scripts/NOTICE.md`). Fix: root `LICENSE`
    stays MIT (c) lidge-jun but gains a "Third-party notices" pointer section;
    README license section links the NOTICE.md. No new notice files needed —
@@ -112,7 +112,7 @@ Per-blocker RCA + accept/rebut:
    `uv`, so `depsAvailable()` returns true and the test exercises a live
    dependency resolve (tiktoken download). Fix (minimal, CI-enabling): add an
    env gate `CODEXCLAW_SKIP_REPOMAP_SMOKE=1` to
-   `plugins/codexclaw/test/repo-map-smoke.test.mjs` skip logic and set it in
+   `plugins/cursorclaw/test/repo-map-smoke.test.mjs` skip logic and set it in
    ci.yml. Local runs stay unchanged.
 5. **docs.yml own install (warning) — ACCEPT.** docs-site is NOT a root
    workspace; docs.yml runs `npm ci` inside `docs-site/` with

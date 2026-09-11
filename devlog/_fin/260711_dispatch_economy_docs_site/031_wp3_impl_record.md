@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, pabcd-initiative, docs-site, hero, impl-record]
+tags: [cursorclaw, pabcd-initiative, docs-site, hero, impl-record]
 ---
 
 # WP3 impl record — docs-site skeleton + hero (DONE)

@@ -28,8 +28,8 @@
 
 ## 검증
 
-- `node plugins/codexclaw/scripts/inventory.mjs --check`: 29 skills OK.
-- `node plugins/codexclaw/scripts/test.mjs` skill-catalog, visualize-inspection, subagent-config: 229 pass.
+- `node plugins/cursorclaw/scripts/inventory.mjs --check`: 29 skills OK.
+- `node plugins/cursorclaw/scripts/test.mjs` skill-catalog, visualize-inspection, subagent-config: 229 pass.
 - 양식 export: 6쪽 A4, 목차 쪽번호 6건 일치, QA PASS; 페이지 이미지 육안 확인(표지·목차·요약·본문 2쪽·부록).
 - 어제 PDF `--qa-only`: Letter, 쪽번호 없음 8쪽, 고아줄 p5, 공백 p2 검출.
 

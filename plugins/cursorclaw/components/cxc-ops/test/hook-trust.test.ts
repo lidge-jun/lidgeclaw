@@ -33,9 +33,9 @@ function command(command: string, extra: Partial<HookHandler> = {}): HookHandler
 
 function makePlugin(hookDocument: unknown, hookRef = "./hooks/sample.json"): string {
   const root = tempDir("cxc-hook-plugin-");
-  mkdirSync(join(root, ".codex-plugin"), { recursive: true });
+  mkdirSync(join(root, ".cursor-plugin"), { recursive: true });
   mkdirSync(join(root, "hooks"), { recursive: true });
-  writeFileSync(join(root, ".codex-plugin", "plugin.json"), JSON.stringify({ name: "fixture", hooks: [hookRef] }));
+  writeFileSync(join(root, ".cursor-plugin", "plugin.json"), JSON.stringify({ name: "fixture", hooks: [hookRef] }));
   writeFileSync(join(root, hookRef), JSON.stringify(hookDocument));
   return root;
 }
@@ -153,7 +153,7 @@ test("listHookEntries refuses manifest hook references outside the plugin root",
   const root = makePlugin({ hooks: {} });
   const outside = join(root, "..", "outside-hook.json");
   writeFileSync(outside, JSON.stringify({ hooks: {} }));
-  writeFileSync(join(root, ".codex-plugin", "plugin.json"), JSON.stringify({ hooks: ["../outside-hook.json"] }));
+  writeFileSync(join(root, ".cursor-plugin", "plugin.json"), JSON.stringify({ hooks: ["../outside-hook.json"] }));
   assert.throws(() => listHookEntries(root, PLUGIN_KEY), /escapes plugin root/);
 });
 
@@ -374,7 +374,7 @@ test("retrustHooks rolls back the resolved config when codex verification fails"
   const home = makeCodexHome(before);
   const calls: Array<{ command: string; args: string[]; codexHome: string | undefined }> = [];
   const failingRunner: HookTrustRunner = (commandName, args, options) => {
-    calls.push({ command: commandName, args, codexHome: options.env.CODEX_HOME });
+    calls.push({ command: commandName, args, codexHome: options.env.CURSOR_HOME });
     return { status: 2, stderr: "invalid config" };
   };
 
@@ -475,7 +475,7 @@ test("retrustHooks verifies through a cmd.exe hop when only the Store codex is o
   assert.match(seen[0].args[3], /features/);
 });
 
-test("retrustHooks honors CODEX_BIN and still passes CODEX_HOME to the runner", () => {
+test("retrustHooks honors CODEX_BIN and still passes CURSOR_HOME to the runner", () => {
   const root = makePlugin({ hooks: { Stop: [{ hooks: [command("echo override")] }] } });
   const home = makeCodexHome('[plugins."fixture@market"]\nenabled = true\n');
   const binDir = tempDir("cxc-hook-codexbin-");
@@ -483,7 +483,7 @@ test("retrustHooks honors CODEX_BIN and still passes CODEX_HOME to the runner", 
   writeFileSync(override, "");
   const seen: Array<{ file: string; codexHome: string | undefined }> = [];
   const runner: HookTrustRunner = (file, _args, options) => {
-    seen.push({ file, codexHome: options.env.CODEX_HOME });
+    seen.push({ file, codexHome: options.env.CURSOR_HOME });
     return { status: 0 };
   };
   const originalBin = process.env.CODEX_BIN;

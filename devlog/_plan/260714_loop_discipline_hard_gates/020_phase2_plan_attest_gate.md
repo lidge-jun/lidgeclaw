@@ -6,7 +6,7 @@ registered work-phases. A scaffold command removes the "no folder exists" excuse
 
 STALENESS NOTE: re-verify all line refs at this phase's P; wp1 will have landed.
 
-## MODIFY `plugins/codexclaw/components/pabcd-state/src/attest.ts`
+## MODIFY `plugins/cursorclaw/components/pabcd-state/src/attest.ts`
 
 ### 1. `Attestation` interface (~line 23)
 
@@ -53,7 +53,7 @@ export function validatePlanArtifacts(att: Attestation | null, cwd: string): Att
 Fail-closed for P>A; other edges untouched. Content depth stays the A-phase reviewer's
 job (a byte-count lint invites padding); the gate guarantees EXISTENCE + numbering.
 
-## MODIFY `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts`
+## MODIFY `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts`
 
 - Help text (~line 86): extend the `A` example with `"planUnit":"devlog/_plan/260714_slug"`.
 - AUDIT ROUND 1 blocker #5 correction: orchestrate-cli.ts never calls `validateAttest`
@@ -74,9 +74,9 @@ divergence:113) and silently exit-0s unknown kinds. BOTH layers need wiring:
   (divergence/metric pattern) + usage-string line.
 - `cli.ts` main(): new `if (kind === "plan")` branch delegating to plan-cli.ts —
   without it `cxc plan init` is a silent exit-0 no-op.
-- `plugins/codexclaw/test/cli-usage.test.mjs` (NOT repo-level test/): update for the
+- `plugins/cursorclaw/test/cli-usage.test.mjs` (NOT repo-level test/): update for the
   new verb.
-- New `plugins/codexclaw/components/pabcd-state/src/plan-cli.ts` implementing
+- New `plugins/cursorclaw/components/pabcd-state/src/plan-cli.ts` implementing
   `plan init <slug> [--phases N] [--cwd <path>]` → `devlog/_plan/<YYMMDD>_<slug>/` with
   `000_plan.md` (Objective / Loop-spec / Work-phase map / Accept criteria headings) and
   `0N0_phaseN.md` stubs each carrying the DIFFLEVEL-ROADMAP-01 header ("write to
@@ -91,8 +91,8 @@ divergence:113) and silently exit-0s unknown kinds. BOTH layers need wiring:
 
 `.gitignore` ignores `dist/` wholesale and dist-freshness skips UNTRACKED dist files
 ("untracked = doesn't ship"). New compiled outputs MUST be force-added at D:
-`git add -f plugins/codexclaw/components/pabcd-state/dist/plan-gate.js
-plugins/codexclaw/components/pabcd-state/dist/plan-cli.js` — otherwise a fresh
+`git add -f plugins/cursorclaw/components/pabcd-state/dist/plan-gate.js
+plugins/cursorclaw/components/pabcd-state/dist/plan-cli.js` — otherwise a fresh
 clone's orchestrate-cli.js import of `./plan-gate.js` throws ERR_MODULE_NOT_FOUND and
 breaks EVERY `cxc orchestrate` call. C phase asserts tracked status
 (`git ls-files --error-unmatch <both files>`).

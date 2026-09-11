@@ -48,7 +48,7 @@ L30; it does not define the scheduler or the primary result store.
 2. A scheduled job can opt into forwarding an existing L30 run result summary to
    telegram or discord without changing the stored result.
 3. Missing credentials or delivery failures produce explicit errors and never
-   delete, overwrite, or mask `.codexclaw/` run results.
+   delete, overwrite, or mask `.cursorclaw/` run results.
 
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
 - node:test with fake telegram/discord transports and secret-redaction checks.

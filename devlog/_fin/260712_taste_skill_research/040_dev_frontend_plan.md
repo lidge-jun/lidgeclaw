@@ -1,6 +1,6 @@
 ---
 created: 2026-07-12
-tags: [codexclaw, dev-frontend, improvement-plan]
+tags: [cursorclaw, dev-frontend, improvement-plan]
 ---
 
 # dev-frontend Improvement Plan

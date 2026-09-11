@@ -46,7 +46,7 @@ typechecks, models, agents, goal/FSM commands, installs or global writes occurre
 
 The unit-relative paths in this section are under
 `devlog/_plan/260905_codex_code_mode_pr_research/`. Evidence prefix **E** is
-`.codexclaw/evidence/01a0702d-c493-7510-801f-7d8772a2689c/` in this checkout.
+`.cursorclaw/evidence/01a0702d-c493-7510-801f-7d8772a2689c/` in this checkout.
 These are existing private artifacts, not new runtime dependencies.
 
 1. `007_methodology_alignment.md:15–42`: initiative methodology has canonical
@@ -75,7 +75,7 @@ These are existing private artifacts, not new runtime dependencies.
    `family-observation/01a070b3-a9ce-7f82-86b2-17c1975cdb45.jsonl`, and
    `family-observation/report.json`. Their presence is not a new claim of complete
    per-child wire attribution; 035/037's limitations still apply.
-6. Source mechanism: `plugins/codexclaw/components/pabcd-state/src/hook.ts:236–247`
+6. Source mechanism: `plugins/cursorclaw/components/pabcd-state/src/hook.ts:236–247`
    detects C from `실제 검증해줘`; the earlier B expression does not match
    `빈 구현을 채우는`. Parser-first handling at `:670–679` returns null for that
    prose. `:681–695` does not promote C into Interview; `:713–727` does not run
@@ -102,40 +102,40 @@ All product paths below are checkout-relative. **Future main-owned changes only*
 
 | Action | Exact file | Scope / source coordinates at 91e051df |
 | --- | --- | --- |
-| MODIFY, first | `plugins/codexclaw/skills/interview/SKILL.md` | 040 H0 immediately before `## Question quality` at line 28. Preserve its complete classify/teach/alternative/spike body, reproduced below. |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/hook.ts` | R1 PHASE_DIRECTIVES `:290–380`; R2 TRIGGER_AUTHORITY_NOTE `:488–493`; R3 loopArmDirective return strings `:525–545`; R6 deletes auto-entry `:741–757` with adjacent comment corrections; R7 RESCAN strings `:1880–1890`. No signature changes or other control-flow edits. |
-| MODIFY | `plugins/codexclaw/components/cxc-ops/src/map-affordance.ts` | R4 replaces renderLoopAffordance array strings `:180–184`; its shared SessionStart/PostCompact call sites `:216`, `:258` stay unchanged. |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/hook.test.ts` | Existing POSIX literal array `:248–275` follows R3; add T1–T4 and T7 below, keep existing assertions. Retain 040 H5 owner/B-scope fixture. |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts` | Add T5 and T8 below; retain 040 mode2 owner additions and all I/Stop/context/cursor cases. |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/interview-ledger.test.ts` | A12 adds independently scoped post-answer output, real answer capture/dedup, unchanged tracker/readiness and firewall coverage. |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts` | A11 adds authorized explicit CLI P/I entry positives; existing gate and identity negatives remain. |
-| MODIFY | `plugins/codexclaw/test/build.test.mjs` | A10 replaces natural I auto-activation expectations, retaining compiled directive and dedup writes. |
-| MODIFY | `plugins/codexclaw/test/hook-e2e.test.mjs` | A10 replaces natural P auto-activation expectations and adds explicit-command entry positives. |
-| MODIFY, comments only | `plugins/codexclaw/components/pabcd-state/src/interview-policy.ts` | A13 removes obsolete mayEnter provenance from `:13–20`; policy logic/values unchanged. |
-| MODIFY, narrow SoT only | `plugins/codexclaw/skills/pabcd/SKILL.md`, `plugins/codexclaw/skills/interview/SKILL.md`, `structure/INDEX.md` | A13 distinguishes hint delivery from actual explicit-command entry. No WP2 owner/duty relocation. Interview also retains H0. |
-| MODIFY | `plugins/codexclaw/components/cxc-ops/test/map-affordance.test.ts` | Add T6 and import/cleanup hunks below; retain size/binding/PATH/CLI tests and 040 complete-binding fixture. Replace only superseded H6 expected phrases. |
+| MODIFY, first | `plugins/cursorclaw/skills/interview/SKILL.md` | 040 H0 immediately before `## Question quality` at line 28. Preserve its complete classify/teach/alternative/spike body, reproduced below. |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/hook.ts` | R1 PHASE_DIRECTIVES `:290–380`; R2 TRIGGER_AUTHORITY_NOTE `:488–493`; R3 loopArmDirective return strings `:525–545`; R6 deletes auto-entry `:741–757` with adjacent comment corrections; R7 RESCAN strings `:1880–1890`. No signature changes or other control-flow edits. |
+| MODIFY | `plugins/cursorclaw/components/cxc-ops/src/map-affordance.ts` | R4 replaces renderLoopAffordance array strings `:180–184`; its shared SessionStart/PostCompact call sites `:216`, `:258` stay unchanged. |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/hook.test.ts` | Existing POSIX literal array `:248–275` follows R3; add T1–T4 and T7 below, keep existing assertions. Retain 040 H5 owner/B-scope fixture. |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts` | Add T5 and T8 below; retain 040 mode2 owner additions and all I/Stop/context/cursor cases. |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/interview-ledger.test.ts` | A12 adds independently scoped post-answer output, real answer capture/dedup, unchanged tracker/readiness and firewall coverage. |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts` | A11 adds authorized explicit CLI P/I entry positives; existing gate and identity negatives remain. |
+| MODIFY | `plugins/cursorclaw/test/build.test.mjs` | A10 replaces natural I auto-activation expectations, retaining compiled directive and dedup writes. |
+| MODIFY | `plugins/cursorclaw/test/hook-e2e.test.mjs` | A10 replaces natural P auto-activation expectations and adds explicit-command entry positives. |
+| MODIFY, comments only | `plugins/cursorclaw/components/pabcd-state/src/interview-policy.ts` | A13 removes obsolete mayEnter provenance from `:13–20`; policy logic/values unchanged. |
+| MODIFY, narrow SoT only | `plugins/cursorclaw/skills/pabcd/SKILL.md`, `plugins/cursorclaw/skills/interview/SKILL.md`, `structure/INDEX.md` | A13 distinguishes hint delivery from actual explicit-command entry. No WP2 owner/duty relocation. Interview also retains H0. |
+| MODIFY | `plugins/cursorclaw/components/cxc-ops/test/map-affordance.test.ts` | Add T6 and import/cleanup hunks below; retain size/binding/PATH/CLI tests and 040 complete-binding fixture. Replace only superseded H6 expected phrases. |
 | MODIFY, at C | `docs/native-thin-harness.md` | 040 H7 plus R5 scope clarification below, adjacent to current principles at `:42–44`; not a docs-only claim that runtime is already adopted. |
-| REGENERATE | `plugins/codexclaw/components/pabcd-state/dist/hook.js` | Existing build output of hook.ts; no handwritten dist patch. |
-| REGENERATE, if compiler preserves changed comments | `plugins/codexclaw/components/pabcd-state/dist/interview-policy.js` | Comment-only source provenance correction; no handwritten dist or policy changes. |
-| REGENERATE | `plugins/codexclaw/components/cxc-ops/dist/map-affordance.js` | Existing build output of map-affordance.ts; inspect any other build delta rather than adopting it silently. |
+| REGENERATE | `plugins/cursorclaw/components/pabcd-state/dist/hook.js` | Existing build output of hook.ts; no handwritten dist patch. |
+| REGENERATE, if compiler preserves changed comments | `plugins/cursorclaw/components/pabcd-state/dist/interview-policy.js` | Comment-only source provenance correction; no handwritten dist or policy changes. |
+| REGENERATE | `plugins/cursorclaw/components/cxc-ops/dist/map-affordance.js` | Existing build output of map-affordance.ts; inspect any other build delta rather than adopting it silently. |
 | NEW, this task only | `devlog/_plan/260905_codex_code_mode_pr_research/042_hook_scope_revalidation.md` | This amendment; 040 remains main-owned. |
 
 Dependency-only owners, **no WP3 duty rewrites** (A13 updates only entry-semantics SoT):
 
-- `plugins/codexclaw/skills/pabcd/SKILL.md:15–21,64–88,120–125` owns scoped phase
+- `plugins/cursorclaw/skills/pabcd/SKILL.md:15–21,64–88,120–125` owns scoped phase
   routing, ordinary class-scaled work versus execution, and authorized delegation.
-- `plugins/codexclaw/skills/pabcd/references/phase-plan.md:4` and
+- `plugins/cursorclaw/skills/pabcd/references/phase-plan.md:4` and
   `references/plan-output.md:1–32` keep all nine C2+ plan fields, including plan-only,
   memory artifact, terminal outcomes, upward/downward escalation, and NOT RUN.
   Hook P does not replace this with its old five-field shorthand.
-- `plugins/codexclaw/skills/pabcd/references/phase-audit.md:3–9`,
+- `plugins/cursorclaw/skills/pabcd/references/phase-audit.md:3–9`,
   `references/phase-check.md:3–51`, `references/phase-control.md` and
   `references/delegation.md:14–25` retain actual audit/verification, verdict,
   gate/evidence, role, transport and same-agent obligations when applicable.
-- `plugins/codexclaw/skills/loop/references/waiting.md:1–21` remains mode-neutral
+- `plugins/cursorclaw/skills/loop/references/waiting.md:1–21` remains mode-neutral
   HITL/HOTL waiting/retirement ownership; loop's row at `SKILL.md:60` and delegation's
   link at `:23–24` remain. No replacement wait rule in a hook.
-- `plugins/codexclaw/skills/dev/SKILL.md:108–124` and loop `SKILL.md:35–46`
+- `plugins/cursorclaw/skills/dev/SKILL.md:108–124` and loop `SKILL.md:35–46`
   retain full selected-file delivery/recovery across inner and outer output budgets.
   `dev/references/skill-ownership.md:33–34` remains the owner map, not a new registry.
 - Existing `dev-testing`, `dev-code-reviewer`, `dev-scaffolding` and all selected
@@ -180,41 +180,41 @@ creation/mutation, not read-only inspection. Deeper methodology stays in WP2's o
 ```ts
 const PHASE_DIRECTIVES: Partial<Record<Phase, string>> = {
   I: [
-    "[codexclaw: INTERVIEW]",
+    "[cursorclaw: INTERVIEW]",
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
     "This also scopes the Mind instructions below. Load $codexclaw:cxc-interview for dimensions, questions, loop classification and readiness. Do not implement.",
     "INTERVIEW-GROUND-01: when tracker writes are authorized, `cxc scan record --session <id> --derive --map <questionId>=<dimension> ...`",
-    "records known[]/unknown[]; read `.codexclaw/sessions/<id>.json` before the next question. Report unmet actions, not false readiness.",
+    "records known[]/unknown[]; read `.cursorclaw/sessions/<id>.json` before the next question. Report unmet actions, not false readiness.",
     "INTERVIEW-RENDER-01: show knowns, the weakest dimension and the answer's impact before the question.",
     "INTERVIEW-INDEPENDENT-01: batch only INDEPENDENT questions; independence governs, not a count.",
   ].join("\n"),
   P: [
-    "[codexclaw: PLAN]",
+    "[cursorclaw: PLAN]",
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
     "Load $codexclaw:cxc-pabcd for P and C2+ plan-output; $codexclaw:cxc-dev selects class and relevant surfaces. No implementation yet.",
     "Plan-only ends with the plan. Forbidden checks: NOT RUN; naming an artifact grants no write permission.",
   ].join("\n"),
   A: [
-    "[codexclaw: AUDIT]",
+    "[cursorclaw: AUDIT]",
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
     "Load $codexclaw:cxc-dev-code-reviewer for review and $codexclaw:cxc-dev for relevant surfaces; authorized PABCD A uses $codexclaw:cxc-pabcd's audit owner. Do not build yet.",
     "Authorized dispatch follows the owner's named-skill, same-reviewer and verdict contracts; main synthesizes. Report unmet independent review; inline review is not its proof. Do not bypass gates.",
   ].join("\n"),
   B: [
-    "[codexclaw: BUILD]",
+    "[cursorclaw: BUILD]",
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
     "Use $codexclaw:cxc-dev for class/surfaces; authorized PABCD B uses $codexclaw:cxc-pabcd. Implement only authorized scope.",
     "Forbidden checks: NOT RUN; no invented proof.",
   ].join("\n"),
   C: [
-    "[codexclaw: CHECK]",
+    "[cursorclaw: CHECK]",
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
     "Use $codexclaw:cxc-dev and $codexclaw:cxc-dev-testing; authorized PABCD C uses $codexclaw:cxc-pabcd's check owner, including C-RENDER-GROUNDING-01.",
     "No-tests forbids tests, not separately authorized build/typecheck. No-goal/no-FSM restrict creation/mutations, not read-only inspection.",
     "Independent review needs owner applicability and dispatch permission. Report unmet review; inline review is not its proof. Forbidden checks: NOT RUN. No pass or gate bypass without real evidence.",
   ].join("\n"),
   D: [
-    "[codexclaw: DONE]",
+    "[cursorclaw: DONE]",
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
     "For authorized D closure load $codexclaw:cxc-pabcd; report evidence and unmet work, then IDLE. Remaining authorized work follows $codexclaw:cxc-loop from disk.",
     "A header or budget/time stop is not completion; never fabricate attestations/receipts.",
@@ -232,7 +232,7 @@ algorithm rewrite. H0 and existing owner duties are still mandatory when authori
 
 ```diff
 @@ hook.ts:488–493, inside TRIGGER_AUTHORITY_NOTE
-   "[codexclaw: PHASE UNCHANGED — TRIGGER-AUTHORITY-01]",
+   "[cursorclaw: PHASE UNCHANGED — TRIGGER-AUTHORITY-01]",
 -  "That phrase reads as a phase request, but a natural-language trigger no longer moves",
 -  "a cycle that is already running: it would skip adjacency, the attest gate and the",
 -  "ledger, which is exactly how a cycle ends up recorded without ever happening.",
@@ -252,7 +252,7 @@ describes a C hint from IDLE, not only an already-running cycle.
 
 ```diff
 @@ hook.ts:525–535 and hook.test.ts:250–259 (snapshot has no ...advance)
-     "[codexclaw: LOOP — orchestrate arming mandate (ORCH-MANDATE-01)]",
+     "[cursorclaw: LOOP — orchestrate arming mandate (ORCH-MANDATE-01)]",
 -    "A loop/goalplan claim without persisted FSM evidence is INVALID, and the PABCD FSM is not",
 -    "armed right now. Arm it with explicit commands before narrating any loop work:",
 +    "Scope first: explicit interview-only, plan-only, HITL, read-only, no-goal, no-FSM, no-tests and no-delegation limits override the bare cxc-loop default.",
@@ -296,12 +296,12 @@ steps, including the unchanged step 4, without weakening an authorized edge.
 
 ```diff
 @@ map-affordance.ts:180–184
--    "[codexclaw] Loop contract: a multi-cycle/PABCD/루프 request is INVALID without",
+-    "[cursorclaw] Loop contract: a multi-cycle/PABCD/루프 request is INVALID without",
 -    "the persisted FSM — run `cxc orchestrate status --session <your id>` first,",
 -    "then enter P and advance each edge with --attest. One work-phase = one full",
 -    "PABCD cycle; never implement two plan pages in one B. Load",
 -    "$codexclaw:cxc-loop + $codexclaw:cxc-pabcd for the full discipline.",
-+    "[codexclaw] Loop contract: for actual loop work load $codexclaw:cxc-loop + $codexclaw:cxc-pabcd.",
++    "[cursorclaw] Loop contract: for actual loop work load $codexclaw:cxc-loop + $codexclaw:cxc-pabcd.",
 +    "Bare cxc-loop means scoped HOTL; a mention alone grants no authority.",
 +    "Exact user limits and separately allowed actions scope this pointer and its owners. No-delegation means no dispatch.",
 +    "Read-only inspection remains allowed under no-goal/no-FSM; for actual loop work inspect `cxc orchestrate status --session <your id>` first.",
@@ -309,7 +309,7 @@ steps, including the unchanged step 4, without weakening an authorized edge.
 +    "No extra external permissions; do not bypass guards or invent evidence.",
 ```
 
-Keep the existing `<600` character bound under the test's pinned `CODEXCLAW_CXC=cxc`;
+Keep the existing `<600` character bound under the test's pinned `CURSORCLAW_CRC=cxc`;
 do not relax it to fit a rewrite. Real payload-resolved command paths may be longer,
 as before. `renderSessionBinding:156–167`, PATH fallback `:260–267`, map/search/
 kwrite/background strings and envelope/event fields remain byte-identical. The
@@ -357,7 +357,7 @@ The exact original prompt is an independent fixture, not derived from detectTrig
 +      const envelope = JSON.parse(output).hookSpecificOutput;
 +      assert.equal(envelope.hookEventName, "UserPromptSubmit");
 +      const ctx = envelope.additionalContext as string;
-+      assert.match(ctx, /^\[codexclaw: CHECK\]/);
++      assert.match(ctx, /^\[cursorclaw: CHECK\]/);
 +      assert.match(ctx, /No-delegation means no dispatch/);
 +      assert.match(ctx, /No-tests forbids tests, not separately authorized build\/typecheck/);
 +      assert.match(ctx, /Independent review needs owner applicability and dispatch permission/);
@@ -462,7 +462,7 @@ T3 should already pass on baseline and remains a control, not bug-fix evidence.
 +        assert.match(ctx, /do not bypass a gate or fabricate an attestation\/receipt/);
 +        if (platform === "win32") {
 +          assert.match(ctx, /Set-Content -Encoding utf8/);
-+          assert.match(ctx, /--attest-file \.codexclaw\/attest\.json/);
++          assert.match(ctx, /--attest-file \.cursorclaw\/attest\.json/);
 +          assert.doesNotMatch(ctx, /--attest <json>/);
 +        } else assert.match(ctx, /--attest <json>/);
 +        const state = readState(cwd, "wp3-arm");
@@ -556,7 +556,7 @@ I tests still require silence and must not be updated to emit the new boundary.
 +      const envelope = JSON.parse(out).hookSpecificOutput;
 +      assert.equal(envelope.hookEventName, event);
 +      const ctx = envelope.additionalContext as string;
-+      const pointer = ctx.split("\n\n").find(line => line.startsWith("[codexclaw] Loop contract:"));
++      const pointer = ctx.split("\n\n").find(line => line.startsWith("[cursorclaw] Loop contract:"));
 +      assert.ok(pointer);
 +      assert.match(pointer, /Bare cxc-loop means scoped HOTL; a mention alone grants no authority/);
 +      assert.match(pointer, /Exact user limits and separately allowed actions scope this pointer and its owners/);
@@ -645,10 +645,10 @@ continues through T4 and native N12. Do not fabricate host goal state for live p
 ## 5. Native activation matrix — main on macmini, all prospective
 
 Existing fresh-turn native machinery is **not** a hypothetical `probe-native.mjs` command.
-The actual checked source is `plugins/codexclaw/scripts/probe-recorder.mjs:59–64`
+The actual checked source is `plugins/cursorclaw/scripts/probe-recorder.mjs:59–64`
 (Astra/high/priority/bypass JSONL argv), `:79–105` (isolated path/install/source
 preflight), `:181–224` (record), `:227–239` (one-spec CLI), and
-`plugins/codexclaw/scripts/probe-evidence.mjs` (`run OUTPUT` consumer).
+`plugins/cursorclaw/scripts/probe-evidence.mjs` (`run OUTPUT` consumer).
 The old private preparation script accepts WP2 names/sourceDirectory allowlists
 only; do **not** pretend it accepts a WP3 directory or execute it unchanged against
 a different source. Main owns isolated operator preparation using the existing
@@ -742,13 +742,13 @@ invent `tsc -p components/...` as a verifier. Build transpilation is not a typec
 
 ```sh
 npm run build
-node --test --test-concurrency=1 plugins/codexclaw/components/pabcd-state/test/hook.test.ts plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts plugins/codexclaw/components/cxc-ops/test/map-affordance.test.ts
-node --test --test-concurrency=1 plugins/codexclaw/components/pabcd-state/test/goal-gate.test.ts plugins/codexclaw/components/pabcd-state/test/session-split.test.ts plugins/codexclaw/components/pabcd-state/test/interview-ledger.test.ts plugins/codexclaw/components/pabcd-state/test/attest-shape-hint.test.ts plugins/codexclaw/components/subagent-config/test/spawn-attach-hook.test.ts
-node --test --test-concurrency=1 plugins/codexclaw/test/hook-e2e.test.mjs plugins/codexclaw/test/manifest-policy.test.mjs plugins/codexclaw/test/skill-catalog.test.mjs plugins/codexclaw/test/port-provenance.test.mjs plugins/codexclaw/test/gate.test.mjs
-node plugins/codexclaw/scripts/gate.mjs
-node plugins/codexclaw/scripts/inventory.mjs --check
-node plugins/codexclaw/scripts/probe-recorder.mjs "$SPEC"
-node plugins/codexclaw/scripts/probe-evidence.mjs run "$OUTPUT"
+node --test --test-concurrency=1 plugins/cursorclaw/components/pabcd-state/test/hook.test.ts plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts plugins/cursorclaw/components/cxc-ops/test/map-affordance.test.ts
+node --test --test-concurrency=1 plugins/cursorclaw/components/pabcd-state/test/goal-gate.test.ts plugins/cursorclaw/components/pabcd-state/test/session-split.test.ts plugins/cursorclaw/components/pabcd-state/test/interview-ledger.test.ts plugins/cursorclaw/components/pabcd-state/test/attest-shape-hint.test.ts plugins/cursorclaw/components/subagent-config/test/spawn-attach-hook.test.ts
+node --test --test-concurrency=1 plugins/cursorclaw/test/hook-e2e.test.mjs plugins/cursorclaw/test/manifest-policy.test.mjs plugins/cursorclaw/test/skill-catalog.test.mjs plugins/cursorclaw/test/port-provenance.test.mjs plugins/cursorclaw/test/gate.test.mjs
+node plugins/cursorclaw/scripts/gate.mjs
+node plugins/cursorclaw/scripts/inventory.mjs --check
+node plugins/cursorclaw/scripts/probe-recorder.mjs "$SPEC"
+node plugins/cursorclaw/scripts/probe-evidence.mjs run "$OUTPUT"
 ```
 
 `SPEC` is the actual main-provisioned absolute path to a fresh 021-schema spec;
@@ -953,7 +953,7 @@ Replace the entire existing constant at `hook.ts:1880–1890` with:
 
 ```ts
 export const RESCAN_REINJECT_DIRECTIVE = [
-  "[codexclaw: INTERVIEW — post-answer rescan]",
+  "[cursorclaw: INTERVIEW — post-answer rescan]",
   "An answer was recorded. Apply this pointer and $codexclaw:cxc-interview only within exact user limits and permissions. No-delegation means no dispatch.",
   "INTERVIEW-SCAN-01: rescan contradictions before the next question or advancement. If required work or tracker writes are forbidden, report them as unmet; do not record a completed scan or claim readiness.",
   "Only when dispatch is authorized: give each read-only Mind the current plan/tracker position; cap 3, lowest-scoring dimensions first. Discover spawn_agent if needed.",
@@ -973,9 +973,9 @@ to `guidance`; no bypass or source of synthetic scan evidence is introduced.
 ### A9 — every affected source-level expectation
 
 The source search covered natural P/I inputs and phase/activation assertions in
-`components/pabcd-state/test` and `plugins/codexclaw/test`. Existing cases affected:
+`components/pabcd-state/test` and `plugins/cursorclaw/test`. Existing cases affected:
 
-| File (under plugins/codexclaw) / original coordinate | Exact disposition |
+| File (under plugins/cursorclaw) / original coordinate | Exact disposition |
 | --- | --- |
 | `components/pabcd-state/test/hook.test.ts:419–447` | Replace the two P-vs-agbrowse/policy tests with the after-images below: same chosen advice, IDLE footer, no activation. |
 | Same `:585–598` | Replace loose-path test below; no more natural P write. |
@@ -1000,7 +1000,7 @@ passive modes and I readiness tests remain unchanged, except the specific expect
 natural I activation at `hook-continuation.test.ts:92–93` named above.
 
 Add `TRIGGER_AUTHORITY_NOTE` to the existing import from `../src/hook.ts` in
-`hook.test.ts`. Existing `CODEXCLAW_CXC="cxc"` makes the literal note expectation
+`hook.test.ts`. Existing `CURSORCLAW_CRC="cxc"` makes the literal note expectation
 deterministic. Exact replacements for the first three affected tests:
 
 ```ts
@@ -1160,21 +1160,21 @@ test("compiled pabcd-state natural I hint emits advice and dedup without phase e
     });
     const res = spawnSync("node", [cli, "hook", "user-prompt-submit"], {
       input: payload, encoding: "utf8",
-      env: { ...process.env, CODEX_HOME: home, CODEX_SQLITE_HOME: home },
+      env: { ...process.env, CURSOR_HOME: home, CODEX_SQLITE_HOME: home },
     });
     assert.equal(res.status, 0, res.stderr);
     const ctx = JSON.parse(res.stdout).hookSpecificOutput.additionalContext;
     assert.match(ctx, /codexclaw: INTERVIEW/);
     assert.match(ctx, /PHASE UNCHANGED/);
     assert.match(ctx, /IPABCD: IDLE \(IDLE\)/);
-    const stateFile = join(tmp, ".codexclaw", "sessions", "s-build-test.json");
+    const stateFile = join(tmp, ".cursorclaw", "sessions", "s-build-test.json");
     assert.ok(existsSync(stateFile), "turn dedup state must still be written");
     const state = JSON.parse(readFileSync(stateFile, "utf8"));
     assert.equal(state.phase, "IDLE");
     assert.equal(state.orchestrationActive, false);
     assert.equal(state.lastInjectedPhase, null);
     assert.deepEqual(state.injectedTurns, ["t1"]);
-    assert.equal(existsSync(join(tmp, ".codexclaw", "ledger.jsonl")), false);
+    assert.equal(existsSync(join(tmp, ".cursorclaw", "ledger.jsonl")), false);
   } finally {
     rmSync(tmp, { recursive: true, force: true });
     rmSync(home, { recursive: true, force: true });
@@ -1209,14 +1209,14 @@ test("WP22/G19: natural plan hint emits PLAN advice with IDLE footer, never acti
     assert.match(ctx, /codexclaw: PLAN/);
     assert.match(ctx, /PHASE UNCHANGED/);
     assert.match(ctx, /IPABCD: IDLE \(IDLE\)/);
-    const stateFile = join(tmp, ".codexclaw", "sessions", "s1.json");
+    const stateFile = join(tmp, ".cursorclaw", "sessions", "s1.json");
     assert.ok(existsSync(stateFile));
     const state = JSON.parse(readFileSync(stateFile, "utf8"));
     assert.equal(state.phase, "IDLE");
     assert.equal(state.orchestrationActive, false);
     assert.equal(state.lastInjectedPhase, null);
     assert.deepEqual(state.injectedTurns, ["t1"]);
-    assert.equal(existsSync(join(tmp, ".codexclaw", "ledger.jsonl")), false);
+    assert.equal(existsSync(join(tmp, ".cursorclaw", "ledger.jsonl")), false);
   } finally {
     rmSync(tmp, { recursive: true, force: true });
     rmSync(home.dir, { recursive: true, force: true });
@@ -1237,10 +1237,10 @@ test("wp3: registered explicit orchestrate P/I commands still enter and record c
       }, home.env);
       assert.equal(res.status, 0, res.stderr);
       assert.ok(JSON.parse(res.stdout).hookSpecificOutput.additionalContext.includes(`IPABCD: ${phase} (`));
-      const state = JSON.parse(readFileSync(join(tmp, ".codexclaw", "sessions", "explicit-entry.json"), "utf8"));
+      const state = JSON.parse(readFileSync(join(tmp, ".cursorclaw", "sessions", "explicit-entry.json"), "utf8"));
       assert.equal(state.phase, phase);
       assert.equal(state.orchestrationActive, true);
-      const rows = readFileSync(join(tmp, ".codexclaw", "ledger.jsonl"), "utf8")
+      const rows = readFileSync(join(tmp, ".cursorclaw", "ledger.jsonl"), "utf8")
         .trim().split("\n").map(line => JSON.parse(line));
       assert.equal(rows.length, 1);
       assert.equal(rows[0].from, "IDLE");
@@ -1319,7 +1319,7 @@ test("wp3: post-answer scope is independent, capture dedups and no readiness is 
     const envelope = JSON.parse(output).hookSpecificOutput;
     assert.equal(envelope.hookEventName, "PostToolUse");
     const ctx = envelope.additionalContext as string;
-    assert.match(ctx, /^\[codexclaw: INTERVIEW — post-answer rescan\]/);
+    assert.match(ctx, /^\[cursorclaw: INTERVIEW — post-answer rescan\]/);
     assert.match(ctx, /exact user limits and permissions\. No-delegation means no dispatch/);
     assert.match(ctx, /required work or tracker writes are forbidden, report them as unmet/);
     assert.match(ctx, /do not record a completed scan or claim readiness/);
@@ -1353,7 +1353,7 @@ the actual tracker/derived readiness flags from fabricated scan completion.
 
 ### A13 — exact SoT/comment updates, no WP2 owner rewrite
 
-`plugins/codexclaw/skills/pabcd/SKILL.md:27–34` complete replacement:
+`plugins/cursorclaw/skills/pabcd/SKILL.md:27–34` complete replacement:
 
 ```markdown
 - **Hook hint (narrow):** `UserPromptSubmit` detects `interview` / `인터뷰`
@@ -1366,7 +1366,7 @@ the actual tracker/derived readiness flags from fabricated scan completion.
   with the current SessionStart binding; explicit user commands are also supported.
 ```
 
-At `plugins/codexclaw/skills/interview/SKILL.md:11`, replace
+At `plugins/cursorclaw/skills/interview/SKILL.md:11`, replace
 `Use this skill to enter or continue Codexclaw's IPABCD Interview phase.` with:
 
 ```markdown
@@ -1441,8 +1441,8 @@ If only a new ordinary user turn is supported, that is not PostToolUse evidence.
 Additional **prospective macmini-only** direct targets (beyond section 6):
 
 ```sh
-node --test --test-concurrency=1 plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts plugins/codexclaw/components/pabcd-state/test/orchestrate-apply.test.ts plugins/codexclaw/components/pabcd-state/test/orchestrate-grammar.test.ts plugins/codexclaw/components/pabcd-state/test/interview-policy.test.ts plugins/codexclaw/components/pabcd-state/test/interview-readiness.test.ts plugins/codexclaw/components/pabcd-state/test/parse.test.ts
-node --test --test-concurrency=1 plugins/codexclaw/test/build.test.mjs
+node --test --test-concurrency=1 plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts plugins/cursorclaw/components/pabcd-state/test/orchestrate-apply.test.ts plugins/cursorclaw/components/pabcd-state/test/orchestrate-grammar.test.ts plugins/cursorclaw/components/pabcd-state/test/interview-policy.test.ts plugins/cursorclaw/components/pabcd-state/test/interview-readiness.test.ts plugins/cursorclaw/components/pabcd-state/test/parse.test.ts
+node --test --test-concurrency=1 plugins/cursorclaw/test/build.test.mjs
 ```
 
 The first command reads real explicit-entry/gate/policy/parse consumers, including

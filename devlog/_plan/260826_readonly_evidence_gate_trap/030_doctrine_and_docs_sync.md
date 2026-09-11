@@ -45,9 +45,9 @@ Append EVIDENCE-TERMINAL-01: the evidence gate blocks at most MAX_ATTEMPTS times
 agent, then releases with an unresolved record that blocks parent goal completion.
 State the bound honestly — the release is guaranteed, including on I/O failure.
 
-## `plugins/codexclaw/skills/`
+## `plugins/cursorclaw/skills/`
 
-`rg -l 'EVIDENCE_RECORDED' plugins/codexclaw/skills/` to find every skill teaching the
+`rg -l 'EVIDENCE_RECORDED' plugins/cursorclaw/skills/` to find every skill teaching the
 receipt contract (known: `skills/qa/SKILL.md`). Each must state that read-only lanes are
 dispatched as `explorer`. There is no capability declaration — that design was audited
 out as forgeable; do not reintroduce it in prose.
@@ -61,5 +61,5 @@ record in session state. **No new directories exist** — `evidence-unverified/`
 ## Accept criteria (c6)
 
 - No shipped doc claims unbounded fail-closed blocking.
-- `rg -n 'fail-closed' docs/ structure/ plugins/codexclaw/skills/` reviewed line by line.
+- `rg -n 'fail-closed' docs/ structure/ plugins/cursorclaw/skills/` reviewed line by line.
 - `npm run gate` passes (it scans skills/structure prose for forbidden claims).

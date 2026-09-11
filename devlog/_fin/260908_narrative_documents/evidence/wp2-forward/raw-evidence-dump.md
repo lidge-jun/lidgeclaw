@@ -2,7 +2,7 @@
 
 - probe 1: ssh macmini-cf 'node -v' -> v22.22.0 (exit 0)
 - probe 2: ssh suji 'codex --version' -> 0.147.0
-- ran: node --test plugins/codexclaw/test/skill-catalog.test.mjs -> 4 pass 0 fail
+- ran: node --test plugins/cursorclaw/test/skill-catalog.test.mjs -> 4 pass 0 fail
 - ran: quick_validate.py on search skill -> "Skill is valid!" exit 0
 - probe 3: curl http://127.0.0.1:10100/v1/models -> 28 models, includes anthropic/claude-opus-5
 - observed: PR #84 CONFLICTING against dev; trial merge shows only CHANGELOG.md conflicts

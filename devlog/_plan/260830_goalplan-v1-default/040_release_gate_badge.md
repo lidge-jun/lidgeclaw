@@ -86,13 +86,13 @@ descriptive rather than a target.
 
 | File | Change |
 |------|--------|
-| `plugins/codexclaw/scripts/inventory.mjs` | `check()` accepts an optional `expectedTests`; when supplied, a published tests count that differs is a violation. New CLI form `--check --tests <total>` |
+| `plugins/cursorclaw/scripts/inventory.mjs` | `check()` accepts an optional `expectedTests`; when supplied, a published tests count that differs is a violation. New CLI form `--check --tests <total>` |
 | `.github/workflows/ci.yml` | tee the existing `npm test` output, parse its TAP `tests` total, and pass it to `inventory.mjs --check --tests <total>` — one measurement, no second suite run |
-| `plugins/codexclaw/test/inventory.test.mjs` | NEW tests: a wrong-but-self-consistent badge across all three READMEs is a violation when a measured total is supplied, and the matching total passes |
+| `plugins/cursorclaw/test/inventory.test.mjs` | NEW tests: a wrong-but-self-consistent badge across all three READMEs is a violation when a measured total is supplied, and the matching total passes |
 | `README.md`, `README.ko.md`, `README.zh.md` | tests badge + `alt` text 2,026 → the final measured total, via `inventory.mjs --write --tests <total>` |
 | `CHANGELOG.md` | note the badge correction and the new drift check under 0.2.16 |
 
-`--write` also rewrites `plugins/codexclaw/inventory.json` unconditionally (audit
+`--write` also rewrites `plugins/cursorclaw/inventory.json` unconditionally (audit
 blocker 4). It is byte-clean today, so the expectation is that the file does not
 change; if it does, that is a real inventory drift to inspect, not noise to commit.
 
@@ -144,7 +144,7 @@ before the explicit emptiness check could name the problem. Two amendments:
 2. Add `|| true` to the capture so a miss reaches the explicit check and reports
    "could not parse a test total" instead of dying anonymously.
 
-New file `plugins/codexclaw/test/suite-summary-parse.test.mjs` extracts every
+New file `plugins/cursorclaw/test/suite-summary-parse.test.mjs` extracts every
 summary pattern from both workflow files and runs it under `C` and `en_US.UTF-8`,
 asserting identical matches and that the digits read are the summary's rather than a
 test title's trailing number. Restoring the old anchor makes it fail on any machine,

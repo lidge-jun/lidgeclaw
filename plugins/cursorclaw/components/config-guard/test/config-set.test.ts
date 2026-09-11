@@ -49,7 +49,7 @@ test("set writes the key AND records it, so disable can revert it", () => {
   assert.ok(rec, "the key must be recorded or it can never be reverted");
   assert.equal(rec?.priorValue, null);
   assert.equal(rec?.appliedValue, "true");
-  assert.equal(rec?.setByCodexclaw, true);
+  assert.equal(rec?.setByCursorclaw, true);
 
   // end-to-end: the uninstall path actually undoes it
   const d = deactivate({ run: noopRunner, codexHome: home, configPath });

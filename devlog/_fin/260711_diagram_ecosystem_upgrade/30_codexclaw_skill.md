@@ -6,7 +6,7 @@
 
 ## Deliverables
 
-### plugins/codexclaw/skills/dev-diagram-viewer/
+### plugins/cursorclaw/skills/dev-diagram-viewer/
 ```
 SKILL.md                           329 lines — routing table, env detection, delivery workflow
 agents/openai.yaml                   5 lines — allow_implicit_invocation: true

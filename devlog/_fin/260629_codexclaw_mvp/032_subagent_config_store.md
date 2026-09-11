@@ -6,7 +6,7 @@ Status: TODO  ·  Phase 2
 Persist per-role subagent config (model + prompt override).
 
 ## Store
-`.codexclaw/subagents.json`:
+`.cursorclaw/subagents.json`:
 ```json
 {
   "roles": {

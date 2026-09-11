@@ -4,9 +4,9 @@ Dependency: wp1 common policy.
 
 Scope: only the files and changes below. Re-read against the current tree at P; amend before writing if stale. Existing audit is historical evidence and is not rewritten.
 
-Verification: `node --test plugins/codexclaw/test/manifest-policy.test.mjs` (baseline 6/6 pass, reads skill metadata); YAML parsing over changed SKILL.md files; `git diff --check`. Semantic verification uses independent read-only scenario judgments, not prose phrase assertions.
+Verification: `node --test plugins/cursorclaw/test/manifest-policy.test.mjs` (baseline 6/6 pass, reads skill metadata); YAML parsing over changed SKILL.md files; `git diff --check`. Semantic verification uses independent read-only scenario judgments, not prose phrase assertions.
 
-## 1. MODIFY plugins/codexclaw/skills/dev-architecture/SKILL.md
+## 1. MODIFY plugins/cursorclaw/skills/dev-architecture/SKILL.md
 
 Before:
 
@@ -22,7 +22,7 @@ heuristics, and size limits follow `dev` §0.2 DEFAULT exceptions; uppercase sev
 alone does not turn a structural preference into a safety gate.
 `````
 
-## 2. MODIFY plugins/codexclaw/skills/dev-architecture/SKILL.md
+## 2. MODIFY plugins/cursorclaw/skills/dev-architecture/SKILL.md
 
 Before:
 
@@ -39,7 +39,7 @@ relational constraints) belong to the domain owner even for in-process callers.
 Authorization and assertions for genuinely reachable invalid states remain allowed.
 `````
 
-## 3. MODIFY plugins/codexclaw/skills/dev-architecture/SKILL.md
+## 3. MODIFY plugins/cursorclaw/skills/dev-architecture/SKILL.md
 
 Before:
 
@@ -53,7 +53,7 @@ After:
 | Repeating the same input shape parser in every domain constructor | Duplicates a trusted ingress contract | Parse shape once; enforce domain invariants in the entity/value-object owner |
 `````
 
-## 4. MODIFY plugins/codexclaw/skills/dev-architecture/SKILL.md
+## 4. MODIFY plugins/cursorclaw/skills/dev-architecture/SKILL.md
 
 Before:
 
@@ -67,7 +67,7 @@ After:
 | Repeated runtime shape checks on already validated trusted values | Adds noise without a new boundary | Trust the parsed shape; retain domain invariants and reachable-state checks |
 `````
 
-## 5. MODIFY plugins/codexclaw/skills/dev-architecture/SKILL.md
+## 5. MODIFY plugins/cursorclaw/skills/dev-architecture/SKILL.md
 
 Before:
 
@@ -81,7 +81,7 @@ After:
 | Assertions on a state proven impossible by the actual contract | Distracts from reachable failures | Fix types where sufficient; retain assertions for real domain/state constraints |
 `````
 
-## 6. MODIFY plugins/codexclaw/skills/dev-architecture/SKILL.md
+## 6. MODIFY plugins/cursorclaw/skills/dev-architecture/SKILL.md
 
 Before:
 
@@ -95,7 +95,7 @@ After:
 | **Internal function params** | No repeated shape parsing; domain constraints may apply | Types prove shape, not every business invariant | Domain owner checks start <= end |
 `````
 
-## 7. MODIFY plugins/codexclaw/skills/dev-architecture/references/circular-dependencies.md
+## 7. MODIFY plugins/cursorclaw/skills/dev-architecture/references/circular-dependencies.md
 
 Before:
 
@@ -111,7 +111,7 @@ Do not claim that compiling proves an acyclic architectural module graph. Use th
 repository's dependency rules or inspect module edges when that property matters.
 `````
 
-## 8. MODIFY plugins/codexclaw/skills/dev-architecture/references/circular-dependencies.md
+## 8. MODIFY plugins/cursorclaw/skills/dev-architecture/references/circular-dependencies.md
 
 Before:
 
@@ -125,7 +125,7 @@ After:
 2. Run the affected tests/checks at the depth required by `dev` §3; respect explicit execution constraints
 `````
 
-## 9. MODIFY plugins/codexclaw/skills/dev-code-reviewer/SKILL.md
+## 9. MODIFY plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md
 
 Before:
 
@@ -139,7 +139,7 @@ After:
 | >500 lines | Strong review signal; not a blocker by size alone. Accept a documented cohesion/risk rationale |
 `````
 
-## 10. MODIFY plugins/codexclaw/skills/dev-code-reviewer/SKILL.md
+## 10. MODIFY plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md
 
 Before:
 
@@ -153,7 +153,7 @@ After:
 | Unused exports | `ts-prune`, `knip`, consumer search | Remove scoped internal dead exports; public contracts require compatibility review before removal |
 `````
 
-## 11. MODIFY plugins/codexclaw/skills/dev-code-reviewer/SKILL.md
+## 11. MODIFY plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md
 
 Before:
 
@@ -167,7 +167,7 @@ After:
 | Measured expensive re-renders | Profiler identifies repeat work | Check Compiler activation and state ownership first; use manual memoization only where still useful |
 `````
 
-## 12. MODIFY plugins/codexclaw/skills/dev-code-reviewer/SKILL.md
+## 12. MODIFY plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md
 
 Before:
 
@@ -183,7 +183,7 @@ Docs-only reviews use document/contract checks; a diagnostic review does not aut
 installs, product changes, or a repository-wide suite prohibited by the user.
 `````
 
-## 13. MODIFY plugins/codexclaw/skills/dev-debugging/SKILL.md
+## 13. MODIFY plugins/cursorclaw/skills/dev-debugging/SKILL.md
 
 Before:
 
@@ -201,7 +201,7 @@ incident policy and preserve evidence. Diagnosis alone never authorizes a code f
 rollback, production access, or an upstream issue submission.
 `````
 
-## 14. MODIFY plugins/codexclaw/skills/dev-debugging/SKILL.md
+## 14. MODIFY plugins/cursorclaw/skills/dev-debugging/SKILL.md
 
 Before:
 
@@ -217,7 +217,7 @@ After:
    `dev` §3 / `dev-testing` risk floor. Respect user restrictions on local suites.
 `````
 
-## 15. MODIFY plugins/codexclaw/skills/dev-debugging/SKILL.md
+## 15. MODIFY plugins/cursorclaw/skills/dev-debugging/SKILL.md
 
 Before:
 
@@ -232,7 +232,7 @@ After:
    additional affected areas rather than silently expanding the patch.
 `````
 
-## 16. MODIFY plugins/codexclaw/skills/dev-debugging/SKILL.md
+## 16. MODIFY plugins/cursorclaw/skills/dev-debugging/SKILL.md
 
 Before:
 
@@ -246,7 +246,7 @@ After:
 | Claiming "fixed" without running verification | Run the relevant checks, show output, and verify the original symptom |
 `````
 
-## 17. MODIFY plugins/codexclaw/skills/dev-debugging/SKILL.md
+## 17. MODIFY plugins/cursorclaw/skills/dev-debugging/SKILL.md
 
 Before:
 
@@ -260,7 +260,7 @@ After:
 - **Undocumented library behavior** — document evidence; propose an upstream report or scoped workaround without posting externally unless authorized
 `````
 
-## 18. MODIFY plugins/codexclaw/skills/dev-debugging/SKILL.md
+## 18. MODIFY plugins/cursorclaw/skills/dev-debugging/SKILL.md
 
 Before:
 
@@ -275,7 +275,7 @@ For security-sensitive bugs (auth bypass, data leak, injection), use `dev-securi
 controls and `dev-devops` for incident response. Preserve the same authorization boundary.
 `````
 
-## 19. MODIFY plugins/codexclaw/skills/dev-backend/SKILL.md
+## 19. MODIFY plugins/cursorclaw/skills/dev-backend/SKILL.md
 
 Before:
 
@@ -289,7 +289,7 @@ After:
 - [ ] Existing/protocol response contract preserved; shared envelope only where applicable (§5)
 `````
 
-## 20. MODIFY plugins/codexclaw/skills/dev-backend/SKILL.md
+## 20. MODIFY plugins/cursorclaw/skills/dev-backend/SKILL.md
 
 Before:
 
@@ -303,7 +303,7 @@ After:
 - [ ] Error handler preserves the repository's error convention and correct HTTP mapping; AppError is one optional pattern
 `````
 
-## 21. MODIFY plugins/codexclaw/skills/dev-backend/SKILL.md
+## 21. MODIFY plugins/cursorclaw/skills/dev-backend/SKILL.md
 
 Before:
 
@@ -318,7 +318,7 @@ If the repository chooses AppError, a base class may carry statusCode, code, and
 isOperational. Do not introduce a parallel hierarchy into an established Result/error model.
 `````
 
-## 22. MODIFY plugins/codexclaw/skills/dev-backend/SKILL.md
+## 22. MODIFY plugins/cursorclaw/skills/dev-backend/SKILL.md
 
 Before:
 
@@ -333,7 +333,7 @@ Use Result only when selected for this repository. Otherwise propagate errors to
 clear handling boundary; do not add wrappers or change public error contracts by preference.
 `````
 
-## 23. MODIFY plugins/codexclaw/skills/dev-backend/SKILL.md
+## 23. MODIFY plugins/cursorclaw/skills/dev-backend/SKILL.md
 
 Before:
 
@@ -349,7 +349,7 @@ capacity and product needs. The common six-connection browser limit concerns HTT
 HTTP/2 stream limits are negotiated. These values are not universal failure thresholds.
 `````
 
-## 24. MODIFY plugins/codexclaw/skills/dev-backend/SKILL.md
+## 24. MODIFY plugins/cursorclaw/skills/dev-backend/SKILL.md
 
 Before:
 
@@ -363,7 +363,7 @@ After:
 | Work exceeds the actual request/proxy budget (5s is only an example) | Usually | Streaming/bounded synchronous work may be appropriate |
 `````
 
-## 25. MODIFY plugins/codexclaw/skills/dev-backend/SKILL.md
+## 25. MODIFY plugins/cursorclaw/skills/dev-backend/SKILL.md
 
 Before:
 
@@ -377,7 +377,7 @@ After:
 | Long work exceeds the declared request budget or blocks the event loop | Queue, stream, or isolate according to the actual contract; 5s is not a universal cutoff |
 `````
 
-## 26. MODIFY plugins/codexclaw/skills/dev-data/SKILL.md
+## 26. MODIFY plugins/cursorclaw/skills/dev-data/SKILL.md
 
 Before:
 
@@ -391,7 +391,7 @@ After:
 - Data APIs preserve the existing/protocol contract and its exceptions (`dev-backend` §5); do not wrap GraphQL, gRPC, SSE, or an established API just to match a sample envelope
 `````
 
-## 27. MODIFY plugins/codexclaw/skills/dev-data/SKILL.md
+## 27. MODIFY plugins/cursorclaw/skills/dev-data/SKILL.md
 
 Before:
 
@@ -409,7 +409,7 @@ After:
   read-only diagnostic. See the PostgreSQL EXPLAIN documentation for the pinned version.
 `````
 
-## 28. MODIFY plugins/codexclaw/skills/dev-data/SKILL.md
+## 28. MODIFY plugins/cursorclaw/skills/dev-data/SKILL.md
 
 Before:
 
@@ -423,7 +423,7 @@ After:
 | **Speed (groupby/join)** | Measure on representative input | Depends on expressions, data and execution mode | Depends on SQL plan, data and memory budget |
 `````
 
-## 29. MODIFY plugins/codexclaw/skills/dev-data/SKILL.md
+## 29. MODIFY plugins/cursorclaw/skills/dev-data/SKILL.md
 
 Before:
 
@@ -437,7 +437,7 @@ After:
 ❌ Fail: Quarantine invalid rows under the dataset's access/retention policy; log redacted identifiers and diagnostics, not raw PII. Don't silently drop.
 `````
 
-## 30. MODIFY plugins/codexclaw/skills/dev-scaffolding/SKILL.md
+## 30. MODIFY plugins/cursorclaw/skills/dev-scaffolding/SKILL.md
 
 Before:
 
@@ -451,7 +451,7 @@ After:
 | Python     | `package_name/` | `name_tool.py` | `test_name.py` | `__init__.py`          |
 `````
 
-## 31. MODIFY plugins/codexclaw/skills/dev-scaffolding/SKILL.md
+## 31. MODIFY plugins/cursorclaw/skills/dev-scaffolding/SKILL.md
 
 Before:
 
@@ -466,7 +466,7 @@ After:
 | Importable packages | Follow language identifiers; no hyphens in normal Python imports | `stockprice/`, `stock_price/` |
 `````
 
-## 32. MODIFY plugins/codexclaw/skills/dev-scaffolding/SKILL.md
+## 32. MODIFY plugins/cursorclaw/skills/dev-scaffolding/SKILL.md
 
 Before:
 
@@ -484,7 +484,7 @@ checks. Do not install dependencies, start servers, or run a broad suite merely 
 For a runnable scaffold, verify usability within the authorized environment:
 `````
 
-## 33. MODIFY plugins/codexclaw/skills/dev-devops/SKILL.md
+## 33. MODIFY plugins/cursorclaw/skills/dev-devops/SKILL.md
 
 Before:
 
@@ -499,7 +499,7 @@ Severity and rule authority are distinct (`dev` §0.2). Safety/correctness and r
 proof remain mandatory; architecture/tool preferences need project-specific justification.
 `````
 
-## 34. MODIFY plugins/codexclaw/skills/dev-devops/SKILL.md
+## 34. MODIFY plugins/cursorclaw/skills/dev-devops/SKILL.md
 
 Before:
 
@@ -515,7 +515,7 @@ exception language does not waive this gate: changing it needs a separately appr
 predeclared security policy, never an exception invented in the failing release report. Read
 `````
 
-## 35. MODIFY plugins/codexclaw/skills/dev-devops/SKILL.md
+## 35. MODIFY plugins/cursorclaw/skills/dev-devops/SKILL.md
 
 Before:
 
@@ -533,7 +533,7 @@ or deleting refs. Propose missing automation first; enact it only when authorize
 Delivery repositories accumulate dead refs, and the cost is not disk.
 `````
 
-## 36. MODIFY plugins/codexclaw/skills/dev-security/SKILL.md
+## 36. MODIFY plugins/cursorclaw/skills/dev-security/SKILL.md
 
 Before:
 
@@ -548,7 +548,7 @@ See `references/asvs-checklist.md` for the local release checklist and the disti
 from formal ASVS 5.0.0 evidence (Authentication V6, Session Management V7).
 `````
 
-## 37. MODIFY plugins/codexclaw/skills/dev-security/SKILL.md
+## 37. MODIFY plugins/cursorclaw/skills/dev-security/SKILL.md
 
 Before:
 
@@ -562,7 +562,7 @@ After:
 - [ ] Browser session tokens use an appropriate httpOnly/secure/SameSite cookie strategy; keep session tokens out of localStorage. For cookie-authenticated state changes, verify framework CSRF protection or an appropriate token/origin/Fetch-Metadata defense; SameSite alone is not sufficient in most deployments.
 `````
 
-## 38. MODIFY plugins/codexclaw/skills/dev-security/SKILL.md
+## 38. MODIFY plugins/cursorclaw/skills/dev-security/SKILL.md
 
 Before:
 
@@ -576,7 +576,7 @@ After:
 - [ ] Applicable security requirements are mapped to the pinned ASVS version, requirement IDs, applicability decisions and evidence. The local checklist alone never certifies ASVS L1/L2 compliance.
 `````
 
-## 39. MODIFY plugins/codexclaw/skills/dev-security/references/asvs-checklist.md
+## 39. MODIFY plugins/cursorclaw/skills/dev-security/references/asvs-checklist.md
 
 Before:
 
@@ -739,12 +739,12 @@ standard to discover omissions; no compliance claim without full applicable cove
 Implementation examples: `owasp-top10.md`; scanning recipes: `static-analysis.md`.
 `````
 
-## 40. MODIFY plugins/codexclaw/skills/dev-frontend/SKILL.md
+## 40. MODIFY plugins/cursorclaw/skills/dev-frontend/SKILL.md
 
 Before:
 
 `````text
-| `../../../../.codexclaw/goalplans/design-award-research-skill-expansion-000-plan-010-crawl/devlog/090/090-synthesis.md` | Calibrating anti-slop rules against award evidence | Context-gated exemptions for centered/split heroes, one-hue fields, gradients, motion, oversized type, navigation, and media |
+| `../../../../.cursorclaw/goalplans/design-award-research-skill-expansion-000-plan-010-crawl/devlog/090/090-synthesis.md` | Calibrating anti-slop rules against award evidence | Context-gated exemptions for centered/split heroes, one-hue fields, gradients, motion, oversized type, navigation, and media |
 `````
 
 After:
@@ -753,12 +753,12 @@ After:
 | `../dev-uiux-design/references/design-trends.md` | Calibrating a dated design example | Source provenance, surface-specific exceptions, and re-verification before promoting a sample to a default |
 `````
 
-## 41. MODIFY plugins/codexclaw/skills/dev-uiux-design/SKILL.md
+## 41. MODIFY plugins/cursorclaw/skills/dev-uiux-design/SKILL.md
 
 Before:
 
 `````text
-| `../../../../.codexclaw/goalplans/design-award-research-skill-expansion-000-plan-010-crawl/devlog/090/090-synthesis.md` | Calibrating anti-slop rules against award evidence | Context-gated exemptions for centered heroes, split media, one-hue fields, gradients, motion, oversized type, navigation, and media |
+| `../../../../.cursorclaw/goalplans/design-award-research-skill-expansion-000-plan-010-crawl/devlog/090/090-synthesis.md` | Calibrating anti-slop rules against award evidence | Context-gated exemptions for centered heroes, split media, one-hue fields, gradients, motion, oversized type, navigation, and media |
 `````
 
 After:
@@ -767,7 +767,7 @@ After:
 | `references/design-trends.md` | Calibrating a dated design example | Source provenance, surface-specific exceptions, and re-verification before promoting a sample to a default |
 `````
 
-## 42. MODIFY plugins/codexclaw/skills/dev-frontend/SKILL.md
+## 42. MODIFY plugins/cursorclaw/skills/dev-frontend/SKILL.md
 
 Before:
 
@@ -783,7 +783,7 @@ reference and reopen its sources; explain the product-specific role and preserve
 accessibility. No private goalplan is required to justify a design decision.
 `````
 
-## 43. MODIFY plugins/codexclaw/skills/dev-frontend/SKILL.md
+## 43. MODIFY plugins/cursorclaw/skills/dev-frontend/SKILL.md
 
 Before:
 
@@ -797,7 +797,7 @@ After:
 - **Visual verification**: exercise the changed flow using the available capability selected by `dev/references/browser-routing.md` and `dev-testing` §4.7. Read rendered output and verify the interaction; no single optional browser is mandatory.
 `````
 
-## 44. MODIFY plugins/codexclaw/skills/dev-uiux-design/SKILL.md
+## 44. MODIFY plugins/cursorclaw/skills/dev-uiux-design/SKILL.md
 
 Before:
 
@@ -811,7 +811,7 @@ After:
 - "Simple" in brief → determine whether it means fewer choices, less decoration, or less information; do not automatically decrease information density
 `````
 
-## 45. MODIFY plugins/codexclaw/skills/dev-uiux-design/SKILL.md
+## 45. MODIFY plugins/cursorclaw/skills/dev-uiux-design/SKILL.md
 
 Before:
 
@@ -825,7 +825,7 @@ After:
 - "Simple" in brief: reduce the complexity the user actually names; derive density from the task, not a fixed arithmetic rule
 `````
 
-## 46. MODIFY plugins/codexclaw/skills/dev-uiux-design/SKILL.md
+## 46. MODIFY plugins/cursorclaw/skills/dev-uiux-design/SKILL.md
 
 Before:
 
@@ -843,7 +843,7 @@ fall outside the rough inference ranges. Prefer the brief, existing design syste
 accessibility and task evidence; record a different choice without treating it as failure.
 `````
 
-## 47. MODIFY plugins/codexclaw/skills/dev-uiux-design/SKILL.md
+## 47. MODIFY plugins/cursorclaw/skills/dev-uiux-design/SKILL.md
 
 Before:
 
@@ -859,7 +859,7 @@ Award evidence is a dated sample, not an exemption or universal prohibition. Con
 purpose, and retain accessibility. Do not depend on a private goalplan synthesis.
 `````
 
-## 48. MODIFY plugins/codexclaw/skills/dev-frontend/references/stacks/react.md
+## 48. MODIFY plugins/cursorclaw/skills/dev-frontend/references/stacks/react.md
 
 Before:
 
@@ -877,7 +877,7 @@ must not replace Iconoir, Hugeicons, Lucide, or another approved library with a 
 Use the actual library's supported weight/stroke API consistently.
 `````
 
-## 49. MODIFY plugins/codexclaw/skills/dev-frontend/references/stacks/react.md
+## 49. MODIFY plugins/cursorclaw/skills/dev-frontend/references/stacks/react.md
 
 Before:
 
@@ -896,7 +896,7 @@ After:
 - Official guidance: https://react.dev/reference/react/memo
 `````
 
-## 50. MODIFY plugins/codexclaw/skills/dev-frontend/references/stacks/react.md
+## 50. MODIFY plugins/cursorclaw/skills/dev-frontend/references/stacks/react.md
 
 Before:
 
@@ -910,7 +910,7 @@ After:
 2. If missing, consider an existing equivalent and propose the pinned dependency only when needed; do not silently install it
 `````
 
-## 51. MODIFY plugins/codexclaw/skills/dev-frontend/references/stacks/react.md
+## 51. MODIFY plugins/cursorclaw/skills/dev-frontend/references/stacks/react.md
 
 Before:
 
@@ -925,7 +925,7 @@ Rules specific to React projects. Load only the owning frontend references neede
 by the actual surface; ordinary CRUD work does not require a marketing design survey.
 `````
 
-## 52. MODIFY plugins/codexclaw/skills/dev-security/references/asvs-checklist.md
+## 52. MODIFY plugins/cursorclaw/skills/dev-security/references/asvs-checklist.md
 
 Before:
 

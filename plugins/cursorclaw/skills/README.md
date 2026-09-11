@@ -61,7 +61,7 @@ still ship as compatibility surfaces.
   `dev/references/reader-documents.md`; report storyline, paragraph, exhibit and
   page-design rules (REPORT-*) live in its `reference/` files. Ships
   `allow_implicit_invocation: false`; activates by description match or explicit
-  `$cxc-dev-visualizer`. `dev-diagram-viewer/` is the deprecated redirect folder for
+  `$crc-dev-visualizer`. `dev-diagram-viewer/` is the deprecated redirect folder for
   the previous name.
 - `pabcd/` — Codex-native PABCD workflow (Interview/Plan/Audit/Build/Check/Done) with
   class-scaled depth. Folds in the structured-development discipline.
@@ -76,7 +76,7 @@ still ship as compatibility surfaces.
   discipline; not memory or chat search. It also owns the former `ultraresearch`
   multi-wave research protocol; no separate `ultraresearch/` folder ships.
 - `recall/` — discoverable `cxc-recall` surface for read-only past-session chat and
-  memory search over `~/.codex` before asking the user to repeat context.
+  memory search over `~/.cursor` before asking the user to repeat context.
 - `qa/` — discoverable `cxc-qa` manual surface-driving QA gate for web, GUI, TUI,
   CLI, and HTTP API scenarios, with captured evidence and teardown receipts.
 - `repo-map/` — discoverable `cxc-repo-map` one-shot tree-sitter + PageRank map for
@@ -84,12 +84,12 @@ still ship as compatibility surfaces.
 - `kwrite/` — discoverable `cxc-kwrite` surface for Korean prose polishing (윤문):
   AI-tell removal, register consistency, rhythm, meaning-exact revision of existing
   Korean text. On-demand: `agents/openai.yaml` sets `allow_implicit_invocation: false`;
-  it activates by description match or explicit `$cxc-kwrite`.
+  it activates by description match or explicit `$crc-kwrite`.
 - `remote/` — discoverable `cxc-remote` surface for messenger-bridge onboarding:
   agent-run Telegram/Discord connection ladder (serve -> token -> agent -> pair ->
   smoke) plus setup troubleshooting. On-demand like the `dev-*` routers:
   `agents/openai.yaml` sets `allow_implicit_invocation: false`; it activates by
-  description match or explicit `$cxc-remote`.
+  description match or explicit `$crc-remote`.
 - `ast-grep/` — discoverable `cxc-ast-grep` surface for optional AST-aware structural
   search/codemods, with `rg` first for ordinary text search.
 - `skill-hub/` — discoverable `cxc-skill-hub (DEPRECATED -> cxc-dev)` catalog for choosing the right

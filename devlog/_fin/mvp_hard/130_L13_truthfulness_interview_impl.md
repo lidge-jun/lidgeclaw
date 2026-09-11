@@ -13,17 +13,17 @@ the wrapper was built precisely because it is absent. So removal = retire the wr
 native thread/search as a non-goal. `cxc-search` already owns the native search ladder.
 
 Diff-level changes:
-1. `plugins/codexclaw/components/cxc-ops/src/cli.ts` — remove `import ... chat-search.ts` (line ~13),
+1. `plugins/cursorclaw/components/cxc-ops/src/cli.ts` — remove `import ... chat-search.ts` (line ~13),
    remove `case "chat-search"` dispatch (lines ~37-41), remove `parseChatSearchArgs` (lines ~50-58),
    drop `chat-search "<term>"` from the `default` usage string (line ~44).
-2. Delete `plugins/codexclaw/components/cxc-ops/src/chat-search.ts`.
-3. `plugins/codexclaw/components/cxc-ops/test/cxc-ops.test.ts` — remove the chat-search section
+2. Delete `plugins/cursorclaw/components/cxc-ops/src/chat-search.ts`.
+3. `plugins/cursorclaw/components/cxc-ops/test/cxc-ops.test.ts` — remove the chat-search section
    (the 7 chat-search/parseChatSearchArgs tests + their imports at lines ~8-9, ~127-167).
    ADD a positive test: `main(["chat-search"])` falls to default usage (exit 0) AND the usage string
    does NOT contain `chat-search` (proves the subcommand is gone, since unknown != error here).
 4. `bin/codexclaw.mjs` — remove `chat-search` from help (line ~116) and any dispatch hint (lines ~11, ~64, ~90).
-5. `plugins/codexclaw/components/cxc-ops/package.json:6` — drop the `chat-search (...)` clause from `description`.
-6. `plugins/codexclaw/test/build.test.mjs:36` — add `"cxc-ops"` to `COMPONENTS` so dist idempotence +
+5. `plugins/cursorclaw/components/cxc-ops/package.json:6` — drop the `chat-search (...)` clause from `description`.
+6. `plugins/cursorclaw/test/build.test.mjs:36` — add `"cxc-ops"` to `COMPONENTS` so dist idempotence +
    import-rewrite + placeholder checks cover it (catches dangling imports after removal).
 7. Docs: rewrite `../mvp_res/204_L20.4_cxc_chat_search_wrapper.md` and the chat-search line in
    `../mvp_res/200_L20_clijaw_command_mapping.md` to "wrapper retired; native thread/search exposes no
@@ -41,7 +41,7 @@ no schema home. Fix puts durable scan evidence in the interview ledger, not just
 Diff-level changes (design, hardened in this WP's own P/A):
 1. `interview.ts` — extend `InterviewTracker` with scan-evidence (`scanRounds`, `lastScanRoundId`);
    `isInterviewReady` = existing data-shape AND `scanRounds >= 1` (scan actually ran).
-2. `.codexclaw/interviews/<sessionId>.jsonl` — append `scan_started` / `scan_completed` / `rescan_completed`
+2. `.cursorclaw/interviews/<sessionId>.jsonl` — append `scan_started` / `scan_completed` / `rescan_completed`
    events as the durable evidence of record (hot counter is a cache of this).
 3. `fsm.ts` I→P — convert hard block to SOFT gate: if high contradictions remain OR no scan ran, return a
    warn+advise-block outcome that the main agent MAY override explicitly.

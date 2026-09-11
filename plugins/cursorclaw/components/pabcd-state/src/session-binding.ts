@@ -36,20 +36,20 @@ export function resolveNativeSession(cwd: string, env: NodeJS.ProcessEnv = proce
 
   let dbPath: string;
   try {
-    const home = env.CODEX_SQLITE_HOME || env.CODEX_HOME || join(homedir(), ".codex");
+    const home = env.CODEX_SQLITE_HOME || env.CURSOR_HOME || join(homedir(), ".codex");
     const candidates = readdirSync(home)
       .filter(name => /^state_[0-9]+\.sqlite$/.test(name))
       .map(name => ({ name, version: BigInt(name.slice(6, -7)) }))
       .sort((a, b) => a.version > b.version ? -1 : a.version < b.version ? 1 : a.name.localeCompare(b.name));
     if (candidates.length === 0) {
-      return { ok: false, error: "Native state database is missing. Check CODEX_SQLITE_HOME or CODEX_HOME." };
+      return { ok: false, error: "Native state database is missing. Check CODEX_SQLITE_HOME or CURSOR_HOME." };
     }
     dbPath = resolve(home, candidates[0].name);
     if (!lstatSync(dbPath).isFile()) {
       return { ok: false, error: "Newest native state database must be a regular file, not a symlink or directory." };
     }
   } catch {
-    return { ok: false, error: "Cannot locate the native state database. Check CODEX_SQLITE_HOME or CODEX_HOME." };
+    return { ok: false, error: "Cannot locate the native state database. Check CODEX_SQLITE_HOME or CURSOR_HOME." };
   }
 
   try {

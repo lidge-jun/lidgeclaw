@@ -14,7 +14,7 @@ role already has a model saved.
 
 ## Part 2 — diff-level
 
-### MODIFY `plugins/codexclaw/components/subagent-config/src/store.ts`
+### MODIFY `plugins/cursorclaw/components/subagent-config/src/store.ts`
 - `setRole()`: validate the MERGED role, not the bare patch.
   - Before: `const err = validateRolePatch(patch); if (err) throw …; const next = {…merge}`
   - After: merge first → `const err = validateRolePatch(next as Partial<RoleConfig>)`
@@ -22,12 +22,12 @@ role already has a model saved.
     still nulls model). `validateRolePatch` itself unchanged (still exported/pure).
 - Doc comment updated to state merged-validation semantics.
 
-### MODIFY `plugins/codexclaw/gui/src/api.ts`
+### MODIFY `plugins/cursorclaw/gui/src/api.ts`
 - `setSubagentRole()` returns `{ ok: boolean; config: SubagentsConfig; error?: string }`
   instead of silently returning the fallback: parse non-ok responses' `{error}` body,
   network failure → `{ok:false, config:fallback, error:"backend unreachable"}`.
 
-### MODIFY `plugins/codexclaw/gui/src/pages/Subagents.tsx`
+### MODIFY `plugins/cursorclaw/gui/src/pages/Subagents.tsx`
 - checkbox onChange (checked): `save(role, { mode:"model", model: r.model ?? catalog[0]?.id ?? null })`;
   when catalog empty AND no current model → error toast "no models available", no request.
 - `save()`: use new result shape — `ok` → success toast + setConfig(result.config);

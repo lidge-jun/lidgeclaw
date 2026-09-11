@@ -71,7 +71,7 @@ refresh every 4 seconds until finish, independent of status-edit suspension.
 
 ## Diff-level change map
 
-### NEW `plugins/codexclaw/components/messenger-bridge/src/telegram-progress.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/src/telegram-progress.ts`
 
 Own the shared attended-turn progress lifecycle now duplicated or missing across
 Telegram ingresses.
@@ -97,7 +97,7 @@ Telegram ingresses.
   transient status message, and leaves durable final/error delivery to the
   caller.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/telegram-api.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/telegram-api.ts`
 
 Before: `SendMessageParams` supports text, parse mode, and thread id; status sends
 cannot request silent delivery.
@@ -109,7 +109,7 @@ Keep the existing 429 retry path; the progress controller additionally coalesces
 events while a call is delayed and handles a returned 429 after the API client’s
 single retry.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/telegram-adapter.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/telegram-adapter.ts`
 
 Before: `runTurn()` owns draft/status state inline; groups get a 1.5-second,
 last-five-line bubble, assistant text takes a separate edit path, and the code is
@@ -125,7 +125,7 @@ For Telegram `/retry`, create the same controller in the parsed-command branch,
 pass its callback through `CommandContext`, and finish it around command
 execution. Other commands do not create a progress message.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/telegram-webhook.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/telegram-webhook.ts`
 
 Before: `acceptMessage()` creates draft state for every turn but wires events
 only when `msg.chat.type === "private"`; group/topic turns pass `undefined`.
@@ -141,7 +141,7 @@ through the command context. Preserve asynchronous webhook acknowledgement: the
 turn and progress lifecycle remain attached to `enqueued.result`, not the HTTP
 response.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/telegram-commands.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/telegram-commands.ts`
 
 Before: `CommandContext` cannot carry runner events, so `handleGateway("retry")`
 cannot connect the retry turn to transport progress.
@@ -151,7 +151,7 @@ After: add optional `onEvent` to `CommandContext` using the existing
 `dispatchGatewayCommand()`. Only ingress code deciding to run `/retry` supplies
 the callback.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/gateway-commands.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/gateway-commands.ts`
 
 Before: `GatewayCommandContext` has `onApprovalRequest` but no `onEvent`, and
 `handleRetry()` starts a full turn without event delivery.
@@ -160,7 +160,7 @@ After: add optional `onEvent: IncomingRequest["onEvent"]` and pass
 `onEvent: ctx.onEvent` in `handleRetry()`. No other gateway command consumes the
 field.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-adapter.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-adapter.ts`
 
 Before: ordinary Discord messages use `createProgressWindow()`, but
 `!cxc retry` enters `handleGatewayTextCommand()` without that window.
@@ -172,19 +172,19 @@ without changing Discord’s established embed renderer.
 
 ### Discord interaction decision — OUT for Phase 1
 
-`plugins/codexclaw/components/messenger-bridge/src/discord-commands.ts`
+`plugins/cursorclaw/components/messenger-bridge/src/discord-commands.ts`
 interaction turns (`/ask`, `/review`) and component retry remain unchanged in
 this phase. They have a visible deferred “Working” response, although it is not
 event-driven, and fixing them requires an interaction-token progress lifecycle
 rather than the Telegram topic renderer. Record that as a separate parity unit;
 do not hide the known gap or claim all Discord ingresses are healthy.
 
-### NEW `plugins/codexclaw/components/messenger-bridge/test/telegram-progress.test.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/test/telegram-progress.test.ts`
 
 Add isolated fake-clock/fake-API tests for renderer selection, content,
 serialization, throttle, cleanup, and 429 backoff.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/telegram-adapter.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/telegram-adapter.test.ts`
 
 Before: asserts the private draft path and legacy group status path.
 
@@ -193,7 +193,7 @@ status send, coalesced edits at the 2-second boundary, rolling activity plus
 latest assistant text, deletion before the separate final answer, and topic id
 preservation.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/telegram-webhook.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/telegram-webhook.test.ts`
 
 Before: covers private draft progress but does not require group/topic event UX.
 
@@ -202,7 +202,7 @@ single status message is silent and thread-scoped, edits occur, cleanup precedes
 the separately sent final, and private supported/unsupported lanes select draft
 or status correctly.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/gateway-commands.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/gateway-commands.test.ts`
 
 Before: retry behavior is tested without runner-event forwarding.
 
@@ -210,7 +210,7 @@ After: assert `handleRetry()` passes the exact supplied `onEvent` callback to
 `AgentService.handleIncoming()` and leaves it absent when the caller supplies
 none.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/discord-adapter.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/discord-adapter.test.ts`
 
 Before: covers ordinary message progress embeds but not `!cxc retry` events.
 
@@ -252,24 +252,24 @@ events. Do not add slash-interaction expectations in this phase.
 
 ### Unit and integration tests
 
-1. `plugins/codexclaw/components/messenger-bridge/test/telegram-progress.test.ts`:
+1. `plugins/cursorclaw/components/messenger-bridge/test/telegram-progress.test.ts`:
    lane selection; initial silent send; topic id;
    latest-text/activity rendering; deduplication; five-line roll; 4,096-character
    bound; 2-second throttle; serialized last-write-wins edits; 429
    `retry_after`; no second status message; finish/delete; timer cleanup; no
    post-finish edit.
-2. `plugins/codexclaw/components/messenger-bridge/test/telegram-adapter.test.ts`:
+2. `plugins/cursorclaw/components/messenger-bridge/test/telegram-adapter.test.ts`:
    private draft, private fallback, group/topic
    status, separate final, and `/retry` callback wiring in long-poll mode.
-3. `plugins/codexclaw/components/messenger-bridge/test/telegram-webhook.test.ts`:
+3. `plugins/cursorclaw/components/messenger-bridge/test/telegram-webhook.test.ts`:
    signed webhook private/group/topic lanes,
    asynchronous acknowledgement, separate final, and `/retry` callback wiring.
-4. `plugins/codexclaw/components/messenger-bridge/test/gateway-commands.test.ts`:
+4. `plugins/cursorclaw/components/messenger-bridge/test/gateway-commands.test.ts`:
    callback propagation through `handleRetry()`.
-5. `plugins/codexclaw/components/messenger-bridge/test/discord-adapter.test.ts`:
+5. `plugins/cursorclaw/components/messenger-bridge/test/discord-adapter.test.ts`:
    event-driven progress for textual retry and no
    regression in ordinary message progress.
-6. `plugins/codexclaw/components/messenger-bridge/test/telegram-api.test.ts`:
+6. `plugins/cursorclaw/components/messenger-bridge/test/telegram-api.test.ts`:
    `sendMessage()` serializes `disable_notification: true` when set and omits
    the field otherwise.
 7. Cleanup-failure resilience (amendment 1): with `deleteMessage` and a pending

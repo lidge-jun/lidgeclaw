@@ -16,7 +16,7 @@ Gap class: HARNESS (missing surfaces) · evidence: explorer Beauvoir
 
 Two small additions, both daemon-free, both fail-open:
 
-1. `rule-injector` — on SessionStart scan a `.codexclaw/rules/` (or project `AGENTS.md`)
+1. `rule-injector` — on SessionStart scan a `.cursorclaw/rules/` (or project `AGENTS.md`)
    and inject as `additionalContext`; re-inject on UserPromptSubmit when relevant. Scope
    capped at file scan + dedup. This is E4 (directive), not enforcement.
 2. `comment-lint` PostToolUse — match edit-like tools, run a static check for forbidden

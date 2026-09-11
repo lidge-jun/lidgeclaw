@@ -1,6 +1,6 @@
 ---
 created: 2026-07-12
-tags: [codexclaw, subagent, evidence-gate, hardening, impl-record]
+tags: [cursorclaw, subagent, evidence-gate, hardening, impl-record]
 ---
 
 # Hardening Implementation Record

@@ -4,7 +4,7 @@ status: superseded
 supersededBy: 061_review_binding.md
 warning: 폐기됨 — open/close CLI는 자기 attest와 동형이다. 승인은 observer만 쓸 수 있어야 한다.
 workPhase: wp5
-tags: [codexclaw, review-round, a-to-b]
+tags: [cursorclaw, review-round, a-to-b]
 ---
 
 # 060 — A>B review-round 배선

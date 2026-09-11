@@ -7,9 +7,9 @@ exactly one definition site with pointer-shaped mentions everywhere else.
 
 ## Scope
 
-IN: `plugins/codexclaw/skills/dev/references/stacked-prs.md` (NEW),
-`plugins/codexclaw/skills/dev/SKILL.md` (MODIFY, §5 area + §Modular-reference table row),
-`plugins/codexclaw/skills/dev/references/skill-ownership.md` (MODIFY, one row).
+IN: `plugins/cursorclaw/skills/dev/references/stacked-prs.md` (NEW),
+`plugins/cursorclaw/skills/dev/SKILL.md` (MODIFY, §5 area + §Modular-reference table row),
+`plugins/cursorclaw/skills/dev/references/skill-ownership.md` (MODIFY, one row).
 
 OUT: every other skill (WP3 owns those), frontmatter/keywords (WP4), CLI/hooks.
 
@@ -27,7 +27,7 @@ OUT: every other skill (WP3 owns those), frontmatter/keywords (WP4), CLI/hooks.
 review mechanics for stacks are stack semantics, so they belong to the stack owner. The
 reviewer skill gets a trigger + pointer only.
 
-## NEW — `plugins/codexclaw/skills/dev/references/stacked-prs.md`
+## NEW — `plugins/cursorclaw/skills/dev/references/stacked-prs.md`
 
 Full body (write verbatim):
 
@@ -208,7 +208,7 @@ Sources for the behavioral claims above, all opened 2026-08-03: `git rebase` doc
 Claim-by-claim provenance: `devlog/_plan/260803_stacked_pull_requests/000_research.md`.
 ```
 
-## MODIFY — `plugins/codexclaw/skills/dev/SKILL.md`
+## MODIFY — `plugins/cursorclaw/skills/dev/SKILL.md`
 
 ### M1. Modular-reference table row (near line 91, the `logging` row block)
 
@@ -230,7 +230,7 @@ Wording constraint: the bullet must NOT restate the reference body — it names 
 the strict cascade duty, and the escalate boundary, then points. Duplication would violate
 the family's single-owner rule and the reviewer checks for it.
 
-## MODIFY — `plugins/codexclaw/skills/dev/references/skill-ownership.md`
+## MODIFY — `plugins/cursorclaw/skills/dev/references/skill-ownership.md`
 
 Insert one row, adjacent to the other process/safety rows:
 
@@ -241,7 +241,7 @@ Insert one row, adjacent to the other process/safety rows:
 
 ## Accept criteria (WP2)
 
-1. `rg -n "DEV-STACK-0" plugins/codexclaw/skills` → definitions only in
+1. `rg -n "DEV-STACK-0" plugins/cursorclaw/skills` → definitions only in
    `dev/references/stacked-prs.md`; `dev/SKILL.md` mention is pointer-shaped.
 2. `npm run gate` exits 0 (no forbidden-claims / status-sync / count drift).
 3. `npm test` exits 0.

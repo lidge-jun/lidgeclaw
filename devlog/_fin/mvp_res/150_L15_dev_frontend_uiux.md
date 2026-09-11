@@ -19,26 +19,26 @@ separate designpower router skills in this loop.
 
 ## Scope (decision-complete)
 Files to add/edit:
-- `plugins/codexclaw/skills/dev-frontend/SKILL.md`
-- `plugins/codexclaw/skills/dev-frontend/agents/openai.yaml`
-- `plugins/codexclaw/skills/dev-frontend/scripts/README.md`
-- `plugins/codexclaw/skills/dev-frontend/scripts/init-artifact.sh`
-- `plugins/codexclaw/skills/dev-frontend/scripts/bundle-artifact.sh`
-- `plugins/codexclaw/skills/dev-frontend/examples/README.md`
-- `plugins/codexclaw/skills/dev-uiux-design/SKILL.md`
-- `plugins/codexclaw/skills/dev-uiux-design/agents/openai.yaml`
-- `plugins/codexclaw/skills/dev-uiux-design/references/*.md`
+- `plugins/cursorclaw/skills/dev-frontend/SKILL.md`
+- `plugins/cursorclaw/skills/dev-frontend/agents/openai.yaml`
+- `plugins/cursorclaw/skills/dev-frontend/scripts/README.md`
+- `plugins/cursorclaw/skills/dev-frontend/scripts/init-artifact.sh`
+- `plugins/cursorclaw/skills/dev-frontend/scripts/bundle-artifact.sh`
+- `plugins/cursorclaw/skills/dev-frontend/examples/README.md`
+- `plugins/cursorclaw/skills/dev-uiux-design/SKILL.md`
+- `plugins/cursorclaw/skills/dev-uiux-design/agents/openai.yaml`
+- `plugins/cursorclaw/skills/dev-uiux-design/references/*.md`
 
 Concrete source -> target map:
-- `/Users/jun/.cli-jaw-3459/skills/dev-frontend/SKILL.md` -> `plugins/codexclaw/skills/dev-frontend/SKILL.md`
-- `/Users/jun/.cli-jaw-3459/skills/dev-frontend/scripts/*` -> `plugins/codexclaw/skills/dev-frontend/scripts/`
-- `/Users/jun/.cli-jaw-3459/skills/dev-frontend/examples/*` -> `plugins/codexclaw/skills/dev-frontend/examples/`
-- `/Users/jun/.cli-jaw-3459/skills/dev-uiux-design/SKILL.md` -> `plugins/codexclaw/skills/dev-uiux-design/SKILL.md`
-- `/Users/jun/.cli-jaw-3459/skills/dev-uiux-design/references/*` -> `plugins/codexclaw/skills/dev-uiux-design/references/`
-- `devlog/.lazycodex/plugins/omo/skills/frontend/SKILL.md` -> `plugins/codexclaw/skills/dev-frontend/SKILL.md` and cross-link to `dev-uiux-design`
-- `devlog/.lazycodex/plugins/omo/skills/visual-qa/SKILL.md` -> `plugins/codexclaw/skills/dev-frontend/SKILL.md` visual-fidelity notes and L16 testing verification
-- `devlog/.lazycodex/plugins/omo/skills/visual-qa/references/agent-browser-setup.md` -> `plugins/codexclaw/skills/dev-frontend/SKILL.md` or `dev-testing` cross-reference, not a new router
-- `devlog/.lazycodex/plugins/omo/skills/frontend/` designpower routing concepts -> `plugins/codexclaw/skills/dev-uiux-design/` where they are design-judgment, not implementation
+- `/Users/jun/.cli-jaw-3459/skills/dev-frontend/SKILL.md` -> `plugins/cursorclaw/skills/dev-frontend/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-frontend/scripts/*` -> `plugins/cursorclaw/skills/dev-frontend/scripts/`
+- `/Users/jun/.cli-jaw-3459/skills/dev-frontend/examples/*` -> `plugins/cursorclaw/skills/dev-frontend/examples/`
+- `/Users/jun/.cli-jaw-3459/skills/dev-uiux-design/SKILL.md` -> `plugins/cursorclaw/skills/dev-uiux-design/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-uiux-design/references/*` -> `plugins/cursorclaw/skills/dev-uiux-design/references/`
+- `devlog/.lazycodex/plugins/omo/skills/frontend/SKILL.md` -> `plugins/cursorclaw/skills/dev-frontend/SKILL.md` and cross-link to `dev-uiux-design`
+- `devlog/.lazycodex/plugins/omo/skills/visual-qa/SKILL.md` -> `plugins/cursorclaw/skills/dev-frontend/SKILL.md` visual-fidelity notes and L16 testing verification
+- `devlog/.lazycodex/plugins/omo/skills/visual-qa/references/agent-browser-setup.md` -> `plugins/cursorclaw/skills/dev-frontend/SKILL.md` or `dev-testing` cross-reference, not a new router
+- `devlog/.lazycodex/plugins/omo/skills/frontend/` designpower routing concepts -> `plugins/cursorclaw/skills/dev-uiux-design/` where they are design-judgment, not implementation
 
 Exact behavior:
 - L4 stubs are router shells; L15 ports full content and references.

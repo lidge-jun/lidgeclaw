@@ -22,11 +22,11 @@ decision.
 
 ## Scope (decision-complete)
 - Files added/edited:
-  - `plugins/codexclaw/components/pabcd-state/src/goal-gate.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/cli.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/goal-gate.test.ts`
-  - `plugins/codexclaw/hooks/pre-tool-use-guarding-goal-budget.json`
-  - `plugins/codexclaw/.codex-plugin/plugin.json`
+  - `plugins/cursorclaw/components/pabcd-state/src/goal-gate.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/cli.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/goal-gate.test.ts`
+  - `plugins/cursorclaw/hooks/pre-tool-use-guarding-goal-budget.json`
+  - `plugins/cursorclaw/.cursor-plugin/plugin.json`
 - Guard input:
   - `hook_event_name: "PreToolUse"`
   - `tool_name`
@@ -84,7 +84,7 @@ None for budget gate. `Q-GM-1-followup` remains for the separate interview-in-go
 - `devlog/_plan/260629_codexclaw_mvp/023_goal_convention_port.md`
 - `devlog/_plan/260629_codexclaw_mvp/023.2_pass3_P_plan.md`
 - `devlog/_plan/260629_codexclaw_mvp/160_pass1_7_completeness_audit.md`
-- `plugins/codexclaw/components/pabcd-state/src/goal-gate.ts`
-- `plugins/codexclaw/hooks/pre-tool-use-guarding-goal-budget.json`
+- `plugins/cursorclaw/components/pabcd-state/src/goal-gate.ts`
+- `plugins/cursorclaw/hooks/pre-tool-use-guarding-goal-budget.json`
 - codex-rs `hooks/src/schema.rs` PreToolUse input/output schema.
 - omo `ulw-loop/src/codex-hook.ts` create_goal guard parity.

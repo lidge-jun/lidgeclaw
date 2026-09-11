@@ -9,7 +9,7 @@ was itself a complete link with a bad target (`[$codexclaw:cxc-loop](/plain/path
 selection and no name fallback (injection.rs:301,368), so a noncanonical target
 injects nothing.
 Fold-back: link-repair rule — a complete markdown link whose LABEL is a known
-cxc mention (`$cxc-<f>` / `$codexclaw:cxc-<f>`, folder exists under skillsDir)
+cxc mention (`$crc-<f>` / `$codexclaw:cxc-<f>`, folder exists under skillsDir)
 and whose TARGET is noncanonical (not `skill://<skillsDir>/<f>/SKILL.md` or
 points to a nonexistent file) is atomically replaced by the canonical link.
 Links with correct canonical targets stay protected; unknown-label links stay

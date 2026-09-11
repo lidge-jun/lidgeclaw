@@ -2,9 +2,9 @@
  * memory-write-gate.ts — MEMORY-WRITE-GATE-01 (260909 wp1-A).
  *
  * PreToolUse guard over the memory WRITE surface: a note only lands in
- * ~/.codex/memories when this session can point at an explicit user request for
+ * ~/.cursor/memories when this session can point at an explicit user request for
  * it. `memories.add_ad_hoc_note` creates
- * `~/.codex/memories/extensions/ad_hoc/notes/<filename>` with create_new(true)
+ * `~/.cursor/memories/extensions/ad_hoc/notes/<filename>` with create_new(true)
  * (codex-rs ext/memories/src/local/ad_hoc_note.rs:12,28-38), so the risk this
  * closes is an UNWANTED NEW NOTE, not damage to an existing one. That file
  * outlives codexclaw, which is exactly the "user keeps carrying the result"
@@ -15,7 +15,7 @@
  * Two write surfaces, one policy:
  *  1. the memory tool itself, hook-facing name `memoriesadd_ad_hoc_note`;
  *  2. an ordinary file edit (apply_patch/Write/Edit) or shell command whose
- *     destination is under ~/.codex/memories.
+ *     destination is under ~/.cursor/memories.
  * Surface 2 matters because the tool is only one route to the same bytes.
  *
  * Tool name (T2): codex-rs flat_tool_name concatenates namespace + name with NO
@@ -105,9 +105,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-/** The memories root this gate protects: $CODEX_HOME/memories, else ~/.codex/memories. */
+/** The memories root this gate protects: $CURSOR_HOME/memories, else ~/.cursor/memories. */
 export function memoriesRoot(env: NodeJS.ProcessEnv = process.env): string {
-  const home = env.CODEX_HOME && env.CODEX_HOME.trim() !== "" ? env.CODEX_HOME.trim() : join(homedir(), ".codex");
+  const home = env.CURSOR_HOME && env.CURSOR_HOME.trim() !== "" ? env.CURSOR_HOME.trim() : join(homedir(), ".codex");
   return resolve(join(home, "memories"));
 }
 

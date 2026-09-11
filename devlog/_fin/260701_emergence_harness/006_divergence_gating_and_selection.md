@@ -77,7 +77,7 @@ enters only at the irreducible-judgment boundary, which keeps the loop honest an
 
 - The loop runs single-strategy by default; the L3 plateau check (doc `005`) is the switch
   that arms divergence mode.
-- Divergence mode is recorded in `.codexclaw/` state (mode flag + candidate archive) so a
+- Divergence mode is recorded in `.cursorclaw/` state (mode flag + candidate archive) so a
   fresh pass knows it is mid-divergence and which candidates exist.
 - On resolution the mode clears; the loop converges on the kept candidate.
 - For a satisfy-spec goal the plateau check effectively never fires (the spec is met and

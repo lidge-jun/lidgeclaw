@@ -26,14 +26,14 @@ fields beside it, and L7 verifies the compiled state path.
 
 ## Scope (decision-complete)
 - Files added/edited:
-  - `plugins/codexclaw/components/pabcd-state/src/state.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/fsm.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/state.test.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/fsm.test.ts`
-  - `plugins/codexclaw/components/pabcd-state/package.json`
+  - `plugins/cursorclaw/components/pabcd-state/src/state.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/fsm.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/state.test.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/fsm.test.ts`
+  - `plugins/cursorclaw/components/pabcd-state/package.json`
 - State layout:
-  - `<cwd>/.codexclaw/sessions/<sanitize(sessionId)>.json`
-  - `<cwd>/.codexclaw/ledger.jsonl`
+  - `<cwd>/.cursorclaw/sessions/<sanitize(sessionId)>.json`
+  - `<cwd>/.cursorclaw/ledger.jsonl`
 - Phase enum: `I`, `P`, `A`, `B`, `C`, `D`.
 - Session scope is mandatory: parallel sessions in one working tree must not clobber each other.
 - `readState` is fail-safe: missing, corrupt, or unknown-phase state returns a default `I` state.
@@ -69,9 +69,9 @@ fields beside it, and L7 verifies the compiled state path.
 - FSM gates enforce interview/audit/check flags exactly as shipped.
 
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
-- `node --test` in `plugins/codexclaw/components/pabcd-state` at Pass 1: 16/16 pass.
+- `node --test` in `plugins/cursorclaw/components/pabcd-state` at Pass 1: 16/16 pass.
 - Final Phase 1 regression: root `npm test` 73/73, with pabcd-state 52/52.
-- Data dump shape: `.codexclaw/sessions/<session>.json` plus `.codexclaw/ledger.jsonl`.
+- Data dump shape: `.cursorclaw/sessions/<session>.json` plus `.cursorclaw/ledger.jsonl`.
 
 ## Commit unit (one atomic conventional commit)
 One state-engine commit: add pabcd-state file store, FSM predicates, and node:test coverage.
@@ -83,6 +83,6 @@ None.
 - `devlog/_plan/260629_codexclaw_mvp/018_pass1_P_plan.md`
 - `devlog/_plan/260629_codexclaw_mvp/022.1_pabcd_state_files.md`
 - `devlog/_plan/260629_codexclaw_mvp/016_session_scope_finding.md`
-- `plugins/codexclaw/components/pabcd-state/src/state.ts`
-- `plugins/codexclaw/components/pabcd-state/src/fsm.ts`
+- `plugins/cursorclaw/components/pabcd-state/src/state.ts`
+- `plugins/cursorclaw/components/pabcd-state/src/fsm.ts`
 - codex-rs hook events: `user_prompt_submit.rs`, `stop.rs`, `pre_tool_use.rs` session_id field.

@@ -12,7 +12,7 @@ rulesets, required checks, merge methods, PR limits, labels or templates (000_pl
 problem 2). Every lidge-jun repository audited on 2026-09-09 is mis-set on at least one
 of these (ledger 2.12). L3's intake policy assumes the controls this file creates.
 
-## NEW `plugins/codexclaw/skills/dev-devops/references/repo-bootstrap.md`
+## NEW `plugins/cursorclaw/skills/dev-devops/references/repo-bootstrap.md`
 
 Full body (B copies this verbatim; the outer fence is four backticks):
 
@@ -233,7 +233,7 @@ Fill this before proposing anything:
 - Live repository audit and planner: `devlog/_plan/260909_agent_swarm_repo_hygiene/001_research_ledger.md` 2.x
 ````
 
-## MODIFY `plugins/codexclaw/skills/dev-devops/SKILL.md` — Modular References table
+## MODIFY `plugins/cursorclaw/skills/dev-devops/SKILL.md` — Modular References table
 
 After the `references/branch-lifecycle.md` row of the Modular References table:
 ```diff

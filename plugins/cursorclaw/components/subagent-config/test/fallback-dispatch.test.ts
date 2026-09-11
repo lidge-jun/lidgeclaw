@@ -10,7 +10,7 @@ import { runSpawnAttachHook } from "../src/spawn-attach-hook.ts";
 
 function fixture(role: typeof ROLES[number] = "executor") {
   const cwd = mkdtempSync(join(tmpdir(), "cxc-fallback-"));
-  const env = { CODEXCLAW_HOME: join(cwd, "global") };
+  const env = { CURSORCLAW_HOME: join(cwd, "global") };
   setRole(cwd, role, { mode: "model", model: "xai/grok-4.6", effort: "high", fallback: { model: "cursor/grok-4.6", effort: null } }, "project", env);
   const base = { sessionId: "session-test", dispatchId: "task-test" };
   const call = (input: Record<string, unknown>) => runDispatch(cwd, { ...base, ...input }, env);

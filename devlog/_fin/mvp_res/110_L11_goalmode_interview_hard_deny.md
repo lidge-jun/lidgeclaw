@@ -7,7 +7,7 @@ Source-of-record: 022.3, 023, 023.1, 080
 ## Resolved (jun 2026-06-30) -- goal-active 소스 확정 + 왜 hard-deny가 필수인가
 - **goal 생명주기는 codex 내장 위임**(A 구조). codexclaw는 goal을 만들지 않고 FSM만 소유.
 - **goal-active 감지 소스 = codex `goals_1.sqlite`를 thread_id(=hook payload의 `session_id`)로
-  READ-ONLY 조회.** hook payload에는 goal 필드가 없음(INDIRECT). 자체 `.codexclaw/goal-active`
+  READ-ONLY 조회.** hook payload에는 goal 필드가 없음(INDIRECT). 자체 `.cursorclaw/goal-active`
   마커는 만들지 않는다(폐기). 근거: `codex-rs/hooks/src/schema.rs:273/540/561`(goal 필드 없음),
   `codex-rs/state/src/lib.rs:82`(`goals_1.sqlite`), `state/goals_migrations/0001_thread_goals.sql:2`
   (PK `thread_id`), `state/src/model/thread_goal.rs:11`(status Active/.../Complete).
@@ -36,18 +36,18 @@ after goal starts, only PABCD repeats; I never reopens.
 
 ## Scope (decision-complete)
 - Files to add/edit after unblock:
-  - `plugins/codexclaw/components/pabcd-state/src/hook.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/cli.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/goal-active.ts` (NEW: read-only
-    `goals_1.sqlite` lookup by thread_id under `$CODEX_HOME`; returns
+  - `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/cli.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/goal-active.ts` (NEW: read-only
+    `goals_1.sqlite` lookup by thread_id under `$CURSOR_HOME`; returns
     active|inactive|unreadable)
-  - `plugins/codexclaw/components/pabcd-state/test/hook.test.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/cli.test.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/goal-active.test.ts` (NEW)
+  - `plugins/cursorclaw/components/pabcd-state/test/hook.test.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/cli.test.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/goal-active.test.ts` (NEW)
   - PreToolUse matcher = NEW dedicated hook file
-    `plugins/codexclaw/hooks/pre-tool-use-guarding-interview-in-goal.json`
+    `plugins/cursorclaw/hooks/pre-tool-use-guarding-interview-in-goal.json`
     (exact path; see Hardening pins below), registered in
-    `plugins/codexclaw/.codex-plugin/plugin.json` after the goal-budget hook.
+    `plugins/cursorclaw/.cursor-plugin/plugin.json` after the goal-budget hook.
 - Enforce:
   - If a codex goal is active, suppress I-phase directive injection.
   - If a codex goal is active, deny `request_user_input`.
@@ -66,7 +66,7 @@ after goal starts, only PABCD repeats; I never reopens.
   - No `request_user_input` in goal mode.
   - No plain-text "quick interview" fallback.
   - No new I-phase goal type in MVP.
-  - No self-built goal store / no `.codexclaw/goal-active` marker (codex owns goal state).
+  - No self-built goal store / no `.cursorclaw/goal-active` marker (codex owns goal state).
   - No prompt-only claim of hard deny.
 
 ## IPABCD micro-cycle
@@ -94,8 +94,8 @@ after goal starts, only PABCD repeats; I never reopens.
 3. With goal inactive, normal L8-L10 interview behavior remains available.
 
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
-- `node --test plugins/codexclaw/components/pabcd-state/test/hook.test.ts`
-- `node --test plugins/codexclaw/components/pabcd-state/test/cli.test.ts`
+- `node --test plugins/cursorclaw/components/pabcd-state/test/hook.test.ts`
+- `node --test plugins/cursorclaw/components/pabcd-state/test/cli.test.ts`
 - CLI stdout: `cxc goal doctor` or equivalent reports the goal-active source and
   whether the `request_user_input` hard deny is installed.
 
@@ -111,8 +111,8 @@ prompt-only deny. Implementation proceeds in B; no further jun decision needed.
 
 ## Hardening pins (Pass 1, jun 2026-06-30) -- decision-complete closure
 - **PreToolUse matcher path (was placeholder)**: add a NEW dedicated hook file
-  `plugins/codexclaw/hooks/pre-tool-use-guarding-interview-in-goal.json`, registered in
-  `plugins/codexclaw/.codex-plugin/plugin.json` `hooks[]` AFTER
+  `plugins/cursorclaw/hooks/pre-tool-use-guarding-interview-in-goal.json`, registered in
+  `plugins/cursorclaw/.cursor-plugin/plugin.json` `hooks[]` AFTER
   `pre-tool-use-guarding-goal-budget.json`. Keep it SEPARATE from the goal-budget matcher so the
   safety-critical `request_user_input` deny is isolated and independently testable. The hook command
   invokes the same `pabcd-state` hook CLI entrypoint with a `pre-tool-use` event arg.

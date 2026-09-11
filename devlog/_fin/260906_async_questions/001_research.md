@@ -10,10 +10,10 @@ The distinct blocking `functions.request_user_input` schema uses `header`, `id`,
 
 ## Current plugin boundary
 
-- `plugins/codexclaw/components/pabcd-state/src/goal-gate.ts:135-139`: the existing goal guard matches exactly `request_user_input`.
-- `plugins/codexclaw/components/pabcd-state/src/hook.ts:1843-1844`: PostToolUse capture matches exactly `request_user_input` before calling `captureInterviewAnswers`.
-- `plugins/codexclaw/components/pabcd-state/src/interview-ledger.ts:231-280`: capture expects question IDs and returned `answers`, unlike async `title` and later messages.
-- `plugins/codexclaw/skills/interview/SKILL.md:194-225`: automatic capture and goal firewall describe that synchronous Interview path.
+- `plugins/cursorclaw/components/pabcd-state/src/goal-gate.ts:135-139`: the existing goal guard matches exactly `request_user_input`.
+- `plugins/cursorclaw/components/pabcd-state/src/hook.ts:1843-1844`: PostToolUse capture matches exactly `request_user_input` before calling `captureInterviewAnswers`.
+- `plugins/cursorclaw/components/pabcd-state/src/interview-ledger.ts:231-280`: capture expects question IDs and returned `answers`, unlike async `title` and later messages.
+- `plugins/cursorclaw/skills/interview/SKILL.md:194-225`: automatic capture and goal firewall describe that synchronous Interview path.
 
 Therefore general async guidance must not promise automatic Interview capture/readiness, extend exact-name enforcement claims to async names, or use async as a workaround for a host denial. This unit changes prose only.
 

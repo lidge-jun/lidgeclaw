@@ -11,7 +11,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT"></a>
 </p>
 
-[codexclaw](https://github.com/lidge-jun/codexclaw) 的 **Cursor 运行时分支**。把同样的开发纪律（dev skill 家族、PABCD、子代理角色）打成 Cursor 插件，而不是 Codex 插件。
+[cursorclaw](https://github.com/lidge-jun/codexclaw) 的 **Cursor 运行时分支**。把同样的开发纪律（dev skill 家族、PABCD、子代理角色）打成 Cursor 插件，而不是 Codex 插件。
 
 **0.2.0** 完整打包：全部 skills、Codex 级 hook fan-out、agents/commands、dogfood `.cursor/`、`crc` CLI。移植对照见 [PORTING.md](PORTING.md)，上游钉扎见 [UPSTREAM.lock](UPSTREAM.lock)。
 

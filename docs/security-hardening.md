@@ -8,13 +8,13 @@ PABCD state, recall, subagent configuration, and messenger bridge.
 - The browser talks only to the loopback `cxc serve` or Vite development API.
   Mutating requests require a loopback `Host`, JSON content type, and the
   `x-codexclaw-local: 1` header. Both servers use the same 1 MB JSON reader.
-- Goalplans live below `<cwd>/.codexclaw/goalplans/<slug>`. A slug is an
+- Goalplans live below `<cwd>/.cursorclaw/goalplans/<slug>`. A slug is an
   identifier, not a path: separators, dot segments, stored/requested mismatches,
   and symlinked state roots are rejected.
 - Automatic recall is project-scoped. Cross-project search remains available
   only through an explicit `cxc chat search` command. Injected history is wrapped
   in an `untrusted-recall-data` block and must never be interpreted as policy.
-- `.codexclaw/subagents.json` is intended as operator-local state. If Git tracks
+- `.cursorclaw/subagents.json` is intended as operator-local state. If Git tracks
   it, spawn-time model, effort, and prompt overrides are ignored unless the
   operator reviews it, runs `cxc subagents trust-token`, and exports the printed
   value. The value binds the canonical repository path and exact config digest,
@@ -22,7 +22,7 @@ PABCD state, recall, subagent configuration, and messenger bridge.
   overrides fall back to operator-owned global roles, then the original session.
   The settings API and spawn hook share this resolver; the dashboard reports the
   warning and effective source. Global subagent defaults are stored separately at
-  `$CODEXCLAW_HOME/subagents.json` (default `~/.codexclaw/subagents.json`).
+  `$CURSORCLAW_HOME/subagents.json` (default `~/.cursorclaw/subagents.json`).
   Live model discovery invokes only the read-only OCX model command with bounded
   execution/output and keeps its shared cache under CXC home. It does not write
   Codex or OCX preferences.

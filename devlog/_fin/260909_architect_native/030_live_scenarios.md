@@ -24,7 +24,7 @@ bounded observations, not a statistical trigger-rate evaluation.
 ## Discovered and repaired entrypoint defect
 
 First design and review runs chose the intended logical role but created no child:
-installed `bin/cxc.mjs subagents dispatch` returned `unknown subcommand 'dispatch'`.
+installed `bin/cursorclaw.mjs subagents dispatch` returned `unknown subcommand 'dispatch'`.
 The repository CLI supported this route; the payload dispatcher did not. This was
 an installed entrypoint bug, not an unavailable provider or a registration failure.
 
@@ -70,7 +70,7 @@ permissions in this native host. The architect role file's read-only declaration
 does not establish a narrower effective filesystem boundary in these runs.
 Treat this as the shared host behavior, not an architect-specific adoption blocker.
 No additional permission constraint was installed. Design/review tracked source
-files stayed unchanged; operational `.codexclaw` state is expected.
+files stayed unchanged; operational `.cursorclaw` state is expected.
 
 Model names above are requested/routed names in actual native runtime records;
 they do not independently attest the ultimate provider backend identity. No

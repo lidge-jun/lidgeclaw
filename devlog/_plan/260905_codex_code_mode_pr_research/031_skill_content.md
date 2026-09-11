@@ -8,7 +8,7 @@ Companion: [030_agent_owned_skills.md](030_agent_owned_skills.md).
 All source coordinates below are inclusive line ranges at codexclaw HEAD 065fa1e8.
 They are BEFORE coordinates: copy from that snapshot before applying any splice.
 Resolve repository-relative paths against /Users/jun/.codex/worktrees/974c/codexclaw.
-S means plugins/codexclaw/skills; this is a documentation abbreviation, not a new API.
+S means plugins/cursorclaw/skills; this is a documentation abbreviation, not a new API.
 New reference contents are the exact concatenation specified below, with one blank
 line between blocks and one final newline. Do not paraphrase mechanically moved
 content. Apply only the explicitly listed link/owner corrections after copying.

@@ -3,7 +3,7 @@
 Implementation commit: 15ae4434. Eight guidance files changed, 95 insertions and
 50 deletions. No runtime, config, test count, dependencies or workflows changed.
 
-Fresh checks: node --test plugins/codexclaw/test/native-execution.test.mjs — 21 pass,
+Fresh checks: node --test plugins/cursorclaw/test/native-execution.test.mjs — 21 pass,
 0 fail; gate.mjs — no drift; git diff --check — exit0. Native tests prove routing
 links/executable examples only. C receipt is recorded under the main session ID.
 

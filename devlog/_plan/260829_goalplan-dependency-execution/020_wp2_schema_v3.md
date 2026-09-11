@@ -34,7 +34,7 @@
 
 ## 2. 확인한 현재 코드
 
-- `GoalplanTask`는 현재 `id`, `title`, `status`만 가진다: `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:74-78`.
+- `GoalplanTask`는 현재 `id`, `title`, `status`만 가진다: `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:74-78`.
 - `GoalplanWorkPhase`에도 의존 필드가 없다: 같은 파일 `:80-90`.
 - `reviveGoalplan()`은 work phase와 task를 새 객체로 재구성한다. 현재 허용 목록에 없는 필드는 읽는 순간 사라진다: 같은 파일 `:428-515`.
 - task 복원은 `tasks.push({ id, title, status })`만 실행하므로 저장된 outcome도 버린다: 같은 파일 `:449-455`.
@@ -45,7 +45,7 @@
 - `buildGoalplan()`은 현재 `schemaVersion`을 쓰지 않는다: 같은 파일 `:669-695`.
 - `effectiveSchemaVersion()`은 marker가 있으면 최소 v2로 올리지만 최대 지원 버전을 검사하지 않는다: 같은 파일 `:771-775`.
 - `validateGoalplan()`은 v3도 v2 이상으로만 보고 `finalGateReasons()`를 실행한다: 같은 파일 `:791-819`, `:871-919`.
-- 테스트는 `node:test`의 `test()`를 쓰며, 스키마 왕복 테스트는 `plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts:30-45`에 있다.
+- 테스트는 `node:test`의 `test()`를 쓰며, 스키마 왕복 테스트는 `plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts:30-45`에 있다.
 
 ## 3. 설계 결정
 
@@ -107,7 +107,7 @@ v4 plan은 두 경로에서 실패한다.
 
 ### 3.5 변경 전 parser baseline은 wp2 첫 산출물이다
 
-2026-08-29 재측정값은 `.codexclaw/goalplans/` 디렉터리 91개, 그 아래 `goalplan.json` 90개다.
+2026-08-29 재측정값은 `.cursorclaw/goalplans/` 디렉터리 91개, 그 아래 `goalplan.json` 90개다.
 이 수치는 관측 기록일 뿐 생성기 상수가 아니다. wp2 소스와 테스트를 고치기 전에 현재 parser가
 발견한 파일을 모두 읽고, manifest와 `sourceCount`를 baseline JSON에 함께 적는다. wp7은 manifest에
 실린 각 fixture의 변경 전 `expected`와 변경 후 normalized 결과가 같은지만 판정한다. 운영 디렉터리에
@@ -135,9 +135,9 @@ snapshot은 `measuredOn`, `sourceCount`, `manifest`, `fixtures`만 가진다. `i
 ```bash
 cd /Users/jun/Developer/new/700_projects/codexclaw
 rg -n 'schemaVersion|invalid-shape|criteria\[\]|supports at most|buildGoalplan\(|GoalplanTask|outcome|dependsOn' \
-  plugins/codexclaw/components/pabcd-state/test --glob '*.test.ts'
+  plugins/cursorclaw/components/pabcd-state/test --glob '*.test.ts'
 rg -n 'validateGoalplan\([^,)]*\)|applyGoalCompleteGuard|permissionDecisionReason|requires a finalGate|no valid surface' \
-  plugins/codexclaw/components/pabcd-state/test --glob '*.test.ts'
+  plugins/cursorclaw/components/pabcd-state/test --glob '*.test.ts'
 ```
 
 | 이 wp가 바꾸는 값 | 기존 테스트 검색 결과 | 기존 단언 변경 소유자 | 이 문서의 갱신 diff |
@@ -151,27 +151,27 @@ rg -n 'validateGoalplan\([^,)]*\)|applyGoalCompleteGuard|permissionDecisionReaso
 검색 결과에 없는 문자열을 기다리는 테스트를 추측해서 만들지 않는다. 위 네 파일의 legacy 고정 diff는
 `buildGoalplan()` 출력 변경 때문에 실제로 깨지는 기존 assertion만 고친다.
 
-- **MODIFY** `plugins/codexclaw/components/pabcd-state/src/goalplan.ts`
+- **MODIFY** `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts`
   - v3 타입, 최대 지원 버전, `dependsOn` reviver, task outcome 보존, 미래 버전 거부, 진단, 신규 plan 버전을 추가한다.
-- **MODIFY** `plugins/codexclaw/components/pabcd-state/dist/goalplan.js`
+- **MODIFY** `plugins/cursorclaw/components/pabcd-state/dist/goalplan.js`
   - `npm run build`가 `src/goalplan.ts`에서 다시 만든 tracked 배포 산출물이다.
-- **MODIFY** `plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts`
+- **MODIFY** `plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts`
   - 의존 왕복, malformed shape, outcome trim·미지정 보존, v3 선언, v4 거부 회귀 테스트를 추가한다.
-- **MODIFY** `plugins/codexclaw/components/pabcd-state/test/final-gate.test.ts`
+- **MODIFY** `plugins/cursorclaw/components/pabcd-state/test/final-gate.test.ts`
   - `plan()`의 “v1 fixture” 의도를 `schemaVersion: 1`로 명시한다.
-- **MODIFY** `plugins/codexclaw/components/pabcd-state/test/work-phase-states.test.ts`
+- **MODIFY** `plugins/cursorclaw/components/pabcd-state/test/work-phase-states.test.ts`
   - work-phase 상태만 검증하는 fixture를 v1로 고정해 final-gate 계약과 분리한다.
-- **MODIFY** `plugins/codexclaw/components/pabcd-state/test/goal-gate.test.ts`
+- **MODIFY** `plugins/cursorclaw/components/pabcd-state/test/goal-gate.test.ts`
   - final gate 없이 통과해야 하는 기존 완료 fixture가 legacy v1임을 명시한다.
-- **NEW** `plugins/codexclaw/components/pabcd-state/test/fixtures/capture-goalplan-baseline.mjs`
+- **NEW** `plugins/cursorclaw/components/pabcd-state/test/fixtures/capture-goalplan-baseline.mjs`
   - 변경 전 parser 결과와 발견한 allowlist 비식별 입력을 manifest와 함께 한 JSON으로 만든다.
-- **NEW** `plugins/codexclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json`
+- **NEW** `plugins/cursorclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json`
   - 생성기가 만든 manifest, 입력, 변경 전 parser 결과 집합을 그대로 체크인한다.
 - **DELETE 없음**
 
 ## 5. Diff-level PRD
 
-### 5.1 MODIFY — `plugins/codexclaw/components/pabcd-state/src/goalplan.ts`
+### 5.1 MODIFY — `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts`
 
 #### A. 지원 버전과 타입
 
@@ -544,7 +544,7 @@ After:
       `schemaVersion ${version} requires a finalGate - open a final-gate review round with ` +
 ```
 
-### 5.2 MODIFY — `plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts`
+### 5.2 MODIFY — `plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts`
 
 #### A. import 확장
 
@@ -552,7 +552,7 @@ Before:
 
 ```ts
 // wp1 적용 후 상태 (wp1은 소스를 바꾸지 않았으므로 현재 HEAD와 동일)
-// 실측 위치: plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts:6-20
+// 실측 위치: plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts:6-20
 import {
   buildGoalplan,
   readGoalplan,
@@ -795,7 +795,7 @@ test("schema v3: pre-change baseline records a private-data-free manifest and pa
   // arrange
   const path = join(
     process.cwd(),
-    "plugins/codexclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json",
+    "plugins/cursorclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json",
   );
   type ParserResult =
     | { kind: "parsed" }
@@ -974,7 +974,7 @@ After:
   withCriterion.criteria[0] = { ...withCriterion.criteria[0], status: "met", capturedEvidence: "proof" };
 ```
 
-### 5.3 MODIFY — `plugins/codexclaw/components/pabcd-state/test/final-gate.test.ts`
+### 5.3 MODIFY — `plugins/cursorclaw/components/pabcd-state/test/final-gate.test.ts`
 
 이 파일의 `plan()`은 주석부터 “v1 checks all pass” fixture이며 각 v2 케이스가 명시적으로
 `schemaVersion: 2`를 override한다. 기본값을 v1로 고정해야 기존 테스트 분리가 유지된다.
@@ -1000,7 +1000,7 @@ After:
 `...over`가 뒤에 있으므로 기존 `plan({ schemaVersion: 2, ... })`와 v3/v4 추가 fixture는 원하는
 버전을 계속 선택한다.
 
-### 5.4 MODIFY — `plugins/codexclaw/components/pabcd-state/test/work-phase-states.test.ts`
+### 5.4 MODIFY — `plugins/cursorclaw/components/pabcd-state/test/work-phase-states.test.ts`
 
 이 파일은 blocked/superseded 상태의 순수 helper와 구조 검증을 다룬다. final-gate가 없는 plan의
 `validateGoalplan(...).ok === true` assertion이 있으므로 fixture builder를 v1로 고정한다.
@@ -1027,7 +1027,7 @@ function plan(workPhases: GoalplanWorkPhase[], over: Partial<Goalplan> = {}): Go
 }
 ```
 
-### 5.5 MODIFY — `plugins/codexclaw/components/pabcd-state/test/goal-gate.test.ts`
+### 5.5 MODIFY — `plugins/cursorclaw/components/pabcd-state/test/goal-gate.test.ts`
 
 `valid goalplan at IDLE -> complete passes`는 final-gate 도입 전 legacy 완료 경로를 보존하는 테스트로
 명시한다. 신규 v3 plan이 final gate 없이 통과한다고 오해하게 두지 않도록 제목도 바꾼다.
@@ -1057,7 +1057,7 @@ test("GOAL-COMPLETE-GATE-01: valid legacy v1 goalplan at IDLE -> complete passes
 신규 v3의 final-gate 필수 동작은 `final-gate.test.ts`의 v2 이상 공통 계약과
 `goalplan.test.ts`의 v3 선언 테스트가 함께 고정한다. 이 phase에서 별도 gate fixture를 복제하지 않는다.
 
-### 5.6 NEW — `plugins/codexclaw/components/pabcd-state/test/fixtures/capture-goalplan-baseline.mjs`
+### 5.6 NEW — `plugins/cursorclaw/components/pabcd-state/test/fixtures/capture-goalplan-baseline.mjs`
 
 wp2 구현을 시작하기 전에 아래 파일을 추가하고 한 번 실행한다. parser 결과를 먼저 읽은 다음 입력
 문자열을 allowlist 방식으로 치환한다. alias map은 fixture마다 새로 만들며, 같은 fixture 안의 id와
@@ -1081,7 +1081,7 @@ import { fileURLToPath } from "node:url";
 import { GOALPLAN_FILE, goalplanDir, readGoalplanDetailed } from "../../src/goalplan.ts";
 
 const repo = process.cwd();
-const sourceRoot = join(repo, ".codexclaw", "goalplans");
+const sourceRoot = join(repo, ".cursorclaw", "goalplans");
 const output = join(dirname(fileURLToPath(import.meta.url)), "goalplans-pre-change-baseline.json");
 const measuredOn = "2026-08-29";
 const preservedEnumsByKey = new Map([
@@ -1171,7 +1171,7 @@ export function assertFixturesPrivateAndStable(fixtureList, reparseRoot) {
 
 // 감사 라운드 10 재검증의 새 BLOCKER 1: 아래 수집·쓰기 구문은 반드시 main 가드 안에 둔다.
 // 가드 밖에서는 위 순수 함수와 상수 export만 평가된다. 여덟 번째 focused test가 이 모듈을
-// dynamic import 할 때 운영 `.codexclaw/goalplans` 전수 수집이나 baseline 쓰기가 절대 일어나지
+// dynamic import 할 때 운영 `.cursorclaw/goalplans` 전수 수집이나 baseline 쓰기가 절대 일어나지
 // 않아야 하며, corpus가 없는 checkout에서 `readdirSync(sourceRoot)`의 ENOENT로 import가 깨지지도
 // 않아야 한다.
 function captureBaseline() {
@@ -1228,7 +1228,7 @@ if (process.argv[1] !== undefined && process.argv[1].endsWith("capture-goalplan-
 }
 ```
 
-선택 근거: 루트 `package.json`과 `plugins/codexclaw/scripts/*.mjs`는 실행 스크립트를 `.mjs`로 두고
+선택 근거: 루트 `package.json`과 `plugins/cursorclaw/scripts/*.mjs`는 실행 스크립트를 `.mjs`로 두고
 `node`로 호출한다. `build.mjs`도 TypeScript 소스를 동적 import한다. 생성기는 이 관례를 따르되,
 루트 `npm test`와 별도로 직접 실행하므로 TypeScript import의 타입 제거를 명령에 명시한다.
 
@@ -1240,7 +1240,7 @@ fixture_cwd="$(mktemp -d)"
 trap 'rm -rf -- "$fixture_cwd"' EXIT
 CXC_GOALPLAN_BASELINE_TMP="$fixture_cwd" \
   node --experimental-strip-types \
-  plugins/codexclaw/components/pabcd-state/test/fixtures/capture-goalplan-baseline.mjs
+  plugins/cursorclaw/components/pabcd-state/test/fixtures/capture-goalplan-baseline.mjs
 ```
 
 기대 결과: exit 0이며 발견한 fixture 수와 `parsed`·`invalid-shape` 수를 보고한다. 특정 개수를
@@ -1248,7 +1248,7 @@ CXC_GOALPLAN_BASELINE_TMP="$fixture_cwd" \
 `mkdtempSync()`로 만든 cwd를 `finally`에서 정리한다. 이 명령은 wp2의 다른 파일을 고치기 전에 한 번만
 실행한다. 생성 뒤에는 운영 plan을 다시 읽어 baseline을 갱신하지 않는다.
 
-### 5.7 NEW — `plugins/codexclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json`
+### 5.7 NEW — `plugins/cursorclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json`
 
 Before:
 
@@ -1314,7 +1314,7 @@ checkout에서 이 명령을 돌리면 `tests 1 / pass 1 / fail 0`이 나오는�
 ### RED 확인
 
 ```bash
-node --test --test-name-pattern='schema v3:' plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts
+node --test --test-name-pattern='schema v3:' plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts
 ```
 
 기대 결과: 구현 전 여덟 개 중 legacy outcome 생략, pre-change baseline privacy,
@@ -1327,7 +1327,7 @@ reviver가 필드를 무시하므로 실패해야 한다. `buildGoalplan()`을 v
 ### focused GREEN
 
 ```bash
-node --test --test-name-pattern='schema v3:' plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts
+node --test --test-name-pattern='schema v3:' plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts
 ```
 
 기대 결과: 정확히 위 여덟 제목의 테스트가 pass하고 fail은 0이다. baseline 테스트는 manifest,
@@ -1367,14 +1367,14 @@ test -f devlog/_plan/260829_goalplan-dependency-execution/020_wp2_schema_v3.md
 git status --porcelain -- devlog/_plan/260829_goalplan-dependency-execution/020_wp2_schema_v3.md
 git diff --no-index /dev/null devlog/_plan/260829_goalplan-dependency-execution/020_wp2_schema_v3.md
 git status --porcelain -- \
-  plugins/codexclaw/components/pabcd-state/src/goalplan.ts \
-  plugins/codexclaw/components/pabcd-state/dist/goalplan.js \
-  plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts \
-  plugins/codexclaw/components/pabcd-state/test/final-gate.test.ts \
-  plugins/codexclaw/components/pabcd-state/test/work-phase-states.test.ts \
-  plugins/codexclaw/components/pabcd-state/test/goal-gate.test.ts \
-  plugins/codexclaw/components/pabcd-state/test/fixtures/capture-goalplan-baseline.mjs \
-  plugins/codexclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json \
+  plugins/cursorclaw/components/pabcd-state/src/goalplan.ts \
+  plugins/cursorclaw/components/pabcd-state/dist/goalplan.js \
+  plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts \
+  plugins/cursorclaw/components/pabcd-state/test/final-gate.test.ts \
+  plugins/cursorclaw/components/pabcd-state/test/work-phase-states.test.ts \
+  plugins/cursorclaw/components/pabcd-state/test/goal-gate.test.ts \
+  plugins/cursorclaw/components/pabcd-state/test/fixtures/capture-goalplan-baseline.mjs \
+  plugins/cursorclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json \
   devlog/_plan/260829_goalplan-dependency-execution/020_wp2_schema_v3.md
 ```
 

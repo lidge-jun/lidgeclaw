@@ -32,7 +32,7 @@
 >
 > 슬라이스의 전제가 "Stop 정체 판정에 진전 신호를 하나 더 넣는다"인데, 이 저장소에는
 > 이미 **두 번째 진전 판정기**가 있다 — `objectivePlateau`(`hook.ts:904-912`). 둘이
-> 같은 데이터(`.codexclaw/metrics.jsonl`)를 다른 규칙으로 읽으면 반드시 어긋난다.
+> 같은 데이터(`.cursorclaw/metrics.jsonl`)를 다른 규칙으로 읽으면 반드시 어긋난다.
 > 감사 라운드마다 어긋나는 지점이 하나씩 드러났고, 매번 지문을 plateau 쪽으로 좁혔지만
 > 완전한 동치를 문자열 지문으로 달성하지 못했다.
 >
@@ -131,7 +131,7 @@ Stop 정체 테스트의 실제 위치는 `test/hook-continuation.test.ts`(675�
 | 사실 | 근거 |
 | --- | --- |
 | `metric record/ingest/show/kind` 서브커맨드가 라우팅돼 있다 | `cli.ts:93-94`, `metric-cli.ts:17-27` |
-| 각 기록은 `.codexclaw/metrics.jsonl`에 append되고 `best`를 누적한다 | `metrics.ts:115-132` |
+| 각 기록은 `.cursorclaw/metrics.jsonl`에 append되고 `best`를 누적한다 | `metrics.ts:115-132` |
 | Stop이 **이미** 이 데이터를 읽는다 — plateau 판정 | `hook.ts:901-906`, `hook.ts:975` |
 | plateau는 `workPhaseId`별로 최근 2건을 본다 | `metrics.ts:198-217` |
 
@@ -159,7 +159,7 @@ WP8의 다섯 라운드는 전부 "지문을 어떻게 만들어야 plateau와 �
 둘 중 하나만으로는 안 된다. 커서만 보면 같은 값 반복 기록이 진전이 되고, plateau만 보면
 위의 재충전 문제가 생긴다.
 
-**이벤트 커서: metrics ledger의 행 수.** `.codexclaw/metrics.jsonl`은 append-only이고
+**이벤트 커서: metrics ledger의 행 수.** `.cursorclaw/metrics.jsonl`은 append-only이고
 (`metrics.ts:130-132`가 `appendFileSync`만 한다), `readObjectiveMetrics(cwd, sessionId)`가
 그 세션의 행을 순서대로 준다. 그 **개수**가 단조 증가하는 커서다. 새 필드를 만들 필요도,
 타임스탬프를 믿을 필요도 없다.
@@ -348,8 +348,8 @@ WP8이 defer하며 "재개 시 반드시 회귀 테스트로 먼저 넣을 것"�
   ```
   npx tsc --noEmit --allowImportingTsExtensions --module nodenext --target es2022 \
     --moduleResolution nodenext \
-    plugins/codexclaw/components/pabcd-state/src/hook.ts \
-    plugins/codexclaw/components/pabcd-state/src/state.ts
+    plugins/cursorclaw/components/pabcd-state/src/hook.ts \
+    plugins/cursorclaw/components/pabcd-state/src/state.ts
   ```
 
   **변경 전 baseline 실측(WP8 A 라운드 1, 실제 RUN):** exit 2, `error TS` **5건**.

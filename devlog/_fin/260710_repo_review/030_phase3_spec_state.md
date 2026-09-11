@@ -7,7 +7,7 @@
 
 | # | 섹션 | 내용 | 근거 소스 |
 |---|------|------|-----------|
-| 1 | .codexclaw 지형 | sessions/ledger/goalplans/interviews/evidence/divergence 파일 스키마 실측 표 | `004_research_state.md` §1 (B에서 재실측) |
+| 1 | .cursorclaw 지형 | sessions/ledger/goalplans/interviews/evidence/divergence 파일 스키마 실측 표 | `004_research_state.md` §1 (B에서 재실측) |
 | 2 | sessions 스키마 대조 | `<id>.json` 실측 vs `components/pabcd-state/src/state.ts` 타입 | 004 §2 |
 | 3 | goalplan 계약 대조 | `skills/loop/SKILL.md` Shipped schema 절 vs `goalplan.ts` 구현 — 양방향 누락 필드 | 004 §3 |
 | 4 | E8 실패 조건 전수 | `goalplan.ts` validate의 실패 조건 나열 + 미검증 한계(인용 진위) | 004 §4 |

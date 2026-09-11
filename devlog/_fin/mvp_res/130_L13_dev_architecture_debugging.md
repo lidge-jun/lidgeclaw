@@ -20,25 +20,25 @@ absorbed.
 
 ## Scope (decision-complete)
 Files to add/edit:
-- `plugins/codexclaw/skills/dev-architecture/SKILL.md`
-- `plugins/codexclaw/skills/dev-architecture/agents/openai.yaml`
-- `plugins/codexclaw/skills/dev-architecture/references/circular-dependencies.md`
-- `plugins/codexclaw/skills/dev-architecture/references/coupling-taxonomy.md`
-- `plugins/codexclaw/skills/dev-architecture/references/barrel-discipline.md`
-- `plugins/codexclaw/skills/dev-debugging/SKILL.md`
-- `plugins/codexclaw/skills/dev-debugging/agents/openai.yaml`
-- `plugins/codexclaw/skills/dev-debugging/references/async-debugging.md`
-- `plugins/codexclaw/skills/dev-debugging/references/methodologies.md`
-- `plugins/codexclaw/skills/dev-debugging/references/postmortem-template.md`
-- `plugins/codexclaw/skills/dev-debugging/references/tool-guides.md`
+- `plugins/cursorclaw/skills/dev-architecture/SKILL.md`
+- `plugins/cursorclaw/skills/dev-architecture/agents/openai.yaml`
+- `plugins/cursorclaw/skills/dev-architecture/references/circular-dependencies.md`
+- `plugins/cursorclaw/skills/dev-architecture/references/coupling-taxonomy.md`
+- `plugins/cursorclaw/skills/dev-architecture/references/barrel-discipline.md`
+- `plugins/cursorclaw/skills/dev-debugging/SKILL.md`
+- `plugins/cursorclaw/skills/dev-debugging/agents/openai.yaml`
+- `plugins/cursorclaw/skills/dev-debugging/references/async-debugging.md`
+- `plugins/cursorclaw/skills/dev-debugging/references/methodologies.md`
+- `plugins/cursorclaw/skills/dev-debugging/references/postmortem-template.md`
+- `plugins/cursorclaw/skills/dev-debugging/references/tool-guides.md`
 
 Concrete source -> target map:
-- `/Users/jun/.cli-jaw-3459/skills/dev-architecture/SKILL.md` -> `plugins/codexclaw/skills/dev-architecture/SKILL.md`
-- `/Users/jun/.cli-jaw-3459/skills/dev-architecture/references/*` -> `plugins/codexclaw/skills/dev-architecture/references/`
-- `/Users/jun/.cli-jaw-3459/skills/dev-debugging/SKILL.md` -> `plugins/codexclaw/skills/dev-debugging/SKILL.md`
-- `/Users/jun/.cli-jaw-3459/skills/dev-debugging/references/*` -> `plugins/codexclaw/skills/dev-debugging/references/`
-- `devlog/.lazycodex/plugins/omo/skills/debugging/SKILL.md` -> `plugins/codexclaw/skills/dev-debugging/SKILL.md` and debugging references
-- `devlog/.lazycodex/plugins/omo/skills/ast-grep/SKILL.md` -> `plugins/codexclaw/skills/dev-architecture/SKILL.md` AST-aware search guidance, not a new skill
+- `/Users/jun/.cli-jaw-3459/skills/dev-architecture/SKILL.md` -> `plugins/cursorclaw/skills/dev-architecture/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-architecture/references/*` -> `plugins/cursorclaw/skills/dev-architecture/references/`
+- `/Users/jun/.cli-jaw-3459/skills/dev-debugging/SKILL.md` -> `plugins/cursorclaw/skills/dev-debugging/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-debugging/references/*` -> `plugins/cursorclaw/skills/dev-debugging/references/`
+- `devlog/.lazycodex/plugins/omo/skills/debugging/SKILL.md` -> `plugins/cursorclaw/skills/dev-debugging/SKILL.md` and debugging references
+- `devlog/.lazycodex/plugins/omo/skills/ast-grep/SKILL.md` -> `plugins/cursorclaw/skills/dev-architecture/SKILL.md` AST-aware search guidance, not a new skill
 - `devlog/.lazycodex/plugins/omo/skills/ast-grep/references/*` -> architecture reference notes only when structural search examples are needed
 - `devlog/.lazycodex/plugins/omo/skills/comment-checker/SKILL.md` -> cross-link to review feedback handling, with completion gate owned by `dev` and detailed review owned by L16
 

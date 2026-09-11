@@ -12,7 +12,7 @@ No new token/time/cost bound was requested; bounded waits and no blind retries.
 
 ## Exact changes
 
-MODIFY plugins/codexclaw/skills/dev/references/stacked-prs.md:
+MODIFY plugins/cursorclaw/skills/dev/references/stacked-prs.md:
 - Add a prominent native-opt-in policy before the model. Native usage is default-off;
   do not recommend/prompt to opt in or infer it from generic 'stack', PR splitting,
   dependency graphs, CI work, release authority, Can Stack or platform availability.
@@ -26,28 +26,28 @@ MODIFY plugins/codexclaw/skills/dev/references/stacked-prs.md:
 - A PABCD dependency map does not itself choose a PR stack or native registration.
   Keep useful manual-chain ordering and exact-head safety.
 
-MODIFY plugins/codexclaw/skills/dev/SKILL.md stack pointer and
-plugins/codexclaw/skills/dev-devops/SKILL.md stack-CI pointer:
+MODIFY plugins/cursorclaw/skills/dev/SKILL.md stack pointer and
+plugins/cursorclaw/skills/dev-devops/SKILL.md stack-CI pointer:
 state ordinary PR/manual-chain default and the strong explicit native opt-in, retain
 owner reference and existing-membership/CI distinction. No proactive upsell.
 
-MODIFY plugins/codexclaw/components/cxc-ops/src/map-affordance.ts renderStackedPrAffordance:
+MODIFY plugins/cursorclaw/components/cxc-ops/src/map-affordance.ts renderStackedPrAffordance:
 replace 'Publish GitHub stacks natively' with a bounded (<600 chars) emitted pointer:
 'Use ordinary PRs/manual chains by default. Do not suggest or create native stacks
 unless the user clearly and strongly requests GitHub native stacks for this task.'
 Keep owner DEV-STACK-06/07, existing membership safety and separate CI verification.
 No transport/tool permission enforcement is added; this is emitted guidance.
 
-MODIFY plugins/codexclaw/components/cxc-ops/test/map-affordance.test.ts existing two-event test:
+MODIFY plugins/cursorclaw/components/cxc-ops/test/map-affordance.test.ts existing two-event test:
 assert the runtime output's default/opt-in/no-suggestion contract for SessionStart
 and post-compact UserPromptSubmit, reject the removed native-publication directive;
 retain envelope/event/bounded-length tests. No extra test case/count needed.
-REGENERATE plugins/codexclaw/components/cxc-ops/dist/map-affordance.js using shipped build.mjs.
+REGENERATE plugins/cursorclaw/components/cxc-ops/dist/map-affordance.js using shipped build.mjs.
 Source-of-truth sync: owner and injected hint; no other architecture changes.
 
 ## Verification and delivery
 
-Baseline: node --test plugins/codexclaw/components/cxc-ops/test/map-affordance.test.ts
+Baseline: node --test plugins/cursorclaw/components/cxc-ops/test/map-affordance.test.ts
 14pass,0fail (reads the changed runtime function and both actual hook envelopes).
 Run it after source/build changes; gate.mjs reads skills/references for drift.
 Independent audit scenarios: ordinary PR; generic stack/manual chain; splitPR/CI;

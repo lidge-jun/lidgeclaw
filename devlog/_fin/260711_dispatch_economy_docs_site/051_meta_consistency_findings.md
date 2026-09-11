@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, dispatch-economy, meta-audit, findings, triage]
+tags: [cursorclaw, dispatch-economy, meta-audit, findings, triage]
 ---
 
 # Loop 1 — meta-consistency findings + main triage (DONE)
@@ -21,7 +21,7 @@ B (2 sol lanes) -> C (main re-verification) -> D. Session
   same-agent retry.
 - Dispatch-hygiene note (itself loop-relevant): both sol lanes tried to
   persist evidence files / run FSM commands despite read-only packets —
-  Carson wrote `.codexclaw/evidence/lane-t-meta-contradiction-audit.txt`
+  Carson wrote `.cursorclaw/evidence/lane-t-meta-contradiction-audit.txt`
   (out of scope, tolerated as harmless). Return-surface friction: V1
   `wait_agent` delivers only the FINAL message, so a lane that "replies then
   receipts" loses its payload — recovered via rollout read.

@@ -26,9 +26,9 @@ test("args are exact and the allowlisted environment excludes ambient overrides/
   try {
     for (const key of keys) process.env[key] = "synthetic-ambient-sentinel";
     const env = probeEnv("/fixture/home", "/fixture/bin", "/fixture/plugin");
-    assert.deepEqual(Object.keys(env).sort(), ["CODEXCLAW_CXC", "CODEX_HOME", "CODEX_SQLITE_HOME", "HOME", "LANG", "PATH", "TMPDIR", "USERPROFILE"].sort());
+    assert.deepEqual(Object.keys(env).sort(), ["CURSORCLAW_CRC", "CURSOR_HOME", "CODEX_SQLITE_HOME", "HOME", "LANG", "PATH", "TMPDIR", "USERPROFILE"].sort());
     assert.equal(env.PATH.split(":")[0], "/fixture/bin");
-    assert.ok(env.CODEXCLAW_CXC.includes(join("/fixture/plugin", "bin", "cxc.mjs")));
+    assert.ok(env.CURSORCLAW_CRC.includes(join("/fixture/plugin", "bin", "cxc.mjs")));
     for (const key of keys) assert.equal(env[key], undefined);
   } finally {
     keys.forEach((key, i) => { if (before[i] === undefined) delete process.env[key]; else process.env[key] = before[i]; });
@@ -90,7 +90,7 @@ test("record accepts a clean isolated fixture exactly once and persists private 
 for (const [name, mutate, expected] of [
   ["full cachebuster version mismatch", f => { f.spec.expectedVersion = "1.0.0+codex.fixture-two"; }, /manifest identity mismatch/],
   ["outside install", f => { const outside = join(f.base, "outside-plugin"); cpSync(f.installed, outside, { recursive: true });
-    putJson(f.root, "install.json", { installedPath: outside }); }, /outside isolated CODEX_HOME/],
+    putJson(f.root, "install.json", { installedPath: outside }); }, /outside isolated CURSOR_HOME/],
   ["config symlink", f => { const target = put(f.base, "outside-config", "# fixture\n");
     rmSync(f.config); symlinkSync(target, f.config); }, /symlinked path refused/],
   ["trust WARN", () => {}, /doctor hook-trust not PASS/],

@@ -5,18 +5,18 @@ goal guard/Interview ledger. No new field/enum, serialization or permission surf
 
 | File | Change |
 |---|---|
-| `plugins/codexclaw/components/cxc-ops/src/map-affordance.ts` | Add a private question-pointer renderer; append its output in both existing common emitters |
-| `plugins/codexclaw/components/cxc-ops/test/map-affordance.test.ts` | Extend existing output/compiled CLI cases to observe question pointer, optional continuation and main/child boundary without increasing test counts |
-| `plugins/codexclaw/components/pabcd-state/src/goal-gate.ts` | Clarify GOAL_MODE_DENY_REASON: blocking Interview tool is denied; exposed async mid-work questions remain subject to host rules and expect no answer |
-| `plugins/codexclaw/components/pabcd-state/test/goal-gate.test.ts` | Extend existing guard cases to distinguish async passthrough for all goal states from synchronous denial |
+| `plugins/cursorclaw/components/cxc-ops/src/map-affordance.ts` | Add a private question-pointer renderer; append its output in both existing common emitters |
+| `plugins/cursorclaw/components/cxc-ops/test/map-affordance.test.ts` | Extend existing output/compiled CLI cases to observe question pointer, optional continuation and main/child boundary without increasing test counts |
+| `plugins/cursorclaw/components/pabcd-state/src/goal-gate.ts` | Clarify GOAL_MODE_DENY_REASON: blocking Interview tool is denied; exposed async mid-work questions remain subject to host rules and expect no answer |
+| `plugins/cursorclaw/components/pabcd-state/test/goal-gate.test.ts` | Extend existing guard cases to distinguish async passthrough for all goal states from synchronous denial |
 | Corresponding two `dist/*.js` files | Regenerate via repository build, keep source/dist parity |
-| `plugins/codexclaw/skills/interview/SKILL.md` | Explicit transport exception: use synchronous request_user_input; no async replacement for persisted Interview rounds |
-| `plugins/codexclaw/skills/dev/references/async-questions.md` | State phase/goal-independent permission when exposed/host-allowed, no reply expectation, and actual common-hook discovery boundary |
+| `plugins/cursorclaw/skills/interview/SKILL.md` | Explicit transport exception: use synchronous request_user_input; no async replacement for persisted Interview rounds |
+| `plugins/cursorclaw/skills/dev/references/async-questions.md` | State phase/goal-independent permission when exposed/host-allowed, no reply expectation, and actual common-hook discovery boundary |
 | `structure/60_native_capabilities.md` | Replace prior docs-only statement with common-hook delivery plus unchanged permission/capture limitations |
 
 ## Pointer contract
 
-Private renderer returns a single paragraph beginning `[codexclaw] User questions:`:
+Private renderer returns a single paragraph beginning `[cursorclaw] User questions:`:
 main agents may leave useful questions during work, including active goals;
 outside Interview prefer exposed/allowed request_user_input_async; do not expect
 replies or wait; continue authorized work, make reasonable assumptions, incorporate
@@ -40,7 +40,7 @@ dist CLI entrypoints. Extend existing cases, verify their new runtime-output
 assertions fail before implementation, then build and rerun. New checks are required
 contract extensions; no assertion deletion or test-count/badge adjustment is planned.
 
-`node plugins/codexclaw/scripts/build.mjs` compiles all component src files via
+`node plugins/cursorclaw/scripts/build.mjs` compiles all component src files via
 `compileSource`, writes corresponding dist files, and validates manifest targets.
 Baseline build is not needed to mutate generated output during P; its verified
 call chain is `build → compileComponent → compileSource`. Run after implementation.

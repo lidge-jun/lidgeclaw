@@ -13,7 +13,7 @@
     "Peer guidance calls for discovery before selecting a relevant task to read; listing does not contact or wake peers."
   ],
   "loadedGuidance": [
-    "plugins/codexclaw/skills/dev/SKILL.md",
-    "plugins/codexclaw/skills/dev/references/peer-collaboration.md"
+    "plugins/cursorclaw/skills/dev/SKILL.md",
+    "plugins/cursorclaw/skills/dev/references/peer-collaboration.md"
   ]
 }

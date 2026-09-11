@@ -66,7 +66,7 @@ Read current status immediately before every merge and publish.
 
 MODIFY for version0.2.17 (unless a concurrent release takes it): package.json,
 package-lock.json workspace versions, cli/package.json, eight component package.json
-files, plugins/codexclaw/gui/package.json, plugin manifest base+fresh cachebuster,
+files, plugins/cursorclaw/gui/package.json, plugin manifest base+fresh cachebuster,
 and generated inventory/readme/docs count blocks. No dependency changes merely
 for a version bump. Any vulnerability fix is separately reviewed and tested.
 Do not change docs-site's independent0.0.1 version.

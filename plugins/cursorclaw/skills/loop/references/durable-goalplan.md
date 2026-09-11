@@ -44,7 +44,7 @@ Interview OPEN ASSUMPTIONS, steering decisions, and quality gates.
 
 ### Shipped schema
 
-This is the on-disk shape under `.codexclaw/goalplans/<slug>/goalplan.json`
+This is the on-disk shape under `.cursorclaw/goalplans/<slug>/goalplan.json`
 (+ `ledger.jsonl`). Fill these fields; do not invent parallel ones:
 
 - `objective`, `slug`, `createdAt`, `updatedAt`.

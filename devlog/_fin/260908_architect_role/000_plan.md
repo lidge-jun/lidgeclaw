@@ -7,7 +7,7 @@ Add a configurable design specialist using CXC's existing role store and spawn p
 - Loop: satisfy-spec HOTL, triggered by Jun's architect continuation and handoff.
 - Goal: fourth role across settings and dispatch, with formal P guidance and truthful lifecycle evidence.
 - Non-goals: new skills, philosophy amendment, provider defaults, global role registration, plugin installation, paid inference tests, push/PR/merge, unrelated refactors.
-- Verifiers: isolated component tests via `node plugins/codexclaw/scripts/test.mjs`; build via `npm run build`; `npm run gate`; GUI build/typecheck and isolated browser settings roundtrip. Prose gets semantic independent review, not a claim of hook enforcement.
+- Verifiers: isolated component tests via `node plugins/cursorclaw/scripts/test.mjs`; build via `npm run build`; `npm run gate`; GUI build/typecheck and isolated browser settings roundtrip. Prose gets semantic independent review, not a claim of hook enforcement.
 - Stop: all three cycles and criteria complete with source-bound receipts and local commits. Missing authority/capability is NEEDS_HUMAN/BLOCKED, never DONE; no user token/time bound is specified and none is invented. Tools use current authorized capabilities, fixture config/state only for verification, no paid provider tests.
 - Memory: this unit and native-cwd goalplan for session 01a0829e-d196-7b31-bed9-9551e9ea3c18.
 - Escalation: main resolves bounded implementation/review findings; reclaim a packet after two distinct agent failures. New delegated scope requires plan amendment. External publication and environment installation require Jun.

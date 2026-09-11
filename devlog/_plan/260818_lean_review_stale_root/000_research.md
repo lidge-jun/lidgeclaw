@@ -1,7 +1,7 @@
 ---
 created: 2026-08-18
 status: done
-tags: [codexclaw, review-binding, lean, install-root, hooks]
+tags: [cursorclaw, review-binding, lean, install-root, hooks]
 ---
 
 # 000 — 게이트를 얇게, 그리고 사라진 설치 경로를 보이게

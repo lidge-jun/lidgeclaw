@@ -1,6 +1,6 @@
 /**
  * cache.ts — TTL cache for source catalogs (WP3 / 040). Lives under
- * `$CODEXCLAW_HOME ?? ~/.cursorclaw` (recall index-db convention): this is a
+ * `$CURSORCLAW_HOME ?? ~/.cursorclaw` (recall index-db convention): this is a
  * deletable DERIVED cache, never project state, so it does not go in the
  * project-local .cursorclaw/ session dir. Fail-open: on network failure a stale
  * cache is served with a one-line warning on stderr.
@@ -12,7 +12,7 @@ import { join } from "node:path";
 export const DEFAULT_TTL_MS = 60 * 60 * 1000; // 1h
 
 export function cacheDir(env: Record<string, string | undefined> = process.env): string {
-  const fromEnv = (env.CURSORCLAW_HOME || env.CODEXCLAW_HOME || "").trim();
+  const fromEnv = (env.CURSORCLAW_HOME || env.CURSORCLAW_HOME || "").trim();
   const base = fromEnv ? fromEnv : join(homedir(), ".cursorclaw");
   return join(base, "skill-cache");
 }

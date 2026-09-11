@@ -39,7 +39,7 @@
 ## Finding 3 (Minor): friction capture 제거 시 Stop hook 부가기능 상실 + 스키마 불일치
 
 - KEEP #2 Stop hook의 `buildStopBlock`은 `peakFrictionVerdict(cwd)`로
-  `.codexclaw/friction.jsonl`을 읽어 escalate 조언을 붙임 (hook.ts:664).
+  `.cursorclaw/friction.jsonl`을 읽어 escalate 조언을 붙임 (hook.ts:664).
 - `post-tool-use-capturing-shell-friction` 제거 시 이 파일이 안 쌓여 verdict가 항상
   null → fail-open이라 깨지진 않지만 기능은 소실.
 - 000_plan의 흡수 규칙은 "friction.log에 기록"이라고 썼으나 실제 파일은
@@ -54,7 +54,7 @@
 
 - recall hooks: `additionalContext` 주입만 하는 순수 advisory (recall/src/hook.ts) — 제거 OK.
 - edit-shape: one-time nudge advisory — 제거 OK.
-- project-rules: `.codexclaw/rules/` 부재 + root AGENTS.md도 부재 → 이 리포에선
+- project-rules: `.cursorclaw/rules/` 부재 + root AGENTS.md도 부재 → 이 리포에선
   현재 완전 무음(no-op) 상태 (B-phase 리뷰어 정정: "중복"이 아니라 "무음").
   AGENTS.md 있는 리포에서만 네이티브 주입과 중복이 됨. 어느 쪽이든 제거 OK.
 

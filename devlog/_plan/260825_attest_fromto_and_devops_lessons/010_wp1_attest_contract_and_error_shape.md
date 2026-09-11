@@ -21,7 +21,7 @@ forever.
 
 ## MODIFY map
 
-### 1. `plugins/codexclaw/skills/pabcd/SKILL.md` — the table (:91-98)
+### 1. `plugins/cursorclaw/skills/pabcd/SKILL.md` — the table (:91-98)
 
 Replace the "Required attest keys" table so every gated row carries the full key
 set, and add a copy-paste object per edge underneath. The entry rows must keep
@@ -124,7 +124,7 @@ to run `<cmd> --help`; and `review-round`/`plan` reject `--help` as an unknown
 verb (`review-round-cli.ts:99`, `plan-cli.ts:75`). Add the `help|--help|-h`
 branch that loop/receipt/scan already have, and list the missing verbs.
 
-`cxc freeze --help` writing `.codexclaw/interview/freeze.json` is the same
+`cxc freeze --help` writing `.cursorclaw/interview/freeze.json` is the same
 family but a mutation, not a message: handle `--help` before any IO.
 `metric`/`divergence` demanding `--session` before printing usage is the same
 one-line fix.
@@ -153,7 +153,7 @@ exist in the tree today.
    branches (platform is injected — this repo's convention, `atomic-write.test.ts:4`).
 5. `help-verbs.test.ts`: extend to `review-round`, `plan`, `metric`,
    `divergence`, `freeze`. The freeze case asserts exit 0, output contains
-   `Usage`, AND that `.codexclaw/interview/freeze.json` was not created — the
+   `Usage`, AND that `.cursorclaw/interview/freeze.json` was not created — the
    mutation is the actual bug, so the assertion must touch the filesystem.
 6. A doc-truth test bound to the TABLE ROWS, not the file: parse the attest table
    out of `skills/pabcd/SKILL.md` and assert each gated row names the keys that
@@ -170,11 +170,11 @@ test 6 reddens the build when the next contract change forgets the skill again.
 | # | Criterion | Proof |
 |---|---|---|
 | 1 | Every gated row names `from`/`to` + its edge-specific keys | table diff |
-| 2 | `rg -e workPhaseId -e planUnit -e testReceiptPath plugins/codexclaw/skills/pabcd/SKILL.md` has hits | command output |
+| 2 | `rg -e workPhaseId -e planUnit -e testReceiptPath plugins/cursorclaw/skills/pabcd/SKILL.md` has hits | command output |
 | 3 | The null-coerce refusal names the target verb and shows a correct example | live CLI output, BOTH flag forms (different literals) |
 | 4 | No injected example uses `evidence` as an attest key | `rg` + test |
 | 5 | `cxc orchestrate --help` carries a B→C object and a C→D object with `testReceiptPath` | help output |
-| 6 | `--help` exits 0 with usage on every shipped verb, and `cxc freeze --help` creates no `.codexclaw/interview/freeze.json` | test output + `ls` |
+| 6 | `--help` exits 0 with usage on every shipped verb, and `cxc freeze --help` creates no `.cursorclaw/interview/freeze.json` | test output + `ls` |
 | 7 | `scan-cli.ts:146`'s override example carries `from`/`to` | `rg` |
 | 8 | `npm test` green after `npm run build` | receipt |
 

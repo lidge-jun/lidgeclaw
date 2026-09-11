@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, dispatch-economy, implementation, record, wp1]
+tags: [cursorclaw, dispatch-economy, implementation, record, wp1]
 ---
 
 # WP1 implementation record
@@ -16,14 +16,14 @@ Status: DONE (cycle closed via attested D, session 019f4a07)
   (specifiability incl. DECISION BOUNDARY x verifiability x judgment ownership),
   output-side triage disposition obligation (wave-granular allowed), model routing
   as non-overriding DEFAULT, batch-spawn preference.
-- `plugins/codexclaw/skills/pabcd/SKILL.md` — 51-line delegation block
+- `plugins/cursorclaw/skills/pabcd/SKILL.md` — 51-line delegation block
   verbatim-moved from `## Catalog Discovery routing` into the previously empty
   `## Delegation Model (subagents)` (move diff-verified byte-identical:
   VERBATIM_MOVE_OK). One-sentence non-normative ECONOMY-01 pointer (SOT stays
   doctrine §3). DISPATCH-TASK-01 amended: packet DECISION BOUNDARY sentence +
   RETURN FORMAT verbatim-anchor obligation (Memex 2603.04257 grounding). P-phase
   loop-spec `Escalation condition` now stated bidirectionally.
-- `plugins/codexclaw/skills/loop/SKILL.md` — new `## Speculative dispatch
+- `plugins/cursorclaw/skills/loop/SKILL.md` — new `## Speculative dispatch
   (DISPATCH-SPECULATE-01, HEURISTIC)` after Wait visibility.
 
 ## A-gate history (reviewer: decorrelated gpt-5.6-sol explorer, reused per DISPATCH-ACTOR-01)

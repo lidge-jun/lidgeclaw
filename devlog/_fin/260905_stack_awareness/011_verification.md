@@ -11,10 +11,10 @@ commit changes records only. PR: https://github.com/lidge-jun/codexclaw/pull/64
 - After implementation and native-default clarification: focused hook/manifest tests
   **17 passed / 0 failed / 0 skipped**.
 - Full affected cxc-ops suite + manifest policy + dist freshness: **195 passed / 0 failed / 0 skipped**.
-  Command: `node --test plugins/codexclaw/components/cxc-ops/test/*.test.ts plugins/codexclaw/test/manifest-policy.test.mjs plugins/codexclaw/test/dist-freshness.test.mjs`.
-- `node plugins/codexclaw/scripts/build.mjs`: **156 files**, exit 0, layout valid.
+  Command: `node --test plugins/cursorclaw/components/cxc-ops/test/*.test.ts plugins/cursorclaw/test/manifest-policy.test.mjs plugins/cursorclaw/test/dist-freshness.test.mjs`.
+- `node plugins/cursorclaw/scripts/build.mjs`: **156 files**, exit 0, layout valid.
   This is type stripping, not typechecking. Dist byte parity passed independently.
-- `node plugins/codexclaw/scripts/gate.mjs` and `git diff --check`: exit 0.
+- `node plugins/cursorclaw/scripts/gate.mjs` and `git diff --check`: exit 0.
 - Real `components/cxc-ops/dist/cli.js hook post-compact` output contains the native
   delivery and registration-verification pointer, with the existing event/envelope.
 - No repository-wide local suite. PR CI was queued/in progress at handoff preparation;

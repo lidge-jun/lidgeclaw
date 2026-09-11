@@ -44,9 +44,9 @@ PASS=$(rg -o '^. pass (\d+)' -r '$1' /tmp/cxc-release-suite.log | tail -1)
 FAIL=$(rg -o '^. fail (\d+)' -r '$1' /tmp/cxc-release-suite.log | tail -1)
 [ "$FAIL" = 0 ] || { echo "suite not green: $FAIL failures"; exit 1; }
 
-node plugins/codexclaw/scripts/inventory.mjs --write --tests "$PASS"   # updates every registered tests surface
-node plugins/codexclaw/scripts/inventory.mjs --check
-node plugins/codexclaw/scripts/inventory.mjs --published                # must now print tests=$PASS
+node plugins/cursorclaw/scripts/inventory.mjs --write --tests "$PASS"   # updates every registered tests surface
+node plugins/cursorclaw/scripts/inventory.mjs --check
+node plugins/cursorclaw/scripts/inventory.mjs --published                # must now print tests=$PASS
 ```
 
 3. Write the `## [0.2.0-beta.1]` CHANGELOG section from the Unreleased block.

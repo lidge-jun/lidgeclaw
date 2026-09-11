@@ -1,6 +1,6 @@
 ---
 created: 2026-07-12
-tags: [codexclaw, subagent, evidence-gate, sol-review, hardening]
+tags: [cursorclaw, subagent, evidence-gate, sol-review, hardening]
 ---
 
 # Sol Conceptual Hardening Review (Beauvoir)

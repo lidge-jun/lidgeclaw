@@ -25,16 +25,16 @@ CLI로 생성·완료·증거 결박하는 lifecycle이 없고 (2) 항목 사이
 ## Loop-spec
 
 - Loop archetype: verifier-defined. 각 phase의 성공은 테스트가 판정하며 모델 판단이 아니다.
-- Write scope: plugins/codexclaw/components/pabcd-state/src/{goalplan,goalplan-cli,goal-gate,steering,atomic-write,state,orchestrate-apply}.ts,
-  같은 컴포넌트의 test/, plugins/codexclaw/skills/loop/SKILL.md, 이 devlog 유닛.
+- Write scope: plugins/cursorclaw/components/pabcd-state/src/{goalplan,goalplan-cli,goal-gate,steering,atomic-write,state,orchestrate-apply}.ts,
+  같은 컴포넌트의 test/, plugins/cursorclaw/skills/loop/SKILL.md, 이 devlog 유닛.
   소비자 조정이 필요할 때만 orchestrate-cli.ts, hook.ts, review-round-cli.ts, review-observer.ts.
-  `plugins/codexclaw/components/pabcd-state/dist/`도 write scope다. 구현 wp가 바꾼 각 src 파일과
+  `plugins/cursorclaw/components/pabcd-state/dist/`도 write scope다. 구현 wp가 바꾼 각 src 파일과
   basename이 같은 tracked `dist/*.js`를 `npm run build`로 재생성해 함께 반영한다.
   `state.ts`는 wp5의 D-close recovery marker 저장·복원·reset과 marker가 남은 IDLE의 check epoch
   보존을 소유하고, `orchestrate-apply.ts`는 `clearedIdle()` reset에서 recovery marker를 실제로
   제거한다. `orchestrate-cli.ts`와 `hook.ts`는 marker를 보존한 cleared-IDLE 상태를 소비하고,
   state·두 원장 커밋 뒤 marker와 check epoch를 지우는 범위까지 wp5에서 함께 고친다.
-  `plugins/codexclaw/skills/loop/SKILL.md` 수정은 wp6이 소유한다(정본 §17).
+  `plugins/cursorclaw/skills/loop/SKILL.md` 수정은 wp6이 소유한다(정본 §17).
 - Out-of-scope: senpi-task DAG 코드 이식, 별도 스케줄러 프로세스, 별도 상태 저장소,
   호스트 goal DB 쓰기, 자체 WAL/체크포인트 엔진, 웨이브 실행기, 노드 steer 런타임, 팀 DAG,
   devlog/.omo 및 devlog/.senpi(읽기 전용 참조 미러).
@@ -132,7 +132,7 @@ Stop 훅은 턴 생성기가 아니라 **같은 턴 안의 guard**다. "실행 �
 문서 파일명은 wp 번호와 decade가 1:1로 맞도록 정리했다(010=wp1부터 070=wp7까지). 각 문서 안에 남은
 이전 phase 번호 표기는 정본 §7의 지도를 따른다.
 
-wp1~wp7의 변경 manifest에는 `plugins/codexclaw/components/pabcd-state/dist/` 항목을 둔다. wp1처럼
+wp1~wp7의 변경 manifest에는 `plugins/cursorclaw/components/pabcd-state/dist/` 항목을 둔다. wp1처럼
 소스를 바꾸지 않는 wp는 dist 변경 없음이라고 명시하고, 구현 wp는 변경 src와 basename이 같은 tracked
 `dist/*.js`를 MODIFY로 적는다. src만 적고 배포 산출물을 빠뜨린 manifest는 완료된 manifest가 아니다.
 
@@ -177,16 +177,16 @@ goalplan criteria[] c-1~c-8과 1:1로 대응한다.
   회귀가 고정됨. `npm run build`는 dist 재생성과 layout 검사만 맡으며 타입·미정의 식별자·import
   이름 오류 검출 증거로 쓰지 않음. 각 wp는 변경 공개 경로 focused test → `npm run build` →
   `npm test` → `npm run gate` 순서로 통과하고 receipt를 기록함. 루트 `npm test`에 포함된
-  `plugins/codexclaw/test/dist-freshness.test.mjs`는 tracked `dist/*.js`와 src의 byte equality를 판정함
+  `plugins/cursorclaw/test/dist-freshness.test.mjs`는 tracked `dist/*.js`와 src의 byte equality를 판정함
 
 ## 검증 (전 phase 공통)
 
 - 각 단계의 첫 게이트는 해당 decade 문서에 적힌 focused test다. 이 테스트는 변경된 공개 CLI,
   hook, helper 경로를 실제 호출해야 하며 import만 하거나 build exit 0만 확인해서는 안 됨
-- TypeScript focused test는 `node --experimental-strip-types --test plugins/codexclaw/components/pabcd-state/test/*.test.ts` 형식으로 실행하며, 각 decade 문서는 이 형식의 정확한 대상 파일을 적음
+- TypeScript focused test는 `node --experimental-strip-types --test plugins/cursorclaw/components/pabcd-state/test/*.test.ts` 형식으로 실행하며, 각 decade 문서는 이 형식의 정확한 대상 파일을 적음
 - `npm run build` — 타입 제거와 `dist/*.js` 재생성·layout 검사 전용. 타입·미정의 식별자·import 이름
   오류 검출 게이트로 간주하지 않음
-- `npm test` — 루트 suite의 `plugins/codexclaw/test/dist-freshness.test.mjs`가 build 직후 tracked
+- `npm test` — 루트 suite의 `plugins/cursorclaw/test/dist-freshness.test.mjs`가 build 직후 tracked
   `dist/*.js`와 현재 src의 byte equality를 검사함
 - `npm run gate`
 - 체크인된 manifest 항목의 변경 전후 normalized 결과 동일(운영 디렉터리 현재 개수는 판정에 쓰지 않음)

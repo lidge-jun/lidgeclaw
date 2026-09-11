@@ -9,8 +9,8 @@ The live dispatch set is `enable`, `disable`, `uninstall`, `status`, `orchestrat
 `subagents`, `map`, `provider`, `chat`, `memory`, `skill`, `gui`, `serve`, and `service`.
 
 :::caution[Two CLI tiers]
-For v0.1.1 the plugin payload ships its own dispatcher at `bin/cxc.mjs`, so every marketplace
-install has a working terminal surface: `node "<pluginRoot>/bin/cxc.mjs" <command>`. When `cxc`
+For v0.1.1 the plugin payload ships its own dispatcher at `bin/cursorclaw.mjs`, so every marketplace
+install has a working terminal surface: `node "<pluginRoot>/bin/cursorclaw.mjs" <command>`. When `cxc`
 is not on `PATH`, the SessionStart banner prints the exact resolved invocation, and injected
 directives use it. A PATH-level `cxc` / `codexclaw` binary remains a repo-checkout convenience
 (npm link or a shell alias to `bin/codexclaw.mjs`). The payload dispatcher excludes `gui` and
@@ -39,8 +39,8 @@ directives use it. A PATH-level `cxc` / `codexclaw` binary remains a repo-checko
 | `cxc subagents` | subagent-config | Read/write per-role subagent model and prompt config. |
 | `cxc map` | repo-map | Generate a ranked repository map from the `repo-map` skill. |
 | `cxc provider` | provider-bridge | Show read-only opencodex (`ocx`) provider status (detect mode). |
-| `cxc chat search` / `cxc chat index` | recall | Search or index read-only Codex rollout history under `CODEX_HOME` / `~/.codex`. |
-| `cxc memory search` | recall | Search read-only Codex memory artifacts under `CODEX_HOME` / `~/.codex`. |
+| `cxc chat search` / `cxc chat index` | recall | Search or index read-only Codex rollout history under `CURSOR_HOME` / `~/.cursor`. |
+| `cxc memory search` | recall | Search read-only Codex memory artifacts under `CURSOR_HOME` / `~/.cursor`. |
 | `cxc skill search` / `cxc skill show` | skill-search | Search or show remote dormant skills from jaw, hermes, clawhub, or GitHub sources. |
 | `cxc serve` | messenger-bridge | Start the opt-in loopback dashboard/API/messenger bridge on `127.0.0.1`. |
 | `cxc service` | messenger-bridge | Install, uninstall, or inspect the macOS launchd service for `cxc serve`. |
@@ -121,7 +121,7 @@ cxc scan record --session <id> [--contradictions N] [--high N]
 
 `scan record` records one interview contradiction-scan round. It performs both halves of the
 recording contract: it appends a `scan_completed` event to the per-session interview ledger
-(`.codexclaw/interviews/<id>.jsonl`) and increments the tracker's `scanRounds` /
+(`.cursorclaw/interviews/<id>.jsonl`) and increments the tracker's `scanRounds` /
 `lastScanRoundId` counters via session state. Recorded rounds are what the I→P readiness gate
 reads, so scans count toward the gate without an override. `--session` is required; there is no
 latest-session fallback for mutating commands.

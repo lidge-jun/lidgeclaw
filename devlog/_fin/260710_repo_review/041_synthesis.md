@@ -144,7 +144,7 @@ GO-WITH-FIXES(blockers=2), 사이클 4는 GO-WITH-FIXES(blockers=3)였다. 사�
 사이클 4 C 시점의 read-only validate 출력:
 
 ```text
-[codexclaw loop validate: codexclaw-devlog-260710-repo-review-000-plan-010] FAIL
+[cursorclaw loop validate: codexclaw-devlog-260710-repo-review-000-plan-010] FAIL
   - 1 work phase(s) not done: wp4
   - 2 unmet criterion/criteria: c5, c6
 exit=1
@@ -173,7 +173,7 @@ completion이 다시 생긴다.
 ## 5. 리뷰어 verdict
 
 사이클 4 A게이트 판정은 **GO-WITH-FIXES (blockers=3, 모두 Med)**다. 증거는
-`.codexclaw/evidence/repo-review-cycle4-a-gate-20260710T055800+0900.md`에 있다.
+`.cursorclaw/evidence/repo-review-cycle4-a-gate-20260710T055800+0900.md`에 있다.
 
 폴드 내역:
 

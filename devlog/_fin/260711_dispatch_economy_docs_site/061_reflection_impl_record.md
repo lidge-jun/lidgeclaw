@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, pabcd-initiative, dispatch-economy, reflection, impl-record]
+tags: [cursorclaw, pabcd-initiative, dispatch-economy, reflection, impl-record]
 ---
 
 # Loop 2 impl record — reflection patch + initiative port (DONE)

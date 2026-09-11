@@ -26,8 +26,8 @@ cxc service status
 curl -sS http://127.0.0.1:7717/api/health
 ```
 Service is launchd-only: plist
-`~/Library/LaunchAgents/com.codexclaw.serve.plist`, logs
-`~/.codexclaw/serve.out.log` and `~/.codexclaw/serve.err.log`. There is no
+`~/Library/LaunchAgents/com.cursorclaw.serve.plist`, logs
+`~/.cursorclaw/serve.out.log` and `~/.cursorclaw/serve.err.log`. There is no
 `cxc serve status`.
 
 **Linux:** create a `codexclaw-serve` systemd user unit, then run

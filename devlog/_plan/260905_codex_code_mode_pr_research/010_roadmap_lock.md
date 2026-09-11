@@ -8,7 +8,7 @@ Status: DESIGN
 - Trigger: user approved unlimited-time researcher-style HOTL execution and unlimited total subagent dispatches after Interview.
 - Outcome: audited, dependency-ordered implementation instructions and a reproducible remote baseline, not production feature completion.
 - Non-goals: modifying initiative, replacing Codex runtime, releasing/pushing, bypassing hook trust, broadening model/credential scope.
-- Write scope: this devlog unit and session-bound `.codexclaw/` bookkeeping only in WP0. Source experiments start in WP1.
+- Write scope: this devlog unit and session-bound `.cursorclaw/` bookkeeping only in WP0. Source experiments start in WP1.
 - Stop condition: all decade plans independently audited, docs receipt passes, WP0 task/criterion recorded and D closed.
 - Memory: `000`–`008` research plus this file, `020`/`021`, `030`/`031`, `040`, `050`, `060`, goalplan and ledgers.
 - Escalation: new authority or an unavailable exact probe contract; lower-severity technical questions are tested, not returned to the user. New delegated lanes require an explicit scoped packet; main reclaims a failed packet after two distinct agents.
@@ -36,7 +36,7 @@ Each row is a full P→A→B→C→D cycle. WP0 does not implement another row. 
 ## Current structure and intended boundaries
 
 ```text
-plugins/codexclaw/
+plugins/cursorclaw/
   skills/{loop,pabcd,dev}/        intent, phase contracts, common routing
   hooks/*.json                   actual native hook registrations
   components/pabcd-state/        FSM, ledgers, continuation, prompt guidance
@@ -66,9 +66,9 @@ The following real remote command completed with exit 0 and TAP `145 passed, 0 f
 
 ```sh
 node --test --test-concurrency=1 \
-  plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts \
-  plugins/codexclaw/components/subagent-config/test/spawn-attach-hook.test.ts \
-  plugins/codexclaw/test/hook-bench-compare.test.mjs
+  plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts \
+  plugins/cursorclaw/components/subagent-config/test/spawn-attach-hook.test.ts \
+  plugins/cursorclaw/test/hook-bench-compare.test.mjs
 ```
 
 Artifact: remote `../baseline-tests-confirmed.log`. These tests read the named runtime modules; they do not validate future prose or the whole plugin. New verifiers in later docs are explicitly prospective until first run.

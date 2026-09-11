@@ -53,7 +53,7 @@ Auditors return file:line-backed PASS/FAIL per claim. Integrate, then B.
 
 ## Out of scope
 
-- No skill-body edits (`plugins/codexclaw/skills/**` stays untouched).
+- No skill-body edits (`plugins/cursorclaw/skills/**` stays untouched).
 - No docs outside `devlog/_plan/promptgap/`.
 - No runtime/hook code.
 

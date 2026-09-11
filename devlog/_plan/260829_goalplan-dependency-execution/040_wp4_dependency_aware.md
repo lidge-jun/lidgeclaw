@@ -133,27 +133,27 @@ phase-local 표기 관례에 맞춰
 
 ### MODIFY
 
-- `plugins/codexclaw/components/pabcd-state/src/goalplan.ts`
+- `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts`
   - phase/task 의존 충족 판정
   - `effectiveActiveWorkPhaseId()`, `nextOpenTask()`, `advanceWorkPhase()` 의존 인식
   - 실행 불가 상태의 파생 진단 `dependencyDeadlock()`
   - ready와 무관한 부분 대기 진단 `dependencyWaitReasons()`와 공통 문장 생성기
-- `plugins/codexclaw/components/pabcd-state/src/hook.ts`
+- `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
   - Stop 안내가 의존 미충족 task를 “Remaining work”로 제시하지 않도록 함
   - 의존 교착이면 구체적인 blocker 안내
   - 채팅 D-close의 `no_active` 안내도 같은 파생 진단 사용
-- `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts`
+- `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts`
   - CLI D-close의 `no_active` 안내에 같은 교착 진단 사용
   - gated attest 결박 코드는 유지하되 dependency-aware active와 일치함을 테스트로 고정
-- `plugins/codexclaw/components/pabcd-state/dist/goalplan.js`
+- `plugins/cursorclaw/components/pabcd-state/dist/goalplan.js`
   - build가 갱신한 tracked `goalplan.ts` 배포 산출물
-- `plugins/codexclaw/components/pabcd-state/dist/hook.js`
+- `plugins/cursorclaw/components/pabcd-state/dist/hook.js`
   - build가 갱신한 tracked `hook.ts` 배포 산출물
-- `plugins/codexclaw/components/pabcd-state/dist/orchestrate-cli.js`
+- `plugins/cursorclaw/components/pabcd-state/dist/orchestrate-cli.js`
   - build가 갱신한 tracked `orchestrate-cli.ts` 배포 산출물
-- `plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts`
-- `plugins/codexclaw/components/pabcd-state/test/work-phase-states.test.ts`
-- `plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts`
+- `plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts`
+- `plugins/cursorclaw/components/pabcd-state/test/work-phase-states.test.ts`
+- `plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts`
 
 ### NEW
 
@@ -165,7 +165,7 @@ phase-local 표기 관례에 맞춰
 
 ## 4. `goalplan.ts` 상세 diff
 
-경로: `plugins/codexclaw/components/pabcd-state/src/goalplan.ts`
+경로: `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts`
 구분: **MODIFY**
 
 ### 4.1 wp4 진입 시 타입 전제
@@ -516,7 +516,7 @@ if (!effectiveId) return { kind: "no_active" };
 
 ## 5. `hook.ts` 상세 diff
 
-경로: `plugins/codexclaw/components/pabcd-state/src/hook.ts`
+경로: `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
 구분: **MODIFY**
 
 ### 5.1 import와 Stop context
@@ -593,7 +593,7 @@ if (!next && unmet.length === 0) return null;
 return {
   nextTaskTitle: next ? `${next.wp.title} → ${next.task.title}` : null,
   expectedEvidence: unmet[0]?.expectedEvidence ?? null,
-  ledgerPath: `.codexclaw/goalplans/${slug}/ledger.jsonl`,
+  ledgerPath: `.cursorclaw/goalplans/${slug}/ledger.jsonl`,
 };
 ```
 
@@ -610,7 +610,7 @@ return {
   dependencyBlockedReason: deadlock
     ? `Dependency deadlock: no executable work remains while unfinished items exist: ${deadlock.reasons.join("; ")}`
     : null,
-  ledgerPath: `.codexclaw/goalplans/${slug}/ledger.jsonl`,
+  ledgerPath: `.cursorclaw/goalplans/${slug}/ledger.jsonl`,
 };
 ```
 
@@ -629,7 +629,7 @@ wp6 인계: 이 한 건짜리 `nextTaskTitle`은 wp4 시점의 호환 표면이�
 if (advanced.kind === "no_active") {
   return buildContextOutput(
     "UserPromptSubmit",
-    `[codexclaw — refused: the bound goalplan "${state.slug}" has no active work-phase to close (CYCLE-COMPLETION-01). Nothing was written.]`,
+    `[cursorclaw — refused: the bound goalplan "${state.slug}" has no active work-phase to close (CYCLE-COMPLETION-01). Nothing was written.]`,
   );
 }
 ```
@@ -644,7 +644,7 @@ if (advanced.kind === "no_active") {
     : `the bound goalplan "${state.slug}" has no active work-phase to close`;
   return buildContextOutput(
     "UserPromptSubmit",
-    `[codexclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
+    `[cursorclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
   );
 }
 ```
@@ -653,7 +653,7 @@ if (advanced.kind === "no_active") {
 
 ## 6. `orchestrate-cli.ts` 상세 diff
 
-경로: `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts`
+경로: `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts`
 구분: **MODIFY**
 
 ### 6.1 import
@@ -751,7 +751,7 @@ if (advanced.kind === "no_active") {
     : `the bound goalplan "${state.slug}" has no active work-phase to close`;
   return buildContextOutput(
     "UserPromptSubmit",
-    `[codexclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
+    `[cursorclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
   );
 }
 ```
@@ -780,7 +780,7 @@ if (advanced.kind === "no_active") {
 ### 6.5 출력 문자열 조사와 기존 테스트 갱신
 
 wp4가 만드는 reason을 소비하는 Stop context, 채팅 D-close, CLI D-close를 조사했다. 다음 명령으로
-`plugins/codexclaw/components/pabcd-state/test/` 전체를 실제 검색했다. Stop 필드와 Stop 출력 문자열의
+`plugins/cursorclaw/components/pabcd-state/test/` 전체를 실제 검색했다. Stop 필드와 Stop 출력 문자열의
 단언은 §35 U3·U6에 따라 040에서 제거하고 060으로 넘긴다.
 
 ```bash
@@ -799,12 +799,12 @@ rg -n -F \
   -e 'waits for work-phase' \
   -e 'waits for task' \
   -e 'CYCLE-COMPLETION-01' \
-  plugins/codexclaw/components/pabcd-state/test/
+  plugins/cursorclaw/components/pabcd-state/test/
 ```
 
 | wp4가 소유하는 출력 문자열 | 기존 테스트 검색 결과 | 갱신 소유자·처분 |
 |---|---|---|
-| `dependencyDeadlock()` reason: `work-phase <id> is blocked (<reason>)` / `work-phase <id> waits for work-phase <id> (<status>)`; CLI D-close는 `Dependency deadlock: <reasons>`로 감싼다 | `plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts:904`가 기존 `/blocked or superseded/`를 기다려 확정 실패 | **reason 형식과 기존 CLI 단언 갱신은 wp4 소유.** 아래 diff로 정확한 새 reason을 기다리게 고친다. `dependencyDeadlock(plan).reasons`와 `dependencyWaitReasons(plan)`의 순수 helper golden은 §7.1이 소유한다 |
+| `dependencyDeadlock()` reason: `work-phase <id> is blocked (<reason>)` / `work-phase <id> waits for work-phase <id> (<status>)`; CLI D-close는 `Dependency deadlock: <reasons>`로 감싼다 | `plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts:904`가 기존 `/blocked or superseded/`를 기다려 확정 실패 | **reason 형식과 기존 CLI 단언 갱신은 wp4 소유.** 아래 diff로 정확한 새 reason을 기다리게 고친다. `dependencyDeadlock(plan).reasons`와 `dependencyWaitReasons(plan)`의 순수 helper golden은 §7.1이 소유한다 |
 
 `work-phase-states.test.ts:147`의 `blocked or superseded`는 테스트 이름이며 출력 assert가 아니다.
 `goalplan.test.ts:594`, `:708`, `hook.test.ts:644`, `:668`, `orchestrate-cli.test.ts:727`, `:794`의
@@ -817,8 +817,8 @@ rg -n -F \
 기존 테스트 갱신 diff:
 
 ```diff
---- a/plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts
-+++ b/plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts
+--- a/plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts
++++ b/plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts
 @@
    assert.equal(r.code, 1);
 -  assert.match(r.output, /blocked or superseded/);
@@ -874,7 +874,7 @@ export function readStopWorkContext(cwd: string, state: State): StopWorkContext 
     dependencyBlockedReason: deadlock
       ? `Dependency deadlock: no executable work remains while unfinished items exist: ${deadlock.reasons.join("; ")}`
       : null,
-    ledgerPath: `.codexclaw/goalplans/${slug}/ledger.jsonl`,
+    ledgerPath: `.cursorclaw/goalplans/${slug}/ledger.jsonl`,
   };
 }
 ```
@@ -892,7 +892,7 @@ export function readStopWorkContext(cwd: string, state: State): StopWorkContext 
 
 ### 7.1 `goalplan.test.ts`
 
-경로: `plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts`
+경로: `plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts`
 구분: **MODIFY**
 
 함수를 호출하는 테스트 파일이 자립하도록 import 전체 Before/After를 적는다.
@@ -1106,7 +1106,7 @@ test("wp4 compatibility: v2 plans without dependsOn keep the v1 selection result
 
 ### 7.2 `work-phase-states.test.ts`
 
-경로: `plugins/codexclaw/components/pabcd-state/test/work-phase-states.test.ts`
+경로: `plugins/cursorclaw/components/pabcd-state/test/work-phase-states.test.ts`
 구분: **MODIFY**
 
 함수를 호출하는 테스트 파일이 자립하도록 import 전체 Before/After를 적는다.
@@ -1281,7 +1281,7 @@ test("wp4: dependency wait reasons include phase and task waits", () => {
 
 ### 7.3 Stop 표면 테스트 인계
 
-경로: `plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts`
+경로: `plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts`
 구분: **040 변경 없음**
 
 040은 `readStopWorkContext()`의 `nextTaskTitle`·`dependencyBlockedReason` 필드와 Stop 출력 문자열을
@@ -1291,7 +1291,7 @@ test("wp4: dependency wait reasons include phase and task waits", () => {
 
 ### 7.4 `orchestrate-cli.test.ts`
 
-경로: `plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts`
+경로: `plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts`
 구분: **MODIFY**
 
 추가 케이스:
@@ -1411,10 +1411,10 @@ verification_tmp="$(mktemp -d)"
 trap 'rm -rf "$verification_tmp"' EXIT
 export TMPDIR="$verification_tmp"
 cd /Users/jun/Developer/new/700_projects/codexclaw
-node --experimental-strip-types --test plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts
-node --experimental-strip-types --test plugins/codexclaw/components/pabcd-state/test/work-phase-states.test.ts
-node --experimental-strip-types --test plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts
-node --experimental-strip-types --test plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts
+node --experimental-strip-types --test plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts
+node --experimental-strip-types --test plugins/cursorclaw/components/pabcd-state/test/work-phase-states.test.ts
+node --experimental-strip-types --test plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts
+node --experimental-strip-types --test plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts
 ```
 
 기대 결과:
@@ -1433,11 +1433,11 @@ cd /Users/jun/Developer/new/700_projects/codexclaw
 # 앵커 없는 패턴은 기존 '030: schema round-trips' 1건만 잡고도 exit 0이 된다.
 # 신규 3건이 실제로 등록됐는지 개수로 먼저 확인한다(P-phase stale check 260829).
 compatibility_case_count="$(rg -n 'test\("(wp4 compatibility:|030: schema round-trips)' \
-  plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts | wc -l | tr -d ' ')"
+  plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts | wc -l | tr -d ' ')"
 test "$compatibility_case_count" -eq 4
 node --experimental-strip-types --test \
   --test-name-pattern='^(wp4 compatibility:|030: schema round-trips)' \
-  plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts
+  plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts
 ```
 
 기대 결과:
@@ -1459,17 +1459,17 @@ cd /Users/jun/Developer/new/700_projects/codexclaw
 # 앵커 없는 'wp4:'는 기존 '260714 wp4:' 4건을 오탐해 신규 0건에서도 exit 0이 된다.
 # 개수 확인을 먼저 두고 패턴에 ^ 앵커를 붙인다(P-phase stale check 260829).
 wp4_case_count="$(rg -n 'test\("(wp4:|wp4 regression:|wp4 compatibility:)' \
-  plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts \
-  plugins/codexclaw/components/pabcd-state/test/work-phase-states.test.ts \
-  plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts | wc -l | tr -d ' ')"
+  plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts \
+  plugins/cursorclaw/components/pabcd-state/test/work-phase-states.test.ts \
+  plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts | wc -l | tr -d ' ')"
 test "$wp4_case_count" -eq 16
 node --experimental-strip-types --test \
   --test-name-pattern='^(wp4:|wp4 regression:|wp4 compatibility:)' \
-  plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts \
-  plugins/codexclaw/components/pabcd-state/test/work-phase-states.test.ts \
-  plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts
+  plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts \
+  plugins/cursorclaw/components/pabcd-state/test/work-phase-states.test.ts \
+  plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts
 node --experimental-strip-types --test \
-  plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts
+  plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts
 ```
 
 기대 결과:

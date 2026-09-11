@@ -2,7 +2,7 @@
 created: 2026-08-17
 status: record
 workPhase: wp5
-tags: [codexclaw, release, outcome]
+tags: [cursorclaw, release, outcome]
 ---
 
 # 060 — 결과 기록

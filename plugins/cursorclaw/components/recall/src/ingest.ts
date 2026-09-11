@@ -6,7 +6,7 @@
  * byte range (from the stored complete-line boundary) — this keeps
  * refresh-on-query at milliseconds even while multi-MB sessions are live.
  * Shrunk or rewritten files fall back to full re-parse; the AFTER DELETE/INSERT
- * triggers keep both FTS tables in sync. ~/.codex is only ever read.
+ * triggers keep both FTS tables in sync. ~/.cursor is only ever read.
  *
  * Byte offsets are byte offsets (not JS string lengths): boundaries come from
  * Buffer scans so multi-byte UTF-8 (Korean) cannot corrupt the resume point.

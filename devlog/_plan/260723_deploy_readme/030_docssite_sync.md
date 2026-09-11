@@ -15,7 +15,7 @@ Files (all under `docs-site/`):
 - L138 "12 hook JSON files" → 18 active hooks, with the event-family breakdown:
   session-start 4, user-prompt-submit 2, pre-tool-use 5, post-tool-use 2,
   stop 1, subagent-stop 1, post-compact 3 (= 18; source of truth:
-  `plugins/codexclaw/.codex-plugin/plugin.json`).
+  `plugins/cursorclaw/.cursor-plugin/plugin.json`).
 - L162 "green at 801 tests" → recompute at B (`npm test` tail; 1,201 as of
   2026-07-23).
 - GUI-as-shipped claims (audit 001 #11): mark consistently with README E6 —
@@ -35,7 +35,7 @@ Files (all under `docs-site/`):
 ## F2 — `src/content/docs/getting-started/installation.md`
 
 - L52-60 "codexclaw ships twelve hooks" → 18 active hooks.
-- Install wording: align with README E4 — add `codex plugin marketplace upgrade
+- Install wording: align with README E4 — add `Cursor plugin install upgrade
   codexclaw` (update), `codex plugin remove codexclaw@codexclaw` (uninstall),
   hook re-approval note, and the repo-checkout scope line for `cxc` (D6).
 - A-round-3 expansion:
@@ -49,7 +49,7 @@ Files (all under `docs-site/`):
 ## F3 — `src/content/docs/reference/hooks.md`
 
 - L6 "registers twelve hooks" → 18; refresh the hook inventory against
-  `plugins/codexclaw/.codex-plugin/plugin.json` (source of truth). The page is
+  `plugins/cursorclaw/.cursor-plugin/plugin.json` (source of truth). The page is
   missing SIX active registrations: session-start-injecting-recall-context,
   user-prompt-submit-detecting-recall-intent, post-compact-injecting-recall-
   context, post-compact-injecting-bg-terminal-affordance,

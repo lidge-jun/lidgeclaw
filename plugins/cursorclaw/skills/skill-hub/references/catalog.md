@@ -21,7 +21,7 @@ Load an on-demand skill explicitly by `$name` or SKILL.md path.
 | dev-frontend | `skills/dev-frontend/SKILL.md` | surface | UI components, CSS, client frameworks, viewport/a11y | false | none |
 | dev-uiux-design | `skills/dev-uiux-design/SKILL.md` | surface | design judgment, UX states, layout/typography/logos | false | none |
 | dev-testing | `skills/dev-testing/SKILL.md` | surface | test strategy, coverage, E2E, CI, TDD | false | none |
-| qa | `skills/qa/SKILL.md` | capability | manual surface-driving QA after building/changing a user-facing surface (web/TUI/CLI/API): evidence matrix, adversarial classes, teardown receipts | false | none (rides native browser/CU tools + `.codexclaw/evidence/`) |
+| qa | `skills/qa/SKILL.md` | capability | manual surface-driving QA after building/changing a user-facing surface (web/TUI/CLI/API): evidence matrix, adversarial classes, teardown receipts | false | none (rides native browser/CU tools + `.cursorclaw/evidence/`) |
 | dev-code-reviewer | `skills/dev-code-reviewer/SKILL.md` | surface | code review, antipatterns, pre-merge verdicts | false | none |
 | dev-security | `skills/dev-security/SKILL.md` | surface | auth, secrets, validation, OWASP, supply chain | false | none |
 | dev-devops | `skills/dev-devops/SKILL.md` | surface | containers, deploy pipelines, k8s, IaC, SRE | false | none |
@@ -29,7 +29,7 @@ Load an on-demand skill explicitly by `$name` or SKILL.md path.
 | search | `skills/search/SKILL.md` | capability | external/current/web lookups, deep research | true | none |
 | search (Tier 3) | `skills/search/SKILL.md` | capability | deep multi-source research (EXPAND/wave/journal/claim-ledger), Tier-3 explorer swarm | false | none (protocol rides base explorer; agbrowse HTTP proof is opt-in) |
 | lunasearch | `skills/lunasearch/SKILL.md` | capability | cheap parallel public-web discovery via Luna explorer subagents; depends on cxc-search for proof | false | none |
-| recall | `skills/recall/SKILL.md` | capability | past-session recall: search prior Codex chats (`cxc chat search`) + memory store (`cxc memory search`) before asking the user | true | none (reads Codex-native `~/.codex` artifacts read-only) |
+| recall | `skills/recall/SKILL.md` | capability | past-session recall: search prior Codex chats (`cxc chat search`) + memory store (`cxc memory search`) before asking the user | true | none (reads Codex-native `~/.cursor` artifacts read-only) |
 | ast-grep | `skills/ast-grep/SKILL.md` | capability | AST-shape search / deterministic codemods (rg-first for byte search) | false | needs `sg` binary (lazy-provisioned) |
 | repo-map | `skills/repo-map/SKILL.md` | capability | ranked whole-repo structure map (tree-sitter tags + PageRank) for C2+ exploration bootstrap | false | needs Python deps (one-time pip install; degrades to install hint) |
 | skill-hub | `skills/skill-hub/SKILL.md` | router | "which skill?", capability beyond dev | true | none |
@@ -37,7 +37,7 @@ Load an on-demand skill explicitly by `$name` or SKILL.md path.
 ## Loading rule
 
 On-demand skills do not appear in the auto-rendered `<skills_instructions>`
-list. To use one, mention it explicitly (`$cxc-dev-testing`) or open its SKILL.md
+list. To use one, mention it explicitly (`$crc-dev-testing`) or open its SKILL.md
 path. The `dev` hub also routes to the right surface skill by change-surface.
 
 ## Host-provided (not codexclaw skills)

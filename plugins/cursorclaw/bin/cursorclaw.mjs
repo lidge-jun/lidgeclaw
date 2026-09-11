@@ -37,7 +37,7 @@ export const COMMAND_TABLE = Object.freeze({
   uninstall: "config-guard",
   status: "config-guard",
   // `config` splits by subcommand: `interview` belongs to pabcd-state (which owns
-  // cursorclaw.json), everything else to config-guard (which owns ~/.codex/config.toml).
+  // cursorclaw.json), everything else to config-guard (which owns ~/.cursor/config.toml).
   config: "config-guard",
   doctor: "crc-ops",
   reset: "crc-ops",
@@ -82,12 +82,12 @@ const HELP = [
   "  receipt test -- <cmd>          run a check and record it for the C>D gate",
   "",
   "Core:",
-  "  enable | disable | status      declared Codex feature flags",
+  "  enable | disable | status      declared Cursorclaw feature flags",
   "  config                         managed config.toml keys + interview policy",
   "  doctor | reset | hooks         plugin health / state reset / hook re-trust",
   "",
   "Workspace intelligence:",
-  '  chat search "q" | memory search "q"   recall over ~/.codex artifacts',
+  '  chat search "q" | memory search "q"   recall over ~/.cursor artifacts',
   "  skill search|show              dormant-skill discovery",
   "",
   "Operations:",
@@ -131,7 +131,7 @@ if (isMain) {
   if (cmd === "version" || cmd === "--version" || cmd === "-v") {
     try {
       const manifest = JSON.parse(
-        readFileSync(join(payloadRoot, ".codex-plugin", "plugin.json"), "utf8"),
+        readFileSync(join(payloadRoot, ".cursor-plugin", "plugin.json"), "utf8"),
       );
       console.log(manifest.version ?? "unknown");
       process.exit(0);

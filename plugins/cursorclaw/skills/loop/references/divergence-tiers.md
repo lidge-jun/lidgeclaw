@@ -40,7 +40,7 @@ wall-clock time and collapse-owner attention, not tokens.
 
 Lane research is performed by read-only EXPLORER subagents that return findings and
 evidence only. The MAIN session writes the candidate document, or assigns it to a
-scoped WORKER whose write scope is the devlog unit or `.codexclaw/divergence/`.
+scoped WORKER whose write scope is the devlog unit or `.cursorclaw/divergence/`.
 Explorers never write files.
 
 The front-matter lives in the candidate document. `cxc divergence candidate add`
@@ -55,7 +55,7 @@ For research-heavy units, the first Tier-1 dispatch SHOULD be a blindspot/unknow
 so candidates come from evidence rather than parameter tweaks.
 
 Topology is star, not mesh: subagents neither message one another nor spawn workers.
-Exchange is file-mediated through `.codexclaw/divergence/` and the devlog unit.
+Exchange is file-mediated through `.cursorclaw/divergence/` and the devlog unit.
 
 ## Provenance And Ownership
 
@@ -86,5 +86,5 @@ overfitting stop signal and re-plan before keeping the candidate.
 This is E7 doctrine plus project-local evidence. The only shipped E2 lever is the
 goal-mode Stop hook's plateau block; HITL divergence entry is human- or agent-selected.
 Worktree creation, harness execution, and candidate races are agent-executed work, not
-background automation. `.codexclaw/divergence/` files are durable evidence, not an
+background automation. `.cursorclaw/divergence/` files are durable evidence, not an
 automatic control source; active mode alone cannot move phases or build candidates.

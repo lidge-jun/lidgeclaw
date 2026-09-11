@@ -6,7 +6,7 @@ VERSION=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("v
 CONTEXT=$(cat <<CTX
 cursorclaw ${VERSION} loaded for Cursor.
 PABCD / skill discipline is available via plugin skills (crc-*/cxc-* folders).
-State directory: .cursorclaw/ (Codex-era .codexclaw still recognized during port).
+State directory: .cursorclaw/ (Codex-era .cursorclaw still recognized during port).
 CLI: node bin/cursorclaw.mjs (alias: crc) — orchestrate/doctor/map still porting from cxc.
 CTX
 )

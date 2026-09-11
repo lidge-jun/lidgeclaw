@@ -48,13 +48,13 @@ scripts/dev-install.sh
 ```
 
 **Corrected rationale (AUDIT-A2).** The shipped `dist/` is TRACKED, not ignored:
-`git ls-files 'plugins/codexclaw/components/*/dist/*'` returns 160 files and `git check-ignore`
+`git ls-files 'plugins/cursorclaw/components/*/dist/*'` returns 160 files and `git check-ignore`
 exits 1 on them. The bare `dist/` line at `.gitignore:2` does not apply to already-tracked files.
 PR 91 and 93 each ship their own compiled output, so after both merge the committed `dist/` is the
 concatenation of two separately-built trees.
 
 The rebuild therefore proves that the merged SOURCES compile to the committed ARTIFACTS. The real
-acceptance signal is that `git status --porcelain plugins/codexclaw/components/*/dist/` is EMPTY
+acceptance signal is that `git status --porcelain plugins/cursorclaw/components/*/dist/` is EMPTY
 after `npm run build`. A non-empty result means the two PRs' builds disagree with the merged
 source and must be reconciled and committed before the install.
 
@@ -63,12 +63,12 @@ source and must be reconciled and committed before the install.
 | Criterion | Command | Expected |
 |---|---|---|
 | c-8 | `git rev-parse HEAD origin/dev` | identical SHAs |
-| build | `git status --porcelain plugins/codexclaw/components/*/dist/` | empty after `npm run build` |
+| build | `git status --porcelain plugins/cursorclaw/components/*/dist/` | empty after `npm run build` |
 | c-9 | `npm test` | 0 failures on the merged head |
 | c-4 | `npm run gate` | OK |
-| c-10 | `diff -rq plugins/codexclaw <cache>/<version>` | exit 0 |
+| c-10 | `diff -rq plugins/cursorclaw <cache>/<version>` | exit 0 |
 | c-10 | `find <cache> -type l | wc -l` | 0 |
-| c-10 | `node <cache>/<version>/bin/cxc.mjs doctor` | `overall: PASS` |
+| c-10 | `node <cache>/<version>/bin/cursorclaw.mjs doctor` | `overall: PASS` |
 
 Every one of these runs AFTER the final merge, not before. Evidence gathered at the wp1 baseline
 does not certify the merged head.

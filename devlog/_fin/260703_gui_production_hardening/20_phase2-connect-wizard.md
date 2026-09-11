@@ -14,7 +14,7 @@ After Connect, the card actually shows "waiting for /start" until pairing is det
 then a paired confirmation. An active channel with zero paired chats stops pretending
 to be fine: it shows a warning and a button to open a new pairing window.
 
-## Part 2 — diff-level (single file: `plugins/codexclaw/gui/src/pages/Channels.tsx`)
+## Part 2 — diff-level (single file: `plugins/cursorclaw/gui/src/pages/Channels.tsx`)
 
 1. Render precedence: wizard state wins over `active`:
    `step === "awaiting-start" ? wait : step === "paired" ? paired : active ? live : form`.

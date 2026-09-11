@@ -1,7 +1,7 @@
 ---
 created: 2026-07-07
 status: research-done, phase1-shipped
-tags: [codexclaw, memory, codex-rs, cli-jaw, jawcode, recall, architecture]
+tags: [cursorclaw, memory, codex-rs, cli-jaw, jawcode, recall, architecture]
 aliases: [memory system research, codex memory integration analysis]
 ---
 
@@ -101,7 +101,7 @@ summary_injection_token_limit = 5000
 ### 1.7 아티팩트 구조
 
 ```
-~/.codex/memories/
+~/.cursor/memories/
 |-- .git/                    # git-baselined workspace
 |-- memory_summary.md        # prompt에 항상 주입되는 라우팅 요약
 |-- MEMORY.md                # grep-friendly 핸드북
@@ -254,22 +254,22 @@ Codex의 오픈소스 메모리 아키텍처를 가장 직접적으로 채택한
 ### 4.1 아키텍처 개요
 
 Codexclaw recall은 **Codex 네이티브 persistence에 대한 read-only 검색 레이어**이다.
-메모리를 생성하지 않으며, `~/.codex/`의 세션/메모리 아티팩트를 검색만 한다.
+메모리를 생성하지 않으며, `~/.cursor/`의 세션/메모리 아티팩트를 검색만 한다.
 
 ```
-~/.codex/ (source of truth, read-only)
+~/.cursor/ (source of truth, read-only)
   |-- sessions/**/rollout-*.jsonl
   |-- archived_sessions/*.jsonl
   |-- memories/**/*.md
   +-- memories_<N>.sqlite
          | ingest (incremental)
-~/.codexclaw/recall/index.sqlite (derived cache, rebuildable)
+~/.cursorclaw/recall/index.sqlite (derived cache, rebuildable)
   |-- msgs (content table)
   |-- msgs_fts (unicode61 FTS5)
   +-- msgs_tri (trigram FTS5, CJK)
 ```
 
-소스 위치: `plugins/codexclaw/components/recall/`
+소스 위치: `plugins/cursorclaw/components/recall/`
 
 ### 4.2 검색 기능
 
@@ -311,7 +311,7 @@ cxc memory search "<query>" [--days N] [--limit N]
 
 | | Option A: Codex 네이티브 통합 | Option B: 자체 메모리 (cli-jaw식) | Option C: 얇은 하이브리드 |
 |---|---|---|---|
-| **핵심** | Codex가 생성한 `~/.codex/memories/`를 그대로 소비 | 자체 extraction/consolidation 파이프라인 구축 | 저장은 Codex에 맡기고, codexclaw은 검색/주입/증거 연결만 강화 |
+| **핵심** | Codex가 생성한 `~/.cursor/memories/`를 그대로 소비 | 자체 extraction/consolidation 파이프라인 구축 | 저장은 Codex에 맡기고, codexclaw은 검색/주입/증거 연결만 강화 |
 | **장점** | 유지보수 비용 0, Codex 업데이트 자동 반영, 이미 recall이 이 구조 위에 작동 | 완전한 통제, Codex 변경에 독립, CJK/reflection/injection 커스터마이징 자유 | 중복 저장소 없이 실사용 품질 개선, plugin 경계와 잘 맞음 |
 | **단점** | Codex 구현 변경에 종속, write API 없음, 커스터마이징 한계 | 대규모 개발 비용, Codex 메모리와 중복, model API 비용 | Codex native memory의 write 타이밍/선별은 직접 통제 불가 |
 | **Model 비용** | 0 (Codex가 지불) | Phase 1/2 model 호출 비용 발생 | 0에 가깝게 유지 가능 |
@@ -332,7 +332,7 @@ Codex 네이티브 메모리는 이미 잘 작동한다:
 
 ### 5.3 2026-07-07 수정 결론: 별도 일반 메모리 저장소는 만들지 않는다
 
-사용자 피드백으로 결론을 좁혔다. `~/.codexclaw/memory/` 같은 **일반 메모리 저장소**를 만드는 것은
+사용자 피드백으로 결론을 좁혔다. `~/.cursorclaw/memory/` 같은 **일반 메모리 저장소**를 만드는 것은
 당장 필요하지 않다. Codex가 이미 native memory를 생성/통합/주입하고 있고, codexclaw이 같은 목적의
 메모리 저장소를 하나 더 만들면 중복과 혼선이 생긴다.
 
@@ -340,25 +340,25 @@ Codex 네이티브 메모리는 이미 잘 작동한다:
 
 | 질문 | 답 |
 |---|---|
-| Codex 메모리를 저장할 수 있는가? | **있다.** Codex 자체가 `~/.codex/memories/`와 state DB에 저장한다. |
+| Codex 메모리를 저장할 수 있는가? | **있다.** Codex 자체가 `~/.cursor/memories/`와 state DB에 저장한다. |
 | codexclaw이 Codex native memory에 저장 요청을 보낼 수 있는가? | **안정적인 public write API는 없다고 보는 게 맞다.** |
 | 설정으로 저장을 통제할 수 있는가? | **부분적으로만 가능하다.** 생성/사용 enable, 모델, idle/age/batch/rate-limit 같은 파이프라인 knob은 있다. |
 | 파일을 직접 수정할 수 있는가? | 파일시스템상 가능하지만 **권장하지 않는다.** Codex Phase 2가 다시 정리하거나 덮어쓸 수 있고, 내부 기대값을 깨뜨릴 수 있다. |
 | codexclaw 자체 메모리 저장소가 필요한가? | 일반 memory 목적이면 **불필요**. 필요한 것은 검색 품질과 workflow evidence다. |
 
-따라서 `~/.codexclaw/memory/`는 당장 만들지 않는다. 특히 다음을 하지 않는다:
+따라서 `~/.cursorclaw/memory/`는 당장 만들지 않는다. 특히 다음을 하지 않는다:
 
 - Codex native memory와 같은 성격의 `MEMORY.md`, `profile.md`, `episodes/`, `semantic/` 복제
 - 자체 Phase 1/Phase 2 extraction/consolidation 파이프라인
-- Codex의 `~/.codex/memories/`에 직접 쓰는 writer
+- Codex의 `~/.cursor/memories/`에 직접 쓰는 writer
 - "나중에 유용할 수도 있는" 일반 facts 저장소
 
 codexclaw이 맡을 일은 더 좁다:
 
 1. **Codex memory를 잘 찾는다.**
-   - `~/.codex/sessions/**/rollout-*.jsonl`
-   - `~/.codex/memories/**/*.md`
-   - `~/.codex/memories_<N>.sqlite` / `stage1_outputs`
+   - `~/.cursor/sessions/**/rollout-*.jsonl`
+   - `~/.cursor/memories/**/*.md`
+   - `~/.cursor/memories_<N>.sqlite` / `stage1_outputs`
 
 2. **찾은 내용을 현재 워크플로우에 맞게 연결한다.**
    - PABCD phase 시작 시 과거 유사 작업을 recall
@@ -397,7 +397,7 @@ Codex memory는 완전히 블랙박스가 아니다. 하지만 "원하는 항목
 
 파일 직접 수정에 대한 판단:
 
-- `~/.codex/memories/MEMORY.md`나 `memory_summary.md`를 사람이 수정하는 것은 가능하다.
+- `~/.cursor/memories/MEMORY.md`나 `memory_summary.md`를 사람이 수정하는 것은 가능하다.
 - 그러나 plugin writer가 자동으로 수정하는 것은 위험하다.
 - Phase 2의 git-baselined workspace/diff/reset 흐름과 충돌할 수 있다.
 - Codex의 내부 모델/스키마/프롬프트가 바뀌면 codexclaw writer가 stale해진다.
@@ -405,7 +405,7 @@ Codex memory는 완전히 블랙박스가 아니다. 하지만 "원하는 항목
 
 ### 5.5 구현 로드맵 (수정)
 
-**Phase 0 (현재)**: recall read-only search over `~/.codex/`
+**Phase 0 (현재)**: recall read-only search over `~/.cursor/`
 
 **Phase 1**: recall 검색 품질 강화
 - `memory-search`에 FTS5 인덱스 적용
@@ -424,7 +424,7 @@ Codex memory는 완전히 블랙박스가 아니다. 하지만 "원하는 항목
 
 **Phase 4** (Optional, 보류): codexclaw-specific retention
 - 일반 memory가 아니라 "workflow failure shield"처럼 좁은 목적일 때만 검토
-- 저장 위치도 `~/.codexclaw/memory/`가 아니라 해당 기능의 evidence store가 우선
+- 저장 위치도 `~/.cursorclaw/memory/`가 아니라 해당 기능의 evidence store가 우선
 - LLM-based consolidation은 기본값이 아니며, 충분한 실패 사례가 쌓일 때만 다시 검토
 
 ---
@@ -434,7 +434,7 @@ Codex memory는 완전히 블랙박스가 아니다. 하지만 "원하는 항목
 | 축 | Codex Native | cli-jaw | Jawcode | Codexclaw (현재) |
 |---|---|---|---|---|
 | 메모리 생성 | LLM 2-phase pipeline | LLM flush + heuristic reflect | LLM 2-phase pipeline | 없음 |
-| 저장소 | `~/.codex/memories/` + state DB | `JAW_HOME/memory/structured/` | agent DB + filesystem | `~/.codexclaw/recall/index.sqlite` (캐시) + goalplan/ledger evidence |
+| 저장소 | `~/.cursor/memories/` + state DB | `JAW_HOME/memory/structured/` | agent DB + filesystem | `~/.cursorclaw/recall/index.sqlite` (캐시) + goalplan/ledger evidence |
 | 검색 | `cat`/`grep` on-demand | FTS5 + trigram + BM25 + RRF | summary prompt injection | FTS5 + trigram (chat), paragraph scan (memory) |
 | CJK 지원 | model-dependent | trigram + LIKE + synonym | model-dependent | trigram + LIKE |
 | Prompt 주입 | `memory_summary.md` auto-inject | role-based injection policy | `memory_summary.md` auto-inject | hook nudge (검색 권유만) |
@@ -512,27 +512,27 @@ Codex memory는 완전히 블랙박스가 아니다. 하지만 "원하는 항목
 - `docs/memory.md` -- memory architecture doc
 
 ### Codexclaw
-- `plugins/codexclaw/components/recall/src/index-db.ts` -- sidecar FTS index
-- `plugins/codexclaw/components/recall/src/ingest.ts` -- rollout ingestion
-- `plugins/codexclaw/components/recall/src/chat-search.ts` -- chat search
-- `plugins/codexclaw/components/recall/src/memory-search.ts` -- memory search
-- `plugins/codexclaw/components/recall/src/index-search.ts` -- FTS query compilation
-- `plugins/codexclaw/components/recall/src/hook.ts` -- Codex hook integration
-- `plugins/codexclaw/skills/recall/SKILL.md` -- recall skill definition
+- `plugins/cursorclaw/components/recall/src/index-db.ts` -- sidecar FTS index
+- `plugins/cursorclaw/components/recall/src/ingest.ts` -- rollout ingestion
+- `plugins/cursorclaw/components/recall/src/chat-search.ts` -- chat search
+- `plugins/cursorclaw/components/recall/src/memory-search.ts` -- memory search
+- `plugins/cursorclaw/components/recall/src/index-search.ts` -- FTS query compilation
+- `plugins/cursorclaw/components/recall/src/hook.ts` -- Codex hook integration
+- `plugins/cursorclaw/skills/recall/SKILL.md` -- recall skill definition
 
 ---
 
 ## 9. 구현 기록 (2026-07-07): Phase 1 패치 출하
 
 5.5 로드맵의 Phase 1을 HOTL PABCD 3-cycle 루프로 구현했다. 세션 `019f3982-0774`,
-goalplan `.codexclaw/goalplans/recall-phase-1-read-side-search-quality-patch-po/`
+goalplan `.cursorclaw/goalplans/recall-phase-1-read-side-search-quality-patch-po/`
 (ledger.jsonl에 phase/criteria 증거 전체). 사용자 지시대로 **자체 메모리 저장소는
-만들지 않았다** — `~/.codexclaw/memory/`는 존재하지 않고, `~/.codex/`에는 아무것도
+만들지 않았다** — `~/.cursorclaw/memory/`는 존재하지 않고, `~/.cursor/`에는 아무것도
 쓰지 않았다. 순수 read-side 검색 품질 패치다.
 
 ### 9.1 WP1 — kind-priority + recency half-life 랭킹 (DONE)
 
-`plugins/codexclaw/components/recall/src/memory-search.ts`:
+`plugins/cursorclaw/components/recall/src/memory-search.ts`:
 
 - `kindOfRelpath()`: Codex 메모리 아티팩트를 kind로 분류 —
   `memory_summary.md`=summary, `MEMORY.md`=handbook, `skills/**`=skill,
@@ -620,7 +620,7 @@ half-life 상수(cli-jaw 이식)는 LangChain 기본(69h 반감)보다 완만한
 
 | Agent | 접근 방식 | 자동 추출 | 검색 | Source |
 |---|---|---|---|---|
-| **Codex** | 2-phase pipeline -> `~/.codex/memories/` | O (opt-in) | on-demand cat/grep | [docs](https://developers.openai.com/codex/memories) |
+| **Codex** | 2-phase pipeline -> `~/.cursor/memories/` | O (opt-in) | on-demand cat/grep | [docs](https://developers.openai.com/codex/memories) |
 | **Claude Code** | Memory tool + Dreams consolidation | O | `/mnt/memory/` file search | [docs](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool) |
 | **Gemini CLI** | `GEMINI.md` hierarchy + Auto Memory | O (experimental) | `/memory show` | [docs](https://geminicli.com/docs/cli/auto-memory/) |
 | **Aider** | `CONVENTIONS.md` read-only | X | manual `/read` | [docs](https://aider.chat/docs/usage/conventions.html) |

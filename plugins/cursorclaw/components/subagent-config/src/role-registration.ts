@@ -12,7 +12,7 @@ export function resolveNativeRoleHome(
   env: NodeJS.ProcessEnv = process.env,
   userHome: string = homedir(),
 ): string {
-  const fromEnv = env.CODEX_HOME;
+  const fromEnv = env.CURSOR_HOME;
   if (fromEnv) return fromEnv;
   return join(userHome, ".codex");
 }

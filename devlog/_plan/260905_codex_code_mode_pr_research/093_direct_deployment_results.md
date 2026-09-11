@@ -60,7 +60,7 @@ file proof, native re-trust log/config backup and doctor output. Config bytes we
 not copied off-host. The previously tested isolated copy-install rollback remains
 distinct from macmini's source-linked update; no production rollback was needed.
 
-Local non-secret receipts: .codexclaw/evidence/01a0702d-c493-7510-801f-7d8772a2689c/
+Local non-secret receipts: .cursorclaw/evidence/01a0702d-c493-7510-801f-7d8772a2689c/
 direct-8267fa9/{expected.json,suji-applied.json,windows-applied.json,mac-source-linked-proof.json}.
 
 ## Explicitly not completed

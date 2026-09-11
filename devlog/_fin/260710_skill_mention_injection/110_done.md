@@ -6,9 +6,9 @@
 ## What shipped
 
 1. `spawn-attach-hook.ts`: `normalizeSkillMentions` — conservative line-based
-   scanner (FAILSAFE-SPAN-01: protect on any ambiguity). Bare `$cxc-<f>` /
+   scanner (FAILSAFE-SPAN-01: protect on any ambiguity). Bare `$crc-<f>` /
    `$codexclaw:cxc-<f>` tokens on plain lines rewrite to the canonical
-   `[$cxc-<f>](skill://<abs SKILL.md>)`; standalone broken-target cxc links are
+   `[$crc-<f>](skill://<abs SKILL.md>)`; standalone broken-target cxc links are
    repaired; existing /SKILL.md targets, code, and mixed lines are untouched.
    Wired into both v1 (model routing) and v2 (leaf guard) envelope paths; D1
    deny unchanged. skillsDir: CXC_SKILLS_DIR override -> script-relative.

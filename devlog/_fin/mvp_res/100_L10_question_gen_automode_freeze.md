@@ -20,13 +20,13 @@ artifact is and what must not be reopened after a goal starts.
 
 ## Scope (decision-complete)
 - Files to add/edit:
-  - `plugins/codexclaw/components/pabcd-state/src/hook.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/state.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/cli.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/hook.test.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/state.test.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/cli.test.ts`
-  - `.codexclaw/plan/` format docs if the component owns local fixtures
+  - `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/state.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/cli.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/hook.test.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/state.test.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/cli.test.ts`
+  - `.cursorclaw/plan/` format docs if the component owns local fixtures
 - Question UX follows 080.2 M1:
   - Explain the background.
   - Explain why the decision matters.
@@ -51,7 +51,7 @@ artifact is and what must not be reopened after a goal starts.
   - (`ledger_only` removed in Pass 1; non-blocking items become recorded assumptions — see L8.3/L10.2)
   - `genuine-deadlock` blocks only for true human-authority gaps.
 - Freeze:
-  - plan file under `.codexclaw/plan/` is the canonical spec surface.
+  - plan file under `.cursorclaw/plan/` is the canonical spec surface.
   - freeze creates or updates a manifest hash that binds the plan revision.
   - goal start compares the manifest hash to the current plan file.
   - if changed, warn and re-freeze current file before use; stale execution is
@@ -60,7 +60,7 @@ artifact is and what must not be reopened after a goal starts.
   - represent a pending question or require main-session discipline that refuses
     unrelated free-form answers while waiting.
 - T8 checklist:
-  - namespace `.codexclaw/plan/` by session or slug, or choose an explicit owner
+  - namespace `.cursorclaw/plan/` by session or slug, or choose an explicit owner
     lock before supporting concurrent sessions.
 - T9 checklist:
   - document mutable-current freeze semantics versus immutable snapshot semantics.
@@ -99,9 +99,9 @@ artifact is and what must not be reopened after a goal starts.
    impact text suitable for `request_user_input`.
 
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
-- `node --test plugins/codexclaw/components/pabcd-state/test/hook.test.ts`
-- `node --test plugins/codexclaw/components/pabcd-state/test/state.test.ts`
-- `node --test plugins/codexclaw/components/pabcd-state/test/cli.test.ts`
+- `node --test plugins/cursorclaw/components/pabcd-state/test/hook.test.ts`
+- `node --test plugins/cursorclaw/components/pabcd-state/test/state.test.ts`
+- `node --test plugins/cursorclaw/components/pabcd-state/test/cli.test.ts`
 - CLI stdout: `cxc interview freeze --dry-run` prints manifest path, sha256,
   readiness result, and OPEN ASSUMPTIONS count if this command is introduced.
 

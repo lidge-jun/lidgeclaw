@@ -28,4 +28,4 @@ Banach (`01a07094-bb72-7e92-818e-3ce4f4fab5d7`) inspected the actual remote arti
 
 Main then checked the verifier's out-of-scope provenance gaps: live PID38505 command names `/Users/junny/opencodex`, startup15:29:27KST follows the authorized update, the source remains clean at a687eb735, and rereading the complete usage log finds exactly the same two correlated request IDs. This is operator/source association evidence, not cryptographic attestation of process memory. Native hook invocation counts remain unobserved; synthetic counts are separate.
 
-Reviewed private evidence copy: `.codexclaw/evidence/01a0702d-c493-7510-801f-7d8772a2689c/wp1-baseline-003/`. Failed001/002 remain remote and are not merged into the eligible sample.
+Reviewed private evidence copy: `.cursorclaw/evidence/01a0702d-c493-7510-801f-7d8772a2689c/wp1-baseline-003/`. Failed001/002 remain remote and are not merged into the eligible sample.

@@ -20,7 +20,7 @@ Evidence base:
 ## Loop-spec
 
 - Loop archetype: verifier-defined (component test suites + receipts on win32 and WSL).
-- Write scope: plugins/codexclaw/components/**, plugins/codexclaw/scripts/**, cli/,
+- Write scope: plugins/cursorclaw/components/**, plugins/cursorclaw/scripts/**, cli/,
   bin/, scripts/, .gitattributes, devlog/_plan/260821_win-linux-optimization/**.
 - Out of scope: ../opencodex (read-only reference), messenger-bridge feature work,
   docs-site, gui feature work.

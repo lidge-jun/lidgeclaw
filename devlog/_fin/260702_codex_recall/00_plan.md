@@ -1,13 +1,13 @@
 ---
 created: 2026-07-02
-tags: [codexclaw, recall, chat-search, memory-search, fts5, plan]
-aliases: [codex recall plan, chat/memory search over ~/.codex]
+tags: [cursorclaw, recall, chat-search, memory-search, fts5, plan]
+aliases: [codex recall plan, chat/memory search over ~/.cursor]
 ---
 
 # 260702 codex-recall — cli-jaw-parity chat/memory search over the Codex session root
 
 > Goal (user directive): implement `jaw dashboard chat search` / `jaw dashboard memory search`
-> equivalents on top of `~/.codex`, with trigger integration, iterated via PABCD until an
+> equivalents on top of `~/.cursor`, with trigger integration, iterated via PABCD until an
 > independent subagent judges the result SUPERIOR to cli-jaw's implementation.
 
 ## Part 1 — What is being built (plain terms)
@@ -26,10 +26,10 @@ everything we need — richer, in fact:
 
 | Need | Codex source |
 | --- | --- |
-| chat transcripts | `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` (1,508 files observed) |
-| thread metadata | `~/.codex/state_5.sqlite` `threads` (title, first_user_message, preview, cwd, git_branch, rollout_path, ms timestamps) |
-| user prompt log | `~/.codex/history.jsonl` |
-| memory store | `~/.codex/memories/*.md`, `rollout_summaries/*.md`, `memories_1.sqlite` `stage1_outputs` (raw_memory, rollout_summary) |
+| chat transcripts | `~/.cursor/sessions/YYYY/MM/DD/rollout-*.jsonl` (1,508 files observed) |
+| thread metadata | `~/.cursor/state_5.sqlite` `threads` (title, first_user_message, preview, cwd, git_branch, rollout_path, ms timestamps) |
+| user prompt log | `~/.cursor/history.jsonl` |
+| memory store | `~/.cursor/memories/*.md`, `rollout_summaries/*.md`, `memories_1.sqlite` `stage1_outputs` (raw_memory, rollout_summary) |
 
 ## Work-phase map (multi-pass PABCD)
 
@@ -46,7 +46,7 @@ Class: **C3** (new public CLI surface, cross-session read path; no persistence y
 
 ### Hard constraints (from repo SOT)
 
-- Build is Node type-stripping (`plugins/codexclaw/scripts/build.mjs`): **zero third-party runtime
+- Build is Node type-stripping (`plugins/cursorclaw/scripts/build.mjs`): **zero third-party runtime
   deps**, imports only `node:*` + relative `./x.ts`. SQLite access therefore uses **`node:sqlite`
   (DatabaseSync)** — verified locally: FTS5 + trigram tokenizer work (SQLite 3.51.2).
 - Codex-owned DBs (`state_5.sqlite`, `memories_1.sqlite`) are sqlx-migrated, WAL, live. Open
@@ -63,38 +63,38 @@ local chat indexers, and chat databases; D1' (`devlog/_fin/mvp_res/204_L20.4`, c
 "no self-implemented search" boundary.
 
 This work-phase re-scopes that boundary under the owner directive of 2026-07-02 (goal:
-implement cli-jaw-parity chat/memory search over `~/.codex`), which is precisely the
+implement cli-jaw-parity chat/memory search over `~/.cursor`), which is precisely the
 "later loop explicitly designs a Codex-native replacement" escape hatch L10 reserved.
 Differentiation from the retired model — the recall component:
 
 - does NOT wrap app-server `thread/search` (no server, no protocol client) — D1' stands;
 - does NOT create a memory store or chat database codexclaw writes to — it READS Codex's
   own native persistence (`sessions/*.jsonl`, `state_5.sqlite`, `memories/`) read-only;
-- WP2's sidecar FTS index is a rebuildable derived cache outside `~/.codex`-owned files,
+- WP2's sidecar FTS index is a rebuildable derived cache outside `~/.cursor`-owned files,
   not a second source of truth.
 
 Same-change SOT edits (repo rule: never leave code/SOT silently divergent):
 `structure/INDEX.md` (component map + retirement paragraph pointer),
 `100_L10_...md` + `204_L20.4_...md` (SUPERSEDED-IN-PART notes, owner directive 2026-07-02).
 
-### NEW `plugins/codexclaw/components/recall/`
+### NEW `plugins/cursorclaw/components/recall/`
 
 | File | Responsibility |
 | --- | --- |
 | `package.json` | `@codexclaw/recall`, private, `"type": "module"`, main `dist/cli.js`, test `node --test` |
-| `src/paths.ts` | `codexHome()` = `$CODEX_HOME ?? ~/.codex`; all data paths derived here |
+| `src/paths.ts` | `codexHome()` = `$CURSOR_HOME ?? ~/.cursor`; all data paths derived here |
 | `src/rollout.ts` | date-pruned iteration of `sessions/YYYY/MM/DD/*.jsonl`; line-level lazy parse: cheap lowercase substring prefilter BEFORE `JSON.parse`; extract `session_meta` + `response_item` messages (role, text, ts); classify injected scaffolding (`<INSTRUCTIONS>`, `<permissions instructions>`, `<ENVIRONMENT_CONTEXT>`, AGENTS.md preamble) as `synthetic` |
 | `src/threads-db.ts` | readOnly `node:sqlite` open of `state_5.sqlite`; thread metadata map (title, cwd, git_branch) keyed by thread id; fail-soft null |
 | `src/chat-search.ts` | query → words (≤8), case-insensitive; **AND default, `--any` for cli-jaw-style OR**; filters: days (dir-date pruning, **default 7**, `--days 0` = all history), cwd prefix, role, `--source main\|subagent\|all` (**default main**; cli-jaw cannot search subagent transcripts at all), tool_log matching (function_call/function_call_output, parity with cli-jaw match_field); context window ±N messages; limit (default 50, cap 200); results newest-first |
 | `src/memory-search.ts` | scan `memories/**/*.md` (incl. `rollout_summaries/`) + readOnly LIKE query over `stage1_outputs(raw_memory, rollout_summary)`; dedupe by thread/file; excerpt with match highlight |
 | `src/format.ts` | jaw-style text output (`[ts] (role) excerpt` + `---`) and `--json` envelope `{hits, warnings, scanned}` |
 | `src/cli.ts` | `node:util` parseArgs; argv contract `[kind, "search", ...]`, kind ∈ `chat`\|`memory` (mirrors pabcd-state delegator style) |
-| `test/*.test.ts` | fixture `CODEX_HOME` in tmpdir: synthetic rollout JSONLs (+Korean text), synthetic state_5/memories sqlite built via `node:sqlite`; cover AND/OR, --days pruning, cwd/role filters, context, synthetic-message exclusion, sqlite-missing degradation, Korean queries |
+| `test/*.test.ts` | fixture `CURSOR_HOME` in tmpdir: synthetic rollout JSONLs (+Korean text), synthetic state_5/memories sqlite built via `node:sqlite`; cover AND/OR, --days pruning, cwd/role filters, context, synthetic-message exclusion, sqlite-missing degradation, Korean queries |
 
 ### MODIFY
 
-- `plugins/codexclaw/scripts/build.mjs` — `COMPONENTS` += `"recall"`.
-- `package.json` (root) — test glob += `plugins/codexclaw/components/recall/test/*.test.ts`.
+- `plugins/cursorclaw/scripts/build.mjs` — `COMPONENTS` += `"recall"`.
+- `package.json` (root) — test glob += `plugins/cursorclaw/components/recall/test/*.test.ts`.
 - `bin/codexclaw.mjs` — route `chat` + `memory` commands to `components/recall/dist/cli.js`
   (same spawnSync delegator pattern; update help line).
 
@@ -113,10 +113,10 @@ WP2's FTS index is the real fix for full-history instant search (cli-jaw superio
 
 ### Non-goals in WP1
 
-- No index/persistence (WP2). No hook/skill changes (WP3). No writes anywhere under `~/.codex`.
+- No index/persistence (WP2). No hook/skill changes (WP3). No writes anywhere under `~/.cursor`.
 
 ### Verification (C gate)
 
 - `npm run build` clean (includes layout validation), `npm test` green including new suite,
-  live smoke: `cxc chat search` against the real `~/.codex` with Korean + English queries,
+  live smoke: `cxc chat search` against the real `~/.cursor` with Korean + English queries,
   `--days 3` pruning check, memory search hit on a known `rollout_summaries` topic.

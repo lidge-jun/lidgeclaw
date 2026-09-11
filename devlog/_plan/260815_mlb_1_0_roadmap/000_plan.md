@@ -31,7 +31,7 @@ scouting bundle, and release gate.
 - Implement unified cxc doctor typed result with --json
 - Add lifecycle evidence matrix (install/upgrade/recovery/uninstall)
 - Deterministic fixtures and CI coverage
-- Component: cxc-ops (plugins/codexclaw/components/cxc-ops/)
+- Component: cxc-ops (plugins/cursorclaw/components/cxc-ops/)
 - Dependencies: none new
 
 ### Phase 3 (030): architecture(native) — issue #16
@@ -44,7 +44,7 @@ scouting bundle, and release gate.
 - Define DispatchPacket and DispatchReceipt schemas
 - Schema validation
 - V1/V2 adapter tests
-- Component: subagent-config (plugins/codexclaw/components/subagent-config/)
+- Component: subagent-config (plugins/cursorclaw/components/subagent-config/)
 - Dependencies: none new
 
 ### Phase 5 (050): measurement(rules) — issue #18

@@ -46,7 +46,7 @@ ultraresearch SKILL.md content into search SKILL.md as a Tier 3 section.
 - MODIFY `skills/loop/SKILL.md` — absorb goalplan contract, add 5000-char goal rule,
   add CLI surface docs (`cxc loop init/show/validate`)
 - MODIFY `skills/search/SKILL.md` — inline ultraresearch as Tier 3 section, remove
-  pointer to external `$cxc-ultraresearch` skill
+  pointer to external `$crc-ultraresearch` skill
 - MODIFY `skills/goalplan/SKILL.md` — add deprecation header, redirect to loop
 - MODIFY `skills/ultraresearch/SKILL.md` — add deprecation header, redirect to search
 
@@ -62,7 +62,7 @@ Rename `cxc goalplan` CLI to `cxc loop` with deprecated `goalplan` alias.
   to goalplan-cli.ts logic; keep `goalplan` as deprecated alias
 - MODIFY `components/pabcd-state/src/goalplan-cli.ts` — rename exported types/functions
   to loop-prefixed names (GoalplanCliArgs -> LoopCliArgs etc.), update output labels
-  from `[codexclaw goalplan:` to `[codexclaw loop:`
+  from `[cursorclaw goalplan:` to `[cursorclaw loop:`
 
 **Verifier:** `cxc loop init --objective "test"` works; `cxc goalplan init` still works
 as deprecated alias. Existing tests pass after adaptation.

@@ -2,7 +2,7 @@
 
 Dependency: owning decade plan. These exact edits run AFTER its original operations.
 
-## MODIFY plugins/codexclaw/skills/dev-architecture/SKILL.md
+## MODIFY plugins/cursorclaw/skills/dev-architecture/SKILL.md
 
 Before:
 
@@ -20,7 +20,7 @@ reachable-state assertions. `dev-security` owns security validation and authoriz
 policy; placement must not erase a business invariant or required defense-in-depth.
 `````
 
-## MODIFY plugins/codexclaw/skills/dev-architecture/SKILL.md
+## MODIFY plugins/cursorclaw/skills/dev-architecture/SKILL.md
 
 Before:
 
@@ -34,7 +34,7 @@ After:
 - [ ] **Validation placement** — parse untrusted shape at ingress; enforce domain invariants in their owner and preserve required security checks
 `````
 
-## MODIFY plugins/codexclaw/skills/dev-architecture/SKILL.md
+## MODIFY plugins/cursorclaw/skills/dev-architecture/SKILL.md
 
 Before:
 
@@ -48,7 +48,7 @@ After:
 - [ ] **Module size** — review >400 LOC for cohesion; document a justified exception rather than blocking by size alone
 `````
 
-## MODIFY plugins/codexclaw/skills/dev-architecture/SKILL.md
+## MODIFY plugins/cursorclaw/skills/dev-architecture/SKILL.md
 
 Before:
 

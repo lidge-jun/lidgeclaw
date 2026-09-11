@@ -7,7 +7,7 @@ Goal: codexclaw sessions inside Codex-app managed worktrees stop destroying the
 worktree they run in, and know the safe rename/adopt procedures.
 Non-goals: patching codex-rs or the desktop app; managing other sessions'
 worktrees; the opencodex usage-rollup work (separate unit, separate session).
-Verifier: `node --test` in plugins/codexclaw/components/pabcd-state (full suite,
+Verifier: `node --test` in plugins/cursorclaw/components/pabcd-state (full suite,
 exit 0) + build/dist freshness + manual live-fire hook payloads (030).
 Stop condition: all criteria in the bound goalplan met, dev pushed, main merged.
 Memory artifact: this unit + goalplan ledger.

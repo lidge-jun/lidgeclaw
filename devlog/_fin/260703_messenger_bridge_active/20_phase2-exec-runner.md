@@ -67,7 +67,7 @@ carries on — the binding survives.
 
 ## Part 2 — diff-level
 
-### NEW `plugins/codexclaw/components/messenger-bridge/src/runner.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/src/runner.ts`
 
 - `buildExecArgs({ threadId, model, fullAccess })` — pure, unit-testable:
   - new: `["exec", ...(model? ["-m", model]:[]), "--dangerously-bypass-approvals-and-sandbox", "--skip-git-repo-check", "--json"]` (prompt via stdin)
@@ -89,14 +89,14 @@ carries on — the binding survives.
   header so the model knows history is summarized. Emits `{kind:"status",
   label:"re-seeding session"}`.
 
-### NEW `plugins/codexclaw/components/messenger-bridge/src/queue.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/src/queue.ts`
 
 - `SerialQueues` — Map<key, tail promise + pending count>.
   `enqueue(key, task)` returns `{ position }` synchronously-knowable pending
   count so adapters can send "queued (n ahead)" before awaiting. Per-key strict
   FIFO; keys independent. Cap per key (default 20) → reject with QueueFullError.
 
-### NEW `plugins/codexclaw/components/messenger-bridge/src/agent-service.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/src/agent-service.ts`
 
 - Glue over db + queue + runner (the API adapters/phase-5 routes call):
   `handleIncoming({ db, kind, chatId, text, workdir, onEvent }): Promise<{ ok, text?, error?, queued? }>`

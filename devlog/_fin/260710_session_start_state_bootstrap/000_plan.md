@@ -6,9 +6,9 @@
 - **Trigger:** a fresh Codex `SessionStart` emits the real `session_id`, then an agent runs `cxc orchestrate P --session <that-id>` before any state-writing UserPromptSubmit/Stop/goalplan hook.
 - **Goal:** the SessionStart-bound ID is immediately usable by every agent-gated PABCD command in the same workspace.
 - **Non-goals:** weaken G2/G3 unknown-session protection; allow arbitrary UUID creation at the CLI; make `cli` a Codex-session fallback; change Stop continuation policy; touch opencodex #78/#82; clean unrelated dirty worktree files; release or deploy.
-- **Verifier:** a manifest-to-compiled-entrypoint test invokes the real SessionStart bootstrap hook in an empty temp workspace, observes `.codexclaw/sessions/<id>.json`, then invokes the compiled `orchestrate P --session <id>` path and observes a legal `IDLE -> P` transition. Unit tests additionally measure resume safety, malformed-input silence, a two-process creation race, fail-open IO, synthetic child defense, and source/dist parity. A copied-tree full build/test run protects ignored live artifacts in the real dirty tree.
+- **Verifier:** a manifest-to-compiled-entrypoint test invokes the real SessionStart bootstrap hook in an empty temp workspace, observes `.cursorclaw/sessions/<id>.json`, then invokes the compiled `orchestrate P --session <id>` path and observes a legal `IDLE -> P` transition. Unit tests additionally measure resume safety, malformed-input silence, a two-process creation race, fail-open IO, synthetic child defense, and source/dist parity. A copied-tree full build/test run protects ignored live artifacts in the real dirty tree.
 - **Stop condition:** fresh, resume/corrupt, malformed, race, IO-failure, synthetic-child, immediate-orchestrate, and unknown-unbound cases all have activation evidence; focused tests and copied-tree gates add no failures beyond the five exact pre-existing baseline failures; an independent C reviewer finds no blocking session-identity regression.
-- **Memory artifact:** this unit plus `.codexclaw/goalplans/outcome-in-users-jun-developer-new-700-projects/`.
+- **Memory artifact:** this unit plus `.cursorclaw/goalplans/outcome-in-users-jun-developer-new-700-projects/`.
 - **Expected terminal outcomes:** `DONE` after verified bootstrap; `NOOP` only if current runtime already satisfies the exact process-boundary probe; `BLOCKED` for unavailable runtime evidence; `UNSAFE` if the only fix weakens G2/G3 or overwrites resumed state; `NEEDS_HUMAN` only for a genuinely ambiguous external issue target; `BUDGET_EXHAUSTED` at four hours.
 - **Escalation:** return to P if the real SessionStart payload lacks `session_id`/`cwd`, if Codex does not execute the registered hook, or if resume safety cannot be achieved without changing the session-state format.
 - **HOTL resources:** local filesystem and authenticated read-only GitHub triage; writes limited to the PABCD SessionStart hook, its tests/generated dist, this devlog, and the PABCD skill source of truth; no dependency, secret, release, force-push, destructive Git, or unrelated issue mutation; `gpt-5.6-sol` medium subagents; four-hour wall-clock bound.
@@ -16,8 +16,8 @@
 ## Repository signals and ownership
 
 ```text
-plugins/codexclaw/
-├── .codex-plugin/plugin.json                 # active hook manifest list
+plugins/cursorclaw/
+├── .cursor-plugin/plugin.json                 # active hook manifest list
 ├── hooks/
 │   ├── session-start-announcing-map-affordance.json
 │   ├── user-prompt-submit-checking-pabcd-trigger.json
@@ -39,7 +39,7 @@ Conventions found:
 - Hook parsing is defensive and fail-open; side-effect-only handlers return empty stdout.
 - `dist/*.js` is committed and must equal the repository's deterministic `compileSource` transform.
 - Tests use temp workspaces and real compiled hook entrypoints; production state must never be used as a fixture.
-- Source-of-truth sync target: `plugins/codexclaw/skills/pabcd/SKILL.md` control-surface/state sections.
+- Source-of-truth sync target: `plugins/cursorclaw/skills/pabcd/SKILL.md` control-surface/state sections.
 
 ## Reproduction and causal chain
 
@@ -55,7 +55,7 @@ orchestrate P: unknown session '019f4a8a-b1a1-7113-b72a-460a39a8f096'
 Causal chain:
 
 1. `components/cxc-ops/src/map-affordance.ts:155-187` parses `session_id` and returns the binding envelope but performs no state write.
-2. `.codex-plugin/plugin.json:22-26` registers provider detection and the cxc-ops affordance at SessionStart, but no `pabcd-state` bootstrap.
+2. `.cursor-plugin/plugin.json:22-26` registers provider detection and the cxc-ops affordance at SessionStart, but no `pabcd-state` bootstrap.
 3. `components/pabcd-state/src/state.ts:87-132` returns an in-memory default when the file is absent.
 4. `components/pabcd-state/src/orchestrate-cli.ts:233-243` correctly rejects an absent non-reserved explicit ID under G2.
 5. `components/pabcd-state/src/hook.ts:759-777` can bootstrap later at an active-goal Stop, but the proactive HOTL/HITL entry command runs before that Stop. The reserved `cli` escape creates a different FSM and violates SESSION-IDENTITY-01 for a Codex session.
@@ -105,9 +105,9 @@ Read-only REST, GraphQL, search, events, and direct issue lookup agree that `lid
 1. **Fresh root SessionStart:** trigger the registered compiled hook with non-empty `session_id` and `cwd`; observe one parseable default IDLE file at the exact sanitized path and empty stdout from the bootstrap hook.
 2. **Immediate P entry:** after criterion 1 and before UserPromptSubmit/Stop/goalplan, trigger compiled `orchestrate P --session <id>` with valid attestation; observe exit 0, `IDLE -> P`, and the same file updated.
 3. **Resume/corrupt safety:** preseed valid phase/slug/counters or corrupt bytes, trigger SessionStart again, and observe byte-for-byte unchanged state; a subsequent legal mutation may normalize corrupt bytes through existing FSM IO.
-4. **Malformed/missing identity:** trigger malformed JSON, missing `session_id`, empty/whitespace-only ID, and empty/whitespace-only cwd; observe exit 0 and no `.codexclaw/sessions/missing.json` side effect.
+4. **Malformed/missing identity:** trigger malformed JSON, missing `session_id`, empty/whitespace-only ID, and empty/whitespace-only cwd; observe exit 0 and no `.cursorclaw/sessions/missing.json` side effect.
 5. **Creation race:** launch two compiled SessionStart hook processes for one fresh ID; observe both exit 0, exactly one complete parseable default file, and no leftover temp files.
-6. **IO fail-open:** make `<cwd>/.codexclaw` a regular file so session-directory creation raises `ENOTDIR`; observe hook exit 0, empty stdout, and no state side effect.
+6. **IO fail-open:** make `<cwd>/.cursorclaw` a regular file so session-directory creation raises `ENOTDIR`; observe hook exit 0, empty stdout, and no state side effect.
 7. **Synthetic child defense:** inject `agent_id`/`agent_type` in a SessionStart payload; observe no root write. This is a defensive boundary test, not a claim that production SessionStart currently carries child fields.
 8. **G2/G3 retained:** trigger an unbound unknown explicit ID without SessionStart; observe the existing rejection, and verify no implicit or `cli` fallback was added.
 9. **Generated/runtime parity:** changed `src/*.ts` and committed `dist/*.js` match `compileSource`; the new manifest command resolves without altering the diagnostic command.

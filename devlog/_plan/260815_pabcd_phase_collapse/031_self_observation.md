@@ -2,7 +2,7 @@
 created: 2026-08-15
 status: evidence
 workPhase: wp2
-tags: [codexclaw, self-observation]
+tags: [cursorclaw, self-observation]
 ---
 
 # 031 — 자가 관측: 이 유닛 자신이 붕괴를 재현했다

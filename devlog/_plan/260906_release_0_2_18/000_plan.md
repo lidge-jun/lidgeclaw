@@ -16,7 +16,7 @@ Verifier: current-head PR CI/reviews, remote focused/negative/full tests and bui
 normal release gate, downloaded checksums/file identity, per-install doctor/trust.
 Stop: requested integrations published/applied; unreachable targets reported as
 unknown, never quietly certified. Record exact failure/partial state if blocked.
-Evidence: this unit and .codexclaw/evidence/<session>/release-0.2.18/.
+Evidence: this unit and .cursorclaw/evidence/<session>/release-0.2.18/.
 Escalate actual new authority or unsafe host identity; routine repair choices stay
 with main after independent Grok review. No earlier temporary rule waiver is reused.
 

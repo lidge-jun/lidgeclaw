@@ -210,7 +210,7 @@ That prompt is intended for coding agents. It tells the agent to clone the repo 
        supports_thinking: true
    ```
 
-   - Codex CLI reads `~/.codex/auth.json`
+   - Codex CLI reads `~/.cursor/auth.json`
    - Claude Code accepts `CLAUDE_CODE_OAUTH_TOKEN`, `ANTHROPIC_AUTH_TOKEN`, `CLAUDE_CODE_CREDENTIALS_PATH`, or `~/.claude/.credentials.json`
    - ACP agent entries are separate from model providers — if you configure `acp_agents.codex`, point it at a Codex ACP adapter such as `npx -y @zed-industries/codex-acp`
    - MiniMax Code speaks ACP directly. Install and authenticate it, then add it as an ACP agent:

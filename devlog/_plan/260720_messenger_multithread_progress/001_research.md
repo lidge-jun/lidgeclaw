@@ -9,10 +9,10 @@ group/topic ingress: after a user starts a Codex turn in multi-thread mode, the
 chat shows neither intermediate assistant output nor tool activity; only the
 durable final answer arrives. The webhook starts typing once, then explicitly
 passes `onEvent: undefined` for every non-private chat
-(`plugins/codexclaw/components/messenger-bridge/src/telegram-webhook.ts:148-160`),
+(`plugins/cursorclaw/components/messenger-bridge/src/telegram-webhook.ts:148-160`),
 while final delivery remains unconditional after the queued turn resolves
-(`plugins/codexclaw/components/messenger-bridge/src/telegram-webhook.ts:162-169`,
-`plugins/codexclaw/components/messenger-bridge/src/telegram-webhook.ts:239-251`).
+(`plugins/cursorclaw/components/messenger-bridge/src/telegram-webhook.ts:162-169`,
+`plugins/cursorclaw/components/messenger-bridge/src/telegram-webhook.ts:239-251`).
 
 This is not the behavior of every Telegram runtime mode. The long-poll adapter
 has a weaker but non-zero group/topic progress path, documented below.
@@ -21,20 +21,20 @@ has a weaker but non-zero group/topic progress path, documented below.
 
 Search basis: every direct call to `AgentService.handleIncoming()` or
 `AgentService.enqueueIncoming()` under
-`plugins/codexclaw/components/messenger-bridge/src/*.ts`. `handleIncoming()` is
+`plugins/cursorclaw/components/messenger-bridge/src/*.ts`. `handleIncoming()` is
 itself only a convenience wrapper over `enqueueIncoming()`
-(`plugins/codexclaw/components/messenger-bridge/src/agent-service.ts:123-166`),
+(`plugins/cursorclaw/components/messenger-bridge/src/agent-service.ts:123-166`),
 and `IncomingRequest.onEvent` is forwarded unchanged to the runner
-(`plugins/codexclaw/components/messenger-bridge/src/agent-service.ts:247-264`).
+(`plugins/cursorclaw/components/messenger-bridge/src/agent-service.ts:247-264`).
 
 | Direct caller | Platform and entry path | `onEvent` wiring | Resulting progress UX |
 |---|---|---|---|
-| `plugins/codexclaw/components/messenger-bridge/src/telegram-webhook.ts:94-170` | Telegram webhook ordinary message → `acceptMessage()` → `enqueueIncoming()` at `:150` | Private chats receive `sendWebhookDraftProgress`; the gate at `:158-160` passes `undefined` for groups and supergroups. | Private: draft events when rich drafts are usable. Group/topic: all runner events are dropped; one initial typing action is the only transient signal, then the final answer. This is the primary match for “nothing at all.” |
-| `plugins/codexclaw/components/messenger-bridge/src/telegram-adapter.ts:291-406` | Telegram long-poll ordinary message → adapter `runTurn()` → `handleIncoming()` at `:383` | Always wires the local `onEvent` at `:391`; `draftStreaming` is restricted to rich-supported private chats at `:297`. | Private + draft support: draft progress. Group/topic or unsupported draft: one `🔄` status message, created/edited at `:312-335`; events are coalesced by the 1,500 ms constant at `:58`, retain the last five activity lines at `:378-380`, and the status is deleted at turn end at `:394-396`. This is a weak bubble, not zero progress. |
-| `plugins/codexclaw/components/messenger-bridge/src/discord-adapter.ts:380-449` | Discord gateway `MESSAGE_CREATE` → `handleMessage()` → `handleIncoming()` at `:425` | Wires `progress.onEvent` at `:432`. `progressFromEvent()` maps thinking/tool/file/status/message events at `:518-533`. | Healthy message-gateway path: one progress embed starts before the turn, is edited with Thinking/Coding/Writing stages, and is finalized separately from the answer (`plugins/codexclaw/components/messenger-bridge/src/discord-adapter.ts:334-377`). |
-| `plugins/codexclaw/components/messenger-bridge/src/discord-commands.ts:240-265` | Discord `/ask` and `/review` handlers at `:43-60`, plus component retry from `plugins/codexclaw/components/messenger-bridge/src/discord-interactions.ts:147-157`, all enter `runTurnFromInteraction()` → `handleIncoming()` at `:249` | No `onEvent` field is passed at `:249-256`. | Zero runner-event progress. The interaction response says “Working” before the call and “Done” afterward, but does not change from actual tool/message events. |
-| `plugins/codexclaw/components/messenger-bridge/src/gateway-commands.ts:366-380` | Shared `/retry`: Telegram command dispatch reaches the gateway at `plugins/codexclaw/components/messenger-bridge/src/telegram-commands.ts:132-143`; Discord `!cxc retry` reaches the same handler through `plugins/codexclaw/components/messenger-bridge/src/discord-adapter.ts:284-295` | `GatewayCommandContext` has approval but no event callback at `plugins/codexclaw/components/messenger-bridge/src/gateway-commands.ts:21-30`; `handleRetry()` therefore passes no `onEvent` at `:371-379`. | Zero runner-event progress on both Telegram and Discord retry turns. This bypasses the Telegram adapter’s ordinary-message bubble and the Discord message-gateway embed. |
-| `plugins/codexclaw/components/messenger-bridge/src/heartbeat.ts:113-155` | Autonomous heartbeat → `runAgent()` → `handleIncoming()` at `:133` | No `onEvent` at `:133-139`. | Intentional unattended exception: the turn is recorded, silent results are discarded, and only a completed non-silent result is fanned out at `:144-152`; there is no user waiting on an initiating message. |
+| `plugins/cursorclaw/components/messenger-bridge/src/telegram-webhook.ts:94-170` | Telegram webhook ordinary message → `acceptMessage()` → `enqueueIncoming()` at `:150` | Private chats receive `sendWebhookDraftProgress`; the gate at `:158-160` passes `undefined` for groups and supergroups. | Private: draft events when rich drafts are usable. Group/topic: all runner events are dropped; one initial typing action is the only transient signal, then the final answer. This is the primary match for “nothing at all.” |
+| `plugins/cursorclaw/components/messenger-bridge/src/telegram-adapter.ts:291-406` | Telegram long-poll ordinary message → adapter `runTurn()` → `handleIncoming()` at `:383` | Always wires the local `onEvent` at `:391`; `draftStreaming` is restricted to rich-supported private chats at `:297`. | Private + draft support: draft progress. Group/topic or unsupported draft: one `🔄` status message, created/edited at `:312-335`; events are coalesced by the 1,500 ms constant at `:58`, retain the last five activity lines at `:378-380`, and the status is deleted at turn end at `:394-396`. This is a weak bubble, not zero progress. |
+| `plugins/cursorclaw/components/messenger-bridge/src/discord-adapter.ts:380-449` | Discord gateway `MESSAGE_CREATE` → `handleMessage()` → `handleIncoming()` at `:425` | Wires `progress.onEvent` at `:432`. `progressFromEvent()` maps thinking/tool/file/status/message events at `:518-533`. | Healthy message-gateway path: one progress embed starts before the turn, is edited with Thinking/Coding/Writing stages, and is finalized separately from the answer (`plugins/cursorclaw/components/messenger-bridge/src/discord-adapter.ts:334-377`). |
+| `plugins/cursorclaw/components/messenger-bridge/src/discord-commands.ts:240-265` | Discord `/ask` and `/review` handlers at `:43-60`, plus component retry from `plugins/cursorclaw/components/messenger-bridge/src/discord-interactions.ts:147-157`, all enter `runTurnFromInteraction()` → `handleIncoming()` at `:249` | No `onEvent` field is passed at `:249-256`. | Zero runner-event progress. The interaction response says “Working” before the call and “Done” afterward, but does not change from actual tool/message events. |
+| `plugins/cursorclaw/components/messenger-bridge/src/gateway-commands.ts:366-380` | Shared `/retry`: Telegram command dispatch reaches the gateway at `plugins/cursorclaw/components/messenger-bridge/src/telegram-commands.ts:132-143`; Discord `!cxc retry` reaches the same handler through `plugins/cursorclaw/components/messenger-bridge/src/discord-adapter.ts:284-295` | `GatewayCommandContext` has approval but no event callback at `plugins/cursorclaw/components/messenger-bridge/src/gateway-commands.ts:21-30`; `handleRetry()` therefore passes no `onEvent` at `:371-379`. | Zero runner-event progress on both Telegram and Discord retry turns. This bypasses the Telegram adapter’s ordinary-message bubble and the Discord message-gateway embed. |
+| `plugins/cursorclaw/components/messenger-bridge/src/heartbeat.ts:113-155` | Autonomous heartbeat → `runAgent()` → `handleIncoming()` at `:133` | No `onEvent` at `:133-139`. | Intentional unattended exception: the turn is recorded, silent results are discarded, and only a completed non-silent result is fanned out at `:144-152`; there is no user waiting on an initiating message. |
 
 The inventory has six direct call sites: one `enqueueIncoming()` caller and five
 `handleIncoming()` callers. No other caller exists in the scoped source glob.
@@ -43,9 +43,9 @@ The inventory has six direct call sites: one `enqueueIncoming()` caller and five
 
 For each Telegram agent, `BridgeController.buildAdapterEntry()` first attempts a
 webhook when `agent.webhook_url` is non-empty and returns a webhook adapter on
-success (`plugins/codexclaw/components/messenger-bridge/src/bridge-controller.ts:205-233`).
+success (`plugins/cursorclaw/components/messenger-bridge/src/bridge-controller.ts:205-233`).
 Only if no valid webhook is configured, or registration fails, does it create
-the long-poll adapter (`plugins/codexclaw/components/messenger-bridge/src/bridge-controller.ts:234-264`).
+the long-poll adapter (`plugins/cursorclaw/components/messenger-bridge/src/bridge-controller.ts:234-264`).
 These are mutually exclusive adapter entries for that agent.
 
 Consequently:
@@ -60,16 +60,16 @@ Consequently:
 
 `RunnerEvent` includes thread, status, thinking, tool call, file change, message,
 done, and failure variants
-(`plugins/codexclaw/components/messenger-bridge/src/runner.ts:21-29`). The runner
+(`plugins/cursorclaw/components/messenger-bridge/src/runner.ts:21-29`). The runner
 spawns stock `codex exec`/`codex exec resume` with `--json`
-(`plugins/codexclaw/components/messenger-bridge/src/runner.ts:4-16`,
-`plugins/codexclaw/components/messenger-bridge/src/runner.ts:67-95`) and parses its
+(`plugins/cursorclaw/components/messenger-bridge/src/runner.ts:4-16`,
+`plugins/cursorclaw/components/messenger-bridge/src/runner.ts:67-95`) and parses its
 JSONL stream.
 
 The local parser accepts item-started and item-completed records for reasoning,
 tool calls, and file changes, but emits an assistant `message` only when an
 `agent_message` reaches `item.completed`
-(`plugins/codexclaw/components/messenger-bridge/src/runner.ts:97-153`). Therefore
+(`plugins/cursorclaw/components/messenger-bridge/src/runner.ts:97-153`). Therefore
 the current transport can expose tool/status activity and completed assistant
 message items, but it cannot provide token-level assistant deltas.
 

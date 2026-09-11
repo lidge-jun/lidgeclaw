@@ -2,7 +2,7 @@
 created: 2026-08-15
 status: design
 workPhase: wp4
-tags: [codexclaw, source-identity, b-to-c]
+tags: [cursorclaw, source-identity, b-to-c]
 ---
 
 # 050 — B>C 소스 델타 게이트
@@ -67,8 +67,8 @@ B>C에서 스냅샷이 null이 아니면 현재 정체성과 비교한다.
 
 ## 구현 중 발견: 게이트가 자기 부산물을 증거로 셌다
 
-B 진입 시 `writeState()`가 `.codexclaw/sessions/<id>.json`을 쓰고,
-그 파일이 `git status --porcelain -uall`에 `?? .codexclaw/sessions/x.json`으로
+B 진입 시 `writeState()`가 `.cursorclaw/sessions/<id>.json`을 쓰고,
+그 파일이 `git status --porcelain -uall`에 `?? .cursorclaw/sessions/x.json`으로
 잡힌다. 즉 FSM이 자기 상태를 기록하는 행위만으로 트리가 "변했다"고 판정되어
 **게이트가 매번 스스로를 통과시킨다.**
 
@@ -76,11 +76,11 @@ B 진입 시 `writeState()`가 `.codexclaw/sessions/<id>.json`을 쓰고,
 
 ```
 초기:        []
-state 쓴 뒤:  ["?? .codexclaw/sessions/x.json"]
+state 쓴 뒤:  ["?? .cursorclaw/sessions/x.json"]
 ```
 
 처방: `captureSourceIdentity(cwd, { excludeStateDir: true })` 옵션을 추가해
-050 경로에서만 `.codexclaw/` 항목을 해시 전에 제외한다. 기본 동작은 그대로 둔다 —
+050 경로에서만 `.cursorclaw/` 항목을 해시 전에 제외한다. 기본 동작은 그대로 둔다 —
 review-round 결속이나 receipt 검증에서는 상태 디렉터리도 트리의 일부가 맞다.
 
 ## 알려진 한계 (감사관 지적 그대로 수용)

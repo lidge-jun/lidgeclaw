@@ -8,7 +8,7 @@ permission gate.
 
 This file is served live at `http://127.0.0.1:7717/readme` and is the single
 human-facing doc. The agent-facing setup ladder lives in the `cxc-remote`
-skill (`plugins/codexclaw/skills/remote/`).
+skill (`plugins/cursorclaw/skills/remote/`).
 
 ## Quick start
 

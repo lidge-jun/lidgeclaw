@@ -1,7 +1,7 @@
 /**
  * payload-bin.test.mjs — payload-resident `cxc` dispatcher contract (260724 WP1).
  *
- * `bin/cxc.mjs` is plain .mjs OUTSIDE the build (no dist), so this file is its
+ * `bin/cursorclaw.mjs` is plain .mjs OUTSIDE the build (no dist), so this file is its
  * ONLY freshness contract. Three layers:
  *   1. Existence + `help` smoke (headed "payload dispatcher").
  *   2. Command-set parity with the repo-root bin (M2 anti-drift guard): every

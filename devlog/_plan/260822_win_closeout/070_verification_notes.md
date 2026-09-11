@@ -24,7 +24,7 @@ nothing about the other.
 
 Three classes showed up locally that CI cannot reproduce:
 
-- `~/.codexclaw` exists on a real installation and does not exist on a runner. That
+- `~/.cursorclaw` exists on a real installation and does not exist on a runner. That
   difference hid a production bug where the GUI resolved the user's entire home
   directory as the project root - green in CI, red locally.
 - Symlink creation needs elevation on Windows. Junctions do not, which is why most of

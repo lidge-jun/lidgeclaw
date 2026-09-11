@@ -9,7 +9,7 @@
  * hardcoding the literal `cxc` prefix.
  *
  * Resolution ladder (deterministic per-process, B1 seam):
- *   1. `CODEXCLAW_CXC` env override (test pin + power-user override), trimmed.
+ *   1. `CURSORCLAW_CRC` env override (test pin + power-user override), trimmed.
  *   2. Known payload command + existing dispatcher -> owned payload invocation.
  *   3. Legacy/no-command or repo-only command: PATH `cxc`, then payload fallback.
  *
@@ -76,7 +76,7 @@ export function cxcInvocation(
   env: Record<string, string | undefined> = process.env,
   command?: string,
 ): string {
-  const override = env.CURSORCLAW_CRC || env.CODEXCLAW_CXC;
+  const override = env.CURSORCLAW_CRC || env.CURSORCLAW_CRC;
   if (typeof override === "string" && override.trim().length > 0) return override.trim();
   const dispatcher = join(payloadRootFromModule(moduleUrl), "bin", "cursorclaw.mjs");
   if (command && Object.hasOwn(payloadCommands, command) && existsSync(dispatcher)) {

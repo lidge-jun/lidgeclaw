@@ -27,8 +27,8 @@ C-gate was designed to catch, caught earlier at A instead.
    liveness = `GET /api/health` (bin/codexclaw.mjs:17,296; cli.ts:146).
 6. MAJOR — service install: macOS launchd only, binds CURRENT cwd as --cwd
    (wrong-project foot-gun -> skill warns to cd to the target project first),
-   writes ~/Library/LaunchAgents/com.codexclaw.serve.plist, logs to
-   ~/.codexclaw/serve.{out,err}.log (service.ts:48,95).
+   writes ~/Library/LaunchAgents/com.cursorclaw.serve.plist, logs to
+   ~/.cursorclaw/serve.{out,err}.log (service.ts:48,95).
 7. MAJOR — DC setup must include Bot -> Privileged Gateway Intents -> Message
    Content, invite URL `scope=bot&permissions=3072` (discord-gateway.ts:27,
    Channels.tsx:255, pairing.tsx:29).
@@ -42,7 +42,7 @@ C-gate was designed to catch, caught earlier at A instead.
 10. MINOR — front-matter: `name`, `description`, `metadata.short-description`;
     `metadata.last-verified` optional (search uses it — we adopt it); inline
     relative `references/...` links.
-11. MINOR — GUI served from plugins/codexclaw/gui/dist, bound 127.0.0.1,
+11. MINOR — GUI served from plugins/cursorclaw/gui/dist, bound 127.0.0.1,
     SPA fallback; default port 7717 confirmed.
 
 ## Plan amendment A1

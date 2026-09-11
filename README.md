@@ -32,20 +32,36 @@ Workflow inspiration remains [OMO / oh-my-openagent](https://github.com/code-yeo
 
 **Dev Skill Family** — surface routers (`dev-architecture`, `dev-backend`, `dev-frontend`, …) governed by the parent `dev` skill.
 
-**PABCD Workflow** — Plan / Audit / Build / Check / Done with file-backed state (`.cursorclaw/` preferred; `.codexclaw/` still recognized during the port).
+**PABCD Workflow** — Plan / Audit / Build / Check / Done with file-backed state (`.cursorclaw/` preferred; `.cursorclaw/` still recognized during the port).
 
 **Subagent Roles** — explorer / reviewer / executor / architect prompts shipped as Cursor `agents/*.md` (TOML provenance kept).
 
 **CLI** — `cursorclaw` / `crc` (upstream `cxc` / `codexclaw` names print a redirect hint).
 
-## Install (Cursor plugin)
+## Install (Cursor — global)
+
+From a checkout:
+
+```bash
+./scripts/global-install.sh
+```
+
+That installs:
+
+- plugin copy → `~/.cursor/plugins/local/cursorclaw`
+- 29 skill symlinks → `~/.cursor/skills/`
+- user hooks → `~/.cursor/hooks.json` (full bridge fan-out)
+- core rule → `~/.cursor/rules/cursorclaw-core.mdc`
+- CLI → `~/.local/bin/crc` and `cursorclaw`
+
+Then **restart the Cursor agent session**. Check with `./scripts/global-install.sh --status`.
+
+### Install (Cursor plugin dogfood in this repo)
 
 1. Clone this repository.
-2. In Cursor, add the repo (or `plugins/cursorclaw`) as a **local / marketplace-style Cursor plugin** via Customize → Plugins.
+2. In Cursor, add the repo (or `plugins/cursorclaw`) as a **local Cursor plugin** via Customize → Plugins (optional if global-install already ran).
 3. Restart the agent session.
 4. Confirm the `sessionStart` banner and that skills under `plugins/cursorclaw/skills/` are visible.
-
-Dogfood checklist: run the `install-dev` command from the plugin.
 
 Optional PATH CLI from a checkout:
 
@@ -79,10 +95,10 @@ UPSTREAM.lock                            # pinned codexclaw commit
 
 | | codexclaw | cursorclaw |
 | --- | --- | --- |
-| Runtime | OpenAI Codex plugin | Cursor plugin |
-| Manifest | `.codex-plugin/plugin.json` | `.cursor-plugin/plugin.json` |
+| Runtime | Cursor plugin | Cursor plugin |
+| Manifest | `.cursor-plugin/plugin.json` | `.cursor-plugin/plugin.json` |
 | CLI | `cxc` / `codexclaw` | `crc` / `cursorclaw` |
-| State dir | `.codexclaw/` | `.cursorclaw/` (dual-read during port) |
+| State dir | `.cursorclaw/` | `.cursorclaw/` (dual-read during port) |
 
 Upstream project: https://github.com/lidge-jun/codexclaw
 

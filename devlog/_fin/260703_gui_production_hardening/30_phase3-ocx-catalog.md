@@ -4,10 +4,10 @@
 - Root cause (00_research §1b): `readNativeCacheDefault` (catalog.ts) reads ONLY
   `env.CODEX_MODELS_CACHE_PATH`, which nothing sets → falls back to 4 hardcoded
   natives; the ocx-synced routed slugs never load. Ground truth verified on this
-  machine: `~/.codex/models_cache.json` exists, shape `{models:[{slug,…}]}`, 11
+  machine: `~/.cursor/models_cache.json` exists, shape `{models:[{slug,…}]}`, 11
   entries incl. `anthropic/claude-*` and `opencode-go/*` routed slugs. opencodex
-  resolves the path as `join(CODEX_HOME, "models_cache.json")`
-  (opencodex/src/codex-paths.ts:30), CODEX_HOME defaulting to `~/.codex`.
+  resolves the path as `join(CURSOR_HOME, "models_cache.json")`
+  (opencodex/src/codex-paths.ts:30), CURSOR_HOME defaulting to `~/.cursor`.
 
 ## Part 1 — plain
 
@@ -17,17 +17,17 @@ when routed models actually surfaced.
 
 ## Part 2 — diff-level
 
-### MODIFY `plugins/codexclaw/components/subagent-config/src/catalog.ts`
+### MODIFY `plugins/cursorclaw/components/subagent-config/src/catalog.ts`
 - `readNativeCacheDefault(env)`: resolve path as
-  `env.CODEX_MODELS_CACHE_PATH ?? join(env.CODEX_HOME ?? join(homedir(), ".codex"), "models_cache.json")`.
+  `env.CODEX_MODELS_CACHE_PATH ?? join(env.CURSOR_HOME ?? join(homedir(), ".codex"), "models_cache.json")`.
   Import `homedir` from `node:os`, `join` from `node:path`. Read/allowlist logic unchanged.
 - `buildCatalog()`: when provider mode is "provider" with `ocxModels === undefined`,
   return state `"ocx-active"` if any built entry has `source === "ocx"` (routed slugs
   arrived via the cache sync channel — "unsupported" is a lie then); otherwise keep
   `"unsupported-ocx-catalog"`.
 
-### MODIFY `plugins/codexclaw/components/subagent-config/test/catalog.test.ts`
-- New cases: (a) env CODEX_HOME pointing at a tmp dir containing models_cache.json
+### MODIFY `plugins/cursorclaw/components/subagent-config/test/catalog.test.ts`
+- New cases: (a) env CURSOR_HOME pointing at a tmp dir containing models_cache.json
   with native + routed slugs → routed entries labeled (ocx), natives first;
   (b) no env + no file → 4-native fallback unchanged (pass explicit fake env, never
   the real home); (c) provider mode + cache-borne routed slugs → state "ocx-active".
@@ -41,5 +41,5 @@ when routed models actually surfaced.
 ## Risks
 - `readNativeCacheDefault` currently takes `env = process.env` — keep signature;
   homedir fallback only when both env vars absent. Tests must inject fake env so CI
-  machines with a real ~/.codex don't flake.
+  machines with a real ~/.cursor don't flake.
 - catalog.test.ts existing fixtures use `readNativeCache` injection — unaffected.

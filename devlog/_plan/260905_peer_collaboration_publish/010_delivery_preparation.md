@@ -13,7 +13,7 @@ These local results do not replace new GitHub CI at the published head.
 Publish this branch only with:
 
     git push --set-upstream origin codex/peer-collaboration-guidance
-    gh pr create --repo lidge-jun/codexclaw --base dev --head codex/peer-collaboration-guidance --title "feat: add independent peer collaboration guidance" --body-file .codexclaw/peer-pr-body.md
+    gh pr create --repo lidge-jun/codexclaw --base dev --head codex/peer-collaboration-guidance --title "feat: add independent peer collaboration guidance" --body-file .cursorclaw/peer-pr-body.md
 
 Expected PR checks: four main test lanes, three artifact lanes, two installation
 lanes, WSL and target enforcement. Docs and Release do not trigger for this PR.

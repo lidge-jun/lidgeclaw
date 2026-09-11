@@ -7,7 +7,7 @@ spawn per edit call. Near-equivalent behavior (audit Low #2): a lint DENY now
 skips the advisory leg for that call, so `idleEditNudges` no longer increments
 on denied edits — cosmetic cadence shift, arguably better.
 
-## MODIFY `plugins/codexclaw/components/pabcd-state/src/cli.ts`
+## MODIFY `plugins/cursorclaw/components/pabcd-state/src/cli.ts`
 
 New combined FAIL-OPEN event `pre-tool-use-edit`, dispatched before the legacy
 branches (which stay for back-compat / direct invocation):
@@ -28,7 +28,7 @@ lint has no allow-with-context output.)
 ## MODIFY hooks registration
 
 - `hooks/pre-tool-use-linting-apply-patch.json`: command event `pre-tool-use-lint`
-  → `pre-tool-use-edit`; statusMessage "(codexclaw) Checking structured edit".
+  → `pre-tool-use-edit`; statusMessage "(cursorclaw) Checking structured edit".
 - DELETE `hooks/pre-tool-use-advising-idle-edit.json` + its plugin.json entry
   (15 → 14). `cxc hooks retrust` afterward.
 
@@ -38,12 +38,12 @@ lint has no allow-with-context output.)
 - `structure/INDEX.md:188` — same reference.
 
 Audit notes: retrust never PRUNES — the deleted hook's `[hooks.state."…advising-
-idle-edit"]` section stays as harmless orphan residue in ~/.codex/config.toml
+idle-edit"]` section stays as harmless orphan residue in ~/.cursor/config.toml
 (optional manual removal). Combined branch must live INSIDE the fail-open try.
 
 ## TESTS
 
-- `plugins/codexclaw/test/hook-e2e.test.mjs`: hooks length 15 → 14; assert the
+- `plugins/cursorclaw/test/hook-e2e.test.mjs`: hooks length 15 → 14; assert the
   lint hook JSON's command names `pre-tool-use-edit` (registration truth). The
   L060 lint e2e self-adapts via readHookCommand (audit-verified) but becomes
   environment-coupled once the advisory leg rides it — pass `emptyCodexHome()`

@@ -12,7 +12,7 @@ Status: DONE (shipped + tested) · 2026-07-01 · lazygap_impl loop 020 · class 
 
 ## Why
 
-The user wants to dispatch a subagent WITH a `$cxc-*` skill attached, not merely told about it
+The user wants to dispatch a subagent WITH a `$crc-*` skill attached, not merely told about it
 in prose. `structure/10_subagent_skill_routing.md` states the principle: "routing must travel
 as an attachment, not a hope." The attachment channel exists, but two gaps remain:
 
@@ -37,7 +37,7 @@ as an attachment, not a hope." The attachment channel exists, but two gaps remai
   `permissionDecision == "allow"` (codex-rs `output_parser.rs:162`); v1 accepts injected
   `items` (`multi_agents/spawn.rs:218-221`); v2 is `deny_unknown_fields`, rejects `items`
   (`multi_agents_v2/spawn.rs:243-244`).
-- Existing PreToolUse pattern: `plugins/codexclaw/hooks/pre-tool-use-guarding-goal-budget.json`
+- Existing PreToolUse pattern: `plugins/cursorclaw/hooks/pre-tool-use-guarding-goal-budget.json`
   (`"matcher": "^create_goal$"`) + the FAIL-CLOSED dispatcher `cli.ts:74`. NOTE: the new
   spawn-attach hook is FAIL-OPEN (allow untouched on any doubt), unlike the R-9 fail-closed one.
 
@@ -57,7 +57,7 @@ as an attachment, not a hope." The attachment channel exists, but two gaps remai
 
 ### Part B — deterministic E3 attach hook (the deferred L15.2 piece)
 
-New manifest `plugins/codexclaw/hooks/pre-tool-use-attaching-skills.json`:
+New manifest `plugins/cursorclaw/hooks/pre-tool-use-attaching-skills.json`:
 
 ```json
 {
@@ -70,7 +70,7 @@ New manifest `plugins/codexclaw/hooks/pre-tool-use-attaching-skills.json`:
             "type": "command",
             "command": "node \"${PLUGIN_ROOT}/components/subagent-config/dist/spawn-attach-hook.js\" hook pre-tool-use",
             "timeout": 10,
-            "statusMessage": "(codexclaw) Attaching skills to spawn"
+            "statusMessage": "(cursorclaw) Attaching skills to spawn"
           }
         ]
       }
@@ -139,10 +139,10 @@ So the hook is FAIL-SAFE by construction — it only ever rewrites when v1 is PR
 
 ## Verification
 
-- `node --test plugins/codexclaw/components/subagent-config/test/spawn-wrapper.test.ts`
+- `node --test plugins/cursorclaw/components/subagent-config/test/spawn-wrapper.test.ts`
   (extend with routeDispatch + INTENT_ROLE cases).
-- `node --test plugins/codexclaw/components/subagent-config/test/spawn-attach-hook.test.ts` (new).
-- extend `plugins/codexclaw/test/hook-e2e.test.mjs` with a `pre-tool-use` spawn-attach case
+- `node --test plugins/cursorclaw/components/subagent-config/test/spawn-attach-hook.test.ts` (new).
+- extend `plugins/cursorclaw/test/hook-e2e.test.mjs` with a `pre-tool-use` spawn-attach case
   (v1 attaches, items-present no-ops, malformed fails open) driving the real dist entrypoint.
 - `npm run build` (idempotent; +2 compiled modules) ; `npm test` (full suite green) ;
   `npm run gate` (exit 0) ; `git diff --check`.

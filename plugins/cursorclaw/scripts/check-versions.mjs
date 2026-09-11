@@ -97,10 +97,10 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import
   }
   const result = checkVersions(version);
   if (result.ok) {
-    console.log("[codexclaw versions] OK — every surface declares " + version);
+    console.log("[cursorclaw versions] OK — every surface declares " + version);
     process.exit(0);
   }
-  console.error("[codexclaw versions] FAIL — " + result.violations.length + " mismatch(es):");
+  console.error("[cursorclaw versions] FAIL — " + result.violations.length + " mismatch(es):");
   for (const v of result.violations) console.error("  - " + v);
   process.exit(1);
 }

@@ -64,7 +64,7 @@ Preserve initial ast-grep/diagram/cxc-ops/dev-symlink modifications and old untr
 devlogs/tools. Never broad-add the repo or the prior research folder. Source identity
 and task-only staging are checked before commits. Skill frontmatter stays unchanged.
 
-Preflight catalog command: node --test plugins/codexclaw/test/skill-catalog.test.mjs:
+Preflight catalog command: node --test plugins/cursorclaw/test/skill-catalog.test.mjs:
 4/4 PASS, exit 0; reads skill folders/catalog/badges, not semantic prose.
 skill-creator quick_validate.py was attempted but Python lacks PyYAML; no install.
 Fallback: existing manifest tests plus exact unchanged-frontmatter comparison.

@@ -10,7 +10,7 @@ Work class: C3 — upstream experimental API, runtime/process lifecycle, cross-s
 - Trigger: Codex `0.140.0` added app-server background-terminal list/terminate APIs, and a live Codex Desktop `0.144.0-alpha.4` task successfully exposed a model-created unified-exec process.
 - Goal: codexclaw must teach the exact create → list → poll/write → terminate/clean lifecycle without claiming that a plugin can attach to the Desktop app's private stdio connection.
 - Non-goals: no durable scheduler replacement, no detached/reattached CLI shell feature, no process supervisor, no direct modification of `openai/codex`, no rewriting historical `_fin/` records, and no fake wrapper that launches a second app-server then claims it controls the Desktop thread.
-- Verifier: `node --test plugins/codexclaw/test/background-terminal-doc-sync.test.mjs` proves the contract is synchronized; `npm run build` and `npm test` prove the plugin still builds; a manual app-server probe proves the experimental method gate and same-instance rule.
+- Verifier: `node --test plugins/cursorclaw/test/background-terminal-doc-sync.test.mjs` proves the contract is synchronized; `npm run build` and `npm test` prove the plugin still builds; a manual app-server probe proves the experimental method gate and same-instance rule.
 - Stop condition: live doctrine names all three methods, experimental negotiation, loaded-thread/same-instance scope, the separate `command/exec` registry, `turn/interrupt` behavior, safe termination, and fallback behavior when the RPC surface is not callable.
 - Memory artifact: this unit, especially `001_codex_rs_runtime_guide.md`; once implemented and checked, move the whole folder to `devlog/_fin/`.
 - Expected terminal outcomes: `DONE` after docs, skill guidance, and drift test land; `BLOCKED` if upstream removes or renames the v2 methods; `NEEDS_HUMAN` if a host-controlled endpoint is required for a future operator client.
@@ -56,10 +56,10 @@ devlog/_plan/260713_app_server_background_terminals/
   030_phase3_contract_gate.md                  NEW — phase 3 diff plan
 
 structure/60_native_capabilities.md            MODIFY in phase 1
-plugins/codexclaw/skills/dev/SKILL.md           MODIFY in phase 2
-plugins/codexclaw/skills/dev/references/
+plugins/cursorclaw/skills/dev/SKILL.md           MODIFY in phase 2
+plugins/cursorclaw/skills/dev/references/
   background-terminals.md                      NEW in phase 2
-plugins/codexclaw/test/
+plugins/cursorclaw/test/
   background-terminal-doc-sync.test.mjs        NEW in phase 3
 ```
 
@@ -105,7 +105,7 @@ Until then, a CLI wrapper would control only its own app-server instance and wou
 ## Verification commands for the implementation cycles
 
 ```bash
-node --test plugins/codexclaw/test/background-terminal-doc-sync.test.mjs
+node --test plugins/cursorclaw/test/background-terminal-doc-sync.test.mjs
 npm run build
 npm test
 git diff --check
@@ -119,13 +119,13 @@ if ps ax -o command= | rg '[b]ackground-probe'; then exit 1; fi
 if lsof -nP -iTCP:8765 -sTCP:LISTEN | rg .; then exit 1; fi
 rg -n "thread/backgroundTerminals/(list|terminate|clean)|experimentalApi|CommandExecManager|UnifiedExecProcessManager|unified_exec_manager" \
   structure/60_native_capabilities.md \
-  plugins/codexclaw/skills/dev/SKILL.md \
-  plugins/codexclaw/skills/dev/references/background-terminals.md
+  plugins/cursorclaw/skills/dev/SKILL.md \
+  plugins/cursorclaw/skills/dev/references/background-terminals.md
 ```
 
 ## Plan-phase evidence
 
-- Upstream source: OpenAI Codex PR #26041, merge commit `a1a8807e9d67fad4b95f2730a9669eca5a9d27d0`.
+- Upstream source: Cursor PR #26041, merge commit `a1a8807e9d67fad4b95f2730a9669eca5a9d27d0`.
 - Release containment: annotated tag `rust-v0.140.0` resolves to commit `6506579001c322927a3e4bd440563267a7ac6c1f`; GitHub compare reports the merge commit as its merge base and the tag commit 145 commits ahead.
 - Local binary: Codex Desktop bundles `codex-cli 0.144.0-alpha.4` and generates all three experimental schemas.
 - Ephemeral live observation, not durable proof: a separate app-server accepted experimental initialization and recognized `thread/backgroundTerminals/list`, then returned `thread not found` for a thread owned by the Desktop app-server. In the actual Desktop task, unified-exec session `46623` appeared in the background-terminal list and was subsequently stopped with `Ctrl-C`. Phase 3 requires a fresh redacted transcript and makes that artifact authoritative.

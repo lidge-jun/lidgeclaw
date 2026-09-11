@@ -8,7 +8,7 @@
 ## 1. 범위와 불변식
 
 wp5는 공개 mutation보다 먼저 공통 락을 세운다. 현재 steering 전용 `.steer.lock`을
-`.codexclaw/goalplans/<slug>/.goalplan.lock`으로 바꾸고, 기존 goalplan RMW 경로를 모두 이 락으로
+`.cursorclaw/goalplans/<slug>/.goalplan.lock`으로 바꾸고, 기존 goalplan RMW 경로를 모두 이 락으로
 감싼다. wp6은 이 API가 합쳐진 뒤에만 공개 mutation을 추가한다.
 
 확정 불변식은 아래와 같다.
@@ -118,32 +118,32 @@ block으로 바꾸면 같은 실패가 끝없이 다시 실행될 수 있다.
 
 | 구분 | 경로 | 책임 |
 | --- | --- | --- |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/goalplan.ts` | 공통 락 API, 75ms 대기, 수동 정리 진단, read-only lock status |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/state.ts` | D-close recovery marker 저장·복원, recovery 중 IDLE check epoch 보존 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/orchestrate-apply.ts` | reset 시 marker·check epoch 삭제, IDLE+marker를 실제 reset으로 처리 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/steering.ts` | `.steer.lock` 삭제, 공통 락 적용 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts` | D-close fail-closed, stale-round 청소 fail-open |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/hook.ts` | 채팅 D-close 연산 거부와 hook code 0 경계 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/review-round-cli.ts` | open/abort RMW 직렬화 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/review-observer.ts` | verdict·진단 append 직렬화, hook fail-open |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/goalplan.js` | `src/goalplan.ts` build 산출물 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/state.js` | `src/state.ts` build 산출물 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/orchestrate-apply.js` | `src/orchestrate-apply.ts` build 산출물 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/steering.js` | `src/steering.ts` build 산출물 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/orchestrate-cli.js` | `src/orchestrate-cli.ts` build 산출물 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/hook.js` | `src/hook.ts` build 산출물 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/review-round-cli.js` | `src/review-round-cli.ts` build 산출물 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/review-observer.js` | `src/review-observer.ts` build 산출물 |
-| NEW | `plugins/codexclaw/components/pabcd-state/test/goalplan-concurrency.test.ts` | 공통 락 단위 회귀 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/steering.test.ts` | 공통 락 경합 회귀 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/steering-ops.test.ts` | 전용 WSL 락 단언을 공통 락 경로 단언으로 교체 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts` | CLI D-close 락 실패 회귀 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/hook.test.ts` | 채팅 D-close 락 실패 회귀 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/review-binding.test.ts` | review CLI·observer 경합 회귀 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/state.test.ts` | persisted shape와 marker 복원 회귀 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/orchestrate-apply.test.ts` | IDLE+marker reset 회귀 |
-| MODIFY | `plugins/codexclaw/test/hook-e2e.test.mjs` | compiled SessionStart persisted state exact shape에 recovery 기본값 반영 |
-| NEW | `plugins/codexclaw/components/pabcd-state/test/fixtures/tsc-diagnostic-baseline.txt` | §10.7 미해석 식별자 게이트의 선행 진단 fingerprint 정본 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts` | 공통 락 API, 75ms 대기, 수동 정리 진단, read-only lock status |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/state.ts` | D-close recovery marker 저장·복원, recovery 중 IDLE check epoch 보존 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/orchestrate-apply.ts` | reset 시 marker·check epoch 삭제, IDLE+marker를 실제 reset으로 처리 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/steering.ts` | `.steer.lock` 삭제, 공통 락 적용 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts` | D-close fail-closed, stale-round 청소 fail-open |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/hook.ts` | 채팅 D-close 연산 거부와 hook code 0 경계 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/review-round-cli.ts` | open/abort RMW 직렬화 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/review-observer.ts` | verdict·진단 append 직렬화, hook fail-open |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/goalplan.js` | `src/goalplan.ts` build 산출물 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/state.js` | `src/state.ts` build 산출물 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/orchestrate-apply.js` | `src/orchestrate-apply.ts` build 산출물 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/steering.js` | `src/steering.ts` build 산출물 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/orchestrate-cli.js` | `src/orchestrate-cli.ts` build 산출물 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/hook.js` | `src/hook.ts` build 산출물 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/review-round-cli.js` | `src/review-round-cli.ts` build 산출물 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/review-observer.js` | `src/review-observer.ts` build 산출물 |
+| NEW | `plugins/cursorclaw/components/pabcd-state/test/goalplan-concurrency.test.ts` | 공통 락 단위 회귀 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/steering.test.ts` | 공통 락 경합 회귀 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/steering-ops.test.ts` | 전용 WSL 락 단언을 공통 락 경로 단언으로 교체 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts` | CLI D-close 락 실패 회귀 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/hook.test.ts` | 채팅 D-close 락 실패 회귀 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/review-binding.test.ts` | review CLI·observer 경합 회귀 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/state.test.ts` | persisted shape와 marker 복원 회귀 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/orchestrate-apply.test.ts` | IDLE+marker reset 회귀 |
+| MODIFY | `plugins/cursorclaw/test/hook-e2e.test.mjs` | compiled SessionStart persisted state exact shape에 recovery 기본값 반영 |
+| NEW | `plugins/cursorclaw/components/pabcd-state/test/fixtures/tsc-diagnostic-baseline.txt` | §10.7 미해석 식별자 게이트의 선행 진단 fingerprint 정본 |
 
 `goalplan-cli.ts`, `goal-gate.ts`, `atomic-write.ts`, `skills/loop/SKILL.md`는 wp5에서 수정하지 않는다.
 `skills/loop/SKILL.md` 변경은 wp6 소유다. wp6이 lifecycle과 의존 등록 표면을 추가할 때
@@ -157,7 +157,7 @@ D-close는 CLI의 `args.attest.workPhaseId`, 채팅의 `command.attest.workPhase
 그 밖의 bound close에서 빈 값은 target 조회 단계에서 `attest.workPhaseId is required`로 거부한다.
 순서 정본은 계약 §40 Z4다.
 
-durable marker의 저장 위치는 `.codexclaw/sessions/<sessionId>.json` 안
+durable marker의 저장 위치는 `.cursorclaw/sessions/<sessionId>.json` 안
 `dcloseRecovery` 필드다. 별도 journal은 만들지 않는다. JSON shape는 아래 하나다.
 
 ```ts
@@ -265,7 +265,7 @@ fail-closed 행은 **최초 락 실패**만 가리킨다. `owner.json`은 recove
 
 ## 6. 파일별 diff
 
-### 6.1 MODIFY — `plugins/codexclaw/components/pabcd-state/src/goalplan.ts`
+### 6.1 MODIFY — `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts`
 
 #### before — 저수준 write만 존재
 
@@ -764,7 +764,7 @@ import {
 `goalplanWriteLockStatus()`의 네 번째 인자는 ENOENT 경쟁을 결정적으로 재현하는 테스트 seam이다.
 생산 호출은 넘기지 않는다. `EACCES`, `ENOTDIR` 같은 오류는 “락 없음”으로 숨기지 않고 그대로 던진다.
 
-### 6.1.1 MODIFY — `plugins/codexclaw/components/pabcd-state/src/state.ts`
+### 6.1.1 MODIFY — `plugins/cursorclaw/components/pabcd-state/src/state.ts`
 
 `DcloseRecoveryMarker`와 `State.dcloseRecovery`를 추가한다. marker는 plan의 `done` 상태나 원장
 문구를 대신 읽는 힌트가 아니라 recovery 권위 상태다.
@@ -867,7 +867,7 @@ const rebuilt: State = {
 `writeState()`는 기존 atomic tmp+rename을 그대로 쓴다. marker 생성과 삭제 호출은 D-close 코드가
 goalplan 락 안에서만 실행한다.
 
-### 6.1.2 MODIFY — `plugins/codexclaw/components/pabcd-state/src/orchestrate-apply.ts`
+### 6.1.2 MODIFY — `plugins/cursorclaw/components/pabcd-state/src/orchestrate-apply.ts`
 
 이 파일은 `clearedIdle()`과 reset no-op 판정의 실제 소유자이므로 wp5 write scope에 넣는다. import는
 바꾸지 않는다. `clearedIdle()`은 새 recovery 필드를 spread로 보존하지 않고 명시해서 지운다.
@@ -890,7 +890,7 @@ goalplan 락 안에서만 실행한다.
 따라서 정상 reset은 시작 phase와 무관하게 `checkEpoch: null`, `dcloseRecovery: null`을 저장한다.
 IDLE이어도 marker나 check epoch가 남아 있으면 실제 reset state와 원장 행을 만들며 no-op이 아니다.
 
-### 6.2 MODIFY — `plugins/codexclaw/components/pabcd-state/src/steering.ts`
+### 6.2 MODIFY — `plugins/cursorclaw/components/pabcd-state/src/steering.ts`
 
 #### before — 전용 락 import와 옵션
 
@@ -979,7 +979,7 @@ export interface ApplyOptions {
         entry,
         warning:
           `the batch was applied but its ledger entry could not be written to `
-          + `.codexclaw/goalplans/${slug}/ledger.jsonl `
+          + `.cursorclaw/goalplans/${slug}/ledger.jsonl `
           + `(${err instanceof Error ? err.message : String(err)}). `
           + `Re-running is a no-op because the key is recorded.`,
       };
@@ -996,7 +996,7 @@ export interface ApplyOptions {
 
 `SteerOp`은 wp5에서 확장하지 않는다. wp6이 기존 `add-work-phase`에 `dependsOn?: string[]`만 붙인다.
 
-### 6.3 MODIFY — `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts`
+### 6.3 MODIFY — `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts`
 
 실제 현재 파일의 `node:fs` import에는 `existsSync`, `readFileSync`가 있고 `node:path` import에는
 `join`이 있다. 둘은 helper가 그대로 재사용한다. goalplan import와 state import는 wp4 적용 후
@@ -1540,7 +1540,7 @@ P→A stale-round 청소는 read부터 append까지 callback에 넣는다. 락 �
   }
 ```
 
-### 6.4 MODIFY — `plugins/codexclaw/components/pabcd-state/src/hook.ts`
+### 6.4 MODIFY — `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
 
 채팅 D-close도 `withGoalplanWriteLock()` callback 안에서 plan을 재독·검사·커밋한다. 락 실패 시
 `writeState()`와 `appendLedger()`에 도달하지 않는다.
@@ -1662,7 +1662,7 @@ if (advanced.kind === "no_active") {
     : `the bound goalplan "${state.slug}" has no active work-phase to close`;
   return buildContextOutput(
     "UserPromptSubmit",
-    `[codexclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
+    `[cursorclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
   );
 }
 writeState(payload.cwd, result.state);
@@ -1714,7 +1714,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
         return {
           output: buildContextOutput(
             "UserPromptSubmit",
-            `[codexclaw — refused: invalid goalplan: ${integrityReasons.join("; ")}. Nothing was written.]`,
+            `[cursorclaw — refused: invalid goalplan: ${integrityReasons.join("; ")}. Nothing was written.]`,
           ),
           advanced: null,
           allDone: false as const,
@@ -1724,7 +1724,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
         return {
           output: buildContextOutput(
             "UserPromptSubmit",
-            `[codexclaw — refused: the bound goalplan "${state.slug}" has no active work-phase to close (CYCLE-COMPLETION-01). Nothing was written.]`,
+            `[cursorclaw — refused: the bound goalplan "${state.slug}" has no active work-phase to close (CYCLE-COMPLETION-01). Nothing was written.]`,
           ),
           advanced: null,
           allDone: false as const,
@@ -1745,7 +1745,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              `[codexclaw — refused: the recovery marker for ${closePhaseId} predates the `
+              `[cursorclaw — refused: the recovery marker for ${closePhaseId} predates the `
                 + `successor field, so this retry cannot tell whether the plan commit `
                 + `landed. The marker was kept; inspect the goalplan, set the work-phase `
                 + `statuses and activeWorkPhaseId by hand, then run `
@@ -1778,7 +1778,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
             return {
               output: buildContextOutput(
                 "UserPromptSubmit",
-                `[codexclaw — refused: recovery target ${closePhaseId} is gone from the plan `
+                `[cursorclaw — refused: recovery target ${closePhaseId} is gone from the plan `
                   + `and the successor ${orphan.successorId} it recorded `
                   + `${absentSuccessorDetail(orphan.reason)}, so this retry cannot tell what `
                   + `to finish. The marker was kept; inspect the goalplan, set the work-phase `
@@ -1808,7 +1808,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              `[codexclaw — refused: recovery target ${closePhaseId} gained `
+              `[cursorclaw — refused: recovery target ${closePhaseId} gained `
                 + `${closed.pending.length} open task(s) after its marker was written `
                 + `(CYCLE-COMPLETION-01): ${open}. The recovery marker was kept; close those `
                 + `tasks and repeat the same D request. Nothing was written.]`,
@@ -1821,7 +1821,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              `[codexclaw — refused: recovery target ${closePhaseId} is now ${closed.status} `
+              `[cursorclaw — refused: recovery target ${closePhaseId} is now ${closed.status} `
                 + `(CYCLE-COMPLETION-01). The recovery marker was kept; restore that work-phase `
                 + `and repeat the same D request. Nothing was written.]`,
             ),
@@ -1833,7 +1833,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              `[codexclaw — refused: recovery target ${closePhaseId} now waits for `
+              `[cursorclaw — refused: recovery target ${closePhaseId} now waits for `
                 + `${closed.unmet.join(", ")} (CYCLE-COMPLETION-01). The recovery marker was kept; `
                 + `satisfy those work-phases and repeat the same D request. Nothing was written.]`,
             ),
@@ -1848,7 +1848,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
             return {
               output: buildContextOutput(
                 "UserPromptSubmit",
-                `[codexclaw — refused: the recovery marker for ${closePhaseId} names that `
+                `[cursorclaw — refused: the recovery marker for ${closePhaseId} names that `
                   + `same work-phase as its successor, which no close can produce, so this `
                   + `retry cannot tell what to finish. The marker was kept; inspect the `
                   + `goalplan, set the work-phase statuses and activeWorkPhaseId by hand, `
@@ -1867,7 +1867,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              `[codexclaw — refused: recovery target ${closePhaseId} was closed with `
+              `[cursorclaw — refused: recovery target ${closePhaseId} was closed with `
                 + `successor ${closed.successorId}, which ${detail} (CYCLE-COMPLETION-01). `
                 + `The recovery marker was kept; restore that work-phase and repeat the `
                 + `same D request. Nothing was written.]`,
@@ -1908,7 +1908,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              "[codexclaw — refused: bound chat D-close requires attest.workPhaseId. Nothing was written.]",
+              "[cursorclaw — refused: bound chat D-close requires attest.workPhaseId. Nothing was written.]",
             ),
             advanced: null,
             allDone: false as const,
@@ -1919,7 +1919,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              `[codexclaw — refused: work-phase ${closePhaseId} is not in the bound goalplan. Nothing was written.]`,
+              `[cursorclaw — refused: work-phase ${closePhaseId} is not in the bound goalplan. Nothing was written.]`,
             ),
             advanced: null,
             allDone: false as const,
@@ -1933,7 +1933,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
         return {
           output: buildContextOutput(
             "UserPromptSubmit",
-            `[codexclaw — refused: work-phase ${closeResult.workPhaseId} still has `
+            `[cursorclaw — refused: work-phase ${closeResult.workPhaseId} still has `
               + `${closeResult.pending.length} open task(s), so this cycle cannot close `
               + `(CYCLE-COMPLETION-01): ${open}. Nothing was written.]`,
           ),
@@ -1949,7 +1949,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
         return {
           output: buildContextOutput(
             "UserPromptSubmit",
-            `[codexclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
+            `[cursorclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
           ),
           advanced: null,
           allDone: false as const,
@@ -1960,7 +1960,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
         return {
           output: buildContextOutput(
             "UserPromptSubmit",
-            `[codexclaw — refused: fixed close target ${closePhaseId} does not match active work-phase ${closeResult.closedId}. Nothing was written.]`,
+            `[cursorclaw — refused: fixed close target ${closePhaseId} does not match active work-phase ${closeResult.closedId}. Nothing was written.]`,
           ),
           advanced: null,
           allDone: false as const,
@@ -1971,7 +1971,7 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              "[codexclaw — refused: current C check epoch is required. Nothing was written.]",
+              "[cursorclaw — refused: current C check epoch is required. Nothing was written.]",
             ),
             advanced: null,
             allDone: false as const,
@@ -2019,14 +2019,14 @@ PABCD close row가 없을 때만 `{ from: "C", to: "IDLE", reason: "done" }` 행
     if (locked.kind === "locked") {
       return buildContextOutput(
         "UserPromptSubmit",
-        `[codexclaw — D-close was not applied: ${locked.reason} `
+        `[cursorclaw — D-close was not applied: ${locked.reason} `
           + `The phase and goalplan ledger were not changed.]`,
       );
     }
     if (locked.kind === "unreadable") {
       return buildContextOutput(
         "UserPromptSubmit",
-        `[codexclaw — D-close was not applied: the bound goalplan could not be read `
+        `[cursorclaw — D-close was not applied: the bound goalplan could not be read `
           + `(${locked.reason}). Nothing was written.]`,
       );
     }
@@ -2102,7 +2102,7 @@ const finalize = allDoneClose
 if (finalize.kind !== "ok") {
   return buildContextOutput(
     "UserPromptSubmit",
-    `[codexclaw — D-close was committed and the cycle is closed, but ledger/marker `
+    `[cursorclaw — D-close was committed and the cycle is closed, but ledger/marker `
       + `finalization is pending: ${finalize.reason} The recovery marker is still on the `
       + `session, so running the same D request again finishes the cleanup.]`,
   );
@@ -2174,7 +2174,7 @@ if (closeResult.kind === "no_active") {
   return {
     output: buildContextOutput(
       "UserPromptSubmit",
-      `[codexclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
+      `[cursorclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
     ),
     advanced: null,
   };
@@ -2196,7 +2196,7 @@ if (closeResult.kind === "no_active") {
 `hook.test.ts`의 pinned POSIX snapshot에도 같은 위치와 문자열을 추가한다. CLI help의 bound C→D
 예시는 이미 `workPhaseId`를 포함하므로 바꾸지 않는다.
 
-### 6.5 MODIFY — `plugins/codexclaw/components/pabcd-state/src/review-round-cli.ts`
+### 6.5 MODIFY — `plugins/cursorclaw/components/pabcd-state/src/review-round-cli.ts`
 
 `show`는 계속 `readGoalplan()`을 쓴다. `open`은 plan 파일 hash 계산 뒤 plan RMW만 공통 락에서
 실행한다. `abort`도 같은 API를 쓴다.
@@ -2374,7 +2374,7 @@ function renderOpenPacket(round: ReviewRoundState, fileCount: number): string {
     return locked.value;
 ```
 
-### 6.6 MODIFY — `plugins/codexclaw/components/pabcd-state/src/review-observer.ts`
+### 6.6 MODIFY — `plugins/cursorclaw/components/pabcd-state/src/review-observer.ts`
 
 sign-off 유무와 무관하게 plan 조회, 판정, 진단 append, verdict write를 callback 안에 둔다. 결과가
 `locked` 또는 `unreadable`이면 `""`를 반환한다. callback이나 append가 throw해도 outer catch가
@@ -2582,7 +2582,7 @@ function commitCompletedTask(
 
 아래 테스트는 이름만 적은 목록이 아니다. 각 블록을 해당 파일에 그대로 넣을 수 있어야 한다.
 
-### 8.1 NEW — `plugins/codexclaw/components/pabcd-state/test/goalplan-concurrency.test.ts`
+### 8.1 NEW — `plugins/cursorclaw/components/pabcd-state/test/goalplan-concurrency.test.ts`
 
 파일 전체 내용:
 
@@ -2975,7 +2975,7 @@ test("an unreadable plan releases the acquired lock", () => {
 });
 ```
 
-### 8.2 MODIFY — `plugins/codexclaw/components/pabcd-state/test/steering.test.ts`
+### 8.2 MODIFY — `plugins/cursorclaw/components/pabcd-state/test/steering.test.ts`
 
 현재 `:159`의 `a held lock blocks the batch and names the owner`와 `:171`의
 `the lock is released on success and on rejection` 두 선언을 삭제하고 아래 두 블록으로 교체한다.
@@ -3024,15 +3024,15 @@ test("the common lock is released after an applied or rejected batch", () => {
 });
 ```
 
-### 8.2.1 MODIFY — `plugins/codexclaw/components/pabcd-state/test/steering-ops.test.ts`
+### 8.2.1 MODIFY — `plugins/cursorclaw/components/pabcd-state/test/steering-ops.test.ts`
 
 현재 `:22~72`는 `.steer.lock`을 미리 만들고 `{ wslDeps }`를 넘겨 drvfs/9p 전용 문구를 기다린다.
 wp5 After에서는 그 디렉터리와 seam을 읽지 않으므로 batch가 실제 적용되고 `locked` 단언이 깨진다.
 파일 전체를 공통 락 계약에 맞춰 아래처럼 교체한다.
 
 ```diff
---- a/plugins/codexclaw/components/pabcd-state/test/steering-ops.test.ts
-+++ b/plugins/codexclaw/components/pabcd-state/test/steering-ops.test.ts
+--- a/plugins/cursorclaw/components/pabcd-state/test/steering-ops.test.ts
++++ b/plugins/cursorclaw/components/pabcd-state/test/steering-ops.test.ts
 @@
 -/**
 - * steering-ops.test.ts - wp07 (plan 060).
@@ -3150,7 +3150,7 @@ WSL tier 진단은 `.steer.lock` 전용 `filesystemTier()`와 `{ wslDeps }` seam
 락은 OS별 판정 없이 절대 경로를 내는 계약이므로 drvfs/9p/native 세 테스트는
 삭제한다. 진단을 다른 테스트로 옮기거나 유지한다고 쓰지 않는다.
 
-### 8.2.2 MODIFY — `plugins/codexclaw/components/pabcd-state/test/state.test.ts`
+### 8.2.2 MODIFY — `plugins/cursorclaw/components/pabcd-state/test/state.test.ts`
 
 import는 바꾸지 않는다. 현재 import에 필요한 `readState`, `writeState`, `defaultState`, `readFileSync`가
 이미 모두 있다. exact persisted shape에 새 기본 필드를 넣는다.
@@ -3287,10 +3287,10 @@ test("wp5: foreign D-close marker is dropped and cannot retain an IDLE epoch", (
 });
 ```
 
-### 8.2.3 MODIFY — `plugins/codexclaw/test/hook-e2e.test.mjs`
+### 8.2.3 MODIFY — `plugins/cursorclaw/test/hook-e2e.test.mjs`
 
-루트 `npm test`가 `plugins/codexclaw/test/*.test.mjs`를 실행한다. 실제 파일 전체에서
-`rg -n 'deepEqual' plugins/codexclaw/test/`를 실행한 결과 persisted state 전체 shape는
+루트 `npm test`가 `plugins/cursorclaw/test/*.test.mjs`를 실행한다. 실제 파일 전체에서
+`rg -n 'deepEqual' plugins/cursorclaw/test/`를 실행한 결과 persisted state 전체 shape는
 `hook-e2e.test.mjs:160-184` 한 블록뿐이다. 계약의 `:160`, `:183`은 각각 이 객체의 시작과 마지막
 기존 필드를 가리킨다. 나머지는 배열, 프로세스 인자, 파일 바이트의 동일성 단언이라 state 필드 추가와
 무관하다. component state 테스트와 이 루트 E2E, 두 exact shape를 함께 갱신한다.
@@ -3303,7 +3303,7 @@ test("wp5: foreign D-close marker is dropped and cannot retain an IDLE epoch", (
      });
 ```
 
-### 8.2.4 MODIFY — `plugins/codexclaw/components/pabcd-state/test/orchestrate-apply.test.ts`
+### 8.2.4 MODIFY — `plugins/cursorclaw/components/pabcd-state/test/orchestrate-apply.test.ts`
 
 import는 바꾸지 않는다. `applyHumanTransition`, `defaultState`가 이미 있다. 기존 IDLE no-op 테스트는
 marker와 epoch가 없는 상태에 그대로 남기고 아래 회귀를 더한다.
@@ -3329,7 +3329,7 @@ test("reset from IDLE clears a D-close marker and check epoch instead of becomin
 });
 ```
 
-### 8.3 MODIFY — `plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts`
+### 8.3 MODIFY — `plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts`
 
 CYCLE-COMPLETION 테스트 구역의 기존 bound 성공과 HITL 성공을 먼저 분리해 잠근다. bound만 새
 `close target <id> is complete` 문구를 쓰고, `orchestrate-cli.test.ts:908`의 HITL은 옛 문구를
@@ -3690,7 +3690,7 @@ test("recovery is refused when the fixed target gained an open task after its ma
         : wp
     ),
   });
-  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const retry = runOrchestrateCli(args);
   assert.equal(retry.code, 1);
@@ -3705,7 +3705,7 @@ test("recovery is refused when the fixed target gained an open task after its ma
     // have to infer it from a file a later edit may have touched.
     nextWorkPhaseId: "wp-2",
   });
-  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.deepEqual(goalplanLedgerRows(cwd, slug).filter((row) => row.event === "workphase_done"), []);
 });
 
@@ -3767,7 +3767,7 @@ test("recovery is refused when the fixed target lost a dependency after its mark
       wp.id === "wp-1" ? { ...wp, dependsOn: ["wp-2"] } : wp
     ),
   });
-  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const retry = runOrchestrateCli(args);
   assert.equal(retry.code, 1);
@@ -3782,7 +3782,7 @@ test("recovery is refused when the fixed target lost a dependency after its mark
     // have to infer it from a file a later edit may have touched.
     nextWorkPhaseId: "wp-2",
   });
-  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.deepEqual(goalplanLedgerRows(cwd, slug).filter((row) => row.event === "workphase_done"), []);
 });
 
@@ -3817,7 +3817,7 @@ test("recovery is refused when a pending task is hidden under the already-closed
         : wp
     ),
   });
-  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const retry = runOrchestrateCli(args);
 
@@ -3826,7 +3826,7 @@ test("recovery is refused when a pending task is hidden under the already-closed
   assert.match(retry.output, /The recovery marker was kept/);
   assert.equal(readState(cwd, id).phase, "C");
   assert.notEqual(readState(cwd, id).dcloseRecovery, null);
-  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
 });
 
 for (const forgery of [
@@ -3908,7 +3908,7 @@ test("a marker naming its own target as successor points at reset, not at a plan
       nextWorkPhaseId: "wp-1",
     },
   })}\n`);
-  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const result = runOrchestrateCli(parsedDclose(cwd, id));
 
@@ -3916,7 +3916,7 @@ test("a marker naming its own target as successor points at reset, not at a plan
   assert.match(result.output, /names that same work-phase as its successor/);
   assert.match(result.output, new RegExp(`cxc orchestrate reset --session ${id}`));
   assert.doesNotMatch(result.output, /restore that work-phase/);
-  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.equal(readState(cwd, id).phase, "C");
   assert.equal(readState(cwd, id).dcloseRecovery?.nextWorkPhaseId, "wp-1");
 });
@@ -4093,7 +4093,7 @@ test("an absent target refuses a running successor whose dependency is unmet", (
   ];
   plan.activeWorkPhaseId = null;
   writeGoalplan(cwd, plan);
-  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
   writeState(cwd, {
     ...defaultState(id),
     slug,
@@ -4111,7 +4111,7 @@ test("an absent target refuses a running successor whose dependency is unmet", (
   assert.equal(result.code, 1, result.output);
   assert.match(result.output, /now waits for another work-phase/);
   // Fail closed: no plan write, no ledger row, and the marker stays for a real repair.
-  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.equal(readState(cwd, id).dcloseRecovery?.nextWorkPhaseId, "wp-2");
 });
 test("an absent target restores the cursor onto a stranded running successor", () => {
@@ -4179,13 +4179,13 @@ test("recovery settles when the recorded successor already finished its own cycl
       wp.id === "wp-2" ? { ...wp, status: "done" as const } : wp
     ),
   });
-  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const retry = runOrchestrateCli(args);
 
   assert.equal(retry.code, 0, retry.output);
   // No plan write: the close this marker describes is already reflected.
-  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.equal(readState(cwd, id).phase, "IDLE");
   assert.equal(readState(cwd, id).dcloseRecovery, null);
   // And wp-2 keeps exactly one started row from its own activation.
@@ -4232,14 +4232,14 @@ test("recovery is refused when the marker predates the successor field", () => {
       closedWorkPhaseId: "wp-1",
     },
   })}\n`);
-  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const result = runOrchestrateCli(parsedDclose(cwd, id));
 
   assert.equal(result.code, 1);
   assert.match(result.output, /predates the successor field/);
   assert.match(result.output, /The marker was kept/);
-  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.equal(readState(cwd, id).phase, "C");
   assert.equal(readState(cwd, id).dcloseRecovery?.legacy, true);
   assert.deepEqual(goalplanLedgerRows(cwd, slug).filter((row) => row.event === "workphase_done"), []);
@@ -4278,14 +4278,14 @@ test("recovery is refused when the recorded successor left the plan", () => {
     ...crashed,
     workPhases: crashed.workPhases.filter((wp) => wp.id !== "wp-2"),
   });
-  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const retry = runOrchestrateCli(args);
 
   assert.equal(retry.code, 1);
   assert.match(retry.output, /successor wp-2, which is no longer in the plan/);
   assert.match(retry.output, /The recovery marker was kept/);
-  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.equal(readState(cwd, id).phase, "C");
   assert.equal(readState(cwd, id).dcloseRecovery?.nextWorkPhaseId, "wp-2");
   assert.deepEqual(
@@ -4749,7 +4749,7 @@ test("one session closes two consecutive cycles with distinct close keys", () =>
     checkOutput: "tests passed",
     exitCode: 0,
     workPhaseId: "wp-2",
-    testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+    testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
   });
   const secondArgs = parseOrchestrateCliArgs(
     ["d", "--session", id, "--cwd", cwd, "--attest", secondAttest],
@@ -4925,7 +4925,7 @@ test("P-to-A continues when stale-round housekeeping cannot acquire the common l
 });
 ```
 
-### 8.4 MODIFY — `plugins/codexclaw/components/pabcd-state/test/hook.test.ts`
+### 8.4 MODIFY — `plugins/cursorclaw/components/pabcd-state/test/hook.test.ts`
 
 기존 bound 채팅 D-close fixture 두 개를 먼저 갱신한다. open-task 거부 fixture도 target 결박을 먼저
 통과해야 의도한 `tasks_pending` 분기에 닿는다.
@@ -4968,7 +4968,7 @@ const attest = JSON.stringify({
   checkOutput: "ok",
   exitCode: 0,
   workPhaseId: "wp-1",
-  testReceiptPath: ".codexclaw/evidence/chat-c/test-receipt.json",
+  testReceiptPath: ".cursorclaw/evidence/chat-c/test-receipt.json",
 });
 ```
 
@@ -4988,7 +4988,7 @@ const attest = JSON.stringify({
   checkOutput: "ok",
   exitCode: 0,
   workPhaseId: "wp-1",
-  testReceiptPath: ".codexclaw/evidence/chat-d/test-receipt.json",
+  testReceiptPath: ".cursorclaw/evidence/chat-d/test-receipt.json",
 });
 ```
 
@@ -5030,7 +5030,7 @@ test("bound chat D-close without workPhaseId is refused after empty and all-done
       did: "ran the suite",
       checkOutput: "ok",
       exitCode: 0,
-      testReceiptPath: ".codexclaw/evidence/chat-missing-target/test-receipt.json",
+      testReceiptPath: ".cursorclaw/evidence/chat-missing-target/test-receipt.json",
     });
 
     const output = handleUserPromptSubmit(
@@ -5080,7 +5080,7 @@ for (const workPhaseId of [undefined, "wp-finished"] as const) {
         checkOutput: "ok",
         exitCode: 0,
         ...(workPhaseId ? { workPhaseId } : {}),
-        testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+        testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
       });
       const planPath = join(cwd, STATE_DIR, "goalplans", slug, "goalplan.json");
       const beforePlan = readFileSync(planPath, "utf8");
@@ -5132,7 +5132,7 @@ test("all-done bound chat records closedWorkPhaseId null even when workPhaseId i
       checkOutput: "ok",
       exitCode: 0,
       workPhaseId: "wp-finished",
-      testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+      testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
     });
     const planPath = join(cwd, STATE_DIR, "goalplans", slug, "goalplan.json");
     const beforePlan = readFileSync(planPath, "utf8");
@@ -5141,7 +5141,7 @@ test("all-done bound chat records closedWorkPhaseId null even when workPhaseId i
 
     assert.doesNotMatch(output, /refused|blocked or superseded/);
     const context = JSON.parse(output.trimEnd()).hookSpecificOutput.additionalContext as string;
-    assert.match(context, /\[codexclaw: DONE\]/);
+    assert.match(context, /\[cursorclaw: DONE\]/);
     assert.match(context, /IPABCD: IDLE/);
     assert.equal(readState(cwd, id).phase, "IDLE");
     assert.equal(readState(cwd, id).dcloseRecovery, null);
@@ -5188,7 +5188,7 @@ test("chat D-close rejects an invalid v3 dependency plan before every write", ()
     const attest = JSON.stringify({
       from: "C", to: "D", did: "ran the suite", checkOutput: "ok", exitCode: 0,
       workPhaseId: "wp-1",
-      testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+      testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
     });
 
     const output = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id));
@@ -5300,7 +5300,7 @@ test("chat D-close recovery resumes when the marker target is absent from the pl
 
     assert.doesNotMatch(output, /refused|not in the bound goalplan/);
     const context = JSON.parse(output.trimEnd()).hookSpecificOutput.additionalContext as string;
-    assert.match(context, /\[codexclaw: DONE\]/);
+    assert.match(context, /\[cursorclaw: DONE\]/);
     assert.match(context, /IPABCD: IDLE/);
     assert.equal(readFileSync(planPath, "utf8"), beforePlan);
     assert.equal(
@@ -5391,7 +5391,7 @@ function seedChatCycleAtC(cwd: string, id: string, slug: string): string {
     checkOutput: "ok",
     exitCode: 0,
     workPhaseId: "wp-1",
-    testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+    testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
   });
 }
 
@@ -5408,7 +5408,7 @@ test("chat D-close retry after the recovery marker write matches an uninterrupte
 
     const refAttest = seedChatCycleAtC(reference, "chat-reference", "chat-reference-plan");
     const refOut = handleUserPromptSubmit(ups(`orchestrate d --attest ${refAttest}`, reference, "chat-reference", "r1"));
-    assert.match(refOut, /\[codexclaw: DONE\]/);
+    assert.match(refOut, /\[cursorclaw: DONE\]/);
     const referencePlan = readGoalplan(reference, "chat-reference-plan")!;
 
     assert.throws(
@@ -5429,7 +5429,7 @@ test("chat D-close retry after the recovery marker write matches an uninterrupte
     assert.equal(readGoalplan(cwd, slug)!.workPhases.find((wp) => wp.id === "wp-1")!.status, "in_progress");
 
     const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
-    assert.match(out, /\[codexclaw: DONE\]/);
+    assert.match(out, /\[cursorclaw: DONE\]/);
     const recovered = readGoalplan(cwd, slug)!;
     assert.deepEqual(
       {
@@ -5482,7 +5482,7 @@ test("chat recovery is refused when a pending task is hidden under the closed ta
           : wp
       ),
     });
-    const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+    const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
 
     const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
 
@@ -5490,7 +5490,7 @@ test("chat recovery is refused when a pending task is hidden under the closed ta
     assert.match(out, /The recovery marker was kept/);
     assert.equal(readState(cwd, id).phase, "C");
     assert.notEqual(readState(cwd, id).dcloseRecovery, null);
-    assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+    assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   } finally { rmSync(cwd, { recursive: true, force: true }); }
 });
 
@@ -5523,7 +5523,7 @@ test("chat recovery re-runs the close when only the target status was edited to 
 
     const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
 
-    assert.match(out, /\[codexclaw: DONE\]/);
+    assert.match(out, /\[cursorclaw: DONE\]/);
     const recovered = readGoalplan(cwd, slug)!;
     assert.equal(recovered.activeWorkPhaseId, "wp-2");
     assert.equal(recovered.workPhases.find((wp) => wp.id === "wp-2")!.status, "in_progress");
@@ -5577,14 +5577,14 @@ for (const scenario of [
         /stop at the marker/,
       );
       writeGoalplan(cwd, scenario.mutate(readGoalplan(cwd, slug)!));
-      const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+      const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
 
       const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
       assert.match(out, scenario.pattern);
       assert.match(out, /The recovery marker was kept/);
       assert.equal(readState(cwd, id).phase, "C");
       assert.notEqual(readState(cwd, id).dcloseRecovery, null);
-      assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+      assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
       assert.deepEqual(goalplanLedgerRows(cwd, slug).filter((row) => row.event === "workphase_done"), []);
     } finally { rmSync(cwd, { recursive: true, force: true }); }
   });
@@ -5624,12 +5624,12 @@ test("chat D-close keeps same-turn dedup and clears the Stop guard", () => {
       did: "ran the suite",
       checkOutput: "ok",
       exitCode: 0,
-      testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+      testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
       workPhaseId: "wp-1",
     });
 
     const first = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "same-turn"));
-    assert.match(first, /\[codexclaw: DONE\]/);
+    assert.match(first, /\[cursorclaw: DONE\]/);
     const after = readState(cwd, id);
     assert.equal(after.phase, "IDLE");
     assert.equal(after.stopBlockPhase, null);
@@ -5683,7 +5683,7 @@ test("chat D-close lock timeout keeps phase C, emits a warning, and writes no le
       checkOutput: "ok",
       exitCode: 0,
       workPhaseId: "wp-1",
-      testReceiptPath: ".codexclaw/evidence/chat-lock/test-receipt.json",
+      testReceiptPath: ".cursorclaw/evidence/chat-lock/test-receipt.json",
     });
 
     let output = "";
@@ -5738,7 +5738,7 @@ test("hook CLI exits 0 when chat D-close cannot acquire the goalplan lock", () =
       checkOutput: "ok",
       exitCode: 0,
       workPhaseId: "wp-1",
-      testReceiptPath: ".codexclaw/evidence/chat-process/test-receipt.json",
+      testReceiptPath: ".cursorclaw/evidence/chat-process/test-receipt.json",
     });
     const payload = JSON.stringify(ups(
       `orchestrate d --attest ${attest}`,
@@ -5808,7 +5808,7 @@ try {
   const output = handleUserPromptSubmit(payload, process.platform, hooks);
   // A completed second close while the peer sentinel still exists proves that its
   // transaction ran before the first finalization callback returned.
-  if (output.includes("[codexclaw: DONE]") && peerInsidePath !== "-" && existsSync(peerInsidePath)) {
+  if (output.includes("[cursorclaw: DONE]") && peerInsidePath !== "-" && existsSync(peerInsidePath)) {
     writeFileSync(overlapPath, "second recovery completed inside its peer\n");
   }
   process.stdout.write(output);
@@ -5888,7 +5888,7 @@ test("a second chat recovery contends while the first finalizer callback is held
 
     assert.equal(firstResult.status, 0, firstResult.stderr);
     assert.equal(secondResult.status, 0, secondResult.stderr);
-    assert.match(firstResult.stdout, /\[codexclaw: DONE\]/);
+    assert.match(firstResult.stdout, /\[cursorclaw: DONE\]/);
     assert.match(secondResult.stdout, /D-close was not applied/);
     assert.equal(existsSync(secondAttempted), true);
     assert.equal(
@@ -5911,7 +5911,7 @@ test("a second chat recovery contends while the first finalizer callback is held
 이 블록에 맞춰 `hook.test.ts` import에 `dirname`, `resolve`, `fileURLToPath`를 추가한다. 기존
 `spawnSync` import는 유지하고 동시 회귀용 `spawn`을 더한다.
 
-### 8.5 MODIFY — `plugins/codexclaw/components/pabcd-state/test/review-binding.test.ts`
+### 8.5 MODIFY — `plugins/cursorclaw/components/pabcd-state/test/review-binding.test.ts`
 
 review CLI operation과 observer hook의 차이를 아래 두 테스트로 고정한다.
 
@@ -5920,10 +5920,10 @@ test("review-round abort is fail-closed when the common lock is held", () => {
   const { cwd, slug } = seedAtA();
   try {
     assert.equal(open(cwd, "devlog/_plan/260815_probe/000_plan.md").code, 0);
-    const lock = join(cwd, ".codexclaw", "goalplans", slug, ".goalplan.lock");
+    const lock = join(cwd, ".cursorclaw", "goalplans", slug, ".goalplan.lock");
     mkdirSync(lock, { recursive: false });
     writeFileSync(join(lock, "owner.json"), `${JSON.stringify({ pid: 4242 })}\n`);
-    const before = readFileSync(join(cwd, ".codexclaw", "goalplans", slug, "goalplan.json"), "utf8");
+    const before = readFileSync(join(cwd, ".cursorclaw", "goalplans", slug, "goalplan.json"), "utf8");
     const parsed = parseReviewRoundCliArgs(
       ["abort", "--session", "rb", "--cwd", cwd, "--reason", "reviewer died"],
       cwd,
@@ -5934,7 +5934,7 @@ test("review-round abort is fail-closed when the common lock is held", () => {
 
     assert.equal(result.code, 1);
     assert.match(result.output, /\.goalplan\.lock/);
-    assert.equal(readFileSync(join(cwd, ".codexclaw", "goalplans", slug, "goalplan.json"), "utf8"), before);
+    assert.equal(readFileSync(join(cwd, ".cursorclaw", "goalplans", slug, "goalplan.json"), "utf8"), before);
     assert.equal(latestRound(readGoalplan(cwd, slug)!, "plan_audit")!.status, "in_flight");
   } finally {
     rmSync(cwd, { recursive: true, force: true });
@@ -5947,10 +5947,10 @@ test("review observer is fail-open on lock timeout and leaves verdict unrecorded
     const opened = open(cwd, "devlog/_plan/260815_probe/000_plan.md");
     assert.equal(opened.code, 0);
     const launchId = opened.output.split("\n")[0];
-    const lock = join(cwd, ".codexclaw", "goalplans", slug, ".goalplan.lock");
+    const lock = join(cwd, ".cursorclaw", "goalplans", slug, ".goalplan.lock");
     mkdirSync(lock, { recursive: false });
     writeFileSync(join(lock, "owner.json"), `${JSON.stringify({ pid: 4242 })}\n`);
-    const before = readFileSync(join(cwd, ".codexclaw", "goalplans", slug, "goalplan.json"), "utf8");
+    const before = readFileSync(join(cwd, ".cursorclaw", "goalplans", slug, "goalplan.json"), "utf8");
 
     let output = "not-called";
     assert.doesNotThrow(() => {
@@ -5965,7 +5965,7 @@ test("review observer is fail-open on lock timeout and leaves verdict unrecorded
     });
 
     assert.equal(output, "");
-    assert.equal(readFileSync(join(cwd, ".codexclaw", "goalplans", slug, "goalplan.json"), "utf8"), before);
+    assert.equal(readFileSync(join(cwd, ".cursorclaw", "goalplans", slug, "goalplan.json"), "utf8"), before);
     const round = latestRound(readGoalplan(cwd, slug)!, "plan_audit")!;
     assert.equal(round.status, "in_flight");
     assert.equal(round.lane.verdict, undefined);
@@ -5980,10 +5980,10 @@ test("review observer is fail-open on lock timeout and leaves verdict unrecorded
 실제 검색 명령은 아래와 같다.
 
 ```bash
-rg -n 'deepEqual' plugins/codexclaw/test/
+rg -n 'deepEqual' plugins/cursorclaw/test/
 
 rg -n 'the plan is empty|not in the bound goalplan|cycle closed|blocked or superseded|no active work-phase|could not be read|busy|D-close was not applied|workPhaseId|\.steer\.lock|drvfs|9p|holds the lock|This lock lives on' \
-  plugins/codexclaw/components/pabcd-state/test/
+  plugins/cursorclaw/components/pabcd-state/test/
 ```
 
 검색 결과와 처분은 아래와 같다. “0건”은 pabcd-state의 기존 테스트 전체에 해당 문자열을 기다리는 assert가
@@ -6006,7 +6006,7 @@ rg -n 'the plan is empty|not in the bound goalplan|cycle closed|blocked or super
 | HITL 옛 성공 문구 `current=C -> IDLE ...` | `orchestrate-cli.test.ts:908`의 `an unbound (HITL) session closes its cycle exactly as before`가 code/state만 단언 | wp5 | 옛 문구 exact assert와 `/close target/` 부재 단언을 같은 테스트에 추가 |
 | bound `close target <id> is complete`와 marker cleanup 경고 | 기존 문자열 단언 0건. bound 성공 테스트는 `orchestrate-cli.test.ts:803` | wp5 | 기존 bound 성공 테스트에 `/close target wp-1 is complete/`를 추가하고 §8.3 marker 재시도 테스트들이 성공·경고 경로를 고정 |
 | PABCD close 중복 키 `(sessionId, checkEpoch, closedWorkPhaseId)` | 기존 테스트는 `sessionId/from/to`만 세며 둘째 cycle을 닫는 fixture 없음 | wp5 | §8.3 같은 세션 연속 두 cycle 테스트가 `c-test-epoch/wp-1`, `c-second-cycle/wp-2` 두 행을 단언 |
-| persisted state exact shape의 `dcloseRecovery: null` | `components/pabcd-state/test/state.test.ts`의 fresh state shape, `plugins/codexclaw/test/hook-e2e.test.mjs:160-184`의 compiled SessionStart shape | wp5 | §8.2.2와 §8.2.3 두 객체에 `dcloseRecovery: null` 추가. 루트 test 디렉터리의 다른 `deepEqual`은 배열·인자·바이트 단언이라 변경 없음 |
+| persisted state exact shape의 `dcloseRecovery: null` | `components/pabcd-state/test/state.test.ts`의 fresh state shape, `plugins/cursorclaw/test/hook-e2e.test.mjs:160-184`의 compiled SessionStart shape | wp5 | §8.2.2와 §8.2.3 두 객체에 `dcloseRecovery: null` 추가. 루트 test 디렉터리의 다른 `deepEqual`은 배열·인자·바이트 단언이라 변경 없음 |
 | marker target이 plan에서 사라진 recovery | 기존 CLI·채팅 회귀는 target `wp-1`을 `done` 상태로 plan에 남김 | wp5 | §8.3 CLI와 §8.4 채팅에서 target 부재, 다음 `wp-2` 존재 fixture로 정리 재개와 close row 1개를 단언 |
 | all-done + 입력 `workPhaseId`의 PABCD close target | 기존 all-done 채팅 회귀는 state·plan·goalplan 원장만 단언 | wp5 | §8.4 전용 테스트가 PABCD 행을 `[["c-all-done-null", null]]`로 고정 |
 
@@ -6041,16 +6041,16 @@ trap 'rm -rf "$verification_tmp"' EXIT
 export TMPDIR="$verification_tmp"
 
 baseline_sha=8321b2d7
-new_file=plugins/codexclaw/components/pabcd-state/test/goalplan-concurrency.test.ts
-pab_cli_test=plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts
+new_file=plugins/cursorclaw/components/pabcd-state/test/goalplan-concurrency.test.ts
+pab_cli_test=plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts
 existing_focused_files=(
-  plugins/codexclaw/components/pabcd-state/test/state.test.ts
-  plugins/codexclaw/components/pabcd-state/test/orchestrate-apply.test.ts
-  plugins/codexclaw/components/pabcd-state/test/steering.test.ts
-  plugins/codexclaw/components/pabcd-state/test/steering-ops.test.ts
-  plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts
-  plugins/codexclaw/components/pabcd-state/test/hook.test.ts
-  plugins/codexclaw/components/pabcd-state/test/review-binding.test.ts
+  plugins/cursorclaw/components/pabcd-state/test/state.test.ts
+  plugins/cursorclaw/components/pabcd-state/test/orchestrate-apply.test.ts
+  plugins/cursorclaw/components/pabcd-state/test/steering.test.ts
+  plugins/cursorclaw/components/pabcd-state/test/steering-ops.test.ts
+  plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts
+  plugins/cursorclaw/components/pabcd-state/test/hook.test.ts
+  plugins/cursorclaw/components/pabcd-state/test/review-binding.test.ts
 )
 focused_files=(
   "$new_file"
@@ -6074,14 +6074,14 @@ new_file_declarations="$(rg -c '^[[:space:]]*test\(' "$new_file")"
 # 이 한 선언은 두 workPhaseId 값으로 테스트 두 건을 등록하므로 선언 수보다 한 건 많다.
 parameterized_extra_cases="$(
   rg -c '^for \(const workPhaseId of \[undefined, "wp-finished"\] as const\) \{' \
-    plugins/codexclaw/components/pabcd-state/test/hook.test.ts
+    plugins/cursorclaw/components/pabcd-state/test/hook.test.ts
 )"
 
 # 세 scenario를 도는 이 선언은 세 건을 등록하므로 선언 수보다 두 건 많다. 헤더 존재만 세면
 # scenario 하나가 누락된 채로도 산술이 233을 계산해 false-green이 된다. 배열 원소를 실제로 센다.
-test "$(rg -c '^for \(const scenario of \[$' plugins/codexclaw/components/pabcd-state/test/hook.test.ts)" -eq 1
+test "$(rg -c '^for \(const scenario of \[$' plugins/cursorclaw/components/pabcd-state/test/hook.test.ts)" -eq 1
 scenario_arity="$(
-  rg -c '^  \{ name: "' plugins/codexclaw/components/pabcd-state/test/hook.test.ts
+  rg -c '^  \{ name: "' plugins/cursorclaw/components/pabcd-state/test/hook.test.ts
 )"
 test "$scenario_arity" -eq 3
 scenario_extra_cases=$((scenario_arity - 1))
@@ -6191,8 +6191,8 @@ set -euo pipefail
 cd /Users/jun/Developer/new/700_projects/codexclaw
 
 ! rg -n '\.steer\.lock' \
-  plugins/codexclaw/components/pabcd-state/src \
-  plugins/codexclaw/components/pabcd-state/test
+  plugins/cursorclaw/components/pabcd-state/src \
+  plugins/cursorclaw/components/pabcd-state/test
 ```
 
 기대값은 0건이다.
@@ -6213,7 +6213,7 @@ const { readdirSync, readFileSync } = require("node:fs");
 const { basename, join } = require("node:path");
 const ts = require("typescript");
 
-const srcDir = "plugins/codexclaw/components/pabcd-state/src";
+const srcDir = "plugins/cursorclaw/components/pabcd-state/src";
 const calls = [];
 
 for (const name of readdirSync(srcDir).filter((entry) => entry.endsWith(".ts"))) {
@@ -6304,7 +6304,7 @@ tracked이므로 이전 초안의 `?? …050….md` 기대는 거짓이었고, �
 | `test/hook.test.ts` | 기존 `join`, `spawnSync`를 보존하고 `dirname`, `resolve`, `fileURLToPath`, `spawn`을 더한다. goalplan import에 `readGoalplan`과 `type Goalplan`을 더한다. `existsSync`, `readFileSync`, `STATE_DIR`는 이미 있어 `goalplanLedgerRows()` 지역 정의에 추가 import가 필요하지 않다. |
 | `test/review-binding.test.ts` | import 변경 없음. |
 | `test/state.test.ts` | import 변경 없음. |
-| `plugins/codexclaw/test/hook-e2e.test.mjs` | import 변경 없음. persisted state exact shape만 갱신한다. |
+| `plugins/cursorclaw/test/hook-e2e.test.mjs` | import 변경 없음. persisted state exact shape만 갱신한다. |
 | `test/orchestrate-apply.test.ts` | import 변경 없음. |
 
 `node --experimental-strip-types`는 타입 주석을 지우고 실행하므로 존재하지 않는 타입 이름을
@@ -6353,7 +6353,7 @@ wp5는 `package.json`을 수정하지 않는다 — 그 파일은 이 작업 범
 set -euo pipefail
 cd /Users/jun/Developer/new/700_projects/codexclaw
 
-pab=plugins/codexclaw/components/pabcd-state
+pab=plugins/cursorclaw/components/pabcd-state
 src=$pab/src/goalplan.ts
 gate_tmp="$(mktemp -d)"
 trap 'rm -rf "$gate_tmp"' EXIT
@@ -6446,7 +6446,7 @@ test "$dts_count" -eq 0
 baseline fixture는 wp5가 만드는 tracked 파일이다. 현재 checkout에서 아래로 생성하며 24줄이다.
 
 ```bash
-pab=plugins/codexclaw/components/pabcd-state
+pab=plugins/cursorclaw/components/pabcd-state
 node_modules/.bin/tsc --noEmit --allowImportingTsExtensions --module nodenext \
   --target es2023 --moduleResolution nodenext --skipLibCheck --types node \
   "$pab"/src/*.ts "$pab"/test/*.ts 2>&1 \

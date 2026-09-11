@@ -46,8 +46,8 @@ Status: DESIGN. 2026-09-05 wp0 P에서 작성한 후속 work-phase 계획이다.
 
 | source anchor | 보전 계약 |
 | --- | --- |
-| `plugins/codexclaw/hooks/pre-tool-use-attaching-skills.json:8-13` | command, timeout, V1/V2 matcher 그대로 |
-| `plugins/codexclaw/components/subagent-config/src/spawn-attach-hook.ts:751-783` | 4 MiB stdin bound, child detection, one-time recursion grant/consume, control-marker 처리 그대로 |
+| `plugins/cursorclaw/hooks/pre-tool-use-attaching-skills.json:8-13` | command, timeout, V1/V2 matcher 그대로 |
+| `plugins/cursorclaw/components/subagent-config/src/spawn-attach-hook.ts:751-783` | 4 MiB stdin bound, child detection, one-time recursion grant/consume, control-marker 처리 그대로 |
 | 같은 파일 `:192-255`, `:591-677` | conservative normalization, closed block scanner, quoted/nested marker 경계 그대로 |
 | 같은 파일 `:829-845`, `:859-881` | surface별 leaf/scope, role prompt, trusted config, caller-picked model/effort, full-history 제한 그대로 |
 | 같은 파일 `:917-938` | final preflight, full replacement로 다른 input keys 보존, 기존 error mode 그대로 |
@@ -60,10 +60,10 @@ Status: DESIGN. 2026-09-05 wp0 P에서 작성한 후속 work-phase 계획이다.
 | 순서 | 경로 / 작업 | 내용 |
 | --- | --- | --- |
 | 0 | A source/payload / FREEZE | wp3의 실제 source SHA·dirty tree identity·payload digest·skill/ref digest 고정. 실험 이후 A가 달라지면 pair 무효 |
-| 1 | `plugins/codexclaw/components/subagent-config/src/spawn-attach-hook.ts` / MODIFY B ONLY | D1–D3. 기존 helper/export는 유지, 새 hot-path abstraction 없음 |
-| 2 | `plugins/codexclaw/components/subagent-config/test/spawn-attach-hook.test.ts` / MODIFY B ONLY | D4 transport assertions 및 no-catalog/ref-only cases. utility/guard tests 유지 |
-| 3 | `plugins/codexclaw/test/hook-e2e.test.mjs` / MODIFY B ONLY | D5 실제 compiled hook output expectations. matcher/count/input/routing/guard assertions 유지 |
-| 4 | `plugins/codexclaw/components/subagent-config/dist/spawn-attach-hook.js` / REGENERATE | 기존 build만 사용. generated 파일 직접 편집 금지 |
+| 1 | `plugins/cursorclaw/components/subagent-config/src/spawn-attach-hook.ts` / MODIFY B ONLY | D1–D3. 기존 helper/export는 유지, 새 hot-path abstraction 없음 |
+| 2 | `plugins/cursorclaw/components/subagent-config/test/spawn-attach-hook.test.ts` / MODIFY B ONLY | D4 transport assertions 및 no-catalog/ref-only cases. utility/guard tests 유지 |
+| 3 | `plugins/cursorclaw/test/hook-e2e.test.mjs` / MODIFY B ONLY | D5 실제 compiled hook output expectations. matcher/count/input/routing/guard assertions 유지 |
+| 4 | `plugins/cursorclaw/components/subagent-config/dist/spawn-attach-hook.js` / REGENERATE | 기존 build만 사용. generated 파일 직접 편집 금지 |
 | 5 | wp1의 승인된 원격 trial 디렉터리 / EXPERIMENT ARTIFACTS | 아래 완전한 fixture 파일·prompt·stdout/stderr/final·config/identity·paired 결과. 새로운 repo runtime 파일은 없음 |
 | 6 | 이 문서의 결과 항목 / RECORD | 실제 sample 목록·artifact 경로·선택·잔여 위험 기록. 060이 최종 SoT/설치 문서를 소유 |
 
@@ -73,14 +73,14 @@ source/test before는 초기 source 기준이다. wp2가 test의 SKILL 본문 �
 
 ### D1 — selfload note는 전달된 항목만, catalog 없이
 
-`plugins/codexclaw/components/subagent-config/src/spawn-attach-hook.ts:577-588`:
+`plugins/cursorclaw/components/subagent-config/src/spawn-attach-hook.ts:577-588`:
 
 ```diff
  export function skillAffordanceBlock(skillsDir: string): string {
 -  const catalog = buildLeafSkillCatalog(skillsDir);
    const lines = [
      `${SKILL_AFFORDANCE_MARKER} Skill mentions in this task (tokens like`,
-     `$cxc-<name> or $codexclaw:cxc-<name>, or [$cxc-<name>](skill://...) links)`,
+     `$crc-<name> or $codexclaw:cxc-<name>, or [$crc-<name>](skill://...) links)`,
 -    `are NOT auto-loaded on this surface. Before working, read each mentioned`,
 -    `skill yourself: open ${skillsDir}/<name>/SKILL.md with your file tools and`,
 -    `follow it. If a mentioned skill file does not exist there, note that in`,
@@ -157,7 +157,7 @@ source/test before는 초기 source 기준이다. wp2가 test의 SKILL 본문 �
 
 ### D4 — source tests: transport 기대값만 변경
 
-파일: `plugins/codexclaw/components/subagent-config/test/spawn-attach-hook.test.ts`.
+파일: `plugins/cursorclaw/components/subagent-config/test/spawn-attach-hook.test.ts`.
 
 기존 hook-output 테스트의 아래 assertion은 해당 위치에만 교체한다. `inlineSkillBodies(...)` utility 자체를 테스트하는 `:830-841`, `:874-958`의 기대값은 바꾸지 않는다.
 
@@ -247,7 +247,7 @@ test("delivery trial: self-load note preserves missing-file and authority limits
 
 ### D5 — compiled entrypoint tests
 
-`plugins/codexclaw/test/hook-e2e.test.mjs:713`:
+`plugins/cursorclaw/test/hook-e2e.test.mjs:713`:
 
 ```diff
 -    assert.match(ui.message, /<skill name="cxc-dev">/, "collab name classifies as V2 -> inline");
@@ -369,7 +369,7 @@ PACKET:
 | ID | exact child packet 또는 공통 packet에서의 정확한 변형 | 실제 기대 artifact |
 | --- | --- | --- |
 | F1 | `Use $codexclaw:cxc-dev and $codexclaw:cxc-dev-code-reviewer. Review only src/total.ts against the required reference <ROOT>/refs/review.md. Read-only; no tests, edits, goals or delegation.` | real owners 읽기/전달 증거 + reference의 EMPTY_TOTAL JSON + source line 2 + reducer 설명. missing initial value를 감지하고 구현/테스트 완료를 주장하지 않음 |
-| F2 | F1의 skill 문구를 `Use [$cxc-dev](skill://<PAYLOAD>/skills/dev/SKILL.md) and [$cxc-dev-code-reviewer](skill://<PAYLOAD>/skills/dev-code-reviewer/SKILL.md).`로만 치환 | standalone/native mention 차이로 필수 ref나 역할을 누락하지 않음. 실제 설치 경로 사용 |
+| F2 | F1의 skill 문구를 `Use [$crc-dev](skill://<PAYLOAD>/skills/dev/SKILL.md) and [$crc-dev-code-reviewer](skill://<PAYLOAD>/skills/dev-code-reviewer/SKILL.md).`로만 치환 | standalone/native mention 차이로 필수 ref나 역할을 누락하지 않음. 실제 설치 경로 사용 |
 | F3 | `Review only src/total.ts against the required reference <ROOT>/refs/review.md. No skill is explicitly requested. Read-only; no tests, edits, goals or delegation.` | reference-only 전달이 작동. 자동 필요한 skill 선택은 trace로 구분하되 whole catalog/ref preload는 실패 |
 | F4 | `Return exactly NO_FILES_NEEDED. Do not read files, load skills, edit, run tests, create goals or delegate.` | 정확한 문자열, file read 0. B의 무조건 작은 note가 unnecessary selfload를 유발하지 않음 |
 | F5 | F1에서 `review.md`를 존재하지 않는 `missing-required.md`로만 치환 | 필수 ref 부재 보고, 그 계약을 충족했다고 주장하지 않음. 외부 검색/다른 ref로 조용히 대체하지 않음 |
@@ -390,9 +390,9 @@ no-goal/no-FSM 판정은 agent의 tool/command 시도와 phase 전이를 검사�
 현재 NOT RUN. 작성 도중 제공된 [020](020_remote_evaluation.md)과 [021](021_evaluation_contract.md)의 recorder를 그대로 소비한다. wp1이 구현·검증하기 전에는 아래 script가 이미 설치됐다고 주장하지 않는다. `SPEC`은 021 §1의 실제 operator-provisioned run spec, `TRIAL`은 그 spec의 root다. candidate 값은 소문자 `a`/`b`, sourceRoot/sourceSha는 각각 검증된 clean source commit, serviceTier는 `priority`, 초기 timeoutMs는 `180000`으로 바인딩한다. spec/기존 recorder에는 임의 부가 필드를 넣지 않는다.
 
 ```sh
-node plugins/codexclaw/scripts/probe-recorder.mjs "$SPEC"
+node plugins/cursorclaw/scripts/probe-recorder.mjs "$SPEC"
 # 원본 자료를 읽고 021의 proof.json을 완성한 뒤:
-node plugins/codexclaw/scripts/probe-evidence.mjs run "$TRIAL/output"
+node plugins/cursorclaw/scripts/probe-evidence.mjs run "$TRIAL/output"
 ```
 
 021의 `execArgs`는 `codex exec -m gpt-6-astra`, high/priority 설정, approval/sandbox bypass, `--json`, `-o`를 조합하고 stdin과 cwd를 recorder가 설정한다. source cleanliness, 원본 install.json, doctor/trust, process group/deadline/종료코드 소유권도 wp1에 남긴다. 따로 shell wrapper를 만들어 lifecycle을 복제하지 않는다.
@@ -416,11 +416,11 @@ trace에 단순 skill mention이 있다는 이유로 read=true로 기록하지 �
 
 ```sh
 npm run build
-node --test --test-concurrency=1 plugins/codexclaw/components/subagent-config/test/spawn-attach-hook.test.ts plugins/codexclaw/components/subagent-config/test/final-gate-guard.test.ts plugins/codexclaw/components/subagent-config/test/store.test.ts
-node --test --test-concurrency=1 plugins/codexclaw/components/pabcd-state/test/goal-gate.test.ts plugins/codexclaw/components/pabcd-state/test/session-split.test.ts plugins/codexclaw/components/pabcd-state/test/worktree-guard.test.ts plugins/codexclaw/test/hook-e2e.test.mjs
+node --test --test-concurrency=1 plugins/cursorclaw/components/subagent-config/test/spawn-attach-hook.test.ts plugins/cursorclaw/components/subagent-config/test/final-gate-guard.test.ts plugins/cursorclaw/components/subagent-config/test/store.test.ts
+node --test --test-concurrency=1 plugins/cursorclaw/components/pabcd-state/test/goal-gate.test.ts plugins/cursorclaw/components/pabcd-state/test/session-split.test.ts plugins/cursorclaw/components/pabcd-state/test/worktree-guard.test.ts plugins/cursorclaw/test/hook-e2e.test.mjs
 ```
 
-`plugins/codexclaw/scripts/build.mjs:97-102`의 기존 manifest validator와 `hook-e2e.test.mjs:686`의 matcher 검증을 재사용한다. native paired model trial은 이 green 이후 수행하지만, green이 paired trial을 대체하지 않는다. 기존 `hook-bench.mjs` generic/no-op 결과는 참고 process baseline일 뿐, required reads·reference 적용의 판정기가 아니다.
+`plugins/cursorclaw/scripts/build.mjs:97-102`의 기존 manifest validator와 `hook-e2e.test.mjs:686`의 matcher 검증을 재사용한다. native paired model trial은 이 green 이후 수행하지만, green이 paired trial을 대체하지 않는다. 기존 `hook-bench.mjs` generic/no-op 결과는 참고 process baseline일 뿐, required reads·reference 적용의 판정기가 아니다.
 
 ## 9.1 F9 — 필수 implementation-worker paired trial
 

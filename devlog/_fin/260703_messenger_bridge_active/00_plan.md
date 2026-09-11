@@ -39,14 +39,14 @@ Telegram (grammY, long-poll) ─┐                       ┌─ codex exec --js
 Discord (discord.js, gateway) ─┤→ cxc serve ──────────┤
         [one active channel]  │   ├ allowlist gate    └─ codex exec resume <id>
 GUI (Vite build, static) ─────┘   ├ per-chat serial queue      │
-        └ /api (connect wizard,   ├ SQLite (bindings, tokens,  └ ~/.codex rollouts
+        └ /api (connect wizard,   ├ SQLite (bindings, tokens,  └ ~/.cursor rollouts
           agents, SSE status)     │  allowlist, job log)          (shared with
                                   └ exec runner (JSONL parser)     interactive codex)
 ```
 
-New component: `plugins/codexclaw/components/messenger-bridge/` (src+dist+test
+New component: `plugins/cursorclaw/components/messenger-bridge/` (src+dist+test
 convention). CLI: `serve` + `service` subcommands registered in
-`bin/codexclaw.mjs` delegator. GUI work in `plugins/codexclaw/gui/`.
+`bin/codexclaw.mjs` delegator. GUI work in `plugins/cursorclaw/gui/`.
 
 ## Work-phase slice map (one PABCD cycle each; decade docs)
 
@@ -84,7 +84,7 @@ hardening last but security constraints stated per-phase from the start.
 
 The build system compiles components with Node built-in type-stripping and is
 "sound only because every component has zero third-party runtime deps and
-imports only node:* + relative ./x.ts" (`plugins/codexclaw/scripts/build.mjs:6-8`).
+imports only node:* + relative ./x.ts" (`plugins/cursorclaw/scripts/build.mjs:6-8`).
 Adding grammy/discord.js/better-sqlite3 would force a bundler switch. Instead,
 Node 24 built-ins cover everything (verified on v24.14.1, 2026-07-03):
 

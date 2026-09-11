@@ -73,7 +73,7 @@ worktree) reports:
 
 | Check | Result |
 |---|---|
-| `node plugins/codexclaw/scripts/gate.mjs` | OK, exit 0 |
+| `node plugins/cursorclaw/scripts/gate.mjs` | OK, exit 0 |
 | `node --test` skill-catalog + manifest-policy | tests 10, pass 10, fail 0 |
 | `references/` contains the three new files | `repo-bootstrap.md`, `agent-pr-intake.md`, `local-gc.md` present |
 | Modular References rows in `dev-devops/SKILL.md` | 16 |

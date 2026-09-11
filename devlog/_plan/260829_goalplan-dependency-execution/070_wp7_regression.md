@@ -76,17 +76,17 @@ schema version 값을 비교하는 선택 분기는 금지한다. 단, done/pend
 
 | 표기 | 경로 | 변경 |
 | --- | --- | --- |
-| wp2 산출물 소비 | `plugins/codexclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json` | wp2가 체크인한 비식별 입력 corpus와 변경 전 결과 snapshot을 읽기만 함 |
-| NEW | `plugins/codexclaw/components/pabcd-state/test/goalplan-regression.test.ts` | 결과 집합, v1/v2 oracle, outcome 경계 검사 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts` | CLI D-close 뒤 두 필드 재독 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/hook.test.ts` | 채팅 D-close 뒤 두 필드 재독 |
-| wp6 산출물 재실행 | `plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts` | wp6 소유 Stop 회귀가 ready phase/task와 부분 대기 사유를 최종 문자열로 함께 단언하는지 검사 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/steering.test.ts` | steering annotate 뒤 두 필드 재독 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/review-binding.test.ts` | open, abort, observer 뒤 두 필드 재독 |
-| wp5 산출물 재실행 | `plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts` | 같은 세션의 연속 두 cycle이 서로 다른 close key와 원장 행을 남기는지 검사 |
-| wp6 산출물 재실행 | `plugins/codexclaw/components/pabcd-state/test/goalplan-public-surface.test.ts` | lifecycle 원장 실패의 code 0·경고와 권위 plan commit을 검사 |
-| wp6 산출물 재실행 | `plugins/codexclaw/components/pabcd-state/test/goalplan-public-surface.test.ts` | T11의 `--slug` 양방향 고정을 검사. wp7 P 실측: `help-verbs.test.ts`에는 `renderGoalplanHelp` 참조가 0건이고 goalplan help 회귀를 하나도 갖고 있지 않다. wp6이 `goalplan-public-surface.test.ts`의 `help lists repeated dependency syntax and required outcome` case 안에 담았다 |
-| dist 변경 없음 | `plugins/codexclaw/components/pabcd-state/dist/` | wp7은 src를 바꾸지 않으므로 새 dist manifest 항목이 없고, 기존 tracked dist freshness만 최종 검사 |
+| wp2 산출물 소비 | `plugins/cursorclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json` | wp2가 체크인한 비식별 입력 corpus와 변경 전 결과 snapshot을 읽기만 함 |
+| NEW | `plugins/cursorclaw/components/pabcd-state/test/goalplan-regression.test.ts` | 결과 집합, v1/v2 oracle, outcome 경계 검사 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts` | CLI D-close 뒤 두 필드 재독 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/hook.test.ts` | 채팅 D-close 뒤 두 필드 재독 |
+| wp6 산출물 재실행 | `plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts` | wp6 소유 Stop 회귀가 ready phase/task와 부분 대기 사유를 최종 문자열로 함께 단언하는지 검사 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/steering.test.ts` | steering annotate 뒤 두 필드 재독 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/review-binding.test.ts` | open, abort, observer 뒤 두 필드 재독 |
+| wp5 산출물 재실행 | `plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts` | 같은 세션의 연속 두 cycle이 서로 다른 close key와 원장 행을 남기는지 검사 |
+| wp6 산출물 재실행 | `plugins/cursorclaw/components/pabcd-state/test/goalplan-public-surface.test.ts` | lifecycle 원장 실패의 code 0·경고와 권위 plan commit을 검사 |
+| wp6 산출물 재실행 | `plugins/cursorclaw/components/pabcd-state/test/goalplan-public-surface.test.ts` | T11의 `--slug` 양방향 고정을 검사. wp7 P 실측: `help-verbs.test.ts`에는 `renderGoalplanHelp` 참조가 0건이고 goalplan help 회귀를 하나도 갖고 있지 않다. wp6이 `goalplan-public-surface.test.ts`의 `help lists repeated dependency syntax and required outcome` case 안에 담았다 |
+| dist 변경 없음 | `plugins/cursorclaw/components/pabcd-state/dist/` | wp7은 src를 바꾸지 않으므로 새 dist manifest 항목이 없고, 기존 tracked dist freshness만 최종 검사 |
 | DELETE | 없음 | 기존 fixture와 테스트를 지우지 않음 |
 
 ## 3. wp2 baseline 인수와 parser 결과 동등성
@@ -169,7 +169,7 @@ wp7은 wp2가 체크인한 `test/fixtures/goalplans-pre-change-baseline.json`을
 
 ```bash
 node --input-type=module <<'NODE'
-import snapshot from "./plugins/codexclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json" with { type: "json" };
+import snapshot from "./plugins/cursorclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json" with { type: "json" };
 if (snapshot.measuredOn !== "2026-08-29") process.exit(1);
 if (snapshot.sourceCount !== snapshot.manifest.length) process.exit(2);
 if (snapshot.fixtures.length !== snapshot.manifest.length) process.exit(3);
@@ -661,7 +661,7 @@ test("wp7 preservation: chat D-close keeps dependsOn and outcome", () => {
     const attest = JSON.stringify({
       from: "C", to: "D", did: "ran wp7 suite", checkOutput: "12 passed", exitCode: 0,
       workPhaseId: "wp-1",
-      testReceiptPath: ".codexclaw/evidence/wp7-chat-d/test-receipt.json",
+      testReceiptPath: ".cursorclaw/evidence/wp7-chat-d/test-receipt.json",
     });
 
     const output = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, "wp7-chat-d", "turn-1"));
@@ -844,7 +844,7 @@ together`를 아래에 발췌하고 §7.2에서 재실행한다. 정본은 `test
 60줄이다. 아래 명령이 그것을 확인한다.
 
 ```bash
-pab=plugins/codexclaw/components/pabcd-state
+pab=plugins/cursorclaw/components/pabcd-state
 sed -n '1157,1216p' "$pab"/test/hook-continuation.test.ts | shasum -a 256
 ```
 
@@ -928,7 +928,7 @@ work-phase wp-blocked waits for work-phase wp-live (in_progress)
 wp7 P stale check이 잡은 항목이다. §6.2가 이 회귀를 wp6 산출물로 인수하려 했으나 실측하니 없다.
 
 ```bash
-rg -c 'writeLock' plugins/codexclaw/components/pabcd-state/test/
+rg -c 'writeLock' plugins/cursorclaw/components/pabcd-state/test/
 # → 0건
 ```
 
@@ -987,7 +987,7 @@ test("wp7 preservation: show renders the write lock path and age", () => {
 
     // 기존 요약 줄은 두 경우 모두 그대로다. 새 줄이 기존 출력을 밀어내지 않는다.
     for (const out of [absent.output, present.output]) {
-      assert.match(out, /^\[codexclaw loop: /m);
+      assert.match(out, /^\[cursorclaw loop: /m);
       assert.match(out, /^criteria: 0 \(unmet 0\)$/m);
       assert.match(out, /^complete: /m);
     }
@@ -1187,7 +1187,7 @@ test("one session closes two consecutive cycles with distinct close keys", () =>
     checkOutput: "tests passed",
     exitCode: 0,
     workPhaseId: "wp-2",
-    testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+    testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
   });
   const secondArgs = parseOrchestrateCliArgs(
     ["d", "--session", id, "--cwd", cwd, "--attest", secondAttest],
@@ -1296,7 +1296,7 @@ rg -n --fixed-strings \
   -e 'Ready tasks:' \
   -e 'Waiting on:' \
   -e 'Lock path:' \
-  plugins/codexclaw/components/pabcd-state/test || true
+  plugins/cursorclaw/components/pabcd-state/test || true
 ```
 
 | 출력 문자열 | 기존 테스트 검색 결과 | wp7 처분 |
@@ -1314,7 +1314,7 @@ rg -n --fixed-strings \
 
 ```bash
 test -f devlog/_plan/260829_goalplan-dependency-execution/070_wp7_regression.md
-test -f plugins/codexclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json
+test -f plugins/cursorclaw/components/pabcd-state/test/fixtures/goalplans-pre-change-baseline.json
 test "$(sed -n '1p' devlog/_plan/260829_goalplan-dependency-execution/070_wp7_regression.md)" = '# 070 — wp7: 회귀 확정'
 test "$(rg -c 'assert\.deepEqual\(actual, snapshot\.manifest\);' \
   devlog/_plan/260829_goalplan-dependency-execution/070_wp7_regression.md)" = 1
@@ -1332,15 +1332,15 @@ test -z "$whitespace"
 ### 7.2 wp7 집중 테스트
 
 ```bash
-node --test plugins/codexclaw/components/pabcd-state/test/goalplan-regression.test.ts
-node --test plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts
-node --test plugins/codexclaw/components/pabcd-state/test/hook.test.ts
-node --test plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts
-node --test plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts
-node --test plugins/codexclaw/components/pabcd-state/test/goalplan-public-surface.test.ts
-node --test plugins/codexclaw/components/pabcd-state/test/help-verbs.test.ts
-node --test plugins/codexclaw/components/pabcd-state/test/steering.test.ts
-node --test plugins/codexclaw/components/pabcd-state/test/review-binding.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/goalplan-regression.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/hook.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/goalplan-public-surface.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/help-verbs.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/steering.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/review-binding.test.ts
 ```
 
 기대: exit `0`, fail `0`. corpus 테스트는 체크인 manifest 항목의 변경 전후 normalized 결과 집합을
@@ -1359,7 +1359,7 @@ npm test
 npm run gate
 ```
 
-각 명령 기대 종료 코드는 `0`이다. build 마지막 출력은 `[codexclaw] build OK`를 포함하며 tracked
+각 명령 기대 종료 코드는 `0`이다. build 마지막 출력은 `[cursorclaw] build OK`를 포함하며 tracked
 dist를 먼저 다시 만든다. 뒤따른 루트 `npm test`의 `dist-freshness.test.mjs`는 src와 tracked dist의
 byte equality를 확인한다. root에는 typecheck script와 root `tsconfig.json`이 없으므로 인자 없는
 `npx tsc --noEmit`을 성공 게이트로 쓰지 않는다.
@@ -1382,12 +1382,12 @@ byte equality를 확인한다. root에는 typecheck script와 root `tsconfig.jso
 컴포넌트 스위트는 `npm test`(= 인자 없는 `node --test`)가 아니라 루트와 같은 glob으로 돌린다.
 
 ```bash
-cd plugins/codexclaw/components/pabcd-state && node --test 'test/*.test.ts'
+cd plugins/cursorclaw/components/pabcd-state && node --test 'test/*.test.ts'
 ```
 
 인자 없는 `node --test`는 `test/fixtures/capture-goalplan-baseline.mjs`까지 실행 대상으로 줍는다. 그
 생성기는 `process.argv[1]`이 자기 파일명으로 끝나면 `captureBaseline()`을 부르는데, `node --test`도
-`argv[1]`을 그 파일로 채우므로 가드가 뚫린다. 그러면 컴포넌트 cwd에 없는 `.codexclaw/goalplans`를
+`argv[1]`을 그 파일로 채우므로 가드가 뚫린다. 그러면 컴포넌트 cwd에 없는 `.cursorclaw/goalplans`를
 `readdirSync`해 `ENOENT`로 죽는다. 실측: 컴포넌트에서 `npm test`는 `pass 1087 fail 1`, 같은 트리에서
 `node --test 'test/*.test.ts'`는 `pass 1087 fail 0`이다. 루트 `npm test`는 `test/*.test.ts` glob이라
 이 파일을 애초에 줍지 않는다.

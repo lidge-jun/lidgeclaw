@@ -3,7 +3,7 @@
 Gap class: HARNESS (routing) · evidence: explorer Plato + user steering
 
 > This is the user's central request. omo specializes by inventing roles. codexclaw must
-> specialize by **attaching `$cxc-*` skills to the three base roles** at dispatch time, so
+> specialize by **attaching `$crc-*` skills to the three base roles** at dispatch time, so
 > "act as a reviewer, red-team this per `cxc-dev` + `cxc-dev-frontend`" actually loads that
 > discipline into the child.
 
@@ -18,7 +18,7 @@ Gap class: HARNESS (routing) · evidence: explorer Plato + user steering
 
 | omo 실측 | codexclaw 실측 | 격차 | jaw식 보강 (our way) |
 | --- | --- | --- | --- |
-| `ultraresearch/SKILL.md:12-20` + `~/.codex/agents/lazycodex-*.toml` (8 selectable roles) | `agents/README.md:7-13` + 3 role TOMLs | omo specializes via many roles | codexclaw specializes via skill attachment to 3 roles — do NOT add roles |
+| `ultraresearch/SKILL.md:12-20` + `~/.cursor/agents/lazycodex-*.toml` (8 selectable roles) | `agents/README.md:7-13` + 3 role TOMLs | omo specializes via many roles | codexclaw specializes via skill attachment to 3 roles — do NOT add roles |
 | omo role TOML carries the specialist prompt | `spawn-wrapper.ts` builds `{agent_type,message,model}` with no skill-attachment channel; no production caller (contradiction C1) | codexclaw can't attach a skill to a dispatch | add `SpawnPayload.items` (skill refs) per `structure/10_subagent_skill_routing.md`; route real dispatches through the builder |
 | `ultraresearch/SKILL.md:22,34,38` (first-line marker, authority override, TASK imperative) | `search`/`agents` guardrails are prose, no marker/override | omo's dispatch contract is stronger | the attached skill IS the contract; the spawn message names the skill + a TASK line |
 

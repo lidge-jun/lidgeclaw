@@ -84,7 +84,7 @@ export function generateBundle(opts: {
   const sections: BundleSection[] = [];
 
   // 1. Plugin version and manifest shape
-  const manifestPath = join(opts.pluginRoot, ".codex-plugin", "plugin.json");
+  const manifestPath = join(opts.pluginRoot, ".cursor-plugin", "plugin.json");
   if (existsSync(manifestPath)) {
     try {
       const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Record<string, unknown>;

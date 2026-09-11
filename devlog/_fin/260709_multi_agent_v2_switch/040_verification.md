@@ -13,14 +13,14 @@
    `node --test` — all pass, output captured.
 4. Residual scan (audit Blocker 1: corrected path; Fix 2: corrected criterion):
    `rg -n "multi_agent_v1|send_input|resume_agent|close_agent"` over
-   `plugins/codexclaw/skills`, `structure/`, `plugins/codexclaw/agents`,
-   `plugins/codexclaw/components/*/src` -> zero hits presenting v1 as
+   `plugins/cursorclaw/skills`, `structure/`, `plugins/cursorclaw/agents`,
+   `plugins/cursorclaw/components/*/src` -> zero hits presenting v1 as
    CURRENT-SESSION doctrine; scoped v1-pinned-session fallback notes and
    "v2 has no X" explanations are compliant survivors (audit baseline: 6 hits,
    0 stale).
 5. Live 400 watch: if smoke reproduces upstream HTTP 400 on spawn, terminal outcome
    NEEDS_HUMAN with rollback offer (010 rollback section), not silent DONE.
-6. Config table preservation (audit Fix 4): `rg -n "max_concurrent" ~/.codex/config.toml`
+6. Config table preservation (audit Fix 4): `rg -n "max_concurrent" ~/.cursor/config.toml`
    still shows `max_concurrent_threads_per_session = 1000` inside the
    `[features.multi_agent_v2]` table — guards against a scalar clobber that
    gate 1 alone cannot distinguish.

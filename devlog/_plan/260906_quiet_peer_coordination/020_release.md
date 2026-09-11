@@ -13,13 +13,13 @@ new worker scope is a P amendment. No token/cost cap; <=60s command observations
 
 ## MODIFY version surfaces (exact transformation)
 
-For package.json, cli/package.json, plugins/codexclaw/gui/package.json and each
-plugins/codexclaw/components/*/package.json: version 0.2.18 -> 0.2.19.
+For package.json, cli/package.json, plugins/cursorclaw/gui/package.json and each
+plugins/cursorclaw/components/*/package.json: version 0.2.18 -> 0.2.19.
 For package-lock.json: root version and packages[""] plus the exact corresponding
 workspace entries' version fields 0.2.18 -> 0.2.19; preserve the dependency graph.
-For plugins/codexclaw/.codex-plugin/plugin.json: version
+For plugins/cursorclaw/.cursor-plugin/plugin.json: version
 0.2.18+codex.20260906043759 -> 0.2.19+codex.<fresh UTC timestamp>.
-For plugins/codexclaw/inventory.json: regenerate from the manifest and measured
+For plugins/cursorclaw/inventory.json: regenerate from the manifest and measured
 existing test total (2579 at baseline) with scripts/inventory.mjs --write --tests.
 README.md, README.ko.md and README.zh.md are generated inventory badge consumers;
 accept only the generator's corresponding changes. docs-site@0.0.1 is independent.
@@ -69,13 +69,13 @@ conflict: retain default-off, qualify only unsolicited notification restrictions
 Reset/re-enter wp2 P before this bounded source repair; version remains0.2.19 and
 nothing has been published. Main owns the patch; same A reviewer verifies amendment.
 
-MODIFY plugins/codexclaw/skills/dev/references/peer-collaboration.md:
+MODIFY plugins/cursorclaw/skills/dev/references/peer-collaboration.md:
 - Before: `introductions, progress reports, advisory impacts, completion notices, unsolicited`
 - After: `unsolicited introductions, progress reports, advisory impacts, completion notices, or`
 - Before: `follow-up work, or requests to keep another task busy.`
 - After: `follow-up work, or requests to keep another task busy.`
 - Add before the list: `The following notification defaults do not prohibit contact explicitly requested by the user.`
-MODIFY plugins/codexclaw/skills/loop/SKILL.md:
+MODIFY plugins/cursorclaw/skills/loop/SKILL.md:
 - Before: `Keep this goal's work local; do not send progress or completion notices to other`
 - After: `Keep this goal's work local; do not send unsolicited progress or completion notices to other`
 
@@ -95,12 +95,12 @@ wake phrase. These are the same failure class; stop one-location patching and am
 all reachable wording in this one repair, followed by fresh independent audit.
 Existing user authorization is not weakened and no new outbound trigger is introduced.
 
-MODIFY plugins/codexclaw/skills/loop/references/waiting.md:
+MODIFY plugins/cursorclaw/skills/loop/references/waiting.md:
 `Do not send\nprogress notices or nudges` -> `Do not send\nunsolicited progress notices or nudges`.
-MODIFY plugins/codexclaw/skills/dev/SKILL.md:
+MODIFY plugins/cursorclaw/skills/dev/SKILL.md:
 `progress notifications, or unsolicited follow-ups` ->
 `unsolicited progress notifications or follow-ups`.
-MODIFY plugins/codexclaw/skills/dev/references/peer-collaboration.md:
+MODIFY plugins/cursorclaw/skills/dev/references/peer-collaboration.md:
 `every outbound message: advisory-only notifications must not wake idle/completed` ->
 `every outbound message: unsolicited advisory-only notifications must not wake idle/completed`.
 Before the scenario table add: `Apply explicit user contact instructions first. The

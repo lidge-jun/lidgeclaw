@@ -15,12 +15,12 @@ verification surface.
 
 ## Scope (decision-complete)
 - Files added/edited:
-  - `plugins/codexclaw/components/pabcd-state/src/parse.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/hook.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/cli.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/state.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/hook.test.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/state.test.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/parse.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/cli.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/state.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/hook.test.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/state.test.ts`
 - Input parsing is defensive and snake_case:
   - `parseUserPromptSubmit(raw)`
   - `parseStop(raw)`
@@ -80,7 +80,7 @@ None for Phase 1. Runtime FSM self-transition remains a later loop, not a blocke
 ## References (codex-rs paths, omo skills, ouroboros, source-of-record docs)
 - `devlog/_plan/260629_codexclaw_mvp/018.2_pass2_P_plan.md`
 - `devlog/_plan/260629_codexclaw_mvp/018.3_state_transition_injection.md`
-- `plugins/codexclaw/components/pabcd-state/src/hook.ts`
-- `plugins/codexclaw/components/pabcd-state/src/parse.ts`
+- `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
+- `plugins/cursorclaw/components/pabcd-state/src/parse.ts`
 - codex-rs `hooks/src/schema.rs` UserPromptSubmit and Stop output shapes.
 - omo `rules/src/hook-output.ts` envelope parity.

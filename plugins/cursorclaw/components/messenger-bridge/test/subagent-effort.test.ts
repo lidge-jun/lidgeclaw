@@ -19,7 +19,7 @@ async function startServer(cwd: string) {
     server.listen(0, '127.0.0.1', () => console.log(server.address().port));
     process.on('SIGTERM', () => server.close(() => { db.close(); process.exit(0); }));
   `;
-  const child = spawn(process.execPath, ["--input-type=module", "-e", script, cwd], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, CODEX_HOME: join(cwd, "test-codex-home"), CODEXCLAW_HOME: join(cwd, "test-cxc-home") } });
+  const child = spawn(process.execPath, ["--input-type=module", "-e", script, cwd], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, CURSOR_HOME: join(cwd, "test-codex-home"), CURSORCLAW_HOME: join(cwd, "test-cxc-home") } });
   let stderr = "";
   child.stderr.on("data", chunk => { stderr += chunk; });
   const exit = once(child, "exit");

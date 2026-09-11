@@ -26,7 +26,7 @@ worktree prototype lanes were offered and not chosen as the first investment.
 Correction from owner (this session): "xhigh" is not a specific model-wiring
 requirement. Treat it as the generic subagent concept available to the current
 session. Do NOT build gpt-5.5-xhigh-specific store plumbing; the existing
-`.codexclaw/subagents.json` role/model/effort resolver already covers model
+`.cursorclaw/subagents.json` role/model/effort resolver already covers model
 choice, and the spec must stay model-agnostic.
 
 ### D3. Phase boundaries stay; divergence is conceptual by default
@@ -54,7 +54,7 @@ field guide more faithfully: its "prototypes" are mostly conceptual artifacts
 ### D4. Topology constraint acknowledged: star, not mesh
 
 No nested orchestration (subagents cannot spawn or message each other). Any
-agent-to-agent exchange is file-mediated through shared `.codexclaw/divergence/`
+agent-to-agent exchange is file-mediated through shared `.cursorclaw/divergence/`
 candidates and devlog docs, scheduled by the main session. Human touchpoints:
 interview at entry, collapse review at exit (skippable under an active HOTL goal).
 Owner asked whether agents-only divergence (interview excepted) is designable:
@@ -65,9 +65,9 @@ rounds.
 ## Evidence Trail
 
 - Existing machinery confirmed sufficient: divergence mode/candidates/collapse in
-  `plugins/codexclaw/skills/loop/SKILL.md` (divergence section, ~L268-326);
+  `plugins/cursorclaw/skills/loop/SKILL.md` (divergence section, ~L268-326);
   per-role model + reasoning_effort in
-  `plugins/codexclaw/components/subagent-config/src/spawn-wrapper.ts` (store
+  `plugins/cursorclaw/components/subagent-config/src/spawn-wrapper.ts` (store
   resolver owns effective model).
 - Prior research context: `260707_codex_rs_native_tooling_research/300_recommendations.md`
   (Priority 6, Fable-inspired unknowns workflow) and

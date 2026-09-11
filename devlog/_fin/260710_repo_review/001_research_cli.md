@@ -32,13 +32,13 @@
 ## 2) orchestrate 게이트 로직 요약
 
 - 래퍼는 `orchestrate` 인수를 해석하지 않고 `process.argv.slice(2)` 전체를 `runPabcdState`로 전달한다(`bin/codexclaw.mjs:326-329`). 해당 함수도 `pabcd-state/dist/cli.js`를 동기 실행할 뿐이다(`bin/codexclaw.mjs:137-141`).
-- `A>B`의 `auditOutput`/`auditVerdict` 조건은 래퍼 범위에서 등장하지 않는다. 실질 구현은 컴포넌트 소스(`plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts`)에 있다(래퍼 근거: `bin/codexclaw.mjs:59-68`).
+- `A>B`의 `auditOutput`/`auditVerdict` 조건은 래퍼 범위에서 등장하지 않는다. 실질 구현은 컴포넌트 소스(`plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts`)에 있다(래퍼 근거: `bin/codexclaw.mjs:59-68`).
 - `C>D`의 `checkOutput`/`exitCode` 역시 래퍼 범위 밖, 같은 컴포넌트 소스 소관.
 - `--session`은 도움말에서 "Mutating PABCD commands require the current session id"로 계약(`bin/codexclaw.mjs:208-210`); 실제 필수화는 위임 대상에서 수행(`bin/codexclaw.mjs:326-329`).
 
 ## 3) 발견 사항
 
-1. **High — 소스 감사 공백.** "thin delegator over compiled component CLIs"(`bin/codexclaw.mjs:27`)이고 `orchestrate`는 `dist/cli.js`로 바로 넘어간다(`bin/codexclaw.mjs:59-68`). `cli/src`가 비어 있어 이 경로만으로는 transition/attest 게이트를 소스 기준으로 검토할 수 없다. (보정: 실소스는 `plugins/codexclaw/components/*`에 존재 — 002 보고 참조.)
+1. **High — 소스 감사 공백.** "thin delegator over compiled component CLIs"(`bin/codexclaw.mjs:27`)이고 `orchestrate`는 `dist/cli.js`로 바로 넘어간다(`bin/codexclaw.mjs:59-68`). `cli/src`가 비어 있어 이 경로만으로는 transition/attest 게이트를 소스 기준으로 검토할 수 없다. (보정: 실소스는 `plugins/cursorclaw/components/*`에 존재 — 002 보고 참조.)
 2. **Med — GUI 실행 실패가 성공 종료로 위장될 수 있다.** `process.exit(typeof res.status === "number" ? res.status : 0)`(`bin/codexclaw.mjs:366-367`). `spawnSync` 실행 오류로 `status === null`이면 0으로 종료.
 3. **Med — 실패한 repo-map venv가 다음 실행에서 유효한 것으로 간주.** `let hasVenv = existsSync(venvPython)`(`bin/codexclaw.mjs:265-266`) 후 pip 실패 시 메모리 변수만 false(`bin/codexclaw.mjs:274-276`); 남은 venv가 다음 실행에서 재선택(`bin/codexclaw.mjs:248-250`).
 4. **Med — `map --help` 인터프리터 우선순위가 주석과 다름.** 주석은 bare `python3` 선택(`bin/codexclaw.mjs:225-227`), 실제 fallback은 `env.CODEXCLAW_PYTHON || "python3"`(`bin/codexclaw.mjs:238-251`).

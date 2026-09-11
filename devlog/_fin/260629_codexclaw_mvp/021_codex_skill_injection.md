@@ -6,9 +6,9 @@ Status: TODO  ·  Phase 1
 Document and verify EXACTLY how a skill in this plugin reaches codex's runtime routing.
 
 ## Path (to verify end-to-end)
-1. `plugins/codexclaw/.codex-plugin/plugin.json` declares `skills: "./skills/"`.
-2. `codex plugin marketplace add <repo>` registers the marketplace snapshot.
-3. `codex plugin add codexclaw@personal` copies into `~/.codex/plugins/...`.
+1. `plugins/cursorclaw/.cursor-plugin/plugin.json` declares `skills: "./skills/"`.
+2. `Cursor plugin install add <repo>` registers the marketplace snapshot.
+3. `codex plugin add codexclaw@personal` copies into `~/.cursor/plugins/...`.
 4. codex discovers each `skills/<name>/SKILL.md`; frontmatter `description` = routing trigger.
 5. On a user prompt, codex auto-selects the skill whose description matches (no orchestrator).
 

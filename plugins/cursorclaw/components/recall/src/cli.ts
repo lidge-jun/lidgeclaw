@@ -2,7 +2,7 @@
  * cli.ts — `recall` entry point. Argv contract from bin/codexclaw.mjs:
  *   [kind, "search", ...queryAndFlags]   kind ∈ chat | memory
  *
- * Read-only over CODEX_HOME (~/.codex); never writes. Unknown subcommands print
+ * Read-only over CURSOR_HOME (~/.cursor); never writes. Unknown subcommands print
  * usage and exit 0 (informational, matching cxc-ops convention).
  */
 import { parseArgs } from "node:util";
@@ -48,7 +48,7 @@ const USAGE = [
   "  --no-synonyms memory search: raw words only — no ko/en synonyms, no korean stem",
   "  --json       machine-readable output (text fields clipped at 500 chars)",
   "  --full       with --json: emit unclipped text fields",
-  "  --home PATH  search an alternate Codex home (default $CODEX_HOME ?? ~/.codex)",
+  "  --home PATH  search an alternate Codex home (default $CURSOR_HOME ?? ~/.cursor)",
 ].join("\n");
 
 type ParsedFlags = {

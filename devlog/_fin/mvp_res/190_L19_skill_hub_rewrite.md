@@ -29,14 +29,14 @@ makes on-demand skills (diagram, pptx, xlsx, video, telegram, etc.) reachable.
 
 ## Scope (decision-complete)
 Files to add/edit (after L12-L17 land):
-- `plugins/codexclaw/skills/skill-hub/SKILL.md` (on-demand catalog router)
-- `plugins/codexclaw/skills/skill-hub/agents/openai.yaml`
+- `plugins/cursorclaw/skills/skill-hub/SKILL.md` (on-demand catalog router)
+- `plugins/cursorclaw/skills/skill-hub/agents/openai.yaml`
   (`allow_implicit_invocation: false` -- explicit trigger or `dev` hub routing)
-- `plugins/codexclaw/skills/skill-hub/references/catalog.md` (central registry of
+- `plugins/cursorclaw/skills/skill-hub/references/catalog.md` (central registry of
   default_implicit + on_demand skills, each with path + load_when + native_gap)
-- `plugins/codexclaw/skills/skill-hub/references/renderers.md` (diagram/html
+- `plugins/cursorclaw/skills/skill-hub/references/renderers.md` (diagram/html
   native-gap note: no diagram-html/mermaid/chart-json renderer in codex-rs)
-- `plugins/codexclaw/skills/*/agents/openai.yaml` edits to enforce the implicit
+- `plugins/cursorclaw/skills/*/agents/openai.yaml` edits to enforce the implicit
   policy: `dev` = true; `search`, host-provided `pdf`, `skill-hub`, and all others = false.
 
 Exact behavior (the two-axis distinction is the whole design):

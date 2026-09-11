@@ -2,7 +2,7 @@
 
 ## Position
 
-codexclaw is a discipline and evidence layer attached directly to OpenAI Codex. It is not an alternative coding-agent runtime.
+codexclaw is a discipline and evidence layer attached directly to Cursor. It is not an alternative coding-agent runtime.
 
 Codex remains responsible for model execution, reasoning, session/context transport, shell and sandbox behavior, permissions, base editing, browser/computer-use capabilities, and native subagent scheduling. codexclaw is responsible for risk-scaled development method, surface-specific knowledge routing, PABCD state and evidence, dispatch eligibility, completion judgment, and thin adaptation to the capabilities exposed by the active Codex version.
 

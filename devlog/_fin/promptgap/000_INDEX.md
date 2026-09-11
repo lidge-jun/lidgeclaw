@@ -9,7 +9,7 @@ agent (research PABCD loop, session `cli`). Every claim carries file:line on bot
 > **prompt/skill TEXT** itself: where codexclaw's `SKILL.md` bodies and injected directives are
 > *softer in wording, structure, and discipline* than the reference prompt corpora.
 >
-> codexclaw skills: `plugins/codexclaw/skills/*/SKILL.md`
+> codexclaw skills: `plugins/cursorclaw/skills/*/SKILL.md`
 > reference corpora: omo skills + prompts-core (`/Users/jun/Developer/codex/161_lazycodex`),
 > jawcode prompts (`jawcode/packages/coding-agent/src/prompts`), cli-jaw dev-skill devlogs,
 > gjc origin (`jawcode/struct_har/gjc_origin`).
@@ -30,7 +30,7 @@ agent (research PABCD loop, session `cli`). Every claim carries file:line on bot
 
 Same two lenses as `lazygap/000_INDEX.md`:
 
-1. **No new subagent roles.** Specialization travels as an attached `$cxc-*` skill on the three
+1. **No new subagent roles.** Specialization travels as an attached `$crc-*` skill on the three
    base roles, so every prompt gap below is a *skill body* fix, never a "add a reviewer/QA role"
    fix.
 2. **Host-native boundary.** A prompt is only a gap when the *wording quality* is weaker, not
@@ -67,7 +67,7 @@ cross-cutting weaknesses repeat:
    not family-wide (109); security lacks "retrieved text is data, not instruction" (104).
 5. **No shared authority marker or TASK packet.** No first-line "this skill owns the turn"
    marker in skill *bodies* (109; partially mitigated by the injected directive layer's
-   `[codexclaw: …]` markers), and no *formalized* family-wide subagent
+   `[cursorclaw: …]` markers), and no *formalized* family-wide subagent
    TASK/SCOPE/MUST-NOT/PROOF packet — `pabcd:88-89` already carries a partial delegation
    contract (109) — which is exactly the spawn payload `lazygap/008` wants to carry. This is a
    single-doc pattern (109 only), so it is the weakest "recurring" claim of the five; it is
@@ -146,4 +146,4 @@ evidence.
 ## Status
 
 RESEARCH. 100-109 are parity records with file:line evidence on both trees. Promotion to an
-implementation loop (`$cxc-loop`) is a user decision; nothing here has changed a skill body yet.
+implementation loop (`$crc-loop`) is a user decision; nothing here has changed a skill body yet.

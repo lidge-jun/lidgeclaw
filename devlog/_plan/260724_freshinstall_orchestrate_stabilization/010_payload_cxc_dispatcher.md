@@ -12,7 +12,7 @@ test folded below. Extra emit site found: idle-edit.ts:33.
 
 ## File change map
 
-### NEW `plugins/codexclaw/bin/cxc.mjs`
+### NEW `plugins/cursorclaw/bin/cursorclaw.mjs`
 
 Thin dispatcher mirroring root `bin/codexclaw.mjs` but payload-relative:
 `here = dirname(fileURLToPath(import.meta.url))`; component CLIs at
@@ -36,17 +36,17 @@ Implementation: to avoid a 400-line copy, extract the dispatch table from
 payload bin is a standalone ~120-line delegator: `spawnSync(process.execPath,
 [componentCli, ...argv], {stdio:"inherit"})` per family, plus the repo-map
 ladder imported from a new shared module
-`plugins/codexclaw/components/cxc-ops/dist/repomap-ladder.js` (move
+`plugins/cursorclaw/components/cxc-ops/dist/repomap-ladder.js` (move
 `selectRepoMapCommand`/`repoMapVenvPython` from root bin into cxc-ops src,
 re-export from root bin for back-compat with
-`plugins/codexclaw/test/repo-map-packaging.test.mjs` imports).
+`plugins/cursorclaw/test/repo-map-packaging.test.mjs` imports).
 
 Root `bin/codexclaw.mjs` MODIFY: delegate to the payload bin? No — keep root
 bin as-is except importing the relocated ladder helpers, so local dev behavior
 is byte-identical. (Two dispatchers, one ~120-line and one existing; the new
 packaging test pins their command sets equal.)
 
-### NEW `plugins/codexclaw/components/cxc-ops/src/cxc-resolve.ts`
+### NEW `plugins/cursorclaw/components/cxc-ops/src/cxc-resolve.ts`
 
 Single source of truth for "how do I say cxc on this machine":
 
@@ -56,7 +56,7 @@ export function payloadRootFromModule(moduleUrl: string): string
 export function cxcOnPath(env = process.env): boolean
   // scan PATH entries for an executable `cxc` file (no spawn)
 export function cxcInvocation(moduleUrl: string, env?): string
-  // "cxc" when on PATH, else `node "<payloadRoot>/bin/cxc.mjs"`
+  // "cxc" when on PATH, else `node "<payloadRoot>/bin/cursorclaw.mjs"`
 ```
 
 **H1 (blocker fold): NO free-text rewrite function.** A `"cxc "` string
@@ -86,11 +86,11 @@ resolution, so COMPONENTS order cannot break it; cxc-ops src imports nothing
 from other components, so no cycle.
 
 **B1 (A2 blocker fold): deterministic resolution seam.** `cxcInvocation`
-reads env override `CODEXCLAW_CXC` FIRST (test seam + power-user override),
+reads env override `CURSORCLAW_CRC` FIRST (test seam + power-user override),
 then PATH scan, then payload-bin fallback. All existing literal `cxc ...`
 test assertions become PATH-dependent otherwise; the full node --test run
 sets nothing, so tests that assert literal `cxc` MUST pin
-`CODEXCLAW_CXC=cxc` (or call with injected env) in setup. Affected files
+`CURSORCLAW_CRC=cxc` (or call with injected env) in setup. Affected files
 (enumerated, A2): pabcd-state `hook-continuation.test.ts`
 (292/298/303/310/358/547-553/585/597 — 358/585 reach handleStop which has no
 deps param, hence the env seam), `hook.test.ts` (277-278),
@@ -117,7 +117,7 @@ because resolution is deterministic per-process.
 - SKILL.md files: NOT rewritten (static text). Instead the SessionStart
   banner (map-affordance session binding, line ~137) appends one line when
   cxc is NOT on PATH: "`cxc` is not on PATH here; wherever docs say `cxc`,
-  run: node "<payloadRoot>/bin/cxc.mjs" ...". One line, only in the
+  run: node "<payloadRoot>/bin/cursorclaw.mjs" ...". One line, only in the
   degraded case.
 
 ### FIX `cxc scan evidence` phantom command (H4 fold: subcommand is the ONLY option)
@@ -144,8 +144,8 @@ update, ledger append, gate passes after 1 record.
 
 ### Tests (NEW/MODIFY)
 
-- NEW `plugins/codexclaw/test/payload-bin.test.mjs`: (1) payload bin exists,
-  executable header; (2) spawn `node plugins/codexclaw/bin/cxc.mjs help` exits
+- NEW `plugins/cursorclaw/test/payload-bin.test.mjs`: (1) payload bin exists,
+  executable header; (2) spawn `node plugins/cursorclaw/bin/cursorclaw.mjs help` exits
   0; (3) command-set parity with root bin table; (4) payload-only sandbox sim:
   copy payload to tmpdir, `orchestrate status` + `P` + attested edge with
   `env PATH` stripped of repo bin — asserts CR-B end-to-end.
@@ -160,39 +160,39 @@ update, ledger append, gate passes after 1 record.
 - MODIFY component tests covering changed emit sites (pabcd-state hook tests,
   recall hook tests, map-affordance tests): directives on a cxc-on-PATH
   machine unchanged; degraded mode rewrites correctly (inject fake env/deps).
-- Existing suites must stay green: `npm test`, `node plugins/codexclaw/scripts/gate.mjs`.
+- Existing suites must stay green: `npm test`, `node plugins/cursorclaw/scripts/gate.mjs`.
 
 ### Build/dist
 
 M1 fold — exact mechanics: `npm run build` recompiles COMPONENTS src→dist;
 root `.gitignore` ignores `dist/` wholesale so every new/changed dist file
-needs `git add -f`; `plugins/codexclaw/test/packaging.test.mjs` ENTRYPOINTS
-list must gain any new runtime entry; `bin/cxc.mjs` is plain .mjs OUTSIDE the
+needs `git add -f`; `plugins/cursorclaw/test/packaging.test.mjs` ENTRYPOINTS
+list must gain any new runtime entry; `bin/cursorclaw.mjs` is plain .mjs OUTSIDE the
 build (no dist), so the new payload-bin test is its only freshness contract.
 Constraint (L2): WP1 must NOT touch any `hooks/*.json` (hook content-hash
 re-approval) — dist-only changes ride the existing trust.
 
 ### Manifest + version (H3 fold)
 
-`.codex-plugin/plugin.json` has no file whitelist; payload = whole
-`plugins/codexclaw/` tree, so `bin/` ships for fresh installs. BUT the local
-install cache (`~/.codex/plugins/cache/codexclaw/codexclaw/0.1.0/`) symlinks
+`.cursor-plugin/plugin.json` has no file whitelist; payload = whole
+`plugins/cursorclaw/` tree, so `bin/` ships for fresh installs. BUT the local
+install cache (`~/.cursor/plugins/cache/codexclaw/codexclaw/0.1.0/`) symlinks
 per TOP-LEVEL entry at install time — an added `bin/` dir does NOT appear in
 existing installs. Therefore bump 0.1.0 → 0.1.1 across ALL version carriers
-(B3 fold, 12 sites): `.codex-plugin/plugin.json`, root `package.json`, 8
+(B3 fold, 12 sites): `.cursor-plugin/plugin.json`, root `package.json`, 8
 component `package.json`s, `gui/package.json`, PLUS the hardcoded
 `SERVER_INFO.version` in `subagent-config/src/mcp.ts:23` (src change →
 rebuild dist → `git add -f`). WP2 README notes the upgrade path
-(`codex plugin marketplace upgrade codexclaw` or re-add).
+(`Cursor plugin install upgrade codexclaw` or re-add).
 
 ## IN/OUT
 
 - IN: files above; OUT: root bin behavior change, npm packaging, GUI deps,
-  SKILL.md mass rewrite, ~/.codex config.
+  SKILL.md mass rewrite, ~/.cursor config.
 
 ## Accept criteria
 
 - Payload-only sandbox: `command -v cxc` fails, yet SessionStart banner names
-  the working invocation and `node <payload>/bin/cxc.mjs orchestrate status/P/A`
+  the working invocation and `node <payload>/bin/cursorclaw.mjs orchestrate status/P/A`
   all exit 0 (CR-B).
 - All rewrite counterexamples pass; suites + gate green (CR-C).

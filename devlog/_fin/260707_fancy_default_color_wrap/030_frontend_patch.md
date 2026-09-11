@@ -1,7 +1,7 @@
 # 030 — WP3 Patch Notes: dev-frontend
 
 Per 010_plan.md §WP3 + reviewer round-4 notes. Paths relative to
-`plugins/codexclaw/skills/dev-frontend/`.
+`plugins/cursorclaw/skills/dev-frontend/`.
 
 ### references/core/color-system.md — NEW (token implementation owner)
 - **Changes**: FE-COLOR-TOKEN-01 (primitive→semantic→component layering,

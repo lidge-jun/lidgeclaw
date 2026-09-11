@@ -1,6 +1,6 @@
 # 012 — wp4(훅 주입 개선) 정밀 정찰
 
-대상: `plugins/codexclaw/components/recall/`
+대상: `plugins/cursorclaw/components/recall/`
 워크트리: `/Users/jun/.codex/worktrees/1fa9/codexclaw` (브랜치 `codex/memory-upgrade-l0`, origin/dev 6e97e73d)
 성격: P 페이즈 조사/설계. 코드 변경 없음.
 
@@ -225,7 +225,7 @@ SELECT ts, substr(text, 1, 400) FROM msgs
 
 ### 3.3 rollout_summary description 을 가져오려면
 
-`~/.codex/memories/rollout_summaries/*.md` 파일 256개, 총 2.1MB. 전부 frontmatter 를 갖는다(256/256 에 `cwd:` 존재).
+`~/.cursor/memories/rollout_summaries/*.md` 파일 256개, 총 2.1MB. 전부 frontmatter 를 갖는다(256/256 에 `cwd:` 존재).
 
 ```
 thread_id: 01a07dee-39af-7de0-b970-db9e2550fdec
@@ -412,7 +412,7 @@ format.ts 는 CLI 사람 대상 출력 전용이다. `formatChatResult`(:29-50)�
 
 **codexclaw (이 워크트리)**
 
-- `plugins/codexclaw/components/recall/src/hook.ts` — 전량
+- `plugins/cursorclaw/components/recall/src/hook.ts` — 전량
 - `.../recall/src/cli.ts:200-220` — 훅 진입, stdin payload 파싱
 - `.../recall/src/chat-search.ts:97-208` — searchChat / searchViaIndex
 - `.../recall/src/index-search.ts:52-130` — queryIndex, cwd 필터

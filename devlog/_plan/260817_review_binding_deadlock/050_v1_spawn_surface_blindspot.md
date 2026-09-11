@@ -2,7 +2,7 @@
 created: 2026-08-17
 status: design
 workPhase: wp6
-tags: [codexclaw, review-binding, spawn-surface, multi-agent-v1]
+tags: [cursorclaw, review-binding, spawn-surface, multi-agent-v1]
 ---
 
 # 050 — v1 스폰 표면에서 감사 서명이 도달하지 못한다

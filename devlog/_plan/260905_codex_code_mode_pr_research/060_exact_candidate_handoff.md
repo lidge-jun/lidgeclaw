@@ -18,11 +18,11 @@ This phase is spec-satisfaction verification, not further tuning against the hel
 | MODIFY | `structure/10_subagent_skill_routing.md` | Replace stale blanket V1/V2 delivery assertions with the selected measured strategy and explicit unsupported/unknown combinations |
 | MODIFY | `structure/60_native_capabilities.md` | Add verified code-mode execution/discovery/state semantics with exact observed version and limitations; keep source-only ideas separate |
 | MODIFY | `docs-site/src/content/docs/guides/skills.md`, `guides/pabcd.md` | Align entry examples and progressive loading with canonical owners; do not duplicate long method bodies |
-| MODIFY | `.codex-plugin/plugin.json` beneath `plugins/codexclaw/` | Cachebuster only via existing supported helper in the candidate install copy; do not bump public product version solely for cache invalidation |
+| MODIFY | `.cursor-plugin/plugin.json` beneath `plugins/cursorclaw/` | Cachebuster only via existing supported helper in the candidate install copy; do not bump public product version solely for cache invalidation |
 | NEW | `devlog/_plan/260905_codex_code_mode_pr_research/061_final_evidence.md` | Immutable evidence index: source/candidate/install identity, test/probe manifests, holdout verdict, known limitations and teardown |
 | NEW | `devlog/_plan/260905_codex_code_mode_pr_research/062_final_review.md` | Reviewer verdict and issue disposition against the exact source/payload pair |
 
-Runtime dist modifications are generated from the final source using `plugins/codexclaw/scripts/build.mjs` on macmini. Integrate only those generated changes, verify source/dist equality, and force-add only intentional tracked payload files where repository policy requires it. Do not manually edit generated JavaScript.
+Runtime dist modifications are generated from the final source using `plugins/cursorclaw/scripts/build.mjs` on macmini. Integrate only those generated changes, verify source/dist equality, and force-add only intentional tracked payload files where repository policy requires it. Do not manually edit generated JavaScript.
 
 ## Before/after contract changes
 
@@ -61,7 +61,7 @@ These are semantic document edits, not phrase-presence test targets. Reviewer ch
 
 Already exercised baseline: the three focused test files listed in `010_roadmap_lock.md` returned 145/0 on macmini. Later newly written scripts/tests must be run before being cited as working commands. Verification expands to affected pabcd-state and subagent-config tests, package/manifest contracts, and WP1 evidence-analyzer tests.
 
-Existing full build/check owners are `node plugins/codexclaw/scripts/build.mjs`, `node plugins/codexclaw/scripts/gate.mjs`, and `node --test --test-concurrency=1 <explicit affected files>`, executed on the remote snapshot. Read output and exit code. Full repository-wide suites, if needed for risk, run only on macmini and retain logs. No local UI build or repository test suite is required for this headless change.
+Existing full build/check owners are `node plugins/cursorclaw/scripts/build.mjs`, `node plugins/cursorclaw/scripts/gate.mjs`, and `node --test --test-concurrency=1 <explicit affected files>`, executed on the remote snapshot. Read output and exit code. Full repository-wide suites, if needed for risk, run only on macmini and retain logs. No local UI build or repository test suite is required for this headless change.
 
 After source and installed verification, an independent reviewer receives the exact source range, payload digest and raw outcome pointers without the proposed verdict. The main addresses blockers; the same reviewer verifies fixes, while the final held-out gate remains uncontaminated.
 

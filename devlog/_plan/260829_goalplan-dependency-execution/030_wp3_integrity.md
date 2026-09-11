@@ -39,35 +39,35 @@ task 자신을 가리키면 아래 정본 사유로 거부하고 상태를 만�
 
 | 파일과 줄 | 확인한 사실 | 처분 |
 | --- | --- | --- |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:82-115` | `GoalplanTask`와 `GoalplanWorkPhase` 타입, wp2 optional 필드 위치 | wp2 필드를 읽는 검증만 추가 |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:453-523` | `declaredSchemaVersion()`·`reviveDependsOn()`과 `reviveGoalplan()`의 task/phase 복원 | wp2 소유, 수정 없음 |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:695-736` | `writeGoalplan()`의 rename과 `appendGoalplanLedger()`가 별도 write | wp5·wp6 소유, 수정 없음 |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:832-909` | `GoalplanValidation` 타입과 `validateGoalplan()` E8 validator | 두 순수 함수를 연결 |
-| `plugins/codexclaw/components/pabcd-state/src/goal-gate.ts:271-285` | validator 사유 네 개를 deny에 표시 | 안내 문자열만 수정 |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan-cli.ts:246-257` | add-work-phase producer | wp6 소유, 수정 없음 |
-| `plugins/codexclaw/components/pabcd-state/src/steering.ts:176-183,307-320` | 등록 shape와 commit point | wp6·wp5 소유, 수정 없음 |
-| `plugins/codexclaw/components/pabcd-state/src/atomic-write.ts:16,38-45` | rename retry 상수와 실행부 | 수정 없음 |
-| `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts:632-637,671-678,734-739` | D-close와 writer | wp5·wp6 소유, 수정 없음 |
-| `plugins/codexclaw/components/pabcd-state/src/hook.ts:839-875,893-930` | 채팅 D-close preflight, state/PABCD ledger writer, goalplan writer | wp5·wp6 소유, 수정 없음 |
-| `plugins/codexclaw/components/pabcd-state/src/review-round-cli.ts:233-263` | review round writer | wp5 소유, 수정 없음 |
-| `plugins/codexclaw/components/pabcd-state/src/review-observer.ts:119-164` | ignored ledger와 verdict writer | wp5 소유, 수정 없음 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:82-115` | `GoalplanTask`와 `GoalplanWorkPhase` 타입, wp2 optional 필드 위치 | wp2 필드를 읽는 검증만 추가 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:453-523` | `declaredSchemaVersion()`·`reviveDependsOn()`과 `reviveGoalplan()`의 task/phase 복원 | wp2 소유, 수정 없음 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:695-736` | `writeGoalplan()`의 rename과 `appendGoalplanLedger()`가 별도 write | wp5·wp6 소유, 수정 없음 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:832-909` | `GoalplanValidation` 타입과 `validateGoalplan()` E8 validator | 두 순수 함수를 연결 |
+| `plugins/cursorclaw/components/pabcd-state/src/goal-gate.ts:271-285` | validator 사유 네 개를 deny에 표시 | 안내 문자열만 수정 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan-cli.ts:246-257` | add-work-phase producer | wp6 소유, 수정 없음 |
+| `plugins/cursorclaw/components/pabcd-state/src/steering.ts:176-183,307-320` | 등록 shape와 commit point | wp6·wp5 소유, 수정 없음 |
+| `plugins/cursorclaw/components/pabcd-state/src/atomic-write.ts:16,38-45` | rename retry 상수와 실행부 | 수정 없음 |
+| `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts:632-637,671-678,734-739` | D-close와 writer | wp5·wp6 소유, 수정 없음 |
+| `plugins/cursorclaw/components/pabcd-state/src/hook.ts:839-875,893-930` | 채팅 D-close preflight, state/PABCD ledger writer, goalplan writer | wp5·wp6 소유, 수정 없음 |
+| `plugins/cursorclaw/components/pabcd-state/src/review-round-cli.ts:233-263` | review round writer | wp5 소유, 수정 없음 |
+| `plugins/cursorclaw/components/pabcd-state/src/review-observer.ts:119-164` | ignored ledger와 verdict writer | wp5 소유, 수정 없음 |
 
 ## 변경 지도
 
 | 구분 | 파일 | 책임 |
 | --- | --- | --- |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/goalplan.ts` | 정의·outcome·완료 의존 사유와 validate 연결 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/goal-gate.ts` | E8 안내에 integrity 복구 순서 명시 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/goalplan.js` | build가 갱신한 tracked `goalplan.ts` 배포 산출물 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/goal-gate.js` | build가 갱신한 tracked `goal-gate.ts` 배포 산출물 |
-| NEW | `plugins/codexclaw/components/pabcd-state/test/goalplan-integrity.test.ts` | 순수 함수와 validate 연결 테스트 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/goal-gate.test.ts` | update_goal complete deny 통합 테스트 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts` | 정의·outcome·완료 의존 사유와 validate 연결 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/goal-gate.ts` | E8 안내에 integrity 복구 순서 명시 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/goalplan.js` | build가 갱신한 tracked `goalplan.ts` 배포 산출물 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/goal-gate.js` | build가 갱신한 tracked `goal-gate.ts` 배포 산출물 |
+| NEW | `plugins/cursorclaw/components/pabcd-state/test/goalplan-integrity.test.ts` | 순수 함수와 validate 연결 테스트 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/goal-gate.test.ts` | update_goal complete deny 통합 테스트 |
 
 DELETE는 없다.
 
 ## Diff-level 설계
 
-### MODIFY — `plugins/codexclaw/components/pabcd-state/src/goalplan.ts`
+### MODIFY — `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts`
 
 현재 `GoalplanValidation` 선언(`:832`) 직전에 넣는다. wp2 적용 뒤에는
 `doneWorkPhasesWithPendingTasks()` 다음이라는 구조 앵커를 쓴다.
@@ -253,7 +253,7 @@ export interface GoalplanValidation {
 
 ### 기존 테스트 소비자 조사 (§28)
 
-2026-08-29에 아래 명령으로 `plugins/codexclaw/components/pabcd-state/test/` 전체를 검색했다.
+2026-08-29에 아래 명령으로 `plugins/cursorclaw/components/pabcd-state/test/` 전체를 검색했다.
 
 ```bash
 rg -n -F \
@@ -273,7 +273,7 @@ rg -n -F \
   -e "references unknown criterion" \
   -e "is done while dependency work phase(s) are not done" \
   -e "is done while dependency task(s) are not done" \
-  plugins/codexclaw/components/pabcd-state/test
+  plugins/cursorclaw/components/pabcd-state/test
 ```
 
 검색 결과는 기존 `goal-gate.test.ts:314`의 옛 gate 정규식 한 건뿐이다. 새 문자열은 아직 소스에
@@ -373,7 +373,7 @@ export function validateGoalplan(plan: Goalplan, ctx?: GoalplanValidationCtx): G
 
 기존 empty-plan, criterion evidence, 남은 phase, pending task, superseded, final gate 검사는 유지한다.
 
-### MODIFY — `plugins/codexclaw/components/pabcd-state/src/goal-gate.ts`
+### MODIFY — `plugins/cursorclaw/components/pabcd-state/src/goal-gate.ts`
 
 대상은 `:283-285`다. 조건, catch, 사유 네 개 제한은 유지한다.
 
@@ -383,7 +383,7 @@ Before:
 // wp2 적용 후 상태
 const reasons = verdict.reasons.slice(0, 4).join("; ");
 return goalCompleteDenyEnvelope(
-  `GOAL-COMPLETE-GATE-01: the session-bound goalplan '${state.slug}' fails the E8 quality gate: ${reasons}. Finish the remaining work and record fresh capturedEvidence in .codexclaw/goalplans/${state.slug}/goalplan.json (check with \`cxc loop validate --slug "${state.slug}"\`), or use update_goal status "blocked" if an external blocker prevents completion. Do not shrink the objective to escape the gate (LOOP-CONTINUE-01).`,
+  `GOAL-COMPLETE-GATE-01: the session-bound goalplan '${state.slug}' fails the E8 quality gate: ${reasons}. Finish the remaining work and record fresh capturedEvidence in .cursorclaw/goalplans/${state.slug}/goalplan.json (check with \`cxc loop validate --slug "${state.slug}"\`), or use update_goal status "blocked" if an external blocker prevents completion. Do not shrink the objective to escape the gate (LOOP-CONTINUE-01).`,
 );
 ```
 
@@ -392,13 +392,13 @@ After:
 ```ts
 const reasons = verdict.reasons.slice(0, 4).join("; ");
 return goalCompleteDenyEnvelope(
-  `GOAL-COMPLETE-GATE-01: the session-bound goalplan '${state.slug}' fails the E8 quality/integrity gate: ${reasons}. Repair invalid dependency, outcome, and criteria references first; then finish remaining work and record fresh capturedEvidence in .codexclaw/goalplans/${state.slug}/goalplan.json (check with \`cxc loop validate --slug "${state.slug}"\`), or use update_goal status "blocked" if an external blocker prevents completion. Do not shrink the objective to escape the gate (LOOP-CONTINUE-01).`,
+  `GOAL-COMPLETE-GATE-01: the session-bound goalplan '${state.slug}' fails the E8 quality/integrity gate: ${reasons}. Repair invalid dependency, outcome, and criteria references first; then finish remaining work and record fresh capturedEvidence in .cursorclaw/goalplans/${state.slug}/goalplan.json (check with \`cxc loop validate --slug "${state.slug}"\`), or use update_goal status "blocked" if an external blocker prevents completion. Do not shrink the objective to escape the gate (LOOP-CONTINUE-01).`,
 );
 ```
 
 ## 테스트 본문
 
-### NEW — `plugins/codexclaw/components/pabcd-state/test/goalplan-integrity.test.ts`
+### NEW — `plugins/cursorclaw/components/pabcd-state/test/goalplan-integrity.test.ts`
 
 아래 내용 전체로 만든다.
 
@@ -631,7 +631,7 @@ test("a repeated dependency reference is reported once, leaving room for other r
 });
 ```
 
-### MODIFY — `plugins/codexclaw/components/pabcd-state/test/goal-gate.test.ts`
+### MODIFY — `plugins/cursorclaw/components/pabcd-state/test/goal-gate.test.ts`
 
 #### A. 기존 E8 문구 단언 갱신
 
@@ -748,10 +748,10 @@ git status --porcelain -- \
 git diff --no-index /dev/null \
   devlog/_plan/260829_goalplan-dependency-execution/030_wp3_integrity.md || test $? -eq 1
 rg -n '^export function goalplan(DefinitionIntegrityReasons|DependencyCompletionReasons)' \
-  plugins/codexclaw/components/pabcd-state/src/goalplan.ts
+  plugins/cursorclaw/components/pabcd-state/src/goalplan.ts
 ! rg -n 'plan\.workPhases\.flatMap' \
-  plugins/codexclaw/components/pabcd-state/src/goalplan.ts \
-  plugins/codexclaw/components/pabcd-state/test/goalplan-integrity.test.ts
+  plugins/cursorclaw/components/pabcd-state/src/goalplan.ts \
+  plugins/cursorclaw/components/pabcd-state/test/goalplan-integrity.test.ts
 ```
 
 `plan.workPhases.flatMap`만 금지한다. plan 전역 task 평탄화는 phase-local ID 권위를 깨지만,
@@ -765,8 +765,8 @@ exit 0이다.
 ### 집중 테스트
 
 ```bash
-node --test plugins/codexclaw/components/pabcd-state/test/goalplan-integrity.test.ts
-node --test plugins/codexclaw/components/pabcd-state/test/goal-gate.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/goalplan-integrity.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/goal-gate.test.ts
 ```
 
 기대값: 첫 명령은 `tests 12`, `pass 12`, `fail 0`, exit 0. 두 번째 명령도 `fail 0`, exit 0.

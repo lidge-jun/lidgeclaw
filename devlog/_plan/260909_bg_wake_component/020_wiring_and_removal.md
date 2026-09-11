@@ -4,11 +4,11 @@
 
 | 접점 | 변경 |
 |---|---|
-| `plugins/codexclaw/hooks/` | 훅 파일 3개 신설 (stop / user-prompt-submit / session-start) |
-| `.codex-plugin/plugin.json` | `hooks[]` 24 → 27, append만. 기존 항목 순서 불변 |
+| `plugins/cursorclaw/hooks/` | 훅 파일 3개 신설 (stop / user-prompt-submit / session-start) |
+| `.cursor-plugin/plugin.json` | `hooks[]` 24 → 27, append만. 기존 항목 순서 불변 |
 | `scripts/build.mjs` | `REQUIRED_COMPONENTS` + `OPTIONAL_COMPONENTS` 분리. 선택 컴포넌트만 `existsSync`로 거른다 |
 | `package.json` | test glob 1줄 |
-| `plugins/codexclaw/bin/cxc.mjs` | `COMMAND_TABLE`의 `bg`, HELP 줄, slice(3) 분기 |
+| `plugins/cursorclaw/bin/cursorclaw.mjs` | `COMMAND_TABLE`의 `bg`, HELP 줄, slice(3) 분기 |
 | `bin/codexclaw.mjs` | `case "bg"`, `runBgWake()`, HELP 줄 |
 | `inventory.json` + README 3종 | `inventory.mjs --write`로 뱃지 24 → 27 |
 
@@ -23,17 +23,17 @@
 결과:
 
 ```
-[codexclaw inventory] wrote inventory.json (28 skills, 24 hooks, 8 components)
-[codexclaw] build OK — 167 files compiled, layout validated.
-[codexclaw gate] OK — no status drift, false-enforcement prose, count mismatch, or inventory drift.
+[cursorclaw inventory] wrote inventory.json (28 skills, 24 hooks, 8 components)
+[cursorclaw] build OK — 167 files compiled, layout validated.
+[cursorclaw gate] OK — no status drift, false-enforcement prose, count mismatch, or inventory drift.
 npm test EXIT=0
 ```
 
 그 뒤 `git checkout -- .`로 복원하고 다시 확인했다.
 
 ```
-[codexclaw inventory] wrote inventory.json (28 skills, 27 hooks, 9 components)
-[codexclaw gate] OK
+[cursorclaw inventory] wrote inventory.json (28 skills, 27 hooks, 9 components)
+[cursorclaw gate] OK
 npm test EXIT=0
 ```
 

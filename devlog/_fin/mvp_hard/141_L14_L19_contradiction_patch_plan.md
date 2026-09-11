@@ -89,7 +89,7 @@ Work-phases:
    per surface.
 2. L16.2 — Selective implicit promotion (E6): decide which (if any) highest-traffic
    surface skills flip to `allow_implicit_invocation:true`, weighed against context cost.
-3. L16.3 — `$cxc-dev` directive enumerates surface skills (E4): the injected phase/dev
+3. L16.3 — `$crc-dev` directive enumerates surface skills (E4): the injected phase/dev
    directive names exact skills to pull.
 
 DONE when: a single `dev` read names the exact skills; chosen implicit set documented with

@@ -22,7 +22,7 @@
 | OCX 결과 | 2.43.0, HEAD `a687eb735afc7307f902816972c2f8fb522ed2f3`, clean |
 | 서비스 | `ocx service restart` 후 launchd loaded, `/healthz` status ok, version 2.43.0, PID 38505, 127.0.0.1:10100 listener 확인 |
 | CLI 링크 | `ocx`와 `opencodex` 모두 global `@bitkyc08/opencodex/bin/ocx.mjs` 경로를 가리킴 |
-| CodexClaw | `codex plugin marketplace upgrade codexclaw --json` errors 없음; `codex plugin add codexclaw@codexclaw --json` 성공 |
+| CodexClaw | `Cursor plugin install upgrade codexclaw --json` errors 없음; `codex plugin add codexclaw@codexclaw --json` 성공 |
 | 플러그인 결과 | `0.2.16+codex.260830094500`, `/Users/junny/.codex/plugins/cache/codexclaw/codexclaw/0.2.16+codex.260830094500`; `cxc --version` 일치 |
 | Codex CLI | 0.146.0 확인. 이번 요청에서 CLI 자체 업그레이드는 하지 않음 |
 

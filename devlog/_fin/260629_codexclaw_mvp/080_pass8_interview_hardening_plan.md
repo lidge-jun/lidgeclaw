@@ -8,7 +8,7 @@ Status: PLANNING (hardened) · Phase 1 루프의 Pass 8 (Pass 7 빌드·검증 �
 >
 > **Ground truth 소스 (실측 완료)**:
 > - ouroboros clone: `devlog/_plan/260630_ouroboros_interview_research/.ouroboros/skills/{interview,auto,seed,evaluate}/SKILL.md`
-> - codexclaw impl: `plugins/codexclaw/components/pabcd-state/src/{state.ts,hook.ts,parse.ts,cli.ts,fsm.ts}`
+> - codexclaw impl: `plugins/cursorclaw/components/pabcd-state/src/{state.ts,hook.ts,parse.ts,cli.ts,fsm.ts}`
 > - cli-jaw interview protocol: `~/.cli-jaw-3459/skills/dev-pabcd/SKILL.md`
 > - codexclaw docs: `022.3_interview_goalmode_rules.md`, `023.1_interview_ipabcd_prompts.md`, `018.3_state_transition_injection.md`
 
@@ -103,7 +103,7 @@ Contrarian · Socratic · Ontologist + Evaluator · Simplifier. (Nine Minds 전�
 - Nine Minds 중 5종만 (D1): Contrarian · Socratic · Ontologist · Evaluator · Simplifier.
   (Hacker, Researcher, Architect, Seed Architect는 제외 — 9개 fan-out 금지, D2.)
 - ouroboros **codex 플러그인** 디렉토리 구조: `.claude-plugin/plugin.json` + `.codex/{hooks.json,config.toml}`
-  + `skills/` 폴더. codexclaw는 이미 자체 `plugins/codexclaw/` 구조를 가지므로 구조 차용 X, 패턴만 참조.
+  + `skills/` 폴더. codexclaw는 이미 자체 `plugins/cursorclaw/` 구조를 가지므로 구조 차용 X, 패턴만 참조.
 - subagent fan-out: ouroboros는 `ouroboros_lateral_think` MCP tool로 persona를 병렬 spawn. codexclaw는
   codex native subagent (main agent가 spawn)로 대체 — MCP 서버 불필요 (MOC 가설 확인).
 - **Refine gate**: ouroboros의 free-text 정제 게이트는 codexclaw에 적합 — `request_user_input`의
@@ -386,7 +386,7 @@ INTERVIEW LOOP (main agent follows each turn while in I-phase):
 `interviewDirective()` 확장 — 기존 4줄 → 다중 섹션 문자열:
 ```typescript
 const INTERVIEW_PROTOCOL = [
-  "[codexclaw: INTERVIEW — 4-Dimension Protocol]",
+  "[cursorclaw: INTERVIEW — 4-Dimension Protocol]",
   "Track four dimensions: Goal, Constraint, Success criteria, Ontology.",
   "Each dimension has a level (low→mid→high→max), known[], unknown[], confidence.",
   "Interview is ready when all 4 dimensions reach 'max', contradictions[] is EMPTY (each resolved into the spec OR converted to a recorded assumption), and every assumption is RECORDED into the spec's `## OPEN ASSUMPTIONS` section (R-H — assumptions need not be zero, but must be recorded).",
@@ -677,9 +677,9 @@ S1-S2는 state layer, S3-S5는 hook layer, S6는 검증, S7는 설계 검증. �
     근거: `.lazycodex/plugins/omo/components/lazycodex-executor-verify/src/codex-hook.ts:55` (`.omo/evidence`),
     `codegraph/src/session-start-worker.ts:120` (`~/.omo/...`).
   - 공통 패턴 = **프로젝트 루트의 점-디렉토리가 정본 저장소.**
-- codexclaw 결정: 플랜 정본 = `<project>/.codexclaw/plan/`(없으면 생성). devlog 사용자는 기존
-  `devlog/_plan/...`을 쓰되, 비사용자/플러그인-only 사용자는 `.codexclaw/plan/`이 표준 산출 위치.
-  goal/PABCD가 이 디렉토리를 read-only 입력으로 소비. (state 파일 `.codexclaw/sessions/`와 같은 루트.)
+- codexclaw 결정: 플랜 정본 = `<project>/.cursorclaw/plan/`(없으면 생성). devlog 사용자는 기존
+  `devlog/_plan/...`을 쓰되, 비사용자/플러그인-only 사용자는 `.cursorclaw/plan/`이 표준 산출 위치.
+  goal/PABCD가 이 디렉토리를 read-only 입력으로 소비. (state 파일 `.cursorclaw/sessions/`와 같은 루트.)
 - freeze = 인터뷰 종료 시 플랜 파일을 그대로 정본 채택(별도 스냅샷 불요). "무엇이 정본인가" 해소:
   **플래닝 파일 = 정본**, devlog는 그 서술 형태 중 하나.
 
@@ -702,7 +702,7 @@ S1-S2는 state layer, S3-S5는 hook layer, S6는 검증, S7는 설계 검증. �
   근거: `codex-rs/core/src/tools/handlers/plan.rs`(write/persist 경로 없음, "Plan updated" 메시지만),
   `codex-rs/protocol/src/plan_tool.rs`(`UpdatePlanArgs` = step/status 인메모리 구조).
   → codex에 기댈 "기본 플랜 루트"가 없으므로 codexclaw가 **직접** 정본 루트를 만든다.
-- 결정: **플랜 파일이 정본**이고, 정본 루트 = `<project>/.codexclaw/plan/`(R-A 유지).
+- 결정: **플랜 파일이 정본**이고, 정본 루트 = `<project>/.cursorclaw/plan/`(R-A 유지).
   - 각 플랜 파일/세트에 **content hash**를 부여(예: `plan/<slug>/.manifest.json`에 `{files, sha256, frozenAt}`).
     goal이 소비한 시점의 해시를 기록 → 이후 플랜이 바뀌면 해시 불일치로 "정본 변경" 감지 가능.
   - draft↔frozen은 **무거운 별도 스냅샷 파일 없이 해시+manifest로** 경계 표현(R2-2 해소: freeze는
@@ -711,7 +711,7 @@ S1-S2는 state layer, S3-S5는 hook layer, S6는 검증, S7는 설계 검증. �
   서브에이전트 등 검증 수단으로 부족한 부분을 채워서 시작**한다. 즉 frozen spec이 빈약해도
   goal-mode가 시작 시점에 모순-도출 Mind/검증 서브에이전트로 spec을 보강(backfill)한 뒤 PABCD 진입.
   → 미완성 플랜 소비 위험(R2-1)을 "거부 게이트" 대신 "시작 시 backfill"로 흡수.
-- session↔project 링크(R2-3): session tracker(`.codexclaw/sessions/<sid>.json`)에 현재 작업 중인
+- session↔project 링크(R2-3): session tracker(`.cursorclaw/sessions/<sid>.json`)에 현재 작업 중인
   플랜 manifest 해시를 기록 → readiness가 어느 플랜 revision을 검증했는지 추적(구현 시 필드 추가).
 
 ### R-E [R2-10] 엔진 강도 = **핵심만 코드, 나머지는 행동 규약 중심**
@@ -751,7 +751,7 @@ S1-S2는 state layer, S3-S5는 hook layer, S6는 검증, S7는 설계 검증. �
 ## ✅ RESOLVED #5 (2026-06-30) — dry-run #4 기계적 결정 (R-E 일관, jun 승인 불요)
 
 ### R-J [R4-1] 해시 mutation 정책
-- goal 시작 시 `.codexclaw/plan/<slug>/.manifest.json`의 `sha256`를 현재 플랜파일과 **재계산 비교**.
+- goal 시작 시 `.cursorclaw/plan/<slug>/.manifest.json`의 `sha256`를 현재 플랜파일과 **재계산 비교**.
   일치 → frozen 정본 그대로 사용. 불일치 → "정본 변경됨" 경고 + 현재 파일 기준 manifest 자동 re-freeze
   후 진행. **stale manifest로 실행 금지**(현재 파일이 항상 진실). 검증 시점 = goal start (+ freeze 시).
 

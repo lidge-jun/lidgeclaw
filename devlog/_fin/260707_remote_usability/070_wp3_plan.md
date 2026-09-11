@@ -4,7 +4,7 @@ Date: 2026-07-07. Phase: P (cycle 3, final).
 
 ## Deliverables
 
-1. `plugins/codexclaw/components/messenger-bridge/README.md` — the single
+1. `plugins/cursorclaw/components/messenger-bridge/README.md` — the single
    human-facing doc: what the bridge is; install/run (`cxc serve`,
    `cxc service install|uninstall|status`, launchd cwd caveat, logs); channel
    onboarding via the agents API incl. the NEW one-tap deep-link pairing

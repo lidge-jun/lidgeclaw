@@ -12,7 +12,7 @@ Status: RESEARCH (design input; NO code change) · 2026-07-01
 ## The model: I records N>=2 (kept); the USER-FACING question is conditional; collapse point varies
 
 ```
-I  ── record N>=2 candidate approaches in devlog/.codexclaw  (KEPT rule; anti-anchoring)
+I  ── record N>=2 candidate approaches in devlog/.cursorclaw  (KEPT rule; anti-anchoring)
 │      approaches are GROUNDED via cxc-search, not invented from memory
 │      candidates MAY be asymmetric: "strong-1 + add-1" (one primary + one light alternative)
 │      • user intent clear  ──► do NOT interrogate the user with an N>=2 menu;
@@ -131,7 +131,7 @@ maximize-metric goal can re-trigger a late collapse in a later work-phase.
 
 | Step | Mechanism | Tier |
 |---|---|---|
-| I records N>=2 (strong-1 + add-1 OK) | devlog/`.codexclaw` record; kept rule | E7 |
+| I records N>=2 (strong-1 + add-1 OK) | devlog/`.cursorclaw` record; kept rule | E7 |
 | N>=2 grounded via cxc-search | Tier 1 discover + Tier 2 prove; not from memory | E7 |
 | ask the USER to choose | only when intent is open; else converge silently | E7 |
 | classify early vs late collapse | objective-kind (satisfy vs maximize) + winner-clarity | E7 |

@@ -5,7 +5,7 @@ description: Run the optional loopback bridge that relays Telegram or Discord me
 
 The messenger bridge is an opt-in local relay. It connects allowlisted Telegram or Discord chats
 to stock `codex exec` / `codex exec resume`, persists chat-session bindings in
-`.codexclaw/bridge.db`, and serves the bridge GUI plus JSON API from the same loopback origin.
+`.cursorclaw/bridge.db`, and serves the bridge GUI plus JSON API from the same loopback origin.
 
 It is not an orchestrator. It does not dispatch subagents, write the native goal DB, proxy
 providers, or replace Codex runtime behavior.
@@ -97,7 +97,7 @@ The boundary is therefore operational, not sandbox-based:
 | Loopback port | `cxc serve` listens on `127.0.0.1`; remote access is through the messenger APIs. |
 | Host and mutation guard | Local API rejects non-loopback Host headers and requires JSON plus `x-codexclaw-local: 1` for mutating requests. |
 | Allowlist | Only chats admitted during an open handshake window can run turns. |
-| Token custody | Bot tokens live in `.codexclaw/bridge.db`; the API returns token presence, not raw tokens. |
+| Token custody | Bot tokens live in `.cursorclaw/bridge.db`; the API returns token presence, not raw tokens. |
 | Mention gates | Group/guild traffic can require explicit bot mention. |
 
 Telegram persists the polling offset before dispatch, avoiding replay of a started full-permission

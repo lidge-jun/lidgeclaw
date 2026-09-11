@@ -28,17 +28,17 @@ Status: DONE · 2026-06-30 · mvp_hard loop L5 · class C3 (UX/contract, no new 
 ## Reference (verified)
 
 - `buildStageHeader` + `STAGE_LABELS` (footer reuses the label map)
-  ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/hook.ts:125)).
+  ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/hook.ts:125)).
 - `phaseDirective`/`interviewDirective` (footer appends to these)
-  ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/hook.ts:102)).
+  ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/hook.ts:102)).
 - chat status currently returns bare stage header
-  ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/hook.ts) handleOrchestrateCommand status branch).
+  ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/hook.ts) handleOrchestrateCommand status branch).
 - CLI status renderer (parity for the wording)
-  ([orchestrate-cli.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts)).
+  ([orchestrate-cli.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts)).
 
 ## File change map (IN scope)
 
-1. MODIFY `plugins/codexclaw/components/pabcd-state/src/hook.ts`
+1. MODIFY `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
    - NEW `export function phaseFooter(phase: Phase): string` →
      `"At the end of your reply, print one line: IPABCD: <phase> (<LABEL>). After D closes the cycle, show IDLE."`
      (D maps to its label but the directive tells the model the resting state is IDLE.)
@@ -91,7 +91,7 @@ Status: DONE · 2026-06-30 · mvp_hard loop L5 · class C3 (UX/contract, no new 
 ## Audit verdict (A gate — independent reviewer, 2026-06-30)
 
 Verdict: **PLAN OK with fixes**. Confirmed LOW: dedup is safe (footer is appended, so
-`hasStageMarkerForPhase`'s `tail.includes("[codexclaw — <phase>: <LABEL>]")` still
+`hasStageMarkerForPhase`'s `tail.includes("[cursorclaw — <phase>: <LABEL>]")` still
 matches) and one-line footer bloat is acceptable. Folded into the build scope:
 
 1. **HIGH — D must actually close to IDLE (not persist as phase "D")**: chat

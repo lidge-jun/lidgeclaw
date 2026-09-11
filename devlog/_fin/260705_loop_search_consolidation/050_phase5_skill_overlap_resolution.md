@@ -42,7 +42,7 @@ Resolve 5 discovered overlaps and 3 contradictions across 9 skill files.
 ```markdown
 ---
 name: cxc-orchestrate
-description: "DEPRECATED — merged into cxc-pabcd. Use $cxc-pabcd for phase control."
+description: "DEPRECATED — merged into cxc-pabcd. Use $crc-pabcd for phase control."
 metadata:
   deprecated: true
   redirect: cxc-pabcd
@@ -50,8 +50,8 @@ metadata:
 
 # cxc-orchestrate (DEPRECATED)
 
-Phase control semantics have been merged into `$cxc-pabcd` under
-"Phase Control / Orchestrate". Use `$cxc-pabcd` instead.
+Phase control semantics have been merged into `$crc-pabcd` under
+"Phase Control / Orchestrate". Use `$crc-pabcd` instead.
 ```
 
 #### `skills/interview/SKILL.md` — NO CHANGES

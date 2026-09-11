@@ -38,12 +38,12 @@ jobs:
       - run: npm ci
 
       - name: Build the payload
-        run: node plugins/codexclaw/scripts/build.mjs
+        run: node plugins/cursorclaw/scripts/build.mjs
 
       # Committed dist IS the install artifact (packaging.test.mjs). If a rebuild
       # changes it, the published payload does not match its source.
       - name: Committed dist matches source
-        run: git diff --exit-code plugins/codexclaw/components
+        run: git diff --exit-code plugins/cursorclaw/components
 
       - name: Archive the payload
         if: runner.os != 'Windows'
@@ -70,7 +70,7 @@ jobs:
           tar -xzf "dist-artifacts/codexclaw-payload-${GITHUB_SHA}.tar.gz" -C "$work"
           # A missing explicit session is an error, not an invented IDLE state.
           set +e
-          status="$(node "$work/codexclaw/bin/cxc.mjs" orchestrate status --session ci-artifact-probe)"
+          status="$(node "$work/codexclaw/bin/cursorclaw.mjs" orchestrate status --session ci-artifact-probe)"
           status_code=$?
           set -e
           [ "$status_code" -eq 1 ]
@@ -80,7 +80,7 @@ jobs:
           esac
           # `release` with no verb prints usage and exits 1 BY DESIGN, so capture it
           # rather than letting pipefail treat the usage path as a build failure.
-          usage="$(node "$work/codexclaw/bin/cxc.mjs" release 2>&1 || true)"
+          usage="$(node "$work/codexclaw/bin/cursorclaw.mjs" release 2>&1 || true)"
           case "$usage" in
             *"release init"*) echo "release verb routed from the extracted payload" ;;
             *) echo "release verb not routed: $usage"; exit 1 ;;
@@ -124,8 +124,8 @@ jobs:
           set -euo pipefail
           if command -v cxc >/dev/null 2>&1; then echo "unexpected cxc on PATH"; exit 1; fi
 
-          export CODEX_HOME="${RUNNER_TEMP}/codex-home"
-          mkdir -p "$CODEX_HOME"
+          export CURSOR_HOME="${RUNNER_TEMP}/codex-home"
+          mkdir -p "$CURSOR_HOME"
 
           # Resolve the payload from the installer's own output. A bare `find` matches
           # the install cache, the marketplace staging tree AND the marketplace source,
@@ -138,10 +138,10 @@ jobs:
               echo "plugin add --json did not report an install path: $json"; return 1
             fi
             case "$installed" in
-              "$CODEX_HOME"/*) : ;;
-              *) echo "refusing payload outside CODEX_HOME: $installed"; return 1 ;;
+              "$CURSOR_HOME"/*) : ;;
+              *) echo "refusing payload outside CURSOR_HOME: $installed"; return 1 ;;
             esac
-            manifest="$installed/.codex-plugin/plugin.json"
+            manifest="$installed/.cursor-plugin/plugin.json"
             [ -f "$manifest" ] || { echo "no manifest at $manifest"; return 1; }
             node -e 'if(require(process.argv[1]).name!=="codexclaw")process.exit(1)' "$manifest"
             PLUGIN_ROOT="$installed"
@@ -150,16 +150,16 @@ jobs:
           }
 
           # Fork commits must be resolved in the repository that owns the head.
-          codex plugin marketplace add "${GITHUB_SERVER_URL}/${HEAD_REPOSITORY}" --ref "$HEAD_REVISION"
+          Cursor plugin install add "${GITHUB_SERVER_URL}/${HEAD_REPOSITORY}" --ref "$HEAD_REVISION"
           install_and_resolve head
           HEAD_VERSION="$PLUGIN_VERSION"
 
-          node "$PLUGIN_ROOT/bin/cxc.mjs" hooks retrust --key codexclaw@codexclaw \
-            --codex-home "$CODEX_HOME" --bootstrap-ok
+          node "$PLUGIN_ROOT/bin/cursorclaw.mjs" hooks retrust --key codexclaw@codexclaw \
+            --codex-home "$CURSOR_HOME" --bootstrap-ok
           # doctor exits nonzero when ANY check is not PASS, including the two
           # deprecated skills that always report incomplete. Those say nothing about
           # install health, so assert the checks that do.
-          node "$PLUGIN_ROOT/bin/cxc.mjs" doctor --json > "${RUNNER_TEMP}/doctor-head.json" || true
+          node "$PLUGIN_ROOT/bin/cursorclaw.mjs" doctor --json > "${RUNNER_TEMP}/doctor-head.json" || true
           node -e '
             const r = require(process.argv[1]);
             const by = Object.fromEntries(r.checks.map((c) => [c.name, c]));
@@ -176,13 +176,13 @@ jobs:
           # from a different ref fails with "already added from a different source" —
           # so remove the marketplace first. The installed plugin need not be removed.
           codex plugin remove codexclaw@codexclaw
-          codex plugin marketplace remove codexclaw
-          codex plugin marketplace add "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" --ref v0.1.0
+          Cursor plugin install remove codexclaw
+          Cursor plugin install add "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" --ref v0.1.0
           install_and_resolve v0.1.0
           OLD_VERSION="$PLUGIN_VERSION"
 
-          codex plugin marketplace remove codexclaw
-          codex plugin marketplace add "${GITHUB_SERVER_URL}/${HEAD_REPOSITORY}" --ref "$HEAD_REVISION"
+          Cursor plugin install remove codexclaw
+          Cursor plugin install add "${GITHUB_SERVER_URL}/${HEAD_REPOSITORY}" --ref "$HEAD_REVISION"
           install_and_resolve head-again
 
           # The upgrade must be OBSERVABLE. An unchanged version means it silently kept
@@ -190,11 +190,11 @@ jobs:
           [ "$PLUGIN_VERSION" != "$OLD_VERSION" ] || { echo "upgrade no-op: still $OLD_VERSION"; exit 1; }
           [ "$PLUGIN_VERSION" = "$HEAD_VERSION" ] || { echo "unexpected version $PLUGIN_VERSION"; exit 1; }
 
-          node "$PLUGIN_ROOT/bin/cxc.mjs" hooks retrust --key codexclaw@codexclaw \
-            --codex-home "$CODEX_HOME" --bootstrap-ok
+          node "$PLUGIN_ROOT/bin/cursorclaw.mjs" hooks retrust --key codexclaw@codexclaw \
+            --codex-home "$CURSOR_HOME" --bootstrap-ok
 
           codex plugin remove codexclaw@codexclaw
-          codex plugin marketplace remove codexclaw
+          Cursor plugin install remove codexclaw
 
           # Residue: the payload cache must be gone after removal.
           if [ -d "$PLUGIN_ROOT" ]; then

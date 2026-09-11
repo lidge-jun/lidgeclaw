@@ -20,7 +20,7 @@ user assign which model each role uses — via the GUI.
 
 ## Step map (030–039)
 - 031 provider bridge (ocx ensure / graceful skip)   [was 020]
-- 032 subagent config store (.codexclaw/subagents.json)
+- 032 subagent config store (.cursorclaw/subagents.json)
 - 033 model catalog source (ocx catalog + main model = n+1)
 - 034 GUI scaffold (Vite + React, mirror opencodex stack)
 - 035 GUI subagent page (role → model + prompt) + 10100 link bar

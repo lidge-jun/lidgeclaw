@@ -43,13 +43,13 @@ sync. Order = dependency order; do not build a later decade before its prereqs l
 
 Register: `50_emergence_gap.md` root #1 (no objective-delta memory); `005` L2.
 
-Problem: `State` (`plugins/codexclaw/components/pabcd-state/src/state.ts:18`) persists
+Problem: `State` (`plugins/cursorclaw/components/pabcd-state/src/state.ts:18`) persists
 phase/flags/`stopBlock*` only; the ledger stores transitions + evidence strings, never a
 metric. The loop literally cannot know it plateaued.
 
 Work-phases:
 1. 10.1 — add an optional objective-metric record to `State` (or a sibling
-   `.codexclaw/` ledger): `{metric_name, value, baseline, best, workPhaseId, source}`.
+   `.cursorclaw/` ledger): `{metric_name, value, baseline, best, workPhaseId, source}`.
    `source` ∈ {operator-entered, evaluate.sh} (remote judge → operator-entered, the honest
    limit from the diagnosis).
 2. 10.2 — a `cxc` CLI verb to record/read the metric per work-phase (operator types remote
@@ -57,7 +57,7 @@ Work-phases:
 3. 10.3 — tests: round-trip persist/read; baseline/best math; reconstruct after compaction.
 
 DONE when: metric history persists across work-phases and survives a fresh context; tests green.
-Open Q: separate `.codexclaw/metrics.jsonl` vs a field on the work-phase ledger entry?
+Open Q: separate `.cursorclaw/metrics.jsonl` vs a field on the work-phase ledger entry?
 
 Tier note: persisted state is NOT itself E2 (E2 = a Stop block). This decade is the
 E2-READY substrate plus E8 tests; the E2 lever lands in decade 20.
@@ -117,7 +117,7 @@ Work-phases:
 1. 30.1 — `cxc-loop`/`pabcd` SKILL.md: add the collapse-point doctrine — I records N>=2
    (strong-1+add-1), early collapse at P for satisfy-spec, late collapse (A-B-C race at D)
    for maximize-unclear. Label honestly (E7 doctrine + the E2 lever from decade 20).
-2. 30.2 — a `.codexclaw/` divergence-mode flag + candidate archive shape so a fresh pass
+2. 30.2 — a `.cursorclaw/` divergence-mode flag + candidate archive shape so a fresh pass
    knows it is mid-divergence and which candidates exist.
 3. 30.3 — tests/lint: skill text matches the shipped Stop behavior (no over-claim — the
    `50_emergence_gap.md` honesty rule).

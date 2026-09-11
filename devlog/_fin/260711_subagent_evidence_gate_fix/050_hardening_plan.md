@@ -1,6 +1,6 @@
 ---
 created: 2026-07-12
-tags: [codexclaw, subagent, evidence-gate, hardening, plan]
+tags: [cursorclaw, subagent, evidence-gate, hardening, plan]
 ---
 
 # Hardening Plan — Evidence-Gate Defense-in-Depth

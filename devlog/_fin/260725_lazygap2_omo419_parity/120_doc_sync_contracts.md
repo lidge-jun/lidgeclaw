@@ -15,9 +15,9 @@
 두 테스트가 문서 동기화를 지킨다고 하면서 실제로는 **각 파일에 특정 문구가 있는지만**
 검사한다. 소스 간 비교가 하나도 없다.
 
-- `plugins/codexclaw/test/loop-activation-doc-sync.test.mjs:24-34`는 `loopSkill`에 6개,
+- `plugins/cursorclaw/test/loop-activation-doc-sync.test.mjs:24-34`는 `loopSkill`에 6개,
   `pabcdSkill`에 4개 정규식을 각각 적용한다. 두 값을 뽑아 비교하는 구조가 없다.
-- `plugins/codexclaw/test/emergence-doc-sync.test.mjs:27-52`는 다섯 소스에 독립 정규식을
+- `plugins/cursorclaw/test/emergence-doc-sync.test.mjs:27-52`는 다섯 소스에 독립 정규식을
   적용한다. 같은 파일의 `:55-67`은 **성격이 다르다** — 태그 개수를 비교하는 구조 검사다
   (A 감사 5라운드).
 
@@ -107,10 +107,10 @@
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/test/loop-activation-doc-sync.test.mjs` | **삭제** — 10개 단정 전부 산문 검사이고, 그 계약의 런타임 검증은 `hook-continuation.test.ts`가 이미 소유한다 |
-| `plugins/codexclaw/test/emergence-doc-sync.test.mjs` | **삭제** — doctrine 테스트(`:20-52`)는 산문 검사이고 대응 런타임 관측점이 없다 |
-| `plugins/codexclaw/test/emergence-html-structure.test.mjs` | **신규** — 기존 tag-balance 검사(`:55-67`)를 옮긴다. section-label 존재 검사는 제거하고 태그 균형 루프만 남긴다 |
-| `plugins/codexclaw/skills/dev-testing/SKILL.md` | 두 삭제의 근거와 human-review 잔여 항목 기록 |
+| `plugins/cursorclaw/test/loop-activation-doc-sync.test.mjs` | **삭제** — 10개 단정 전부 산문 검사이고, 그 계약의 런타임 검증은 `hook-continuation.test.ts`가 이미 소유한다 |
+| `plugins/cursorclaw/test/emergence-doc-sync.test.mjs` | **삭제** — doctrine 테스트(`:20-52`)는 산문 검사이고 대응 런타임 관측점이 없다 |
+| `plugins/cursorclaw/test/emergence-html-structure.test.mjs` | **신규** — 기존 tag-balance 검사(`:55-67`)를 옮긴다. section-label 존재 검사는 제거하고 태그 균형 루프만 남긴다 |
+| `plugins/cursorclaw/skills/dev-testing/SKILL.md` | 두 삭제의 근거와 human-review 잔여 항목 기록 |
 
 **스킬 frontmatter는 건드리지 않는다.** `metadata.contract`, frontmatter 파서,
 V2 lifecycle 키 전부 철회했다.
@@ -186,9 +186,9 @@ D 요약에 이 세 줄을 그대로 적는다.
 
 - `npm test` — **baseline 실측 (WP16 P)**: exit 0, **1,406 pass**.
   구현 후 기대: exit 0, 실패 0, 총 개수 감소.
-- `test ! -e plugins/codexclaw/test/loop-activation-doc-sync.test.mjs && test ! -e plugins/codexclaw/test/emergence-doc-sync.test.mjs && test -e plugins/codexclaw/test/emergence-html-structure.test.mjs`
+- `test ! -e plugins/cursorclaw/test/loop-activation-doc-sync.test.mjs && test ! -e plugins/cursorclaw/test/emergence-doc-sync.test.mjs && test -e plugins/cursorclaw/test/emergence-html-structure.test.mjs`
   — 삭제 둘과 신규 하나를 함께 확인. `ls`는 쓰지 않는다 (성공 상태가 non-zero라 판정이 뒤집힌다).
-- `node --test plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts`
+- `node --test plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts`
   — A3. 이 파일을 건드리지 않았으므로 통과가 곧 커버리지 유지 증거다.
 - `npm run gate` — **이 슬라이스를 부분적으로 관측한다.** `walkSkillMds`가 모든
   `SKILL.md`를 순회하므로(`gate.mjs:147`) `dev-testing/SKILL.md`에 추가하는 문구는

@@ -15,10 +15,10 @@ injection contract is documented.
 
 ## Scope (decision-complete)
 - Files added/edited:
-  - `plugins/codexclaw/agents/explorer.toml`
-  - `plugins/codexclaw/agents/reviewer.toml`
-  - `plugins/codexclaw/agents/executor.toml`
-  - `plugins/codexclaw/agents/README.md`
+  - `plugins/cursorclaw/agents/explorer.toml`
+  - `plugins/cursorclaw/agents/reviewer.toml`
+  - `plugins/cursorclaw/agents/executor.toml`
+  - `plugins/cursorclaw/agents/README.md`
 - Role shape:
   - `name`
   - `description`
@@ -72,8 +72,8 @@ None for Phase 1. Plugin role auto-registration remains a future proof point, no
 ## References (codex-rs paths, omo skills, ouroboros, source-of-record docs)
 - `devlog/_plan/260629_codexclaw_mvp/025_subagent_as_employee.md`
 - `devlog/_plan/260629_codexclaw_mvp/025.1_pass5_P_plan.md`
-- `plugins/codexclaw/agents/README.md`
-- `plugins/codexclaw/agents/explorer.toml`
-- `plugins/codexclaw/agents/reviewer.toml`
-- `plugins/codexclaw/agents/executor.toml`
+- `plugins/cursorclaw/agents/README.md`
+- `plugins/cursorclaw/agents/explorer.toml`
+- `plugins/cursorclaw/agents/reviewer.toml`
+- `plugins/cursorclaw/agents/executor.toml`
 - codex-rs `core/src/agent/role.rs` and plugin manifest shape.

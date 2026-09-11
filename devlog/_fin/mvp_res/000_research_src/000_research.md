@@ -45,7 +45,7 @@ Cloned to `devlog/.lazycodex/` (gitignored). Structural lessons:
   `package.json` has dependencies). So "plugins can't depend on externals" is FALSE.
 - **Deployment = real Codex plugin**, two channels:
   - npx installer (`lazycodex-ai` → forwards to `oh-my-openagent omo install --platform=codex`) — convenience wrapper.
-  - marketplace: `codex plugin marketplace add <repo>` → `codex plugin add omo@sisyphuslabs`.
+  - marketplace: `Cursor plugin install add <repo>` → `codex plugin add omo@sisyphuslabs`.
   - The marketplace path is the real one; npx is optional sugar. **codexclaw uses marketplace only.**
 
 ## cli-jaw conventions to mirror

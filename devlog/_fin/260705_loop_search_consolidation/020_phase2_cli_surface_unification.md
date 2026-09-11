@@ -47,8 +47,8 @@ Error message uses `label` instead of hardcoded `"goalplan"`.
 
 **Output label changes (3 locations):**
 
-1. `renderPlan()` line ~87: `[codexclaw goalplan: ${plan.slug}]`
-   -> `[codexclaw loop: ${plan.slug}]`
+1. `renderPlan()` line ~87: `[cursorclaw goalplan: ${plan.slug}]`
+   -> `[cursorclaw loop: ${plan.slug}]`
 
 2. `runGoalplanCli()` init error line ~99: `"goalplan init: --objective ..."`
    -> `"loop init: --objective ..."`
@@ -66,12 +66,12 @@ Error message uses `label` instead of hardcoded `"goalplan"`.
    -> `"loop ${args.verb}: no plan found..."`
 
 6. Validate OK output line ~127:
-   `[codexclaw goalplan validate: ${slug}]`
-   -> `[codexclaw loop validate: ${slug}]`
+   `[cursorclaw goalplan validate: ${slug}]`
+   -> `[cursorclaw loop validate: ${slug}]`
 
 7. Validate FAIL output line ~131:
-   `[codexclaw goalplan validate: ${slug}]`
-   -> `[codexclaw loop validate: ${slug}]`
+   `[cursorclaw goalplan validate: ${slug}]`
+   -> `[cursorclaw loop validate: ${slug}]`
 
 **No type/function renames needed.** The internal types (GoalplanCliArgs,
 runGoalplanCli, etc.) stay as-is since they're implementation detail, not
@@ -82,7 +82,7 @@ user-facing. Only the output strings change.
 - OUT: goalplan.ts data model (unchanged), hook.ts (unchanged)
 
 ## Accept Criteria
-1. `cxc loop init --objective "test"` produces output starting with `[codexclaw loop:`
+1. `cxc loop init --objective "test"` produces output starting with `[cursorclaw loop:`
 2. `cxc goalplan init --objective "test2"` still works (deprecated alias)
 3. `cxc loop show`, `cxc loop validate` work identically to goalplan equivalents
 4. No existing test breaks (test output assertions updated in Phase 4)

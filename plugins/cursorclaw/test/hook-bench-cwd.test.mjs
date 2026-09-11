@@ -47,7 +47,7 @@ test("the bench env sets USERPROFILE alongside HOME", () => {
   const env = benchEnv(tmpHome);
   assert.equal(env.HOME, tmpHome);
   assert.equal(env.USERPROFILE, tmpHome, "Windows resolves the home from USERPROFILE");
-  assert.equal(env.CODEX_HOME, join(tmpHome, ".codex"));
+  assert.equal(env.CURSOR_HOME, join(tmpHome, ".codex"));
   assert.equal(env.CODEX_SQLITE_HOME, join(tmpHome, ".codex"));
 });
 

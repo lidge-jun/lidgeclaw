@@ -38,7 +38,7 @@ interface HookCliOptions {
 
 function parseHookOptions(args: string[]): HookCliOptions {
   const options: HookCliOptions = {
-    codexHome: process.env.CODEX_HOME ?? join(homedir(), ".codex"),
+    codexHome: process.env.CURSOR_HOME ?? join(homedir(), ".codex"),
     bootstrapOk: false,
   };
   for (let index = 0; index < args.length; index += 1) {
@@ -60,7 +60,7 @@ function parseHookOptions(args: string[]): HookCliOptions {
 
 function resolvePluginKey(pluginRoot: string, options: HookCliOptions): string {
   if (options.pluginKey) return options.pluginKey;
-  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8")) as { name?: unknown };
+  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8")) as { name?: unknown };
   if (typeof manifest.name !== "string" || !manifest.name) throw new Error("plugin manifest has no name");
   const candidates = readInstalledPluginKeys(options.codexHome, manifest.name);
   if (candidates.length !== 1) {

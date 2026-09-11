@@ -4,7 +4,7 @@ Dependency: wp0 audited roadmap. C3 satisfy-spec; no runtime/config changes.
 
 ## Exact file changes
 
-MODIFY plugins/codexclaw/skills/dev/SKILL.md at Capability Routing Hub:
+MODIFY plugins/cursorclaw/skills/dev/SKILL.md at Capability Routing Hub:
 before: general native routing followed by Browse / QA Tool Routing.
 after: insert Native execution subsection with a link to references/native-execution.md.
 Wording: for tool composition, response projection or in-context JS computation,
@@ -16,13 +16,13 @@ reads and recovery on truncation, but replace nested/outer code-mode-specific bu
 wording with transport-neutral output limits. Concrete nested/outer budget mechanics
 live only in the conditional native-execution reference. Pabcd adds no duplicate.
 
-MODIFY plugins/codexclaw/skills/loop/SKILL.md in the conditional reading table:
+MODIFY plugins/cursorclaw/skills/loop/SKILL.md in the conditional reading table:
 add a Tool composition / JS data processing row linking to
 ../dev/references/native-execution.md. No unconditional full reference load.
-MODIFY plugins/codexclaw/skills/pabcd/SKILL.md near phase routing:
+MODIFY plugins/cursorclaw/skills/pabcd/SKILL.md near phase routing:
 add a short native execution pointer for tool-heavy phase work, not phase entry.
 
-NEW plugins/codexclaw/skills/dev/references/native-execution.md:
+NEW plugins/cursorclaw/skills/dev/references/native-execution.md:
 sections: selection table; discover by live schema; compose with authority;
 ephemeral values and loss; output/completeness; waits and handles; evidence limits.
 Selection rows: simple operation -> direct when a direct callable is exposed;
@@ -46,7 +46,7 @@ Only wait with returned code cell handle; shell and agent handles stay separate;
 yield/timeouts are not completion/cancellation/rollback proof. Link worked examples
 only for concrete code patterns, not mandatory on simple reads.
 
-NEW plugins/codexclaw/skills/dev/references/code-mode-examples.md:
+NEW plugins/cursorclaw/skills/dev/references/code-mode-examples.md:
 Four labeled raw-js fences with extractable IDs discovery, read-batch, cache-read,
 and applyAfterRead, intended for an exposed functions.exec-like
 contract (copy fence contents, not the fence). No new exported runtime library.
@@ -72,7 +72,7 @@ The fixture store can throw; tests require rejection propagation, not success af
 failed storage. Serializability remains a documented host constraint rather than
 pretending the test Map proves native serialization semantics.
 
-NEW plugins/codexclaw/test/native-execution.test.mjs:
+NEW plugins/cursorclaw/test/native-execution.test.mjs:
 use node:test and node:vm ONLY in test code to execute extracted trusted repository
 example fences with controlled tools/text/store/load/ALL_TOOLS. The sandbox is not
 a security boundary or native-runtime simulator. Fresh context for each invocation.
@@ -91,10 +91,10 @@ MODIFY structure/60_native_capabilities.md: add dated 2.2 common native executio
 owner mapping, explicit host availability boundary, exposed exec/wait helpers and
 guidance-only status; leave unrelated historical inventory alone.
 
-MODIFY plugins/codexclaw/skills/dev/references/skill-ownership.md: add one table
+MODIFY plugins/cursorclaw/skills/dev/references/skill-ownership.md: add one table
 row mapping native execution selection/composition to dev/references/native-execution.md
 with dev, loop, pabcd, peer and structure60 as pointer sites.
-MODIFY plugins/codexclaw/skills/dev/references/peer-collaboration.md: before its
+MODIFY plugins/cursorclaw/skills/dev/references/peer-collaboration.md: before its
 code-mode projection paragraph, link the shared execution owner; retain peer-specific
 identity/title/scope preservation. No reviewer/security pointer duplication because
 those governed lanes already load dev. Retain generic full-read rules in dev/loop:
@@ -102,10 +102,10 @@ they govern direct-tool reads as well, not only code-mode execution.
 
 ## Verification and reviewer contract
 
-Existing npm test reads plugins/codexclaw/test/*.test.mjs (package.json).
+Existing npm test reads plugins/cursorclaw/test/*.test.mjs (package.json).
 gate.mjs walks SKILL.md and references (lines 152-164), but it is not a semantic
 agent compliance checker. inventory counts public tests and skill metadata.
-New test command: node --test plugins/codexclaw/test/native-execution.test.mjs;
+New test command: node --test plugins/cursorclaw/test/native-execution.test.mjs;
 NEW, cannot run before the file exists. Execute remotely on macmini Node24, plus
 existing packaging/skill-catalog tests and gate. Mutation-check examples against
 swallowed errors and broken cache handling in an isolated in-memory copy.

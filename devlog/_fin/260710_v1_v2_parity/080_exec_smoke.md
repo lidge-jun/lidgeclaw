@@ -19,7 +19,7 @@
   dev-symlink 재적용. 재설치도 신뢰를 자동 기록하지 않아, 공식 해시 알고리즘
   (identity TOML→canonical JSON→sha256, config/src/fingerprint.rs)을 재현해
   검증(불변 훅 해시 일치 확인) 후 14개 훅의 trusted_hash를 config.toml에 삽입.
-  백업: ~/.codex/config.toml.bak-260710-trust. 구 @personal 항목은 잔존(무해).
+  백업: ~/.cursor/config.toml.bak-260710-trust. 구 @personal 항목은 잔존(무해).
 - run T (bypass 없음): `hook: PreToolUse` 발화 + 자식 파일 덤프에
   `[CXC-LEAF-GUARD]` 바이트 확인 → **신뢰 복구 + 네이티브 V2 매처/guard 검증 완료.**
 - 교훈(후속 작업 후보): 훅 JSON을 수정/커밋할 때마다 재신뢰 필요 —

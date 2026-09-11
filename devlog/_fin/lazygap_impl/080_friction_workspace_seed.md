@@ -12,19 +12,19 @@ Status: DONE (shipped + tested) · 2026-07-01 · lazygap_impl loop 080 · class 
 cli-jaw carries orchestrator context codexclaw lacks: a friction ledger (repeated tool:error →
 escalate→stop), workspace path-hints on dispatch, and a structured seed ontology. The host-native
 boundary says these live as project-local files + hook logic, never a server. 080 ports the three
-as pure functions + `.codexclaw/` files.
+as pure functions + `.cursorclaw/` files.
 
 ## Completion gate
 
 - Code commit: `a279cd4` (`feat(lazygap-080): friction ledger + path-hint + seed ontology`).
 - Runtime surfaces shipped:
-  - `plugins/codexclaw/components/pabcd-state/src/friction.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/friction-gate.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/hook.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/interview.ts`
-  - `plugins/codexclaw/components/subagent-config/src/spawn-wrapper.ts`
-  - `plugins/codexclaw/hooks/post-tool-use-capturing-shell-friction.json`
-  - `plugins/codexclaw/hooks/pre-tool-use-advising-on-friction.json`
+  - `plugins/cursorclaw/components/pabcd-state/src/friction.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/friction-gate.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/interview.ts`
+  - `plugins/cursorclaw/components/subagent-config/src/spawn-wrapper.ts`
+  - `plugins/cursorclaw/hooks/post-tool-use-capturing-shell-friction.json`
+  - `plugins/cursorclaw/hooks/pre-tool-use-advising-on-friction.json`
 - Test evidence landed with the same commit: `friction.test.ts`, `interview.test.ts`,
   `spawn-wrapper.test.ts`, and `hook-e2e.test.mjs`.
 - Verification recorded in commit body: suite `461/461` green, gate OK, doctor PASS, build idempotent.
@@ -60,8 +60,8 @@ as pure functions + `.codexclaw/` files.
 ### Friction read points (sound)
 
 - PreToolUse has `cwd`+`session_id` (`schema.rs:280`, `goal-gate.ts:17`) → can read
-  `.codexclaw/friction.jsonl` locally, no goal-DB.
-- Stop has `cwd` and already reads `.codexclaw` state (`hook.ts:456`, `state.ts:87`). Reading
+  `.cursorclaw/friction.jsonl` locally, no goal-DB.
+- Stop has `cwd` and already reads `.cursorclaw` state (`hook.ts:456`, `state.ts:87`). Reading
   friction in Stop does NOT change arming IFF it happens AFTER the goal-active arming guard
   (`hook.ts:470`). Before that guard would alter arming — forbidden.
 
@@ -90,7 +90,7 @@ as pure functions + `.codexclaw/` files.
 
 ## Design (diff-level)
 
-### (1) Friction ledger — `.codexclaw/friction.jsonl` (HEURISTIC capture, real read gate)
+### (1) Friction ledger — `.cursorclaw/friction.jsonl` (HEURISTIC capture, real read gate)
 
 ```ts
 // friction.ts — port cli-jaw's normalize+hash+verdict; persist to a JSONL ledger under cwd.
@@ -108,7 +108,7 @@ export function readFrictionVerdict(cwd: string, tool: string, errorText: string
 - READ (real gate): PreToolUse may DENY a tool call whose (tool,error) signature is at `stop`
   (E1); Stop may ESCALATE-block when friction is high — BUT only AFTER the goal-active arming
   guard (`hook.ts:470`), never before (would change arming).
-- All local `.codexclaw/friction.jsonl`; no goal-DB; FAIL-OPEN (read error → no verdict → allow).
+- All local `.cursorclaw/friction.jsonl`; no goal-DB; FAIL-OPEN (read error → no verdict → allow).
 
 ### (2) Workspace path-hint — on the spawn-wrapper items (v1)
 
@@ -138,7 +138,7 @@ export interface InterviewTracker { /* ...existing... */ ontologySchema?: Ontolo
 - Friction CAPTURE is heuristic + documented-limited (no apply_patch failures, no exit codes);
   never claimed as complete tool-failure observability.
 - Friction READ never changes Stop arming (consulted only after the goal-active guard); FAIL-OPEN.
-- All new state is project-local `.codexclaw/` (friction.jsonl); no goal-DB, no server.
+- All new state is project-local `.cursorclaw/` (friction.jsonl); no goal-DB, no server.
 - Path-hint is a pure existsSync/realpath transform on the spawn payload (v1 items; v2 skips).
 - Seed ontology is additive + round-trip-safe (threaded through reconstruct/normalize); does not
   touch freeze planHash or the evidence-bundle shape.

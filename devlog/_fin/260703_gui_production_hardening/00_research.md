@@ -82,7 +82,7 @@
 ### 5. Model / reasoning-effort change — PARTIALLY WIRED / ABSENT
 
 - Subagent roles (explorer/reviewer/executor): model selection WORKS end-to-end —
-  GUI saves `.codexclaw/subagents.json` (store.ts), spawn-wrapper.ts consumes it via
+  GUI saves `.cursorclaw/subagents.json` (store.ts), spawn-wrapper.ts consumes it via
   `resolveSpawnConfig` at spawn time. Caveat: the store is per-cwd; the GUI writes to
   the SERVE cwd, which may not be the project codex actually runs in.
 - Main agent (per-chat binding): `bindings.model` column exists (db.ts:91, default

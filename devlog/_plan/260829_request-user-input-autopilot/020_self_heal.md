@@ -7,7 +7,7 @@ G1이 이 유닛의 본체다. `cxc enable`은 게이트 2를 켤 능력이 있�
 
 | 설치 트랙 | 명령 | `cxc enable` 실행? |
 |---|---|---|
-| 1 — 마켓플레이스 | `codex plugin marketplace add` + `codex plugin add` (`installation.md:19`) | **아니오** |
+| 1 — 마켓플레이스 | `Cursor plugin install add` + `codex plugin add` (`installation.md:19`) | **아니오** |
 | 2 — 소스 체크아웃 | `bin/codexclaw.mjs enable` 또는 `cxc enable` (`installation.md:71`) | 예, 수동 |
 
 `plugin.json`에 활성화 훅 슬롯이 없다(`hooks[]`는 SessionStart/PreToolUse 등 런타임
@@ -95,7 +95,7 @@ export function selfHealDeclaredFeatures(deps: SelfHealDeps): SelfHealOutcome[];
             "type": "command",
             "command": "node \"${PLUGIN_ROOT}/components/config-guard/dist/cli.js\" hook session-start",
             "timeout": 20,
-            "statusMessage": "(codexclaw) Ensuring declared codex features"
+            "statusMessage": "(cursorclaw) Ensuring declared codex features"
           }
         ]
       }
@@ -201,7 +201,7 @@ throw가 그 계약을 깬다. 테스트도 outcome이 아니라 예외를 검�
 
 ### A5 — 캐시 파일과 매니페스트를 합치지 않는 이유
 
-`.codexclaw-install.json`에 캐시를 넣는 게 파일 수를 줄이지만, `parseInstallManifest`가
+`.cursorclaw-install.json`에 캐시를 넣는 게 파일 수를 줄이지만, `parseInstallManifest`가
 엄격 검사를 하고 실패 시 전체를 absent로 취급한다. 캐시 쓰기가 매 세션 일어나므로
 거기에 결함이 생기면 되돌리기 능력까지 잃는다. 별 파일 `codexclaw-self-heal.json`을
 유지한다 — 손상되면 캐시 미스로 퇴화할 뿐이다.
@@ -229,7 +229,7 @@ throw가 그 계약을 깬다. 테스트도 outcome이 아니라 예외를 검�
 기존 `deactivate` 테스트가 실제 FS에 쓰게 된다.
 
 정정: 그 테스트들은 이미 `mkdtempSync`로 만든 임시 `codexHome`을 주입하므로 실제
-`~/.codex`에 닿지 않는다(`activate.test.ts:111` 등이 같은 패턴). 따라서 실제 FS 쓰기는
+`~/.cursor`에 닿지 않는다(`activate.test.ts:111` 등이 같은 패턴). 따라서 실제 FS 쓰기는
 허용되고, 새 주입 축을 만들지 않는다. 대신 소유 경계를 이렇게 확정한다:
 
 | 심볼 | 위치 | 성격 |

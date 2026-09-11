@@ -70,7 +70,7 @@ for (const surface of ["V1", "V2"]) {
     assert.ok(ui && typeof ui.message === "string");
     const guard = surface === "V1" ? "[CXC-SUBAGENT-SCOPE]" : "[CXC-LEAF-GUARD]";
     assert.ok(ui.message.startsWith(guard));
-    assert.ok(ui.message.includes(`[$cxc-dev](skill://${realpathSync(f.skill)}) inspect the fixture`));
+    assert.ok(ui.message.includes(`[$crc-dev](skill://${realpathSync(f.skill)}) inspect the fixture`));
     assert.ok(ui.message.includes('<skill name="cxc-dev">'));
     assert.ok(ui.message.includes(f.skillBody.trim()), "body must come from the installed fixture, not the checkout");
     for (const [key, value] of Object.entries(payload.tool_input)) {
@@ -90,7 +90,7 @@ for (const surface of ["V1", "V2"]) {
 
 test("compiled worktree guard denies self-deletion without executing it; benign command is allowed", t => {
   const f = compiledHookFixture(t, "pre-tool-use-guarding-managed-worktree-deletion.json");
-  const checkout = join(f.env.CODEX_HOME, "worktrees/7627/fixture");
+  const checkout = join(f.env.CURSOR_HOME, "worktrees/7627/fixture");
   put(checkout, ".git", "gitdir: /fake/main/.git/worktrees/7627\n");
   put(checkout, "preserve.txt", "untouched\n");
   const payload = { hook_event_name: "PreToolUse", session_id: "probe-worktree", cwd: checkout,

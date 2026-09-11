@@ -64,7 +64,7 @@ the weaker class by choosing which skill to load.
 ## Verification
 
 `npm test` 1987 pass / 0 fail / exit 0, receipt at
-`.codexclaw/evidence/<session>/test-receipt.json`.
+`.cursorclaw/evidence/<session>/test-receipt.json`.
 
 A green suite is not by itself evidence that the new tests work, so each class
 was falsified deliberately:

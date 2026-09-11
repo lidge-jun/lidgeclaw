@@ -2,10 +2,10 @@
 
 ## Scope
 
-IN (current SoT docs only): `plugins/codexclaw/skills/{pabcd,dev,search,lunasearch,qa,loop}/SKILL.md`,
-`plugins/codexclaw/components/pabcd-state/src/hook.ts` directive strings (+ its tests),
+IN (current SoT docs only): `plugins/cursorclaw/skills/{pabcd,dev,search,lunasearch,qa,loop}/SKILL.md`,
+`plugins/cursorclaw/components/pabcd-state/src/hook.ts` directive strings (+ its tests),
 `structure/10_subagent_skill_routing.md`, `structure/20_pabcd_dispatch_doctrine.md`,
-`structure/60_native_capabilities.md`, `plugins/codexclaw/agents/README.md`.
+`structure/60_native_capabilities.md`, `plugins/cursorclaw/agents/README.md`.
 OUT: `devlog/_fin/**` archives, backup files, historical quotes (may keep v1 wording
 as history when clearly marked).
 
@@ -22,7 +22,7 @@ as history when clearly marked).
 | `[agents] max_threads` tuning | `features.multi_agent_v2.max_concurrent_threads_per_session` |
 | structure/60: "multi_agent_v2 off, keep v1 assumptions" row | row flips: v2 ON (260709 dev2 switch), 400 risk accepted + watch note |
 
-Also update `~/.codex/config.toml` comment (done in 010) and pabcd-state hook.ts
+Also update `~/.cursor/config.toml` comment (done in 010) and pabcd-state hook.ts
 injected directive strings that say "multi_agent_v1.* collab tools are deferred".
 
 ## Method

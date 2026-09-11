@@ -1,6 +1,6 @@
 # 110 — 완료 devlog 유닛 `_fin/` 아카이브
 
-출처: D 단계 규칙 (`plugins/codexclaw/skills/pabcd/SKILL.md:190` — "D archives to `_fin/`") ·
+출처: D 단계 규칙 (`plugins/cursorclaw/skills/pabcd/SKILL.md:190` — "D archives to `_fin/`") ·
 의존: `010`-`130` 전부 (선행 17 work-phase, 마지막에 실행) · 상태: PLANNED
 
 ## 왜 별도 슬라이스인가
@@ -64,7 +64,7 @@ after: 같은 파일들이 `devlog/_fin/260725_lazygap2_omo419_parity/` 아래�
 
 ### 4. gate는 이 변경을 관측하지 않는다 (정직한 기술)
 
-`plugins/codexclaw/scripts/gate.mjs:35-40`의 `_plan`→`_fin` 폴백은 **`mvp_hard` 유닛
+`plugins/cursorclaw/scripts/gate.mjs:35-40`의 `_plan`→`_fin` 폴백은 **`mvp_hard` 유닛
 전용**이다 (`:36`이 `join("devlog","_plan","mvp_hard")`). lazygap2 유닛에는
 status-sync 검사가 걸리지 않는다.
 
@@ -139,7 +139,7 @@ P에서 `jq -e` 두 검사를 돌려 `true`를 받았지만, 리뷰어가 **그 
 
 ```bash
 SLUG=codexclaw-lazygap2-15-pabcd-devlog-fin-100-060-0
-PLAN=.codexclaw/goalplans/$SLUG/goalplan.json
+PLAN=.cursorclaw/goalplans/$SLUG/goalplan.json
 
 # (1) 모든 work-phase가 terminal disposition에 있다 (done 또는 blocked)
 #     — blocked는 "정직하게 미완"이고, 그 사유가 기록돼 있어야 한다
@@ -225,7 +225,7 @@ npm test && npm run gate
 
 ```bash
 SLUG=codexclaw-lazygap2-15-pabcd-devlog-fin-100-060-0
-PLAN=.codexclaw/goalplans/$SLUG/goalplan.json
+PLAN=.cursorclaw/goalplans/$SLUG/goalplan.json
 
 # (1) 모든 work-phase가 done — 예외 없음
 jq -e '[.workPhases[] | select(.id != "wp18-fin")] | all(.status == "done")' "$PLAN"

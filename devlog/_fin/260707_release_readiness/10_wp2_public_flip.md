@@ -11,7 +11,7 @@ for CI + Deploy Docs; curl -sI Pages URL = 200; git status ahead 0.
 1. Commit WP1 changes as atomic commits on main:
    - `chore(release): LICENSE (MIT + third-party notices) + README public pass`
    - `ci: test+gate workflow, docs-site Pages deploy, repo-map smoke env gate`
-     (includes `plugins/codexclaw/test/repo-map-smoke.test.mjs`)
+     (includes `plugins/cursorclaw/test/repo-map-smoke.test.mjs`)
    - `docs(devlog): 260707_release_readiness WP1 plan + research capture`
 2. Pre-push gate: `npm test` + `gate.mjs` fresh (done in WP1 C: 801/0, OK).
 3. Flip FIRST: `gh repo edit lidge-jun/codexclaw --visibility public

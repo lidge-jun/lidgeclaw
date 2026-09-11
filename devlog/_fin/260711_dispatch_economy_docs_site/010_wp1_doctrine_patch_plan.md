@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, dispatch-economy, doctrine, plan, diff-level]
+tags: [cursorclaw, dispatch-economy, doctrine, plan, diff-level]
 ---
 
 # WP1 — doctrine patch plan (diff-level)
@@ -32,7 +32,7 @@ Reviewer (Banach, gpt-5.6-sol, decorrelated) returned FAIL with 7 blockers. Disp
 - Memory artifact: this doc + goalplan ledger.
 - Expected terminal outcome: DONE.
 - Escalation condition: gate forbidden-claims false-positive on new wording that cannot be rephrased -> return to P; reviewer FAIL x3 -> LOOP-REPAIR-01 replan.
-- Write scope: `structure/20_pabcd_dispatch_doctrine.md`, `plugins/codexclaw/skills/pabcd/SKILL.md`, `plugins/codexclaw/skills/loop/SKILL.md`, this devlog unit. Nothing else.
+- Write scope: `structure/20_pabcd_dispatch_doctrine.md`, `plugins/cursorclaw/skills/pabcd/SKILL.md`, `plugins/cursorclaw/skills/loop/SKILL.md`, this devlog unit. Nothing else.
 - Rollback (rev 3, round-2 fix): pre-edit VERBATIM COPIES of all three target files
   captured at `/tmp/wp1_snapshot/` (sha1: doctrine 8d61a89e, loop 88c2415f, pabcd
   e3f420d2) — restoration is a direct copy-back, preserving pre-existing user
@@ -79,7 +79,7 @@ Reviewer (Banach, gpt-5.6-sol, decorrelated) returned FAIL with 7 blockers. Disp
     spawning taxes the main context per return (arXiv evidence in WP2 ledger:
     selection bottleneck 2603.20324, MacNet logistic saturation 2406.07155).
 
-### 2. `plugins/codexclaw/skills/pabcd/SKILL.md`
+### 2. `plugins/cursorclaw/skills/pabcd/SKILL.md`
 
 - **Fill `## Delegation Model (subagents)`** (currently an empty header at ~369):
   MOVE the delegation bullets that are misplaced under `## Catalog Discovery
@@ -110,7 +110,7 @@ Reviewer (Banach, gpt-5.6-sol, decorrelated) returned FAIL with 7 blockers. Disp
   DISPATCH-RETIRE-01) and downward (main pushing a slice down to a worker is a
   P-phase amendment, not a mid-B improvisation).
 
-### 3. `plugins/codexclaw/skills/loop/SKILL.md`
+### 3. `plugins/cursorclaw/skills/loop/SKILL.md`
 
 - **Add `## Speculative dispatch (DISPATCH-SPECULATE-01, HEURISTIC)`** after the
   Wait-visibility section: speculative phase-N+1 dispatch during phase N is
@@ -129,7 +129,7 @@ Reviewer (Banach, gpt-5.6-sol, decorrelated) returned FAIL with 7 blockers. Disp
 ## Accept criteria
 
 - c1: `npm run gate` exit 0, `npm test` exit 0 (no regression).
-- c2: `rg "DISPATCH-ECONOMY-01" structure/ plugins/codexclaw/skills/` hits doctrine §3 + pabcd pointer; `## Delegation Model` section non-empty; `DISPATCH-SPECULATE-01` present in loop SKILL; the pabcd ECONOMY mention is a single pointer sentence (manual check) and the moved block passes the verbatim-move diff.
+- c2: `rg "DISPATCH-ECONOMY-01" structure/ plugins/cursorclaw/skills/` hits doctrine §3 + pabcd pointer; `## Delegation Model` section non-empty; `DISPATCH-SPECULATE-01` present in loop SKILL; the pabcd ECONOMY mention is a single pointer sentence (manual check) and the moved block passes the verbatim-move diff.
 - New wording avoids the three forbidden-claims patterns actually scanned by
   `gate.mjs:123` (`hook loads/reads/injects the`, `automatically ... the <x> skill`,
   `hook enforces skill load/read`) — and, beyond the regexes, makes no runtime

@@ -4,7 +4,7 @@ Depends on: none. One complete PABCD; no additional implementation decades.
 
 ## Exact change map
 
-### MODIFY `plugins/codexclaw/components/cxc-ops/src/map-affordance.ts`
+### MODIFY `plugins/cursorclaw/components/cxc-ops/src/map-affordance.ts`
 
 Add `renderStackedPrAffordance(): string` beside the existing static renderers. Complete intended content:
 
@@ -12,7 +12,7 @@ Add `renderStackedPrAffordance(): string` beside the existing static renderers. 
 /** Global discovery only; the agent verifies membership and CI on demand. */
 export function renderStackedPrAffordance(): string {
   return [
-    "[codexclaw] For PR creation/review/merge or dependent branches (stacked PR/스택 PR),",
+    "[cursorclaw] For PR creation/review/merge or dependent branches (stacked PR/스택 PR),",
     "read $codexclaw:cxc-dev references/stacked-prs.md (DEV-STACK-06/07), even without",
     "a DevOps trigger. A parent base or Can Stack banner is not native stack registration;",
     "verify GitHub membership and CI separately. Per-PR CI is expected, not proof of a broken stack.",
@@ -25,11 +25,11 @@ export function renderStackedPrAffordance(): string {
 Before: both lifecycle handlers push `renderLoopAffordance()` but no stack guidance.
 After: immediately after that call in **both** `runMapAffordanceSessionStart` and `runPostCompactAffordance`, push `renderStackedPrAffordance()`. Preserve event names, size gate, identity and all existing guidance. No conditional path, new imports, external tools or state mutation.
 
-### MODIFY `plugins/codexclaw/components/cxc-ops/test/map-affordance.test.ts`
+### MODIFY `plugins/cursorclaw/components/cxc-ops/test/map-affordance.test.ts`
 
 Import `runPostCompactAffordance`. Extend the existing critical-loop visibility case to check a bounded stack pointer in an empty repo's SessionStart and PostCompact envelopes. Require canonical reference/rule ids, native-registration distinction and no authorization claim; check the envelope has no permission decision. Extend malformed-input fallback coverage to retain the pointer. Extend the existing symlink CLI case to assert the emitted stack pointer and invoke `hook post-compact`, checking the actual shipped CLI output, not source wording. Existing top-level test count stays unchanged. Run these new assertions before source implementation for RED, then after build for GREEN.
 
-### MODIFY `plugins/codexclaw/skills/dev/references/stacked-prs.md`
+### MODIFY `plugins/cursorclaw/skills/dev/references/stacked-prs.md`
 
 Insert `DEV-STACK-06 — Recognize and register deliberately` after the model:
 
@@ -58,7 +58,7 @@ A-audit amendment: native stack API merging requires the documented asynchronous
 
 Update the existing SessionStart and PostCompact hook rows to mention global stack guidance. Add one short Skills Map paragraph locating DEV-STACK-06/07 and explaining that advice is always available but membership/CI inspection is on demand, not performed by the hook.
 
-### GENERATED `plugins/codexclaw/components/cxc-ops/dist/map-affordance.js`
+### GENERATED `plugins/cursorclaw/components/cxc-ops/dist/map-affordance.js`
 
 Regenerate with the repository build command. Confirm only the expected dist delta remains; do not hand-edit generated output or upgrade versions.
 

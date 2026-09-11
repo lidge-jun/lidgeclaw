@@ -11,7 +11,7 @@ const cli = resolve(dirname(fileURLToPath(import.meta.url)), "../src/fallback-di
 test("real CLI persists route, survives separate processes, and emits startup protocol", () => {
   const cwd = mkdtempSync(join(tmpdir(), "cxc-dispatch-cli-"));
   const { CODEX_THREAD_ID: _nativeSession, ...inherited } = process.env;
-  const env = { ...inherited, CODEXCLAW_HOME: join(cwd, "global") };
+  const env = { ...inherited, CURSORCLAW_HOME: join(cwd, "global") };
   setRole(cwd, "executor", { mode: "model", model: "xai/grok-4.6", fallback: { model: "cursor/grok-4.6", effort: "low" } }, "project", env);
   const call = (input: unknown, args: string[] = []) => {
     const child = spawnSync(process.execPath, [cli, ...args], { cwd, env, input: JSON.stringify(input), encoding: "utf8" });

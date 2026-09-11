@@ -20,31 +20,31 @@ and is also unaffected.
 
 | Hook file | Event | Matcher | Command | statusMessage | Timeout |
 |---|---|---|---|---|---|
-| `session-start-ensuring-provider-bridge.json` | `SessionStart` | — | `node "${PLUGIN_ROOT}/components/provider-bridge/dist/cli.js" hook session-start` | `(codexclaw) Detecting provider bridge` | 20 s |
-| `session-start-bootstrapping-pabcd-state.json` | `SessionStart` | — | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook session-start` | `(codexclaw) Bootstrapping PABCD session state` | 15 s |
-| `session-start-healing-declared-features.json` | `SessionStart` | — | `node "${PLUGIN_ROOT}/components/config-guard/dist/cli.js" hook session-start` | `(codexclaw) Ensuring declared codex features` | 20 s |
-| `session-start-announcing-map-affordance.json` | `SessionStart` | — | `node "${PLUGIN_ROOT}/components/cxc-ops/dist/cli.js" hook session-start` | `(codexclaw) Announcing cxc map affordance` | 10 s |
-| `user-prompt-submit-checking-pabcd-trigger.json` | `UserPromptSubmit` | — | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook user-prompt-submit` | `(codexclaw) Checking PABCD trigger` | 15 s |
-| `stop-checking-pabcd-continuation.json` | `Stop` | — | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook stop` | `(codexclaw) Checking PABCD continuation` | 15 s |
-| `pre-tool-use-guarding-goal-budget.json` | `PreToolUse` | `^create_goal$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook pre-tool-use` | `(codexclaw) Guarding goal budget` | 15 s |
-| `pre-tool-use-guarding-interview-in-goal.json` | `PreToolUse` | `^request_user_input$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook pre-tool-use` | `(codexclaw) Denying interview/user-input in goal mode` | 15 s |
-| `pre-tool-use-guarding-goal-complete.json` | `PreToolUse` | `^update_goal$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook pre-tool-use` | `(codexclaw) Gating lazy goal completion (E8)` | 15 s |
-| `post-tool-use-capturing-interview-answers.json` | `PostToolUse` | `^request_user_input$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook post-tool-use` | `(codexclaw) Capturing interview answer` | 15 s |
-| `subagent-stop-verifying-evidence.json` | `SubagentStop` | `^worker$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook subagent-stop` | `(codexclaw) Verifying subagent evidence` | 10 s |
-| `subagent-stop-observing-review.json` | `SubagentStop` | `.*` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook subagent-stop-review` | `(codexclaw) Recording review verdict` | 10 s |
-| `pre-tool-use-attaching-skills.json` | `PreToolUse` | `^(collaboration[._]?)?spawn_agent$` | `node "${PLUGIN_ROOT}/components/subagent-config/dist/spawn-attach-hook.js" hook pre-tool-use` | `(codexclaw) Attaching skills to spawn` | 10 s |
-| `post-compact-resetting-reinject-cursor.json` | `PostCompact` | — | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook post-compact` | `(codexclaw) Recovering PABCD state after compaction` | 10 s |
-| `pre-tool-use-linting-apply-patch.json` | `PreToolUse` | `^(apply_patch\|Write\|Edit)$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook pre-tool-use-edit` | `(codexclaw) Checking structured edit` | 10 s |
-| `post-tool-use-tracking-render-observations.json` | `PostToolUse` | `^(view_image\|browser:control-in-app-browser\|chrome:control-chrome\|computer-use:computer-use\|apply_patch)$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook post-tool-use-render-observation` | `(codexclaw) Tracking render observation` | 10 s |
-| `session-start-injecting-recall-context.json` | `SessionStart` | — | `node "${PLUGIN_ROOT}/components/recall/dist/cli.js" hook session-start` | `(codexclaw) Injecting recall context` | 10 s |
-| `post-compact-injecting-recall-context.json` | `PostCompact` | — | `node "${PLUGIN_ROOT}/components/recall/dist/cli.js" hook post-compact` | `(codexclaw) Recovering recall context after compaction` | 10 s |
-| `post-compact-injecting-bg-terminal-affordance.json` | `PostCompact` | — | `node "${PLUGIN_ROOT}/components/cxc-ops/dist/cli.js" hook post-compact` | `(codexclaw) Queuing compact affordance recovery` | 10 s |
-| `post-compact-injecting-bg-terminal-affordance.json` | `UserPromptSubmit` | — | `node "${PLUGIN_ROOT}/components/cxc-ops/dist/cli.js" hook user-prompt-submit` | `(codexclaw) Restoring queued compact affordances` | 10 s |
-| `user-prompt-submit-detecting-recall-intent.json` | `UserPromptSubmit` | — | `node "${PLUGIN_ROOT}/components/recall/dist/cli.js" hook user-prompt-submit` | `(codexclaw) Checking recall intent` | 5 s |
-| `session-start-detecting-managed-worktree.json` | `SessionStart` | — | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook worktree-guard` | `(codexclaw) Checking managed-worktree identity` | 10 s |
-| `user-prompt-submit-guiding-worktree-rename.json` | `UserPromptSubmit` | — | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook worktree-guard` | `(codexclaw) Checking worktree rename intent` | 10 s |
-| `pre-tool-use-guarding-managed-worktree-deletion.json` | `PreToolUse` | `^Bash$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook worktree-guard-pretool` | `(codexclaw) Guarding managed worktree` | 10 s |
-| `pre-tool-use-guarding-memory-write.json` | `PreToolUse` | `^(memories[._]?add_ad_hoc_note\|apply_patch\|Write\|Edit\|Bash)$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook pre-tool-use-memory-write` | `(codexclaw) Guarding memory write` | 10 s |
+| `session-start-ensuring-provider-bridge.json` | `SessionStart` | — | `node "${PLUGIN_ROOT}/components/provider-bridge/dist/cli.js" hook session-start` | `(cursorclaw) Detecting provider bridge` | 20 s |
+| `session-start-bootstrapping-pabcd-state.json` | `SessionStart` | — | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook session-start` | `(cursorclaw) Bootstrapping PABCD session state` | 15 s |
+| `session-start-healing-declared-features.json` | `SessionStart` | — | `node "${PLUGIN_ROOT}/components/config-guard/dist/cli.js" hook session-start` | `(cursorclaw) Ensuring declared codex features` | 20 s |
+| `session-start-announcing-map-affordance.json` | `SessionStart` | — | `node "${PLUGIN_ROOT}/components/cxc-ops/dist/cli.js" hook session-start` | `(cursorclaw) Announcing cxc map affordance` | 10 s |
+| `user-prompt-submit-checking-pabcd-trigger.json` | `UserPromptSubmit` | — | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook user-prompt-submit` | `(cursorclaw) Checking PABCD trigger` | 15 s |
+| `stop-checking-pabcd-continuation.json` | `Stop` | — | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook stop` | `(cursorclaw) Checking PABCD continuation` | 15 s |
+| `pre-tool-use-guarding-goal-budget.json` | `PreToolUse` | `^create_goal$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook pre-tool-use` | `(cursorclaw) Guarding goal budget` | 15 s |
+| `pre-tool-use-guarding-interview-in-goal.json` | `PreToolUse` | `^request_user_input$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook pre-tool-use` | `(cursorclaw) Denying interview/user-input in goal mode` | 15 s |
+| `pre-tool-use-guarding-goal-complete.json` | `PreToolUse` | `^update_goal$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook pre-tool-use` | `(cursorclaw) Gating lazy goal completion (E8)` | 15 s |
+| `post-tool-use-capturing-interview-answers.json` | `PostToolUse` | `^request_user_input$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook post-tool-use` | `(cursorclaw) Capturing interview answer` | 15 s |
+| `subagent-stop-verifying-evidence.json` | `SubagentStop` | `^worker$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook subagent-stop` | `(cursorclaw) Verifying subagent evidence` | 10 s |
+| `subagent-stop-observing-review.json` | `SubagentStop` | `.*` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook subagent-stop-review` | `(cursorclaw) Recording review verdict` | 10 s |
+| `pre-tool-use-attaching-skills.json` | `PreToolUse` | `^(collaboration[._]?)?spawn_agent$` | `node "${PLUGIN_ROOT}/components/subagent-config/dist/spawn-attach-hook.js" hook pre-tool-use` | `(cursorclaw) Attaching skills to spawn` | 10 s |
+| `post-compact-resetting-reinject-cursor.json` | `PostCompact` | — | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook post-compact` | `(cursorclaw) Recovering PABCD state after compaction` | 10 s |
+| `pre-tool-use-linting-apply-patch.json` | `PreToolUse` | `^(apply_patch\|Write\|Edit)$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook pre-tool-use-edit` | `(cursorclaw) Checking structured edit` | 10 s |
+| `post-tool-use-tracking-render-observations.json` | `PostToolUse` | `^(view_image\|browser:control-in-app-browser\|chrome:control-chrome\|computer-use:computer-use\|apply_patch)$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook post-tool-use-render-observation` | `(cursorclaw) Tracking render observation` | 10 s |
+| `session-start-injecting-recall-context.json` | `SessionStart` | — | `node "${PLUGIN_ROOT}/components/recall/dist/cli.js" hook session-start` | `(cursorclaw) Injecting recall context` | 10 s |
+| `post-compact-injecting-recall-context.json` | `PostCompact` | — | `node "${PLUGIN_ROOT}/components/recall/dist/cli.js" hook post-compact` | `(cursorclaw) Recovering recall context after compaction` | 10 s |
+| `post-compact-injecting-bg-terminal-affordance.json` | `PostCompact` | — | `node "${PLUGIN_ROOT}/components/cxc-ops/dist/cli.js" hook post-compact` | `(cursorclaw) Queuing compact affordance recovery` | 10 s |
+| `post-compact-injecting-bg-terminal-affordance.json` | `UserPromptSubmit` | — | `node "${PLUGIN_ROOT}/components/cxc-ops/dist/cli.js" hook user-prompt-submit` | `(cursorclaw) Restoring queued compact affordances` | 10 s |
+| `user-prompt-submit-detecting-recall-intent.json` | `UserPromptSubmit` | — | `node "${PLUGIN_ROOT}/components/recall/dist/cli.js" hook user-prompt-submit` | `(cursorclaw) Checking recall intent` | 5 s |
+| `session-start-detecting-managed-worktree.json` | `SessionStart` | — | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook worktree-guard` | `(cursorclaw) Checking managed-worktree identity` | 10 s |
+| `user-prompt-submit-guiding-worktree-rename.json` | `UserPromptSubmit` | — | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook worktree-guard` | `(cursorclaw) Checking worktree rename intent` | 10 s |
+| `pre-tool-use-guarding-managed-worktree-deletion.json` | `PreToolUse` | `^Bash$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook worktree-guard-pretool` | `(cursorclaw) Guarding managed worktree` | 10 s |
+| `pre-tool-use-guarding-memory-write.json` | `PreToolUse` | `^(memories[._]?add_ad_hoc_note\|apply_patch\|Write\|Edit\|Bash)$` | `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook pre-tool-use-memory-write` | `(cursorclaw) Guarding memory write` | 10 s |
 
 ## What each hook does
 
@@ -124,7 +124,7 @@ Hooks run only after you trust them in Codex. See
 ## Missing session binding
 
 An ordinary Codex fork has its own native thread ID. A missing SessionStart
-message or missing `.codexclaw/sessions/<id>.json` must not be repaired by copying
+message or missing `.cursorclaw/sessions/<id>.json` must not be repaired by copying
 an ID from inherited chat history or by choosing the newest session file.
 
 From the current Codex terminal tool, run `cxc session current --json`. It reads
@@ -147,6 +147,6 @@ native identity retain their read-only latest-file compatibility fallback.
 
 Emitted hints prefer the emitting plugin's dispatcher for commands it supports,
 so an old development `cxc` on PATH cannot capture new recovery commands. Repo-only
-`map`/`gui` keep their PATH routing; explicit `CODEXCLAW_CXC` overrides still win.
-For direct commands from static docs, use `node "<pluginRoot>/bin/cxc.mjs"` when
+`map`/`gui` keep their PATH routing; explicit `CURSORCLAW_CRC` overrides still win.
+For direct commands from static docs, use `node "<pluginRoot>/bin/cursorclaw.mjs"` when
 the PATH CLI is older than the installed plugin.

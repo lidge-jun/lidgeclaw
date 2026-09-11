@@ -4,9 +4,9 @@ Dependency: wp0 roadmap lock.
 
 Scope: only the files and changes below. Re-read against the current tree at P; amend before writing if stale. Existing audit is historical evidence and is not rewritten.
 
-Verification: `node --test plugins/codexclaw/test/manifest-policy.test.mjs` (baseline 6/6 pass, reads skill metadata); YAML parsing over changed SKILL.md files; `git diff --check`. Semantic verification uses independent read-only scenario judgments, not prose phrase assertions.
+Verification: `node --test plugins/cursorclaw/test/manifest-policy.test.mjs` (baseline 6/6 pass, reads skill metadata); YAML parsing over changed SKILL.md files; `git diff --check`. Semantic verification uses independent read-only scenario judgments, not prose phrase assertions.
 
-## 1. MODIFY plugins/codexclaw/skills/dev/SKILL.md
+## 1. MODIFY plugins/cursorclaw/skills/dev/SKILL.md
 
 Before:
 
@@ -22,7 +22,7 @@ Core rules applied to every coding task, regardless of surface.
 User instructions and the actual host's safety/tool contracts take precedence over skill guidance. A diagnosis or review authorizes investigation, not fixes, installs, publishing, or account changes; a change request authorizes only its scoped implementation.
 `````
 
-## 2. MODIFY plugins/codexclaw/skills/dev/SKILL.md
+## 2. MODIFY plugins/cursorclaw/skills/dev/SKILL.md
 
 Before:
 
@@ -41,7 +41,7 @@ After:
   Security, data-loss, or new-abstraction changes are not this fast path. This exception applies
 `````
 
-## 3. MODIFY plugins/codexclaw/skills/dev/SKILL.md
+## 3. MODIFY plugins/cursorclaw/skills/dev/SKILL.md
 
 Before:
 
@@ -62,7 +62,7 @@ Explicitly requested workflows retain their phase/evidence requirements. An uncl
 rule is DEFAULT unless violating it has a concrete safety or correctness consequence.
 `````
 
-## 4. MODIFY plugins/codexclaw/skills/dev/SKILL.md
+## 4. MODIFY plugins/cursorclaw/skills/dev/SKILL.md
 
 Before:
 
@@ -77,7 +77,7 @@ After:
 | Analytics / ETL / data quality / analytical backfills | `dev-data` | `dev-backend` for API integration |
 `````
 
-## 5. MODIFY plugins/codexclaw/skills/dev/SKILL.md
+## 5. MODIFY plugins/cursorclaw/skills/dev/SKILL.md
 
 Before:
 
@@ -116,7 +116,7 @@ Do not install a new driver/runner merely because a request says Playwright; use
 available capability. Explicit project-owned E2E work remains `dev-testing`'s domain.
 `````
 
-## 6. MODIFY plugins/codexclaw/skills/dev/SKILL.md
+## 6. MODIFY plugins/cursorclaw/skills/dev/SKILL.md
 
 Before:
 
@@ -130,7 +130,7 @@ After:
 **Review signals (DEFAULT — exceed with a stated responsibility/risk rationale):**
 `````
 
-## 7. MODIFY plugins/codexclaw/skills/dev/SKILL.md
+## 7. MODIFY plugins/cursorclaw/skills/dev/SKILL.md
 
 Before:
 
@@ -144,7 +144,7 @@ After:
 - Prefer ESM for new JS/TS code when the runtime and repository support it. Preserve required CommonJS configuration/package interfaces; interop and bundler optimization are separate checks, not reasons for a blanket migration.
 `````
 
-## 8. MODIFY plugins/codexclaw/skills/dev/SKILL.md
+## 8. MODIFY plugins/cursorclaw/skills/dev/SKILL.md
 
 Before:
 
@@ -158,7 +158,7 @@ After:
 | C0/C1 | Smallest relevant proof; text/docs edits use consistency checks, behavior edits use the focused test or checker |
 `````
 
-## 9. MODIFY plugins/codexclaw/skills/dev/SKILL.md
+## 9. MODIFY plugins/cursorclaw/skills/dev/SKILL.md
 
 Before:
 
@@ -172,7 +172,7 @@ After:
 - **Preserve public contracts** — trace external consumers before removing exports. Internal unused exports may be removed within scope after consumer search; public removals need a compatibility/migration decision.
 `````
 
-## 10. NEW plugins/codexclaw/skills/dev/references/browser-routing.md
+## 10. NEW plugins/cursorclaw/skills/dev/references/browser-routing.md
 
 After:
 
@@ -223,7 +223,7 @@ capability and required human action. Never lower the evidence standard to repor
   Record the selected fallback; claim platform support only to the extent actually tested.
 `````
 
-## 11. MODIFY plugins/codexclaw/skills/search/SKILL.md
+## 11. MODIFY plugins/cursorclaw/skills/search/SKILL.md
 
 Before:
 
@@ -311,7 +311,7 @@ URLs. Optional tool absence does not justify installing drivers without authoriz
 Fallbacks preserve session, permission, and evidence boundaries from the shared policy.
 `````
 
-## 12. MODIFY plugins/codexclaw/skills/search/SKILL.md
+## 12. MODIFY plugins/cursorclaw/skills/search/SKILL.md
 
 Before:
 
@@ -330,7 +330,7 @@ After:
   on every distribution or host.
 `````
 
-## 13. MODIFY plugins/codexclaw/skills/dev-testing/SKILL.md
+## 13. MODIFY plugins/cursorclaw/skills/dev-testing/SKILL.md
 
 Before:
 
@@ -363,7 +363,7 @@ Load `cxc-qa` for scenario matrices, adversarial/oracle passes, and teardown.
 Missing tool/access -> report the gap, never mark an unperformed check passed.
 `````
 
-## 14. MODIFY plugins/codexclaw/skills/dev-testing/SKILL.md
+## 14. MODIFY plugins/cursorclaw/skills/dev-testing/SKILL.md
 
 Before:
 
@@ -377,7 +377,7 @@ After:
 - This skill owns test adequacy; `dev-code-reviewer` owns finding severity and review process.
 `````
 
-## 15. MODIFY plugins/codexclaw/skills/pabcd/SKILL.md
+## 15. MODIFY plugins/cursorclaw/skills/pabcd/SKILL.md
 
 Before:
 
@@ -403,7 +403,7 @@ Retain safety classification and smallest relevant verification. Interview settl
 residence before P when clarification is needed, not for already-clear trivial edits.
 `````
 
-## 16. MODIFY plugins/codexclaw/skills/pabcd/SKILL.md
+## 16. MODIFY plugins/cursorclaw/skills/pabcd/SKILL.md
 
 Before:
 
@@ -417,7 +417,7 @@ After:
 | C0-C1 | None/inline | Optional | Direct fix | Smallest proof | C0 no devlog; C1 short record only in an existing owning unit (dev §0.1) |
 `````
 
-## 17. MODIFY plugins/codexclaw/skills/pabcd/SKILL.md
+## 17. MODIFY plugins/cursorclaw/skills/pabcd/SKILL.md
 
 Before:
 
@@ -433,7 +433,7 @@ After:
   follow dev §0.1, and C2+ uses the owning unit convention).
 `````
 
-## 18. MODIFY plugins/codexclaw/skills/pabcd/SKILL.md
+## 18. MODIFY plugins/cursorclaw/skills/pabcd/SKILL.md
 
 Before:
 
@@ -451,7 +451,7 @@ work items there at P and keep statuses current through B. If unavailable, use t
 existing devlog/goalplan and concise progress updates; do not invent a tool call.
 `````
 
-## 19. MODIFY plugins/codexclaw/skills/pabcd/SKILL.md
+## 19. MODIFY plugins/cursorclaw/skills/pabcd/SKILL.md
 
 Before:
 
@@ -465,7 +465,7 @@ After:
 Dispatch an independent read-only reviewer using the exposed spawn schema (`agent_type:"explorer"` only when that field is supported, per DISPATCH-AGENT-TYPE-01)
 `````
 
-## 20. MODIFY plugins/codexclaw/skills/pabcd/SKILL.md
+## 20. MODIFY plugins/cursorclaw/skills/pabcd/SKILL.md
 
 Before:
 
@@ -483,7 +483,7 @@ catalog/search when available. Read its schema before calling: omit unsupported
 the task packet. If no discovery/spawn capability exists, report that gap.
 `````
 
-## 21. MODIFY plugins/codexclaw/skills/pabcd/SKILL.md
+## 21. MODIFY plugins/cursorclaw/skills/pabcd/SKILL.md
 
 Before:
 
@@ -499,7 +499,7 @@ After:
   and record that family-level independence was not established.
 `````
 
-## 22. MODIFY plugins/codexclaw/skills/dev-scaffolding/references/implementation-log.md
+## 22. MODIFY plugins/cursorclaw/skills/dev-scaffolding/references/implementation-log.md
 
 Before:
 
@@ -515,7 +515,7 @@ work: the full routine below is for C2+/multi-phase work. C0/C1 exceptions follo
 `dev` §0.1: no C0 devlog, and a short C1 record only in an existing owning unit.
 `````
 
-## 23. MODIFY plugins/codexclaw/skills/dev-scaffolding/references/implementation-log.md
+## 23. MODIFY plugins/cursorclaw/skills/dev-scaffolding/references/implementation-log.md
 
 Before:
 
@@ -529,7 +529,7 @@ After:
 
 `````
 
-## 24. MODIFY plugins/codexclaw/skills/dev-scaffolding/references/implementation-log.md
+## 24. MODIFY plugins/cursorclaw/skills/dev-scaffolding/references/implementation-log.md
 
 Before:
 
@@ -556,7 +556,7 @@ record only in an existing owning unit. No new unit is required for either.
 Record substantive findings and verification truthfully without inflating trivial work.
 `````
 
-## 25. MODIFY plugins/codexclaw/skills/dev-scaffolding/SKILL.md
+## 25. MODIFY plugins/cursorclaw/skills/dev-scaffolding/SKILL.md
 
 Before:
 
@@ -574,7 +574,7 @@ Loop, UNIT-RESIDENCE-01) is the DEFAULT for C2+ work where the repository uses i
 C0/C1 follow the record exemptions in `dev` §0.1; do not create a unit just for them.
 `````
 
-## 26. MODIFY plugins/codexclaw/skills/dev-scaffolding/SKILL.md
+## 26. MODIFY plugins/cursorclaw/skills/dev-scaffolding/SKILL.md
 
 Before:
 
@@ -590,7 +590,7 @@ once `devlog/_plan/` exists, creating a scoped C2+ unit subfolder is routine.
 This does not revoke C0/C1 exemptions or authorize unrelated documentation.
 `````
 
-## 27. MODIFY plugins/codexclaw/skills/dev/references/skill-ownership.md
+## 27. MODIFY plugins/cursorclaw/skills/dev/references/skill-ownership.md
 
 Before:
 
@@ -604,7 +604,7 @@ After:
 | Manual surface QA / evidence matrix | `cxc-qa` | `dev-testing` §4.7; selection in `dev/references/browser-routing.md` |
 `````
 
-## 28. MODIFY plugins/codexclaw/skills/dev/references/skill-ownership.md
+## 28. MODIFY plugins/cursorclaw/skills/dev/references/skill-ownership.md
 
 Before:
 
@@ -661,7 +661,7 @@ exposes these tool names or arguments. Inspect the callable catalog/schema for t
 current task. Optional native browser plugins, `tool_search`, `update_plan`, and
 `agent_type`/fork fields may be absent. Use supported equivalents only; record any
 missing capability without fabricating a successful call. Portable browser selection
-is owned by `plugins/codexclaw/skills/dev/references/browser-routing.md`.
+is owned by `plugins/cursorclaw/skills/dev/references/browser-routing.md`.
 `````
 
 ## 31. MODIFY structure/00_philosophy.md
@@ -688,7 +688,7 @@ Missing tools never authorize silent installs or a lower verification standard.
 ## 7. How to use this file
 `````
 
-## 32. MODIFY plugins/codexclaw/skills/interview/SKILL.md
+## 32. MODIFY plugins/cursorclaw/skills/interview/SKILL.md
 
 Before:
 

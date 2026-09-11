@@ -17,20 +17,20 @@ library modules. git diff --exit-code also ignores untracked generated files.
 ## Exact change map
 
 NEW, generated only by the existing remote Node24 build:
-- plugins/codexclaw/components/cxc-ops/dist/activation-trace.js
-- plugins/codexclaw/components/cxc-ops/dist/scouting-bundle.js
-- plugins/codexclaw/components/cxc-ops/dist/win-paths.js
-- plugins/codexclaw/components/messenger-bridge/dist/token-intake.js
-- plugins/codexclaw/components/subagent-config/dist/capabilities.js
-- plugins/codexclaw/components/subagent-config/dist/capability-lock.js
-- plugins/codexclaw/components/subagent-config/dist/dispatch-contract.js
+- plugins/cursorclaw/components/cxc-ops/dist/activation-trace.js
+- plugins/cursorclaw/components/cxc-ops/dist/scouting-bundle.js
+- plugins/cursorclaw/components/cxc-ops/dist/win-paths.js
+- plugins/cursorclaw/components/messenger-bridge/dist/token-intake.js
+- plugins/cursorclaw/components/subagent-config/dist/capabilities.js
+- plugins/cursorclaw/components/subagent-config/dist/capability-lock.js
+- plugins/cursorclaw/components/subagent-config/dist/dispatch-contract.js
 
 These are already compiled into release archives from existing tracked sources;
 commit their actual output with git add -f, consistent with the current dist policy.
 Do not change source bodies, add runtime imports or remove files from the expected
 inventory to hide the mismatch. Global dist ignore remains unchanged.
 
-MODIFY plugins/codexclaw/test/packaging.test.mjs: preserve all three existing tests;
+MODIFY plugins/cursorclaw/test/packaging.test.mjs: preserve all three existing tests;
 add one contract comparing every existing compiler source's output path against
 Git-tracked files, using build.mjs COMPONENTS/listTsFiles and one git ls-files -z
 snapshot (avoid one extra Git subprocess per generated file on drvfs).

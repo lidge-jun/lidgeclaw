@@ -96,7 +96,7 @@ test("MEMORY-WRITE-GATE-01: the memory-write hook is registered and pins both wr
   const entry = hookJson.hooks.PreToolUse[0];
 
   // The matcher is the union of the two ways a memory file gets written: the memory
-  // tool, and an ordinary edit/shell write into ~/.codex/memories.
+  // tool, and an ordinary edit/shell write into ~/.cursor/memories.
   assert.equal(
     entry.matcher,
     "^(memories[._]?add_ad_hoc_note|apply_patch|Write|Edit|Bash)$",

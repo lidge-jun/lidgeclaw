@@ -26,7 +26,7 @@ delta : 21 commits, 642 files, +279,439 / -11,173
 ## 범위 경계
 
 - IN: `devlog/_plan/260725_lazygap2_omo419_parity/` 문서 작성, `devlog/.lazycodex` 스냅샷 갱신.
-- OUT: `plugins/codexclaw/` 프로덕션 코드/훅/스킬 수정, 버전 변경, push, 릴리스 액션.
+- OUT: `plugins/cursorclaw/` 프로덕션 코드/훅/스킬 수정, 버전 변경, push, 릴리스 액션.
   각 decade 문서(`010`-`130`)의 구현은 별도 PABCD 사이클에서 하나씩 수행한다.
   (2026-07-26: HOTL 루프가 실제로 그 사이클들을 실행 중이다 — 이 유닛은 더 이상 docs-only가 아니다.)
 - 보존: 무관한 untracked 작업 `devlog/_plan/260722_260722-repo-governance-config/`.
@@ -42,7 +42,7 @@ delta : 21 commits, 642 files, +279,439 / -11,173
 | B | Godel (gpt-5.6-sol, medium) | teammode 재작성, visual-qa + `visual-qa.mjs`, programming/logging, remove-ai-slops, review-work/start-work, lcx-*, ultimate-browsing, 배포·버전 체인 | `002` |
 
 두 패킷 모두 codexclaw의 LOCKED 원칙을 판정 기준으로 명시했다: 서브에이전트 역할
-증설 금지(3 base role + `$cxc-*` skill attachment), 서버/데몬/LSP 금지,
+증설 금지(3 base role + `$crc-*` skill attachment), 서버/데몬/LSP 금지,
 SessionStart 자동 업데이트·텔레메트리 금지, 그리고 host goal 쓰기의 게이팅
 (interview freeze 승인 경계에서만, 루프 중 자기무장 금지 —
 `devlog/_fin/lazygap/000_INDEX.md:121-128`). 파견 시점 패킷에는 이 마지막 항목이
@@ -87,8 +87,8 @@ decade 문서의 변경 파일 맵에 나오는 "신규" 경로는 아직 존재
 
 **A 단계 정정:** 최초 P는 decade 문서를 "다음 사이클"로 미뤘다. 리뷰어가 이를
 LOOP-DOCS-FIRST-01 / DIFFLEVEL-ROADMAP-01 위반으로 지적했고
-(`plugins/codexclaw/skills/loop/SKILL.md:93-107`,
-`plugins/codexclaw/skills/pabcd/SKILL.md:194-203`) 이 사이클 안에서 전부 작성했다.
+(`plugins/cursorclaw/skills/loop/SKILL.md:93-107`,
+`plugins/cursorclaw/skills/pabcd/SKILL.md:194-203`) 이 사이클 안에서 전부 작성했다.
 
 ## 수용 기준 (검증 가능)
 
@@ -135,8 +135,8 @@ Mind 조사로 round 4 blocker 9건 중 8건이 `010`→`020`→`030`→`040` �
 
 | 슬라이스 | 판정 | 대표 결함 |
 | --- | --- | --- |
-| `050` | 결함 | `bumpStopCounter`는 `cwd`/`state`만 받고 goalplan을 읽지 않는다 (`plugins/codexclaw/components/pabcd-state/src/hook.ts:721-730`). 설계가 쓴다고 한 `updatedAt`·work-phase id·ledger 라인 수가 그 지점에 없다. 게다가 제안 pseudocode는 첫 관측을 0으로 시작해 기존 1-시작 규칙을 깨고 release를 한 칸 밀어낸다 (`test/hook-continuation.test.ts:443-455`) |
-| `060` | 결함 | 사전조사가 `components/*/test/*.ts`만 훑어 `plugins/codexclaw/test/*.mjs` 트리를 통째로 빠뜨렸다. `manifest-policy.test.mjs:153-169`, `loop-activation-doc-sync.test.mjs:20-34`, `emergence-doc-sync.test.mjs:20-52`에 산문 정규식 단정이 더 있다 — "위반 2건 확정"이 거짓 |
+| `050` | 결함 | `bumpStopCounter`는 `cwd`/`state`만 받고 goalplan을 읽지 않는다 (`plugins/cursorclaw/components/pabcd-state/src/hook.ts:721-730`). 설계가 쓴다고 한 `updatedAt`·work-phase id·ledger 라인 수가 그 지점에 없다. 게다가 제안 pseudocode는 첫 관측을 0으로 시작해 기존 1-시작 규칙을 깨고 release를 한 칸 밀어낸다 (`test/hook-continuation.test.ts:443-455`) |
+| `060` | 결함 | 사전조사가 `components/*/test/*.ts`만 훑어 `plugins/cursorclaw/test/*.mjs` 트리를 통째로 빠뜨렸다. `manifest-policy.test.mjs:153-169`, `loop-activation-doc-sync.test.mjs:20-34`, `emergence-doc-sync.test.mjs:20-52`에 산문 정규식 단정이 더 있다 — "위반 2건 확정"이 거짓 |
 | `061` | 미검토 | `060`과 같은 `dev-testing/SKILL.md` 구역, `062`와 같은 `dev-code-reviewer/SKILL.md` 구역을 만진다 |
 | `062` | 결함 | 삽입 위치를 §5로 적었으나 `REVIEW-INTERDIFF-01`은 §6 이후 별도 절이다 (`dev-code-reviewer/SKILL.md:303-329` vs `:331-388`) |
 | `063` | 결함 | `archiv|closed` 전수 검색이 devlog `_fin/` 아카이빙 서술(`pabcd/SKILL.md:188-192`)과 V2 lifecycle 서술(`:339-346`)을 구분하지 못한다 |

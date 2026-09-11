@@ -20,8 +20,8 @@
 *   cursorclaw subagents           read/write per-role subagent model+prompt config
  *   cursorclaw map                 generate a ranked repo map (repo-map skill, python3)
  *   cursorclaw provider            show read-only opencodex (ocx) provider status
- *   cursorclaw chat search         read-only recall search over ~/.codex rollouts (recall)
- *   cursorclaw memory search       read-only search over ~/.codex memories (recall)
+ *   cursorclaw chat search         read-only recall search over ~/.cursor rollouts (recall)
+ *   cursorclaw memory search       read-only search over ~/.cursor memories (recall)
  *   cursorclaw skill search|show   remote dormant-skill search over cli-jaw-skills/hermes/clawhub/gh (skill-search)
  *
  * This file is a thin delegator over compiled component CLIs; provider detection is
@@ -266,7 +266,7 @@ const TOP_LEVEL_HELP = [
   "  crc --help",
   "",
   "Core:",
-  "  enable                         activate declared Codex feature flags",
+  "  enable                         activate declared Cursorclaw feature flags",
   "  disable | uninstall            revert flags cursorclaw enabled when safe",
   "  status                         show declared feature-flag state",
   "  doctor                         run plugin health checks",
@@ -325,7 +325,7 @@ function renderUnknownTopLevelCommand(cmd) {
  *   1. CODEXCLAW_PYTHON env override -> that interpreter, verbatim.
  *   2. `uv` on PATH -> `uv run --with-requirements <reqs> python -B script ...`
  *      (deps resolve into uv's own rebuildable cache; no venv to manage).
- *   3. existing venv at $CODEXCLAW_HOME|~/.cursorclaw/venvs/repomap -> its python.
+ *   3. existing venv at $CURSORCLAW_HOME|~/.cursorclaw/venvs/repomap -> its python.
  *      The venv is only auto-created when CODEXCLAW_MAP_BOOTSTRAP=1 (opt-in network).
  *   4. bare python3 -> repomap.py itself degrades to an exit-3 install hint.
  *
@@ -367,7 +367,7 @@ export function selectRepoMapCommand(args, env, deps, platform = process.platfor
  * platform is a parameter so the packaging test can assert both shapes from one OS.
  */
 export function repoMapVenvPython(env, home, platform = process.platform) {
-  const base = env.CODEXCLAW_HOME && env.CODEXCLAW_HOME.trim() !== "" ? env.CODEXCLAW_HOME : join(home, ".cursorclaw");
+  const base = env.CURSORCLAW_HOME && env.CURSORCLAW_HOME.trim() !== "" ? env.CURSORCLAW_HOME : join(home, ".cursorclaw");
   return platform === "win32"
     ? join(base, "venvs", "repomap", "Scripts", "python.exe")
     : join(base, "venvs", "repomap", "bin", "python3");
@@ -471,7 +471,7 @@ if (isMain) switch (cmd) {
     break;
   case "config":
     // `config interview` is owned by pabcd-state (it owns cursorclaw.json); the managed
-    // ~/.codex/config.toml keys are owned by config-guard.
+    // ~/.cursor/config.toml keys are owned by config-guard.
     process.exit(
       process.argv[3] === "interview"
         ? runPabcdState(process.argv.slice(2))
@@ -576,7 +576,7 @@ if (isMain) switch (cmd) {
   }
   case "chat":
   case "memory":
-    // recall CLI expects argv as [kind, "search", ...rest]; read-only over ~/.codex.
+    // recall CLI expects argv as [kind, "search", ...rest]; read-only over ~/.cursor.
     // `memory allow-write` is the exception: it records the MEMORY-WRITE-GATE-01 grant
     // in pabcd-state's session file, which owns that state and reads it in the hook.
     // Same owner-based split as `config interview` above.

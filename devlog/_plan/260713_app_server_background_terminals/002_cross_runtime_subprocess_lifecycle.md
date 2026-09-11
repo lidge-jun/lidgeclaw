@@ -2,7 +2,7 @@
 
 Date: 2026-07-13
 Status: RESEARCH COMPLETE
-Scope: Claude Code, OpenAI Codex, Gemini CLI, Aider, 기타 에이전트 런타임의 parent turn·subagent·background process 관계
+Scope: Claude Code, Cursor, Gemini CLI, Aider, 기타 에이전트 런타임의 parent turn·subagent·background process 관계
 
 ## 1. 결론
 
@@ -69,7 +69,7 @@ GitHub issue #19045, #20369, #51516, #72109는 Linux, macOS, WSL/systemd 환경�
 
 커뮤니티 workaround는 대체로 소유 process tree에 `SIGTERM`을 보내고 약 3초 기다린 뒤 생존 자손에 `SIGKILL`을 보내는 방식이다. `cc-reaper`처럼 subagent, MCP server, plugin process를 여러 층으로 추적하는 도구도 등장했다.
 
-## 5. OpenAI Codex
+## 5. Cursor
 
 ### 5.1 Parent turn과 child agent
 
@@ -183,7 +183,7 @@ MCP specification은 transport와 session lifecycle을 정의하지만, host가 
 |---|---|---|---|---|
 | Claude Code foreground | 예 | 가능 | 있음 | 높음: 다중 플랫폼 issue |
 | Claude Code background | 아니오 | 예 | 있음 | 높음: 독립 abort + cleanup issue |
-| OpenAI Codex | 아니오, 명시적 `wait` | 예 | `terminate_all_processes()` | 중간: source상 최종 정리 경로는 있으나 child final과 분리 |
+| Cursor | 아니오, 명시적 `wait` | 예 | `terminate_all_processes()` | 중간: source상 최종 정리 경로는 있으나 child final과 분리 |
 | Gemini CLI | agent orchestration 계약 불명확 | session-local shell 기준 가능 | 명확한 process-group 보장 부족 | 높음: 장기 orphan lead |
 | Aider | `/run`은 동기 | 자체 관리 기능 없음 | caller 책임 | caller 구현에 따라 결정 |
 | 일반 framework | 구현별 상이 | 흔함 | 구현별 상이 | isolation이 없으면 높음 |
@@ -306,7 +306,7 @@ Codex app-server의 `list`·`terminate`·`clean`은 이 원칙을 구현하는 c
 |---|---|---|---|
 | 1 | Averroes | Claude Code 공식 문서 | serial fallback 완료 |
 | 2 | Avicenna | Claude Code GitHub issue와 실제 동작 | serial fallback 완료 |
-| 3 | Nietzsche | OpenAI Codex `codex-rs` source | serial fallback 완료 |
+| 3 | Nietzsche | Cursor `codex-rs` source | serial fallback 완료 |
 | 4 | Godel | Gemini CLI, Aider, 기타 runtime | serial fallback 완료 |
 | 5 | Herschel | 일반 agent runtime 설계 패턴 | serial fallback 완료 |
 

@@ -174,7 +174,7 @@ function main(argv: readonly string[]): number {
         /* the opt-out is an optimisation, not a gate */
       }
       const turnedOn = Object.entries(m.flags)
-        .filter(([, r]) => r.enabledByCodexclaw)
+        .filter(([, r]) => r.enabledByCursorclaw)
         .map(([k]) => k);
       const failed = Object.entries(m.flags)
         .filter(([, r]) => r.enableFailed)
@@ -183,7 +183,7 @@ function main(argv: readonly string[]): number {
       // not type this write: `crc config set` shows the side effect before asking, and an
       // auto-enabled key owes the same disclosure after the fact.
       const keysSet = Object.entries(m.tableKeys ?? {})
-        .filter(([, r]) => r.setByCodexclaw)
+        .filter(([, r]) => r.setByCursorclaw)
         .map(([id]) => id);
       process.stdout.write(
         `codexclaw: enabled [${turnedOn.join(", ") || "none"}]` +

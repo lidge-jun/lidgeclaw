@@ -51,15 +51,15 @@ forbidden pattern in a structured edit before it lands.
 
 ### (A) Rule injector — SessionStart additionalContext (E4)
 
-New manifest `plugins/codexclaw/hooks/session-start-injecting-project-rules.json` →
+New manifest `plugins/cursorclaw/hooks/session-start-injecting-project-rules.json` →
 `cli.js hook session-start-rules` (a NEW SessionStart entry; coexists with the provider one):
 
 ```ts
 // rules.ts — daemon-free: read project rules, emit as additionalContext. File scan + dedup only.
-const RULES_DIR = ".codexclaw/rules";           // *.md files, each a rule block
+const RULES_DIR = ".cursorclaw/rules";           // *.md files, each a rule block
 const FALLBACK = "AGENTS.md";                    // project root fallback
 export function buildRulesContext(cwd: string): string {
-  // read .codexclaw/rules/*.md (or AGENTS.md), concat, dedup, cap length; "" if none.
+  // read .cursorclaw/rules/*.md (or AGENTS.md), concat, dedup, cap length; "" if none.
   // returns a SessionStart additionalContext envelope, or "" (no rules => no injection).
 }
 ```
@@ -70,7 +70,7 @@ export function buildRulesContext(cwd: string): string {
 
 ### (B) Comment-lint — PreToolUse on apply_patch (E1, TRUE prevention) + PostToolUse fallback
 
-Primary: new manifest `plugins/codexclaw/hooks/pre-tool-use-linting-apply-patch.json` with
+Primary: new manifest `plugins/cursorclaw/hooks/pre-tool-use-linting-apply-patch.json` with
 `"matcher": "^(apply_patch|Write|Edit)$"` → `cli.js hook pre-tool-use-lint`:
 
 ```ts
@@ -115,7 +115,7 @@ effect: it does NOT un-write the file; it swaps the tool result for repair feedb
 
 | Check | Evidence |
 |-------|----------|
-| Rules injected | `.codexclaw/rules/*.md` present → SessionStart emits concatenated/deduped context |
+| Rules injected | `.cursorclaw/rules/*.md` present → SessionStart emits concatenated/deduped context |
 | No rules → silent | empty/absent rules dir and no AGENTS.md → `""`, no injection |
 | Lint blocks pre-write | an `apply_patch` adding `as any` (no `// justified:`) → PreToolUse deny + reason |
 | Lint allows clean | a clean patch, or `as any` WITH `// justified:` → allow |
@@ -126,7 +126,7 @@ effect: it does NOT un-write the file; it swaps the tool result for repair feedb
 
 ## Verification
 
-- `node --test plugins/codexclaw/components/pabcd-state/test/comment-lint.test.*` (block/allow/fail-open)
+- `node --test plugins/cursorclaw/components/pabcd-state/test/comment-lint.test.*` (block/allow/fail-open)
 - `node --test .../test/rules.test.*` (concat/dedup/empty)
 - extend `hook-e2e.test.mjs`: drive `cli.js hook pre-tool-use-lint` with a forbidden patch (deny)
   and a clean patch (allow); drive `session-start-rules` with a seeded rules dir.

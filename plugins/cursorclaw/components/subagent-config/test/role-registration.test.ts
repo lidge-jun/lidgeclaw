@@ -111,14 +111,14 @@ test("registerRole rejects invalid runtime role input even from untyped callers"
 test("resolveNativeRoleHome uses explicit env, then injected userHome, and default binding is read-only", () => {
   const envRoot = join(TASK_TMP, "resolver-env");
   const injectedHome = join(TASK_TMP, "resolver-user");
-  assert.equal(resolveNativeRoleHome({ CODEX_HOME: envRoot }, "/unused-home"), envRoot);
-  assert.equal(resolveNativeRoleHome({ CODEX_HOME: "  /spaced-codex  " }, injectedHome), "  /spaced-codex  ");
-  assert.equal(resolveNativeRoleHome({ CODEX_HOME: "" }, injectedHome), join(injectedHome, ".codex"));
+  assert.equal(resolveNativeRoleHome({ CURSOR_HOME: envRoot }, "/unused-home"), envRoot);
+  assert.equal(resolveNativeRoleHome({ CURSOR_HOME: "  /spaced-codex  " }, injectedHome), "  /spaced-codex  ");
+  assert.equal(resolveNativeRoleHome({ CURSOR_HOME: "" }, injectedHome), join(injectedHome, ".codex"));
   assert.equal(resolveNativeRoleHome({}, injectedHome), join(injectedHome, ".codex"));
   const production = resolveNativeRoleHome();
   assert.equal(production, resolveNativeRoleHome(process.env, homedir()));
   const realHome = tmp("resolver-register-");
-  const result = registerArchitect(resolveNativeRoleHome({ CODEX_HOME: realHome }, "/unused"));
+  const result = registerArchitect(resolveNativeRoleHome({ CURSOR_HOME: realHome }, "/unused"));
   assert.equal(result.created, true);
   assert.equal(result.path, join(realHome, "agents/architect.toml"));
   rmSync(realHome, { recursive: true, force: true });

@@ -128,7 +128,7 @@ tolerant.
 npm test
 npm run build
 cxc scan record --session <id> --contradictions 0 --high 0 --dim goal=high
-# then read .codexclaw/sessions/<id>.json and confirm goal.level === "high"
+# then read .cursorclaw/sessions/<id>.json and confirm goal.level === "high"
 ```
 
 ## Accept criteria

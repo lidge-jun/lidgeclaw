@@ -4,9 +4,9 @@ Dependency: wp2 domain contracts.
 
 Scope: only the files and changes below. Re-read against the current tree at P; amend before writing if stale. Existing audit is historical evidence and is not rewritten.
 
-Verification: `node --test plugins/codexclaw/test/manifest-policy.test.mjs` (baseline 6/6 pass, reads skill metadata); YAML parsing over changed SKILL.md files; `git diff --check`. New focused visualize inspection test runs missing-cache, version ordering, explicit-root, drift and malformed-tracker scenarios without touching the real cache.
+Verification: `node --test plugins/cursorclaw/test/manifest-policy.test.mjs` (baseline 6/6 pass, reads skill metadata); YAML parsing over changed SKILL.md files; `git diff --check`. New focused visualize inspection test runs missing-cache, version ordering, explicit-root, drift and malformed-tracker scenarios without touching the real cache.
 
-## 1. MODIFY plugins/codexclaw/skills/dev-diagram-viewer/SKILL.md
+## 1. MODIFY plugins/cursorclaw/skills/dev-diagram-viewer/SKILL.md
 
 Before:
 
@@ -24,7 +24,7 @@ metadata:
 
 Route diagram, chart, and visualization output to the correct rendering surface
 based on the detected runtime environment. This skill is on-demand: it activates
-by description match or explicit `$cxc-dev-diagram-viewer` mention.
+by description match or explicit `$crc-dev-diagram-viewer` mention.
 
 > **C0/C1 work (small local patches):** See `dev` §0.0 Work Classifier + §0.1 Patch Fast-Path before reading references.
 
@@ -542,7 +542,7 @@ wins over that snapshot. The optional Unix `upstream/sync-check.sh` is a drift r
 not proof that output works, and its absence/failure does not justify a false PASS.
 `````
 
-## 2. MODIFY plugins/codexclaw/skills/dev-diagram-viewer/reference/visualize-contract.md
+## 2. MODIFY plugins/cursorclaw/skills/dev-diagram-viewer/reference/visualize-contract.md
 
 Before:
 
@@ -606,7 +606,7 @@ Copy into every compaction summary:
   exists, and the primary interaction updates the visual. The bundled
   `python3 scripts/render.py <absolute-fragment-path> [<destination>.html] [--serve]`
   (located in the upstream visualize bundle at
-  `~/.codex/plugins/cache/openai-bundled/visualize/*/skills/visualize/scripts/render.py`)
+  `~/.cursor/plugins/cache/openai-bundled/visualize/*/skills/visualize/scripts/render.py`)
   can wrap a fragment as standalone HTML or temporarily serve it for browser
   inspection when a preview would help with layout, theme, or runtime behavior.
 
@@ -934,7 +934,7 @@ route from `../SKILL.md`. Do not invent inline support or require the user to in
 a particular optional plugin. Respect the task's current platform and permissions.
 `````
 
-## 3. MODIFY plugins/codexclaw/skills/dev-diagram-viewer/reference/environment-detection.md
+## 3. MODIFY plugins/cursorclaw/skills/dev-diagram-viewer/reference/environment-detection.md
 
 Before:
 
@@ -1086,7 +1086,7 @@ For interactive work, use `../../dev/references/browser-routing.md`.
 No Aside, agbrowse, Bash, or native browser plugin is required on every platform.
 `````
 
-## 4. MODIFY plugins/codexclaw/skills/dev-diagram-viewer/upstream/visualize-upstream.md
+## 4. MODIFY plugins/cursorclaw/skills/dev-diagram-viewer/upstream/visualize-upstream.md
 
 Before:
 
@@ -1164,7 +1164,7 @@ copy a new manual into this repository. Missing local cache is an availability r
 not a reason to require the plugin or declare a broken user environment.
 `````
 
-## 5. MODIFY plugins/codexclaw/skills/dev-diagram-viewer/upstream/sync-check.sh
+## 5. MODIFY plugins/cursorclaw/skills/dev-diagram-viewer/upstream/sync-check.sh
 
 Before:
 
@@ -1175,10 +1175,10 @@ VISUALIZE_ROOT="$HOME/.codex/plugins/cache/openai-bundled/visualize"
 After:
 
 `````text
-VISUALIZE_ROOT="${CXC_VISUALIZE_ROOT:-${CODEX_HOME:-$HOME/.codex}/plugins/cache/openai-bundled/visualize}"
+VISUALIZE_ROOT="${CXC_VISUALIZE_ROOT:-${CURSOR_HOME:-$HOME/.codex}/plugins/cache/openai-bundled/visualize}"
 `````
 
-## 6. MODIFY plugins/codexclaw/skills/dev-diagram-viewer/upstream/sync-check.sh
+## 6. MODIFY plugins/cursorclaw/skills/dev-diagram-viewer/upstream/sync-check.sh
 
 Before:
 
@@ -1202,7 +1202,7 @@ printf '  4. A matching hash is a freshness hint, not rendering or compatibility
 exit 1
 `````
 
-## 7. NEW plugins/codexclaw/test/visualize-inspection.test.mjs
+## 7. NEW plugins/cursorclaw/test/visualize-inspection.test.mjs
 
 After:
 
@@ -1215,7 +1215,7 @@ import { join, resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 
-const source = resolve('plugins/codexclaw/skills/dev-diagram-viewer/upstream/sync-check.sh');
+const source = resolve('plugins/cursorclaw/skills/dev-diagram-viewer/upstream/sync-check.sh');
 const hasBash = spawnSync('bash', ['--version']).status === 0;
 test('visualize inspection uses explicit root, version order, and failure states', { skip: !hasBash }, t => {
   const root = mkdtempSync(join(tmpdir(), 'cxc-visualize-test-'));
@@ -1232,7 +1232,7 @@ test('visualize inspection uses explicit root, version order, and failure states
     };
     const run = env => spawnSync('bash', [join(root, 'sync-check.sh')], {
       encoding: 'utf8', env: { ...process.env, HOME: join(root, 'unused-home'),
-        CODEX_HOME: join(root, 'wrong-default'), CXC_VISUALIZE_ROOT: cache, ...env }
+        CURSOR_HOME: join(root, 'wrong-default'), CXC_VISUALIZE_ROOT: cache, ...env }
     });
     let result = run({});
     assert.equal(result.status, 1);

@@ -18,8 +18,8 @@ Gap class: HARNESS (missing hook surface) · evidence: explorer Darwin
 | --- | --- | --- | --- |
 | `lazycodex-executor-verify/hooks/hooks.json:3` (`SubagentStop` matcher `^lazycodex-executor$`) | none in the 6 registered hooks | omo verifies executor completion; codexclaw cannot | add a 7th hook: `SubagentStop` with a matcher scoped to the executor/verify role |
 | `lazycodex-executor-verify/src/codex-hook.ts:15` + `directive.md:5` (require `EVIDENCE_RECORDED: <path>` last line, else `decision:"block"`) | absent | omo blocks on missing receipt; codexclaw has no completion gate | `SubagentStop` checks the child's final message for a receipt marker; block + inject verifier directive if missing |
-| `codex-hook.ts:52` (`.omo/evidence` root only; resolve/realpath; no symlink; non-empty file) | absent | omo path-validates the receipt; codexclaw has no `.codexclaw/evidence` check | port the path guard to a `.codexclaw/evidence` root |
-| `codex-hook.ts:19` (attempt state; block up to `MAX_ATTEMPTS` then release) | absent | omo bounds the block so it can't trap; codexclaw has nothing to bound | `.codexclaw/evidence-attempts/*.json`; bounded block, then release |
+| `codex-hook.ts:52` (`.omo/evidence` root only; resolve/realpath; no symlink; non-empty file) | absent | omo path-validates the receipt; codexclaw has no `.cursorclaw/evidence` check | port the path guard to a `.cursorclaw/evidence` root |
+| `codex-hook.ts:19` (attempt state; block up to `MAX_ATTEMPTS` then release) | absent | omo bounds the block so it can't trap; codexclaw has nothing to bound | `.cursorclaw/evidence-attempts/*.json`; bounded block, then release |
 
 ## Reinforcement shape (no-server)
 
@@ -33,7 +33,7 @@ New hook `hooks/subagent-stop-verifying-evidence.json` -> pabcd-state CLI
    (verified present on `SubagentStopCommandInput`, `schema.rs:578-595`); `transcript_path`
    is also available for a context-pressure bail (omo `CONTEXT_PRESSURE_MARKERS`).
 2. Look for `EVIDENCE_RECORDED: <relpath>` (or codexclaw's `--evidence` convention).
-3. Validate the path is inside `.codexclaw/evidence/`, real (no symlink), non-empty
+3. Validate the path is inside `.cursorclaw/evidence/`, real (no symlink), non-empty
    (port omo's `isNonEmptyFileInsideEvidenceRoot` realpath/symlink guard).
 4. Missing/invalid + under attempt cap -> `decision:"block"` with a verifier directive
    (runtime turns the `reason` into a continuation prompt, `stop.rs:263-274`).
@@ -58,5 +58,5 @@ equivalent exists today. This is the single highest-value add in the lazygap tra
 
 ## Depends on / feeds
 
-Uses the `.codexclaw/evidence` convention; pairs with `001` (criterion evidence) and
+Uses the `.cursorclaw/evidence` convention; pairs with `001` (criterion evidence) and
 `008` (skill-attached dispatch needs a receipt to be trustworthy).

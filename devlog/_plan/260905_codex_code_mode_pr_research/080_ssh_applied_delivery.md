@@ -7,13 +7,13 @@ artifact SHA, frozen Git SHA and expected plugin version agree.
 ## Concrete operator sequence
 
 Use an ignored one-shot helper under the session evidence/operator directory, not
-a production plugin/runtime module. Inputs: absolute normal CODEX_HOME, previously
+a production plugin/runtime module. Inputs: absolute normal CURSOR_HOME, previously
 verified installed payload root, native Codex executable, full release SHA,
 expected manifest version, and expected per-file content manifest extracted from
 the verified release archive. Execute only on the three established installations.
 
 Before changing native registration, copy the complete old payload to an exclusive
-host-local backup root/plugins/codexclaw. Copy the repository's existing unchanged
+host-local backup root/plugins/cursorclaw. Copy the repository's existing unchanged
 .agents/plugins/marketplace.json alongside it (same name and relative source).
 Verify every copied file hash and reject symlinks/non-files. This provides a normal
 local-marketplace rollback source even if the old cache is pruned. Back up current
@@ -22,7 +22,7 @@ normal config privately on the same host; never print or copy credentials off-ho
 Main verifies each CLI and path with read-only commands. Then use native CLI:
 marketplace remove codexclaw; marketplace add lidge-jun/codexclaw --ref FULL_SHA;
 plugin add codexclaw@codexclaw --json. Resolve installedPath from this result,
-require it inside that CODEX_HOME, and compare every relative file hash and version
+require it inside that CURSOR_HOME, and compare every relative file hash and version
 to the published artifact. Do not edit the cache or config by hand.
 
 Run the installed payload's hooks retrust --key codexclaw@codexclaw --codex-home

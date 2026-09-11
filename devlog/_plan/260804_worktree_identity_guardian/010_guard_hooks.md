@@ -7,15 +7,15 @@ PreToolUse enforcement runs for subagents too via a dedicated CLI event; matcher
 fallback; custom roots via CODEXCLAW_WORKTREE_ROOTS; realpath canonicalization;
 once-per-session rename guidance.
 
-Scope IN: `plugins/codexclaw/components/pabcd-state/` (new `src/worktree-guard.ts`,
+Scope IN: `plugins/cursorclaw/components/pabcd-state/` (new `src/worktree-guard.ts`,
 `src/cli.ts` wiring, new `test/worktree-guard.test.ts`), three new hook JSONs under
-`plugins/codexclaw/hooks/`, `plugins/codexclaw/.codex-plugin/plugin.json` hooks
+`plugins/cursorclaw/hooks/`, `plugins/cursorclaw/.cursor-plugin/plugin.json` hooks
 array, regenerated `dist/`, README.md hook count texts (18→21: badge line ~18,
 "approve the 18 hooks" ~57, "18 active hooks" ~106), structure/INDEX.md hook
 table/list mentions.
 Scope OUT: other components, skills (020), docs-site, existing event behavior.
 
-## NEW `plugins/codexclaw/components/pabcd-state/src/worktree-guard.ts`
+## NEW `plugins/cursorclaw/components/pabcd-state/src/worktree-guard.ts`
 
 Path/fs-only detection (no subprocess). API:
 
@@ -33,7 +33,7 @@ export interface WorktreeIdentity {
 export function candidateWorktreeRoots(env): string[]
 //   [ resolveCodexHome(env)+"/worktrees", ...split(env.CODEXCLAW_WORKTREE_ROOTS,
 //   path.delimiter) ] — platform-delimited (Windows drive letters stay intact)
-export function resolveCodexHome(env): string          // env.CODEX_HOME ?? ~/.codex
+export function resolveCodexHome(env): string          // env.CURSOR_HOME ?? ~/.cursor
 export function canonicalize(p: string): string
 //   realpathSync.native(p) when it exists; else realpath nearest existing
 //   ancestor + append remainder (macOS symlink/case safety, B7)
@@ -87,7 +87,7 @@ export function handleWorktreeGuardPreTool(rawStdin: string): string // enforcem
   fail-open dispatch — AFTER the subagent early-exit (children get no context).
   UserPromptSubmit: rename guidance only when managed AND intent matched AND no
   once-per-session marker; on inject, write
-  `.codexclaw/worktree-guard/<session_id>.json` `{ injectedAt, slot }` (FQ6).
+  `.cursorclaw/worktree-guard/<session_id>.json` `{ injectedAt, slot }` (FQ6).
 - `handleWorktreeGuardPreTool` (PreToolUse): dispatched in cli.ts ABOVE the
   `isSubagentHookPayload` early-exit (same position class as the fail-closed
   pre-tool-use dispatcher), so child agents are enforced too. Reads
@@ -96,7 +96,7 @@ export function handleWorktreeGuardPreTool(rawStdin: string): string // enforcem
 ### Injection text: SessionStart identity block (WORKTREE-GUARD-01)
 
 ```
-[codexclaw: MANAGED WORKTREE — identity guard (WORKTREE-GUARD-01)]
+[cursorclaw: MANAGED WORKTREE — identity guard (WORKTREE-GUARD-01)]
 This session runs inside a Codex-app-managed worktree: <checkoutRoot>
    (cwd: <cwd>; slot: <slotRoot>; worktrees root: <worktreesDir>).
    When checkoutRoot is null the block says "checkout root: unconfirmed (no .git
@@ -129,7 +129,7 @@ place; teardown of THIS session's worktree is done by the user (archive in app �
 snapshot preserved — or removal from OUTSIDE this session); even explicit in-session
 approval does not unlock self-deletion from inside the session.
 
-## MODIFY `plugins/codexclaw/components/pabcd-state/src/cli.ts`
+## MODIFY `plugins/cursorclaw/components/pabcd-state/src/cli.ts`
 
 1. Import `handleWorktreeGuard, handleWorktreeGuardPreTool` from `./worktree-guard.ts`.
 2. ABOVE the subagent early-exit (next to the fail-closed pre-tool-use dispatcher):
@@ -142,20 +142,20 @@ approval does not unlock self-deletion from inside the session.
 
 - `hooks/session-start-detecting-managed-worktree.json`: SessionStart →
   `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook worktree-guard`,
-  timeout 10, statusMessage "(codexclaw) Checking managed-worktree identity".
+  timeout 10, statusMessage "(cursorclaw) Checking managed-worktree identity".
 - `hooks/user-prompt-submit-guiding-worktree-rename.json`: UserPromptSubmit,
-  same command, timeout 10, "(codexclaw) Checking worktree rename intent".
+  same command, timeout 10, "(cursorclaw) Checking worktree rename intent".
 - `hooks/pre-tool-use-guarding-managed-worktree-deletion.json`: PreToolUse,
   command `... hook worktree-guard-pretool`, matcher `"^Bash$"` (B4: codex-rs
   canonical shell hook name; precedent hooks/_deprecated/pre-tool-use-advising-on-friction.json),
-  timeout 10, "(codexclaw) Guarding managed worktree".
+  timeout 10, "(cursorclaw) Guarding managed worktree".
 
-## NEW `plugins/codexclaw/components/pabcd-state/test/worktree-guard.test.ts`
+## NEW `plugins/cursorclaw/components/pabcd-state/test/worktree-guard.test.ts`
 
 `node --test`, imports `../src/worktree-guard.ts`. Cases:
-1. detect: default `~/.codex/worktrees/<slot>/<repo>` (tmpdir HOME via env) →
+1. detect: default `~/.cursor/worktrees/<slot>/<repo>` (tmpdir HOME via env) →
    managed, slot, slotRoot, checkoutRoot at the dir containing `.git`;
-   CODEX_HOME override; CODEXCLAW_WORKTREE_ROOTS extra root (POSIX list AND a
+   CURSOR_HOME override; CODEXCLAW_WORKTREE_ROOTS extra root (POSIX list AND a
    Windows-style `C:\...\worktrees` entry parsed via path.delimiter);
    non-worktree cwd → not managed; cwd == root → not managed; no `.git` anywhere
    up to slotRoot → managed with checkoutRoot null (unconfirmed identity, slot
@@ -195,7 +195,7 @@ hooks"→21. structure/INDEX.md: add the three hooks to the hook list/table.
 
 ## Build/dist
 
-`node plugins/codexclaw/scripts/build.mjs` regenerates dist; `git add -f` the dist
+`node plugins/cursorclaw/scripts/build.mjs` regenerates dist; `git add -f` the dist
 paths (repo convention, verified by auditor against .gitignore + history).
 
 ## Accept criteria + activation scenarios

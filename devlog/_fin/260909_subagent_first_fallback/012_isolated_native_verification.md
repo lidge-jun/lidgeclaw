@@ -28,7 +28,7 @@ Independent full repository suite: `env TMPDIR=/var/tmp/cxc-fallback-native-701c
 
 ## Isolation and evidence boundary
 
-Fixtures, CODEX_HOME, CODEXCLAW_HOME, TMPDIR and project state live under `/var/tmp/cxc-fallback-native-701c17d`. The native binary was launched directly with a minimal environment and no credentials. Its provider URL was an ephemeral loopback HTTP server. The operator's OCX service and installed plugin/settings were not modified or used for inference.
+Fixtures, CURSOR_HOME, CURSORCLAW_HOME, TMPDIR and project state live under `/var/tmp/cxc-fallback-native-701c17d`. The native binary was launched directly with a minimal environment and no credentials. Its provider URL was an ephemeral loopback HTTP server. The operator's OCX service and installed plugin/settings were not modified or used for inference.
 
 The two production hook commands and matchers were loaded as isolated user hooks, with native-reported hashes explicitly trusted in that isolated config. `hooks/list` confirmed both trusted. This verifies those hook entrypoints in the real host, not a full plugin-marketplace installation. The fixture reused model catalog metadata with direct tools and v1 enabled; code-mode execution and native custom-role behavior were not covered. Logical CXC role selection came from the managed dispatch, not native `agent_type`.
 
@@ -46,4 +46,4 @@ All fixture servers and subprocesses exited; only evidence and isolated state re
 
 ## Required follow-up
 
-`plugins/codexclaw/components/subagent-config/src/fallback-errors.ts:9` must account for verified native transport transformations, with narrow matching and retained permission/unknown-error negatives. `fallback-dispatch.ts:173` currently returns `reconcile` for these unclassified strings. Add regression coverage from the captured native outputs, then repeat native acceptance to prove primary -> fallback -> main-direct, including fallback effort and reviewer independence. Do not treat the prior passing synthetic tests as proof of that transition.
+`plugins/cursorclaw/components/subagent-config/src/fallback-errors.ts:9` must account for verified native transport transformations, with narrow matching and retained permission/unknown-error negatives. `fallback-dispatch.ts:173` currently returns `reconcile` for these unclassified strings. Add regression coverage from the captured native outputs, then repeat native acceptance to prove primary -> fallback -> main-direct, including fallback effort and reviewer independence. Do not treat the prior passing synthetic tests as proof of that transition.

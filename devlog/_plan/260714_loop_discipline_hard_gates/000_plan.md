@@ -15,8 +15,8 @@ is form-only; `detectLoopArmRequest` (hook.ts:150) lacks `pabcd` and `여러 번
 ## Loop-spec header
 
 - Loop archetype: verifier-defined (bun test + standalone hook execution + exit codes).
-- Unattended scope: local repo only; write scope = `plugins/codexclaw/components/{pabcd-state,cxc-ops}/`,
-  `plugins/codexclaw/skills/{loop,pabcd}/`, `plugins/codexclaw/hooks/`, this devlog unit,
+- Unattended scope: local repo only; write scope = `plugins/cursorclaw/components/{pabcd-state,cxc-ops}/`,
+  `plugins/cursorclaw/skills/{loop,pabcd}/`, `plugins/cursorclaw/hooks/`, this devlog unit,
   plus `bin/codexclaw.mjs` + `test/cli-usage.test.mjs` for wp2's `plan` verb routing
   (audit round 1 blocker #1: subcommand dispatch lives in the bin, not component cli.ts).
 - Budget: this session's context; checkpoint via goalplan ledger on compaction.
@@ -44,7 +44,7 @@ its decade doc against the then-current tree (files below may drift after earlie
 
 ## Verification per cycle (C phase) — corrected by audit round 1
 
-Repo-root `npm run build` (plugins/codexclaw/scripts/build.mjs, zero-toolchain node
+Repo-root `npm run build` (plugins/cursorclaw/scripts/build.mjs, zero-toolchain node
 type-stripping) then repo-root `npm test` (node --test; includes plugin-level
 hook-e2e / dist-freshness / loop-activation-doc-sync / cli-usage guards). Standalone
 reproduction with captured exit codes, then commit (D). NOTE: build.mjs PLACEHOLDER_RE

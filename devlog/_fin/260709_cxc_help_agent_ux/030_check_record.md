@@ -11,11 +11,11 @@
 ```text
 npm run build
 exit: 0
-[codexclaw] build OK — 101 files compiled, layout validated.
+[cursorclaw] build OK — 101 files compiled, layout validated.
 ```
 
 ```text
-node --test plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts plugins/codexclaw/test/cli-usage.test.mjs
+node --test plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts plugins/cursorclaw/test/cli-usage.test.mjs
 exit: 0
 tests: 33
 pass: 33
@@ -55,7 +55,7 @@ observed: orchestrate A: current=C session=019f4757-93cd-7e91-979c-80f687a91fc1;
 ```
 
 ```text
-node plugins/codexclaw/components/pabcd-state/dist/cli.js orchestrate wat --session 019f4757-93cd-7e91-979c-80f687a91fc1 --cwd /Users/jun/Developer/new/700_projects/codexclaw
+node plugins/cursorclaw/components/pabcd-state/dist/cli.js orchestrate wat --session 019f4757-93cd-7e91-979c-80f687a91fc1 --cwd /Users/jun/Developer/new/700_projects/codexclaw
 exit: 1
 observed: current=C session=019f4757-93cd-7e91-979c-80f687a91fc1; unknown orchestrate verb 'wat' ... run cxc orchestrate --help
 ```
@@ -91,11 +91,11 @@ tests: 983
 pass: 976
 fail: 7
 primary failing surfaces:
-- plugins/codexclaw/components/subagent-config/test/spawn-attach-hook.test.ts
-- plugins/codexclaw/test/build.test.mjs
-- plugins/codexclaw/test/cli-usage.test.mjs
-- plugins/codexclaw/test/dist-freshness.test.mjs
-- plugins/codexclaw/test/hook-e2e.test.mjs
+- plugins/cursorclaw/components/subagent-config/test/spawn-attach-hook.test.ts
+- plugins/cursorclaw/test/build.test.mjs
+- plugins/cursorclaw/test/cli-usage.test.mjs
+- plugins/cursorclaw/test/dist-freshness.test.mjs
+- plugins/cursorclaw/test/hook-e2e.test.mjs
 ```
 
 The help-focused tests and manual CLI smokes pass after rebuilding. The full-suite blocker should be handled by the separate `260709_multi_agent_v2_switch` / subagent hook work before this worktree can claim a repository-wide green gate.

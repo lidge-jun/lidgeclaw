@@ -12,9 +12,9 @@
 ## Reproducible counts
 
 ```bash
-find plugins/codexclaw/components -path '*/src/*' -type f \( -name '*.ts' -o -name '*.mjs' \) -exec sh -c 'for f do n=$(wc -l < "$f"); [ "$n" -gt 400 ] && echo "$f"; done' sh {} + | wc -l
-find plugins/codexclaw/components -path '*/src/*' -type f \( -name '*.ts' -o -name '*.mjs' \) -exec sh -c 'for f do n=$(wc -l < "$f"); [ "$n" -gt 800 ] && echo "$f"; done' sh {} + | wc -l
-find plugins/codexclaw/components -path '*/src/win-exec.ts' | wc -l
+find plugins/cursorclaw/components -path '*/src/*' -type f \( -name '*.ts' -o -name '*.mjs' \) -exec sh -c 'for f do n=$(wc -l < "$f"); [ "$n" -gt 400 ] && echo "$f"; done' sh {} + | wc -l
+find plugins/cursorclaw/components -path '*/src/*' -type f \( -name '*.ts' -o -name '*.mjs' \) -exec sh -c 'for f do n=$(wc -l < "$f"); [ "$n" -gt 800 ] && echo "$f"; done' sh {} + | wc -l
+find plugins/cursorclaw/components -path '*/src/win-exec.ts' | wc -l
 ```
 
 Expected baseline for this report: 21 plugin `src` files >400 LOC; 4 files >800 LOC; 4 `win-exec.ts` owners. Root `bin/codexclaw.mjs` is separately reported and makes the broader runtime count 22.
@@ -54,26 +54,26 @@ git -C devlog/.omo cat-file -e HEAD:packages/omo-opencode/src/tools/delegate-tas
 
 ## Exact anchor code index
 
-- C1 `plugins/codexclaw/components/pabcd-state/src/fsm.ts:23-70`; `plugins/codexclaw/components/pabcd-state/src/hook.ts:1275-1336`.
-- C2 `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:59-90,700-749`; `plugins/codexclaw/components/pabcd-state/src/goalplan-cli.ts:37-84`.
-- C3 `plugins/codexclaw/skills/search/SKILL.md:118-177`; `plugins/codexclaw/components/recall/src/chat-search.ts:28-97`.
-- C4 `plugins/codexclaw/components/subagent-config/src/store.ts:16-58`; `plugins/codexclaw/components/subagent-config/src/spawn-attach-hook.ts:745-929`.
-- C5 `plugins/codexclaw/components/pabcd-state/src/source-identity.ts:168-208`; `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:921-994`.
-- C6 `plugins/codexclaw/components/cxc-ops/src/hook-trust.ts:308-467`; `docs/security-hardening.md:86-95`.
+- C1 `plugins/cursorclaw/components/pabcd-state/src/fsm.ts:23-70`; `plugins/cursorclaw/components/pabcd-state/src/hook.ts:1275-1336`.
+- C2 `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:59-90,700-749`; `plugins/cursorclaw/components/pabcd-state/src/goalplan-cli.ts:37-84`.
+- C3 `plugins/cursorclaw/skills/search/SKILL.md:118-177`; `plugins/cursorclaw/components/recall/src/chat-search.ts:28-97`.
+- C4 `plugins/cursorclaw/components/subagent-config/src/store.ts:16-58`; `plugins/cursorclaw/components/subagent-config/src/spawn-attach-hook.ts:745-929`.
+- C5 `plugins/cursorclaw/components/pabcd-state/src/source-identity.ts:168-208`; `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:921-994`.
+- C6 `plugins/cursorclaw/components/cxc-ops/src/hook-trust.ts:308-467`; `docs/security-hardening.md:86-95`.
 - C7 `.github/workflows/release.yml:68-225`; `.github/workflows/packed-install.yml:21-160`.
-- C8 `plugins/codexclaw/components/pabcd-state/src/interview.ts:264-340`; `plugins/codexclaw/components/pabcd-state/src/goal-active.ts:57-89`.
-- C9 `README.md:48-61`; `plugins/codexclaw/gui/src/pages/Channels.tsx:216-295`.
-- C10 `plugins/codexclaw/gui/src/App.tsx:20-25`; `plugins/codexclaw/gui/src/pages/Dashboard.tsx:181-243`.
-- C11 `plugins/codexclaw/components/messenger-bridge/src/runner.ts:78-105,542-573`; `plugins/codexclaw/components/messenger-bridge/test/runner.test.ts:37-53,166-184`; `plugins/codexclaw/components/messenger-bridge/src/gateway-commands.ts:50-66`; `plugins/codexclaw/components/messenger-bridge/test/gateway-commands.test.ts:251-338`.
-- C12 `plugins/codexclaw/components/messenger-bridge/src/event-log.ts:27-45,112-139`; `plugins/codexclaw/components/messenger-bridge/src/metrics.ts:1-20,42-90`.
-- C13 `plugins/codexclaw/components/subagent-config/src/capabilities.ts:54-128`; `plugins/codexclaw/components/subagent-config/src/spawn-wrapper.ts:428-500`.
-- C14 `plugins/codexclaw/components/cxc-ops/src/map-affordance.ts:101-120`; `plugins/codexclaw/bin/cxc.mjs:89-139`.
+- C8 `plugins/cursorclaw/components/pabcd-state/src/interview.ts:264-340`; `plugins/cursorclaw/components/pabcd-state/src/goal-active.ts:57-89`.
+- C9 `README.md:48-61`; `plugins/cursorclaw/gui/src/pages/Channels.tsx:216-295`.
+- C10 `plugins/cursorclaw/gui/src/App.tsx:20-25`; `plugins/cursorclaw/gui/src/pages/Dashboard.tsx:181-243`.
+- C11 `plugins/cursorclaw/components/messenger-bridge/src/runner.ts:78-105,542-573`; `plugins/cursorclaw/components/messenger-bridge/test/runner.test.ts:37-53,166-184`; `plugins/cursorclaw/components/messenger-bridge/src/gateway-commands.ts:50-66`; `plugins/cursorclaw/components/messenger-bridge/test/gateway-commands.test.ts:251-338`.
+- C12 `plugins/cursorclaw/components/messenger-bridge/src/event-log.ts:27-45,112-139`; `plugins/cursorclaw/components/messenger-bridge/src/metrics.ts:1-20,42-90`.
+- C13 `plugins/cursorclaw/components/subagent-config/src/capabilities.ts:54-128`; `plugins/cursorclaw/components/subagent-config/src/spawn-wrapper.ts:428-500`.
+- C14 `plugins/cursorclaw/components/cxc-ops/src/map-affordance.ts:101-120`; `plugins/cursorclaw/bin/cursorclaw.mjs:89-139`.
 - C15 `.github/workflows/ci.yml:12-55`; `.github/workflows/wsl.yml:13-40`.
-- C16 `package.json:21-24`; `plugins/codexclaw/components/pabcd-state/src/hook.ts:1469`; `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:1094`.
-- C17 `.agents/plugins/marketplace.json:6-18`; `plugins/codexclaw/test/payload-bin.test.mjs:53-106`.
-- C18 `plugins/codexclaw/components/provider-bridge/src/detect.ts:1-101`; `plugins/codexclaw/gui/src/api.ts:12-16,239-241`.
-- C19 `plugins/codexclaw/scripts/hook-bench.mjs:123-160`; `plugins/codexclaw/scripts/hook-bench-compare.mjs:5-40`.
-- C20 `plugins/codexclaw/components/skill-search/src/cli.ts:153-230`; `plugins/codexclaw/components/skill-search/src/sources.ts:10-20`.
+- C16 `package.json:21-24`; `plugins/cursorclaw/components/pabcd-state/src/hook.ts:1469`; `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:1094`.
+- C17 `.agents/plugins/marketplace.json:6-18`; `plugins/cursorclaw/test/payload-bin.test.mjs:53-106`.
+- C18 `plugins/cursorclaw/components/provider-bridge/src/detect.ts:1-101`; `plugins/cursorclaw/gui/src/api.ts:12-16,239-241`.
+- C19 `plugins/cursorclaw/scripts/hook-bench.mjs:123-160`; `plugins/cursorclaw/scripts/hook-bench-compare.mjs:5-40`.
+- C20 `plugins/cursorclaw/components/skill-search/src/cli.ts:153-230`; `plugins/cursorclaw/components/skill-search/src/sources.ts:10-20`.
 - O1 `devlog/.omo/packages/omo-codex/plugin/components/ulw-loop/src/checkpoint.ts:158-252`.
 - O2 `devlog/.omo/packages/team-core/src/team-tasklist/claim.ts:45-96`; `devlog/.omo/packages/omo-opencode/src/tools/task/types.ts:3-21`.
 - O3 `devlog/.omo/packages/shared-skills/skills/ulw-research/SKILL.md:61-149,195-260`.

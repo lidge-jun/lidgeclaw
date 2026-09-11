@@ -134,7 +134,7 @@ export function recordFixture(t, scenario = "success") {
     provenance: { approval: join(root, "approval.md"), install: join(root, "install.json"), prompt: join(root, "prompt.txt"),
       source: join(source.sourceRoot, "fixture.txt"), "source-hidden": join(source.sourceRoot, "fixture.txt"),
       codex: join(base, "fake-codex.mjs"), recorder: join(base, "recorder-copy.mjs") },
-    dispatcher: join(installed, "bin/cxc.mjs"),
+    dispatcher: join(installed, "bin/cursorclaw.mjs"),
     dist: join(installed, "components/fixture/dist/cli.js"), config: join(home, ".codex/config.toml"),
     cxcLauncher: join(home, "probe-bin/cxc"), final: join(root, "output/final.txt"),
     execMarker: join(base, "exec.marker"), doctorLog: join(base, "doctor.log"),
@@ -152,7 +152,7 @@ export function recordFixture(t, scenario = "success") {
   const version = "1.0.0+codex.fixture-one";
   putJson(installed, ".cursor-plugin/plugin.json", { name: "cursorclaw", version });
   put(installed, "components/fixture/dist/cli.js", "// fixture dist\n");
-  put(installed, "bin/cxc.mjs", scriptSource(f, fakeDispatcher));
+  put(installed, "bin/cursorclaw.mjs", scriptSource(f, fakeDispatcher));
   put(base, "external.mjs", `import {writeFileSync} from "node:fs";
 writeFileSync(${JSON.stringify(f.linkedMarker)}, "executed");
 process.stdout.write(${JSON.stringify(JSON.stringify(doctorReport()))});\n`);

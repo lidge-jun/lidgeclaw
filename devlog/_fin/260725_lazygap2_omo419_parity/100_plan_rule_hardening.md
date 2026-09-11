@@ -3,7 +3,7 @@
 출처: 이 유닛의 감사 4라운드 + Interview Mind 5명이 드러낸 **설계 결함 계열** ·
 의존: 없음 (다른 슬라이스의 타입/코드를 쓰지 않음) ·
 쓰기 범위: 산문 3파일 + `gate.mjs` 코드 1파일 + 신규 테스트 1파일 ·
-소유권 주의: `plugins/codexclaw/skills/dev-testing/SKILL.md`를 `060`/`061`과 공유 —
+소유권 주의: `plugins/cursorclaw/skills/dev-testing/SKILL.md`를 `060`/`061`과 공유 —
 아래 "소유권 충돌" 절 참조 · 상태: PLANNED
 
 ## 왜 이 슬라이스가 존재하는가
@@ -15,11 +15,11 @@
 
 | 성격 | tier | 파일 | 넣는 것 | 실제로 막아주는가 |
 | --- | --- | --- | --- | --- |
-| **규칙(산문)** | E7 | `plugins/codexclaw/skills/pabcd/SKILL.md` P 절 | 규칙 3개 | **아니오** — 모델이 읽고 따르는 지침 |
+| **규칙(산문)** | E7 | `plugins/cursorclaw/skills/pabcd/SKILL.md` P 절 | 규칙 3개 | **아니오** — 모델이 읽고 따르는 지침 |
 | **규칙(산문)** | E7 | 같은 파일 A 절 | 리뷰어 체크 5개 | 아니오 |
-| **규칙(산문)** | E7 | `plugins/codexclaw/skills/dev-testing/SKILL.md` | `TEST-ROW-REACHABLE-01` | 아니오 |
-| **코드** | E8 | `plugins/codexclaw/scripts/gate.mjs` | 미작동 검증 명령 탐지 | 일부 — WARN만, 차단은 안 함 |
-| **코드** | E8 | `plugins/codexclaw/test/gate-verifier-claims.test.mjs` | 위 검사의 테스트 | 예 (테스트 자체는 실패로 막힘) |
+| **규칙(산문)** | E7 | `plugins/cursorclaw/skills/dev-testing/SKILL.md` | `TEST-ROW-REACHABLE-01` | 아니오 |
+| **코드** | E8 | `plugins/cursorclaw/scripts/gate.mjs` | 미작동 검증 명령 탐지 | 일부 — WARN만, 차단은 안 함 |
+| **코드** | E8 | `plugins/cursorclaw/test/gate-verifier-claims.test.mjs` | 위 검사의 테스트 | 예 (테스트 자체는 실패로 막힘) |
 
 E7의 한계는 저장소가 이미 못 박아 뒀다: "산문의 모든 MUST는 E1/E2/E3 분기가 뒷받침하지
 않으면 여전히 E7이다. 모순 등록부가 존재하는 이유는 E7이 반복적으로 강제로 오표기됐기
@@ -48,12 +48,12 @@ E7의 한계는 저장소가 이미 못 박아 뒀다: "산문의 모든 MUST는
   `noEmit: true` + `allowImportingTsExtensions: true`가 결박되고, 이는 emit용으로
   재사용할 수 없는 계약이다.
 - 빌드는 tsc를 쓰지 않는다 — Node의 `stripTypeScriptTypes`로 타입만 제거한다
-  (`plugins/codexclaw/scripts/build.mjs:2-4,65-67`). 그래서 root tsconfig 추가는
+  (`plugins/cursorclaw/scripts/build.mjs:2-4,65-67`). 그래서 root tsconfig 추가는
   `npm run build`에 무해하지만, **빌드 성공이 타입 정합을 보장하지 않는 상태가 유지된다.**
 - TypeScript는 root가 아니라 GUI workspace의 devDependency다
-  (`plugins/codexclaw/gui/package.json:16-20`). root gate가 쓰려면 소유권을 옮겨야 한다.
+  (`plugins/cursorclaw/gui/package.json:16-20`). root gate가 쓰려면 소유권을 옮겨야 한다.
 - 범위 정의가 필요하다. GUI는 `moduleResolution: "bundler"` + JSX + DOM
-  (`plugins/codexclaw/gui/tsconfig.json:2-14`), docs-site는 Astro strict
+  (`plugins/cursorclaw/gui/tsconfig.json:2-14`), docs-site는 Astro strict
   (`docs-site/tsconfig.json:1-5`), 컴포넌트는 NodeNext — 하나의 root config로 덮을 수 없다.
 
 ### 더 중요한 발견: `020`의 타입 안전 주장이 거짓이다
@@ -109,11 +109,11 @@ Mind "Bohr"가 초안에서 모순 9건을 잡았고 전부 반영했다. 이 �
 
 | 반복된 결함 | 실제 사례 | 현행 규칙이 요구하는 것 | 빠진 것 |
 | --- | --- | --- | --- |
-| **검증 명령이 존재하지 않음** | 7개 문서가 `npx tsc --noEmit`을 타입 검증기로 적었으나 root `tsconfig.json`이 없어 도움말만 출력한다 (`package.json:21-24`에 typecheck script 없음) | `plugins/codexclaw/skills/pabcd/SKILL.md:125` — "Verifier (command/gate and what it measures)"를 loop-spec에 적어라 | 그 명령을 **실제로 실행해 작동을 확인하라**는 요구가 없다 |
-| **검증기가 변경을 볼 수 없음** | `061`/`062`/`063`/`064`가 `npm run gate`를 검증기로 지정했으나 `plugins/codexclaw/scripts/gate.mjs:147-176`은 SKILL.md만 훑고 references/를 읽지 않는다 | 같은 줄 — "what it measures"를 적어라 | 검증기의 **관측 범위가 변경 대상을 포함하는지** 확인하라는 요구가 없다 |
-| **타입만 추가하고 생성 경로 누락** | `040`이 `CriterionSurface`를 추가했으나 reviver·builder·CLI를 안 바꿔 값을 만들 방법이 없었다 (`plugins/codexclaw/components/pabcd-state/src/goalplan.ts:128-139,198-216`) | `:125` — "file change map"을 적어라 | 새 필드의 **생성→직렬화→역직렬화→소비 사슬 전체**를 열거하라는 요구가 없다 |
+| **검증 명령이 존재하지 않음** | 7개 문서가 `npx tsc --noEmit`을 타입 검증기로 적었으나 root `tsconfig.json`이 없어 도움말만 출력한다 (`package.json:21-24`에 typecheck script 없음) | `plugins/cursorclaw/skills/pabcd/SKILL.md:125` — "Verifier (command/gate and what it measures)"를 loop-spec에 적어라 | 그 명령을 **실제로 실행해 작동을 확인하라**는 요구가 없다 |
+| **검증기가 변경을 볼 수 없음** | `061`/`062`/`063`/`064`가 `npm run gate`를 검증기로 지정했으나 `plugins/cursorclaw/scripts/gate.mjs:147-176`은 SKILL.md만 훑고 references/를 읽지 않는다 | 같은 줄 — "what it measures"를 적어라 | 검증기의 **관측 범위가 변경 대상을 포함하는지** 확인하라는 요구가 없다 |
+| **타입만 추가하고 생성 경로 누락** | `040`이 `CriterionSurface`를 추가했으나 reviver·builder·CLI를 안 바꿔 값을 만들 방법이 없었다 (`plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:128-139,198-216`) | `:125` — "file change map"을 적어라 | 새 필드의 **생성→직렬화→역직렬화→소비 사슬 전체**를 열거하라는 요구가 없다 |
 | **새 상태의 기존 소비자 누락** | `091`이 `blocked`/`superseded`를 추가했으나 `nextOpenTask`·`effectiveActiveWorkPhaseId`·`advanceWorkPhase`가 `done`만 보는 것을 놓쳤다 (`goalplan.ts:241-248,303-330,341-349`) | 위와 같음 | 기존 열거형에 값을 더할 때 **그 열거형을 읽는 모든 지점을 찾으라**는 요구가 없다 |
-| **게이트가 우회 가능한데 강제라고 서술** | `040`이 마커 없으면 통과, `030`이 `schemaVersion` 삭제로 우회 가능 | `plugins/codexclaw/scripts/gate.mjs:122-172`가 false-enforcement 산문을 정규식으로 잡지만 영문 3패턴뿐 | 설계 문서에 **우회 경로를 명시하고 최종 강제층을 지목하라**는 요구가 없다 |
+| **게이트가 우회 가능한데 강제라고 서술** | `040`이 마커 없으면 통과, `030`이 `schemaVersion` 삭제로 우회 가능 | `plugins/cursorclaw/scripts/gate.mjs:122-172`가 false-enforcement 산문을 정규식으로 잡지만 영문 3패턴뿐 | 설계 문서에 **우회 경로를 명시하고 최종 강제층을 지목하라**는 요구가 없다 |
 | **테스트가 도달 불가능한 조건을 요구** | `091`의 "active가 blocked일 때 advance 거부"는 helper가 그 커서를 이미 제외하므로 도달 불가. `050`의 "악의적 work-phase id 경로 거부"는 경로 도출 지점이 없다 | `:125` — C-ACTIVATION-GROUNDING-01은 조건부 경로의 활성화 시나리오를 요구한다 | 그 요구가 **테스트 표의 각 행**에는 적용되지 않는다 (계획의 조건부 경로에만 적용) |
 | **문서 간 필드 계약 불일치** | `030`의 파서는 `kind`/`sourceIdentity`/`createdAt`을, `070`은 `capturedAt`/`sourceSnapshotAt`/`captureChecks`를 쓰는데 "같은 값을 공유한다"고 주장했다 | DIFFLEVEL-ROADMAP-01은 각 phase에 diff-level 문서를 요구한다 | 여러 문서가 **공유 타입을 언급할 때 필드명까지 일치하는지** 검사하라는 요구가 없다 |
 | **헤더 의존 선언이 본문과 드리프트** | `010` 헤더는 "의존 없음"인데 본문은 `020`의 타입을 쓴다. `090` 헤더는 `010` 의존인데 로드맵은 가짜 의존이라고 제거했다 | PHASE-SPLIT-01은 의존 순서 배열을 요구한다 | 문서 **헤더의 의존 선언과 본문의 실제 사용을 대조**하라는 요구가 없다 |
@@ -122,17 +122,17 @@ Mind "Bohr"가 초안에서 모순 9건을 잡았고 전부 반영했다. 이 �
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/skills/pabcd/SKILL.md` | P 단계(`:125`)에 규칙 3개 추가: `PLAN-VERIFIER-REAL-01`, `PLAN-FIELD-CHAIN-01`, `PLAN-BYPASS-NAMED-01` |
-| `plugins/codexclaw/skills/pabcd/SKILL.md` | A 단계(`:126`) 리뷰어 체크리스트에 항목 5개 추가 |
-| `plugins/codexclaw/skills/dev-testing/SKILL.md` | `TEST-ROW-REACHABLE-01` 추가 (테스트 표 각 행의 도달 가능성) |
-| `plugins/codexclaw/scripts/gate.mjs` | `checkVerifierClaims` 신규 + `runGate` warnings 필드 + CLI 양쪽 출력 경로 |
-| `plugins/codexclaw/test/gate-verifier-claims.test.mjs` | 신규 테스트 |
+| `plugins/cursorclaw/skills/pabcd/SKILL.md` | P 단계(`:125`)에 규칙 3개 추가: `PLAN-VERIFIER-REAL-01`, `PLAN-FIELD-CHAIN-01`, `PLAN-BYPASS-NAMED-01` |
+| `plugins/cursorclaw/skills/pabcd/SKILL.md` | A 단계(`:126`) 리뷰어 체크리스트에 항목 5개 추가 |
+| `plugins/cursorclaw/skills/dev-testing/SKILL.md` | `TEST-ROW-REACHABLE-01` 추가 (테스트 표 각 행의 도달 가능성) |
+| `plugins/cursorclaw/scripts/gate.mjs` | `checkVerifierClaims` 신규 + `runGate` warnings 필드 + CLI 양쪽 출력 경로 |
+| `plugins/cursorclaw/test/gate-verifier-claims.test.mjs` | 신규 테스트 |
 | `devlog/_fin/260725_lazygap2_omo419_parity/000_plan.md` | 문서 맵에 `100`/`110` 등록 |
 | `devlog/_fin/260725_lazygap2_omo419_parity/009_reinforcement_roadmap.md` | decade 맵에 `100`/`110` 등록 (슬라이스 16개로 갱신) |
 
 ### 삽입 위치 (감사 블로커 4 반영)
 
-`## Phases`(`plugins/codexclaw/skills/pabcd/SKILL.md:120`) 아래는 `0.`~`5.` 번호 목록이고
+`## Phases`(`plugins/cursorclaw/skills/pabcd/SKILL.md:120`) 아래는 `0.`~`5.` 번호 목록이고
 각 단계가 긴 단일 행이다. 그 사이에 `###` 헤딩을 넣으면 목록이 끊긴다.
 
 저장소가 이미 쓰는 방식을 따른다 — `:127`이 A 항목의 **들여쓴 continuation 문단**이다.
@@ -149,7 +149,7 @@ Mind "Bohr"가 초안에서 모순 9건을 잡았고 전부 반영했다. 이 �
 
 ## 소유권 충돌 (Mind 지적 반영)
 
-`plugins/codexclaw/skills/dev-testing/SKILL.md`를 세 슬라이스가 만진다 —
+`plugins/cursorclaw/skills/dev-testing/SKILL.md`를 세 슬라이스가 만진다 —
 `060`(오라클 규칙 3개), `061`(guard-removal 문장), `100`(`TEST-ROW-REACHABLE-01`).
 `dev-code-reviewer/SKILL.md`는 `061`과 `062`가 공유한다.
 
@@ -162,7 +162,7 @@ Mind "Bohr"가 초안에서 모순 9건을 잡았고 전부 반영했다. 이 �
 
 ### `PLAN-VERIFIER-REAL-01` (E7 규율, P 단계)
 
-before: `plugins/codexclaw/skills/pabcd/SKILL.md:125`는 loop-spec에
+before: `plugins/cursorclaw/skills/pabcd/SKILL.md:125`는 loop-spec에
 "Verifier (command/gate and what it measures)"를 적으라고만 한다.
 
 after: 아래를 추가한다.
@@ -228,7 +228,7 @@ after: 아래를 추가한다.
 
 ### A 단계 리뷰어 체크리스트 (5항목 추가)
 
-`plugins/codexclaw/skills/pabcd/SKILL.md:126`의 "reviewer also checks" 목록에 추가한다.
+`plugins/cursorclaw/skills/pabcd/SKILL.md:126`의 "reviewer also checks" 목록에 추가한다.
 
 > 리뷰어는 추가로 확인한다: (a) 계획이 지목한 검증 명령이 실제로 존재하고 변경 대상을
 > 읽는가 (PLAN-VERIFIER-REAL-01) — 리뷰어가 직접 실행해 확인한다; (b) 새 필드/열거값의
@@ -269,11 +269,11 @@ export function checkVerifierClaims(repoRoot = REPO_ROOT)
 - `ok`은 항상 `true`다. 이 검사는 **차단하지 않는다.**
 - `runGate`의 반환형을 additive로 확장한다:
   `{ ok, checks, violations, warnings }`. `warnings`는 신규 필드이므로
-  기존 소비자(`gate.mjs` CLI, `plugins/codexclaw/test/gate.test.mjs:19-20`,
+  기존 소비자(`gate.mjs` CLI, `plugins/cursorclaw/test/gate.test.mjs:19-20`,
   개별 check 테스트들)를 깨지 않는다.
 - **CLI 출력 경로를 양쪽 다 고친다** (블로커 2의 핵심 — 안 고치면 경고가 보이지 않는다):
   성공 경로(`gate.mjs:209-212`)와 실패 경로(`:213-216`) 모두에서
-  `warnings`가 비어있지 않으면 `[codexclaw gate] WARN — N verifier-claim issue(s):`와
+  `warnings`가 비어있지 않으면 `[cursorclaw gate] WARN — N verifier-claim issue(s):`와
   각 항목을 stderr로 출력한다. exit code는 `violations`만으로 결정한다
   (경고만 있으면 exit 0).
 - 모든 fixture 테스트는 `runGate(tempRoot)`가 아니라 **`checkVerifierClaims(tempRoot)`를
@@ -330,7 +330,7 @@ export function checkVerifierClaims(repoRoot = REPO_ROOT)
 슬라이스 P의 몫이므로, 검사는 보고만 하고 차단하지 않는다.
 
 **설치 payload에서의 한계 (Mind 지적 반영):** 마켓플레이스 payload는
-`./plugins/codexclaw`뿐이다 (`.agents/plugins/marketplace.json:6-12`). `devlog/`는
+`./plugins/cursorclaw`뿐이다 (`.agents/plugins/marketplace.json:6-12`). `devlog/`는
 payload에 없으므로 이 검사는 **저장소 체크아웃에서만 동작한다.** 설치된 플러그인에서는
 검사 대상이 없어 조용히 통과한다. 이것은 결함이 아니라 범위이고, 그 사실을 코드 주석과
 이 문서에 적는다 — "설치본에서도 계획 규율을 강제한다"고 쓰지 않는다.
@@ -367,7 +367,7 @@ payload에 없으므로 이 검사는 **저장소 체크아웃에서만 동작�
 - `npm run gate` — **실행 확인됨**, exit 0. `gate.mjs` 코드 변경은 이 명령이 실행하므로
   관측된다. 단 **산문 4행은 관측하지 못한다** (위 표에서 사람 리뷰로 분류).
 - `npm test` — **실행 확인됨**, exit 0, 1,213 tests pass. 신규 테스트를
-  `plugins/codexclaw/test/*.test.mjs`에 두면 `package.json:24`의 glob이 포함한다.
+  `plugins/cursorclaw/test/*.test.mjs`에 두면 `package.json:24`의 glob이 포함한다.
 - `npx tsc --noEmit` — **적지 않는다.** root `tsconfig.json`이 없어 아무것도 검사하지 않음을
   확인했다 (도움말 출력). 이 문서가 고치려는 바로 그 함정이다.
 

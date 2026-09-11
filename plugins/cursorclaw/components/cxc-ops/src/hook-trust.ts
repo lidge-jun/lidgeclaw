@@ -156,7 +156,7 @@ function assertSafeHeaderValue(value: string, label: string): void {
 export function listHookEntries(pluginRoot: string, pluginKey: string): HookEntry[] {
   assertSupportedPlatform();
   assertSafeHeaderValue(pluginKey, "plugin key");
-  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8")) as {
+  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8")) as {
     hooks?: unknown;
   };
   if (!Array.isArray(manifest.hooks)) return [];
@@ -383,7 +383,7 @@ function verifyCodexConfig(
   runner: HookTrustRunner,
   platform: NodeJS.Platform = process.platform,
 ): void {
-  const env = { ...process.env, CODEX_HOME: codexHome };
+  const env = { ...process.env, CURSOR_HOME: codexHome };
   const invocation = resolveCodexInvocation("codex", ["features", "list"], platform, env);
   const result = runner(invocation.file, invocation.args, {
     encoding: "utf8",

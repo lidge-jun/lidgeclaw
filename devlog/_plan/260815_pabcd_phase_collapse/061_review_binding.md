@@ -3,7 +3,7 @@ created: 2026-08-15
 status: design
 workPhase: wp6
 supersedes: [060_review_round.md]
-tags: [codexclaw, review-round, a-to-b, observer]
+tags: [cursorclaw, review-round, a-to-b, observer]
 ---
 
 # 061 — A>B 감사 결속: observer가 승인을 소유한다
@@ -339,7 +339,7 @@ containment/regular-file/symlink/중복 검사만으로는 `package.json`이나
 그런 파일은 사이클 내내 안정적이므로 항상 `fresh`로 통과한다.
 
 따라서 모든 `--plan-path`를 `state.planUnit` 아래의 **번호 붙은 계획 문서**
-(`^\d{3}_.+\.md$`, plan-gate와 동일 규칙)로 제한한다. `.codexclaw/**`는
+(`^\d{3}_.+\.md$`, plan-gate와 동일 규칙)로 제한한다. `.cursorclaw/**`는
 명시적으로 거부한다. unit은 인자가 아니라 P>A가 확정한 값이다(아래 참조).
 
 ### 알려진 우회 (명시하고 남긴다)
@@ -393,15 +393,15 @@ export function abortRound(plan: Goalplan, purpose: ReviewPurpose, reason: strin
 | `src/fsm.ts` / `src/orchestrate-apply.ts` | P/I 진입 시 `planUnit`·`planEpoch` 둘 다 null |
 | `src/orchestrate-cli.ts` I→P override writer (`:316`) | `transition()`을 우회하는 직접 writer — 여기서도 두 필드 명시적 null |
 | `hooks/subagent-stop-observing-review.json` (신규) | matcher `^explorer$`, non-deny |
-| `.codex-plugin/plugin.json` | 훅 등록 (21 → 22) |
-| `plugins/codexclaw/test/inventory.test.mjs` | `hooks-21` 고정값 (`:145`) |
+| `.cursor-plugin/plugin.json` | 훅 등록 (21 → 22) |
+| `plugins/cursorclaw/test/inventory.test.mjs` | `hooks-21` 고정값 (`:145`) |
 | `README.md` / `.ko` / `.zh` 산문 | 세 파일 모두 설치 문장(`:57`)과 트리 주석의 "21 hooks" — `inventory.mjs`는 배지만 고친다(`inventory.mjs:248`) |
 | `test/review-round-cli.test.ts` (신규) | open 전제조건, show, abort |
 | `test/review-observer.test.ts` (신규) | explorer만, 엄격 파싱, 결속 |
 | `test/orchestrate-cli.test.ts` | A>B 판정표 전 행 |
 | `test/hook-e2e.test.mjs` | **21 → 22 고정값** (`:127`) |
-| `plugins/codexclaw/bin/cxc.mjs` | 설치본 dispatcher에 verb 추가 |
-| `plugins/codexclaw/inventory.json` | 훅 수 재생성 |
+| `plugins/cursorclaw/bin/cursorclaw.mjs` | 설치본 dispatcher에 verb 추가 |
+| `plugins/cursorclaw/inventory.json` | 훅 수 재생성 |
 | `README.md` / `.ko` / `.zh` | hooks 배지 21 → 22 |
 | `structure/INDEX.md` | 21-hook SoT 갱신 (`:184`) |
 

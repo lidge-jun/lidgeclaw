@@ -33,7 +33,7 @@
       "filesMatched": 941,
       "doctor": "PASS",
       "hookTrust": 24,
-      "backup": "/Users/jun/Developer/new/700_projects/codexclaw-narrative/.codexclaw/evidence/narrative-release-0.2.24/rollback/installed-0.2.23"
+      "backup": "/Users/jun/Developer/new/700_projects/codexclaw-narrative/.cursorclaw/evidence/narrative-release-0.2.24/rollback/installed-0.2.23"
     },
     "macmini-cf": {
       "previous": "0.2.22+codex.20260906224615",

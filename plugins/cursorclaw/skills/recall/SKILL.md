@@ -2,13 +2,13 @@
 name: recall
 description: "MUST USE for past-session recall — when a term from prior work is unfamiliar, context feels lost after a compact/restart, or the user references earlier work (그때, 지난번, 저번 세션, 예전에 했던, 기억나?, last time, previous session, what did we do). Searches past Codex conversations and the Codex memory store from the CLI before asking the user. Triggers: recall, 리콜, past session, chat search, memory search, 지난 세션, 이전 작업, 뭐였지, 어떻게 했었지."
 metadata:
-  short-description: "Read-only recall search over ~/.codex: past chats (FTS-indexed) + memory store."
+  short-description: "Read-only recall search over ~/.cursor: past chats (FTS-indexed) + memory store."
 ---
 
 # recall — Past-Session Recall Search
 
-Codex already persists every session (`~/.codex/sessions/**/rollout-*.jsonl`) and a
-per-thread memory store (`~/.codex/memories/`). This skill is the discipline for
+Codex already persists every session (`~/.cursor/sessions/**/rollout-*.jsonl`) and a
+per-thread memory store (`~/.cursor/memories/`). This skill is the discipline for
 SEARCHING that history instead of asking the user to repeat themselves.
 
 ## Recall Lookup Scope (read first)
@@ -21,7 +21,7 @@ When ANY of these happen, search BEFORE asking the user:
   "예전에 만든", "last time", "the thing we did earlier", "as discussed previously".
 - You are about to write "I don't have context about X" — search X first.
 
-Both commands are strictly read-only over `~/.codex`; they never modify anything.
+Both commands are strictly read-only over `~/.cursor`; they never modify anything.
 
 ## Commands
 
@@ -124,7 +124,7 @@ non-fatal degradations (missing state db, truncation at --limit) — read them.
 
 ## Scope: single Codex home (deliberate non-goal)
 
-Recall searches ONE Codex home per invocation — `$CODEX_HOME ?? ~/.codex`, overridable
+Recall searches ONE Codex home per invocation — `$CURSOR_HOME ?? ~/.cursor`, overridable
 per query with `--home <path>`. Cross-home federation (cli-jaw's multi-instance model)
 is an explicit non-goal: Codex is a single-home runtime, and pointing `--home` at an
 alternate root covers the rare multi-root case without a registry or rerank layer.

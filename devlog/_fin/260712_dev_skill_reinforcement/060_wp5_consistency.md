@@ -1,6 +1,6 @@
 ---
 created: 2026-07-12
-tags: [codexclaw, dev-skills, consistency-audit]
+tags: [cursorclaw, dev-skills, consistency-audit]
 ---
 
 # WP5 — Cross-Skill Consistency Audit

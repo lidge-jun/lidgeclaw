@@ -19,7 +19,7 @@ function fixture(t: TestContext) {
   const home = join(root, "native");
   mkdirSync(cwd);
   mkdirSync(home);
-  const env = { CODEX_THREAD_ID: CHILD, CODEX_HOME: home };
+  const env = { CODEX_THREAD_ID: CHILD, CURSOR_HOME: home };
   const dir = join(cwd, ".cursorclaw", "sessions");
   const path = join(dir, `${CHILD}.json`);
   return { root, cwd, home, env, dir, path };
@@ -191,7 +191,7 @@ for (const kind of ["missing", "missing-directory", "schema", "malformed", "dire
         db.close();
       }
     }
-    if (kind === "missing-directory") f.env.CODEX_HOME = join(f.root, "absent");
+    if (kind === "missing-directory") f.env.CURSOR_HOME = join(f.root, "absent");
     const before = snapshot(f.root);
     const result = jsonResult(["bind"], f);
     assert.equal(result.code, 1);

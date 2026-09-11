@@ -22,7 +22,7 @@ module that had none — the absence is also a decision.
 may pipe: stdout is the successful command output, stderr is diagnostics, progress,
 warnings and errors. Do not put piped values on stderr, and do not mix diagnostics into
 stdout. (`--help` and `--version` are successful output and belong on stdout —
-`plugins/codexclaw/skills/qa/references/cli-tui-qa.md:18-20`.)
+`plugins/cursorclaw/skills/qa/references/cli-tui-qa.md:18-20`.)
 
 An expected usage error — a bad flag, bad input — is not error-level *telemetry*, but in a
 CLI it still gets **stderr plus a nonzero exit**. Do not conflate the two ideas.

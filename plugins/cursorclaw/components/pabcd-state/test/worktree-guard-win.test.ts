@@ -21,7 +21,7 @@ interface Rig {
   cleanup: () => void;
 }
 
-/** tmp CODEX_HOME with worktrees/<slot>/<repo>/.git, mirroring worktree-guard.test.ts. */
+/** tmp CURSOR_HOME with worktrees/<slot>/<repo>/.git, mirroring worktree-guard.test.ts. */
 function makeRig(): Rig {
   const home = realpathSync.native(mkdtempSync(join(tmpdir(), "cxc-wgwin-home-")));
   const codexHome = join(home, ".codex");
@@ -36,7 +36,7 @@ function makeRig(): Rig {
     slot,
     slotRoot,
     checkoutRoot,
-    env: { CODEX_HOME: codexHome },
+    env: { CURSOR_HOME: codexHome },
     cleanup: () => rmSync(home, { recursive: true, force: true }),
   };
 }

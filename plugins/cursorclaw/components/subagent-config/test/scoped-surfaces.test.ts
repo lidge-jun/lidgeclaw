@@ -10,7 +10,7 @@ import { setRole } from '../src/store.ts';
 function fixture(t: { after: (fn: () => void) => void }) {
   const cwd = mkdtempSync(join(tmpdir(), 'cxc-surfaces-'));
   t.after(() => rmSync(cwd, { recursive: true, force: true }));
-  const env = { ...process.env, CODEX_HOME: join(cwd, 'codex'), CODEXCLAW_HOME: join(cwd, 'cxc') };
+  const env = { ...process.env, CURSOR_HOME: join(cwd, 'codex'), CURSORCLAW_HOME: join(cwd, 'cxc') };
   return { cwd, env };
 }
 const script = (name: string) => fileURLToPath(new URL(`../dist/${name}.js`, import.meta.url));

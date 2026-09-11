@@ -4,7 +4,7 @@ set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TRACKING_FILE="$SCRIPT_DIR/visualize-upstream.md"
-VISUALIZE_ROOT="${CXC_VISUALIZE_ROOT:-${CODEX_HOME:-$HOME/.codex}/plugins/cache/openai-bundled/visualize}"
+VISUALIZE_ROOT="${CXC_VISUALIZE_ROOT:-${CURSOR_HOME:-$HOME/.codex}/plugins/cache/openai-bundled/visualize}"
 
 if [[ ! -f "$TRACKING_FILE" ]]; then
   printf 'unable to check visualize upstream: tracking file not found\n' >&2

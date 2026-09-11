@@ -11,7 +11,7 @@ and the agent performs setup end-to-end. codexclaw's idiom for that is a skill.
 
 ## Deliverables
 
-- `plugins/codexclaw/skills/remote/SKILL.md` — front-matter (name `cxc-remote`,
+- `plugins/cursorclaw/skills/remote/SKILL.md` — front-matter (name `cxc-remote`,
   description with EN+KO triggers, `metadata.short-description`) following
   sibling conventions (see `skills/recall/SKILL.md`, `skills/search/SKILL.md`).
 - `references/telegram.md` — TG setup ladder.

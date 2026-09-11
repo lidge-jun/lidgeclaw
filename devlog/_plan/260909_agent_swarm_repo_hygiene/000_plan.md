@@ -17,15 +17,15 @@ with the branch-lifecycle reference brought back in line with the shipped OpenCo
 implementation. Non-goals: implementing `cxc worktree gc`; changing any GitHub
 setting; deleting any ref or worktree; merging or releasing; touching opencodex,
 cli-jaw or ima2-gen; GitHub native stacks (DEV-STACK-OPT-IN-01 — user asked for
-"stacked pr", which is a manual chain). Verifier: `node plugins/codexclaw/scripts/gate.mjs`
+"stacked pr", which is a manual chain). Verifier: `node plugins/cursorclaw/scripts/gate.mjs`
 (exit 0 on 2026-09-09 at 6e97e73d; reads every `skills/**/SKILL.md` and nested
 `references/*.md` for false-enforcement prose — checkForbiddenClaims in gate.mjs:159)
-and `node --test plugins/codexclaw/test/skill-catalog.test.mjs
-plugins/codexclaw/test/manifest-policy.test.mjs` (10 pass; reads
+and `node --test plugins/cursorclaw/test/skill-catalog.test.mjs
+plugins/cursorclaw/test/manifest-policy.test.mjs` (10 pass; reads
 `skills/README.md` catalog block and every SKILL.md frontmatter). Neither verifier reads
 reference prose for correctness; citation accuracy and rule consistency are human/reviewer
 review rows. Stop: five goalplan criteria met and wp6 D closes. Memory artifact: this unit
-plus `.codexclaw/evidence/<session>/`. Outcomes: DONE = four PRs open with green CI on
+plus `.cursorclaw/evidence/<session>/`. Outcomes: DONE = four PRs open with green CI on
 final heads; NEEDS_HUMAN = merge; BLOCKED = push refused by hook/ruleset; UNSAFE = never
 delete refs. Escalation: main reclaims a slice after two distinct leaf failures; a new
 worker scope is amended here before dispatch. Resource bounds: user granted unlimited
@@ -50,7 +50,7 @@ Three observed facts drive the unit (evidence in `001_research_ledger.md`):
    another repository reproduces the bug that commit fixed.
 2. **No bootstrap guidance.** The skill reads `delete_branch_on_merge` but never sets
    it; rulesets, required checks, auto-merge, PR limits, labels and templates are
-   undocumented. The skill's own home repository (codexclaw) has auto-delete and
+   undocumented. The skill's own home repository (cursorclaw) has auto-delete and
    auto-merge off; cli-jaw still runs classic branch protection; ima2-gen permits
    force-push to main.
 3. **No agent-PR intake policy.** opencodex holds 72 open PRs (56 drafts), 0 authored
@@ -115,8 +115,8 @@ runs on every PR: `ci.yml` has a bare `pull_request:` trigger with no base filte
 
 | Command | Exit at baseline | Reads the change target? |
 |---|---|---|
-| `node plugins/codexclaw/scripts/gate.mjs` | 0 | yes — walks `skills/*/SKILL.md` and `skills/*/references/**/*.md` (gate.mjs checkForbiddenClaims, line 159) for false-enforcement phrases; catches a new reference claiming a hook enforces it |
-| `node --test plugins/codexclaw/test/skill-catalog.test.mjs plugins/codexclaw/test/manifest-policy.test.mjs` | 0 | yes for SKILL.md frontmatter and the catalog block; does not read reference bodies |
+| `node plugins/cursorclaw/scripts/gate.mjs` | 0 | yes — walks `skills/*/SKILL.md` and `skills/*/references/**/*.md` (gate.mjs checkForbiddenClaims, line 159) for false-enforcement phrases; catches a new reference claiming a hook enforces it |
+| `node --test plugins/cursorclaw/test/skill-catalog.test.mjs plugins/cursorclaw/test/manifest-policy.test.mjs` | 0 | yes for SKILL.md frontmatter and the catalog block; does not read reference bodies |
 | `git merge-base --is-ancestor <lower> <upper>` | n/a | yes — chain proof for wp6 |
 | `gh pr checks <n>` | n/a | yes — CI on each PR head, wp6 |
 | Citation accuracy, rule-ID uniqueness, UNVERIFIED labeling | — | **no command observes this**; human/Opus-5 reviewer row at A for wp2-wp5 |

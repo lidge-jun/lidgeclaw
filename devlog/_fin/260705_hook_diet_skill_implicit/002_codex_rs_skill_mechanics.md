@@ -57,13 +57,13 @@ pub(crate) async fn maybe_emit_implicit_skill_invocation(...)
 
 ```
 Repo (cwd .codex/skills, .agents/skills)
-  → User ($CODEX_HOME/skills, ~/.agents/skills)
+  → User ($CURSOR_HOME/skills, ~/.agents/skills)
     → Plugin roots
-      → System ($CODEX_HOME/skills/.system)
+      → System ($CURSOR_HOME/skills/.system)
         → Admin (/etc/codex/skills)
 ```
 
-Plugin root가 User scope에 속함. codexclaw의 `plugins/codexclaw/skills/`가
+Plugin root가 User scope에 속함. codexclaw의 `plugins/cursorclaw/skills/`가
 여기에 해당.
 
 ### 6. 렌더링 구조 (render.rs)

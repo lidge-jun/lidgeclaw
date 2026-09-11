@@ -3,7 +3,7 @@
 기준 HEAD: `5ebcff6a2e00e82b2d50c405245d9ee342a477fd`.
 세션: `01a0702d-41a2-7640-a78b-6e761b42e3ab`.
 시작 상태: clean managed worktree, I. 사용자 “전부 패치가자 cxc-loop”로 실행 승인.
-조사: `devlog/_fin/260905_dev_skill_audit/`. 인터뷰 증거는 이 세션의 answer ledger와 `.codexclaw/plan/dev-skill-interview.md`다.
+조사: `devlog/_fin/260905_dev_skill_audit/`. 인터뷰 증거는 이 세션의 answer ledger와 `.cursorclaw/plan/dev-skill-interview.md`다.
 
 ## 승인한 정책
 
@@ -42,12 +42,12 @@
 한 work-phase는 한 P→A→B→C→D다. 지금 wp0에서 실제 skill/helper/test 파일은 수정하지 않는다. 각 후속 P에서 pre-written diff를 현재 tree와 다시 대조한다. 전체 계획은 `001_patch_operations.json`에도 exact replacement 순서로 기록했으며 실제 적용은 apply_patch로 한다.
 
 ```text
-plugins/codexclaw/skills/
+plugins/cursorclaw/skills/
   dev/references/browser-routing.md   NEW canonical selection policy
   dev*/                              scoped router/reference patches
   pabcd/ search/ interview/           common policy consumers
   dev-diagram-viewer/upstream/        optional inspection helper
-plugins/codexclaw/test/
+plugins/cursorclaw/test/
   visualize-inspection.test.mjs       NEW isolated executable fixture checks
 structure/                           existing SoT sync
 devlog/_plan/260905_dev_skill_refresh/
@@ -60,8 +60,8 @@ devlog/_plan/260905_dev_skill_refresh/
 ## 검증 선행 실행
 
 - Node exact replacement 재현: JSON의 before를 현재 source에서 찾고 각 after를 메모리에서 순차 적용. 91 edits / 30 files / 후속 phase docs 3개 확인, exit 0. 직접 인자는 이 unit이다.
-- `node --test plugins/codexclaw/test/manifest-policy.test.mjs`: baseline 6/6 PASS, exit 0. skill metadata와 manifest를 실제 읽지만 정책 의미는 검증하지 않는다.
-- Ruby YAML 파싱: `ruby -ryaml -e 'ARGV.each { |p| x=YAML.safe_load(File.read(p).split(/^---\s*$/)[1]); abort(p) unless x["name"].is_a?(String) && x["description"].is_a?(String) }; puts "YAML PASS: #{ARGV.size} skills"' plugins/codexclaw/skills/dev*/SKILL.md` → 13개 PASS, exit 0.
+- `node --test plugins/cursorclaw/test/manifest-policy.test.mjs`: baseline 6/6 PASS, exit 0. skill metadata와 manifest를 실제 읽지만 정책 의미는 검증하지 않는다.
+- Ruby YAML 파싱: `ruby -ryaml -e 'ARGV.each { |p| x=YAML.safe_load(File.read(p).split(/^---\s*$/)[1]); abort(p) unless x["name"].is_a?(String) && x["description"].is_a?(String) }; puts "YAML PASS: #{ARGV.size} skills"' plugins/cursorclaw/skills/dev*/SKILL.md` → 13개 PASS, exit 0.
 - skill-creator quick_validate.py는 PyYAML이 없어 실행 실패. dependency를 설치하지 않고 기존 Ruby YAML과 repo metadata 검사를 사용한다.
 - 새 visualize-inspection test는 아직 구현 전이다. wp3에서 명시 root, 비어 있는 cache, 실제 version 선택, hash drift, malformed tracker를 임시 fixture에서 실행한다. Windows native 실행은 수행하지 않으며 Bash가 없으면 지원 증거로 세지 않는다.
 - 의미 검증은 독립 reviewer가 입력 시나리오에서 실제 선택을 도출해 확인한다. prose 문구 존재를 assert하는 테스트는 만들지 않는다.
@@ -98,7 +98,7 @@ devlog/_plan/260905_dev_skill_refresh/
 
 E7 agent guidance다. 실행 표면은 skill을 읽은 에이전트이며, 지침을 읽지 않거나 상위 지시가 다른 경우 prose만으로 강제할 수 없다. 최종 자동 enforcement layer는 없음. runtime hook/goal DB를 변경하지 않는다. 자동 검사는 metadata/파일과 helper 결과만 증명한다.
 
-추가 env `CXC_VISUALIZE_ROOT`: creation=caller env, serialization=process environment, read=sync-check.sh root selection, consumer=cache glob/version/hash inspection and fixture test. 기본값은 CODEX_HOME 또는 HOME의 cache이며 override/default/fallback은 서로 다른 fixture 값으로 검증한다. 이 값은 권한 상승이나 설치를 수행하지 않는다.
+추가 env `CXC_VISUALIZE_ROOT`: creation=caller env, serialization=process environment, read=sync-check.sh root selection, consumer=cache glob/version/hash inspection and fixture test. 기본값은 CURSOR_HOME 또는 HOME의 cache이며 override/default/fallback은 서로 다른 fixture 값으로 검증한다. 이 값은 권한 상승이나 설치를 수행하지 않는다.
 
 ## 종료
 

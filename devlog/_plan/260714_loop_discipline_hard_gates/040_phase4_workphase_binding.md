@@ -16,7 +16,7 @@ check skipped, HITL unchanged). hook.ts already imports readGoalplan (line 28);
 `phaseDirective(phase)` call sites to extend with opts: hook.ts:431 (mode 1),
 :502 (mode 2 passive re-inject), :616 (mode 3) — B-only starvation line, fail-open.
 
-## MODIFY `plugins/codexclaw/components/pabcd-state/src/attest.ts`
+## MODIFY `plugins/cursorclaw/components/pabcd-state/src/attest.ts`
 
 `Attestation` gains `workPhaseId?: string` (coerced). New pure check in
 `validateAttest`: when a goalplan is BOUND to the session (pass its
@@ -56,20 +56,20 @@ orchestrate-cli passes `effectiveActiveWorkPhaseId(readGoalplan(...))` — compu
 fail-open (null on any IO/parse failure). Accepted evasion class (audit Low #4): an
 agent that deletes/corrupts the goalplan or never binds a slug disengages the gate —
 consistent with the attest.ts threat model (adversary is laziness/hallucination, not
-malice; same class as deleting .codexclaw wholesale).
+malice; same class as deleting .cursorclaw wholesale).
 
 Discoverability (audit Med #2): extend the A/B/D help examples in
 renderOrchestrateHelp with `"workPhaseId":"wp1"`, and add one clause to
 LOOP_ARM_DIRECTIVE step 4: include the active workPhaseId in every gated attest when
 a goalplan is bound.
 
-## MODIFY `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts`
+## MODIFY `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts`
 
 - Load the bound goalplan (existing session→slug binding from `cxc loop init`), pass
   `activeWorkPhaseId` into `validateWorkPhaseBinding` for the four gated edges.
 - D-close already advances the cursor one step; unchanged.
 
-## MODIFY `plugins/codexclaw/components/pabcd-state/src/hook.ts` — B directive starvation
+## MODIFY `plugins/cursorclaw/components/pabcd-state/src/hook.ts` — B directive starvation
 
 `PHASE_DIRECTIVES.B` is static. Make B (and only B) dynamic: when a goalplan is bound,
 append one line naming ONLY the active work-phase:

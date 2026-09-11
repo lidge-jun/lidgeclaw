@@ -2,7 +2,7 @@
 
 - Unit: `devlog/_plan/260715_docsfirst_loop_philosophy/`
 - Session: `019f61d6-e726-7c72-b636-02a0581600ad`
-- Goalplan: `.codexclaw/goalplans/codexclaw-multi-pabcd-docs-first-work-phase-work/`
+- Goalplan: `.cursorclaw/goalplans/codexclaw-multi-pabcd-docs-first-work-phase-work/`
 - Class: C3 (스킬 계약 텍스트, 다중 파일, 코드 무변경)
 - Date: 2026-07-15
 
@@ -24,14 +24,14 @@
 - Loop archetype: spec-satisfaction (검증자 = rg 텍스트 존재 + yaml 파싱 + hooks diff 0 + 커밋).
 - Trigger: 사용자 지시 (2026-07-15, "전체적 cxc의 스킬에 모두 이게 내 철학이라고 … 직접 패치해").
 - Goal: 위 4개 철학이 스킬 텍스트에 반영되고 커밋됨.
-- Non-goals: hooks(`plugins/codexclaw/hooks/*`, `src/hooks*`, `dist/*`) 변경, TS 코드 변경,
+- Non-goals: hooks(`plugins/cursorclaw/hooks/*`, `src/hooks*`, `dist/*`) 변경, TS 코드 변경,
   기존 dirty 파일 정리, 단일-사이클 작업에 대한 문서 강제 확대.
 - Verifier: `rg`로 신규 규칙 텍스트 확인, `uv run --with pyyaml`로 frontmatter 검증,
   `git diff --stat`으로 hooks 무변경 확인, `cxc loop validate`.
 - Stop condition: 수용 기준 (a)-(f) 충족 (goal objective 참조).
 - Memory artifact: 이 유닛 + goalplan ledger.
 - Expected terminal outcome: DONE. Escalation: 스킬 규약 충돌 시 NEEDS_HUMAN.
-- HOTL resource bounds: write scope = 이 유닛 + `plugins/codexclaw/skills/*/SKILL.md` +
+- HOTL resource bounds: write scope = 이 유닛 + `plugins/cursorclaw/skills/*/SKILL.md` +
   `structure/00_philosophy.md` + goalplan 파일. 예산: 이 세션 내 완결(사이클 3개), 외부 비용 없음.
 
 ## 사례 근거: codex-meetup-demo (사용자 지적)
@@ -53,14 +53,14 @@
 
 | 파일 | 현재 상태 | 개입 |
 |------|-----------|------|
-| `plugins/codexclaw/skills/loop/SKILL.md` | Contract에 "overlay on pabcd" 한 줄뿐. docs-first 진입 계약 없음. pabcd 필독 포인터 없음 | **핵심**: LOOP-DOCS-FIRST-01 섹션 신설 (010) |
-| `plugins/codexclaw/skills/pabcd/SKILL.md` | DIFFLEVEL-ROADMAP-01 존재, Phase-0은 "MAY" | MAY → 루프 문맥에선 DEFAULT로 승격 + loop 교차참조 (010) |
-| `plugins/codexclaw/skills/dev/SKILL.md` | §0.4 Workflow Modes가 pabcd/loop 포인팅만 | 한 줄: 멀티 사이클 루프는 docs-first 진입 (020) |
-| `plugins/codexclaw/skills/interview/SKILL.md` | 유닛 residence를 Interview가 정착 | 한 줄: 멀티 사이클 판명 시 첫 work-phase는 roadmap 사이클 (020) |
-| `plugins/codexclaw/skills/goalplan/SKILL.md` | deprecated stub | 한 줄 포인터 (020) |
-| `plugins/codexclaw/skills/dev-scaffolding/SKILL.md` | Phase docs 표에 LEXICO-SPLIT-01만 | 한 줄: 멀티 사이클 유닛의 decade 문서는 WP0에서 전량 생성 (020) |
+| `plugins/cursorclaw/skills/loop/SKILL.md` | Contract에 "overlay on pabcd" 한 줄뿐. docs-first 진입 계약 없음. pabcd 필독 포인터 없음 | **핵심**: LOOP-DOCS-FIRST-01 섹션 신설 (010) |
+| `plugins/cursorclaw/skills/pabcd/SKILL.md` | DIFFLEVEL-ROADMAP-01 존재, Phase-0은 "MAY" | MAY → 루프 문맥에선 DEFAULT로 승격 + loop 교차참조 (010) |
+| `plugins/cursorclaw/skills/dev/SKILL.md` | §0.4 Workflow Modes가 pabcd/loop 포인팅만 | 한 줄: 멀티 사이클 루프는 docs-first 진입 (020) |
+| `plugins/cursorclaw/skills/interview/SKILL.md` | 유닛 residence를 Interview가 정착 | 한 줄: 멀티 사이클 판명 시 첫 work-phase는 roadmap 사이클 (020) |
+| `plugins/cursorclaw/skills/goalplan/SKILL.md` | deprecated stub | 한 줄 포인터 (020) |
+| `plugins/cursorclaw/skills/dev-scaffolding/SKILL.md` | Phase docs 표에 LEXICO-SPLIT-01만 | 한 줄: 멀티 사이클 유닛의 decade 문서는 WP0에서 전량 생성 (020) |
 | `structure/00_philosophy.md` | §6 Evidence-first에 docs-first loop 항목 없음 | §6에 철학 bullet 추가 (020) |
-| hooks (`plugins/codexclaw/hooks/*`) | — | **불변** (사용자 지시) |
+| hooks (`plugins/cursorclaw/hooks/*`) | — | **불변** (사용자 지시) |
 
 "전체적 스킬에 모두" 해석: 모든 `dev-*` 스킬에 중복 서술하면 SSOT가 깨진다. 항상-on인
 `dev` 라우터 + 진입 계약 소유자인 `loop` + 형식 소유자인 `pabcd` + 문서 정착 지점인

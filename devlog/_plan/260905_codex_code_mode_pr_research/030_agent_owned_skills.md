@@ -26,7 +26,7 @@ All code and commands below are prospective wp2 plan content, NOT executed resul
 
 Use /Users/jun/.codex/worktrees/974c/codexclaw as the repository root.
 Baseline: 065fa1e887f1d64dcd9c822f34c5fb8626d80a55. All source line ranges are
-inclusive BEFORE coordinates. S below expands to plugins/codexclaw/skills under
+inclusive BEFORE coordinates. S below expands to plugins/cursorclaw/skills under
 that root. This abbreviation is for the plan only.
 
 ## 2. Binding decisions and evidence
@@ -54,9 +54,9 @@ that root. This abbreviation is for the plan only.
    skills/dev-pabcd/SKILL.md:9–21 establish neutral methodology/adaptation;
    do not back-port CodexClaw's new HOTL default or C0 exception here.
 6. Preserve the eight implicit skill identities. Existing test pin:
-   plugins/codexclaw/test/manifest-policy.test.mjs:51–75.
+   plugins/cursorclaw/test/manifest-policy.test.mjs:51–75.
    Leaf-safe delivery whitelist is distinct:
-   components/subagent-config/src/spawn-attach-hook.ts:520–541 under plugins/codexclaw.
+   components/subagent-config/src/spawn-attach-hook.ts:520–541 under plugins/cursorclaw.
    Neither set becomes an unrestricted catalog.
 7. Latest user steer: ignore OCX's default-tier echo as a known upstream bug;
    that echo is not a blocker or a requirement for response-field parity.
@@ -83,10 +83,10 @@ wp2 checks proposed skill/ref links against the materialized candidate tree.
 | C | MODIFY S/dev/SKILL.md; S/pabcd/SKILL.md; S/loop/SKILL.md | Replace entrypoints with 031 content/splices; no mandatory global reloading of all new refs |
 | C | MODIFY S/dev/agents/openai.yaml; S/pabcd/agents/openai.yaml; S/loop/agents/openai.yaml | Description only, preserve policy booleans and names |
 | D | MODIFY S/dev-scaffolding/SKILL.md; S/dev-scaffolding/references/implementation-log.md | Follow moved document owner and canonical C0/C1 exception |
-| E | MODIFY plugins/codexclaw/scripts/gate.mjs; plugins/codexclaw/test/gate.test.mjs | Preserve false-enforcement scanning after content moves into refs |
-| E | MODIFY plugins/codexclaw/test/manifest-policy.test.mjs | Check actual selected local route targets, not first incidental references/ mention |
-| E | MODIFY plugins/codexclaw/components/pabcd-state/test/attest-shape-hint.test.ts | Move both document reads to canonical phase-control reference; keep edge key assertions |
-| E | MODIFY plugins/codexclaw/components/subagent-config/test/spawn-attach-hook.test.ts | Real catalog/body consumer compatibility without changing delivery behavior |
+| E | MODIFY plugins/cursorclaw/scripts/gate.mjs; plugins/cursorclaw/test/gate.test.mjs | Preserve false-enforcement scanning after content moves into refs |
+| E | MODIFY plugins/cursorclaw/test/manifest-policy.test.mjs | Check actual selected local route targets, not first incidental references/ mention |
+| E | MODIFY plugins/cursorclaw/components/pabcd-state/test/attest-shape-hint.test.ts | Move both document reads to canonical phase-control reference; keep edge key assertions |
+| E | MODIFY plugins/cursorclaw/components/subagent-config/test/spawn-attach-hook.test.ts | Real catalog/body consumer compatibility without changing delivery behavior |
 
 No DELETE file operations. Old sections are removed only after their exact
 destination exists in the same change. Preserve unrelated dirty work.
@@ -163,12 +163,12 @@ outcomes with the same invariants:
 
 ### 5.1 Attestation contract reader
 
-File: plugins/codexclaw/components/pabcd-state/test/attest-shape-hint.test.ts.
+File: plugins/cursorclaw/components/pabcd-state/test/attest-shape-hint.test.ts.
 At original :216 and :246 replace only the path string:
 
 ~~~~diff
--plugins/codexclaw/skills/pabcd/SKILL.md
-+plugins/codexclaw/skills/pabcd/references/phase-control.md
+-plugins/cursorclaw/skills/pabcd/SKILL.md
++plugins/cursorclaw/skills/pabcd/references/phase-control.md
 ~~~~
 
 Update :214 comment to 'The attest table rows out of pabcd/references/phase-control.md, keyed by edge.'
@@ -179,7 +179,7 @@ The route contract below proves the entrypoint points to this same reference.
 
 ### 5.2 Preserve prose-gate reach
 
-File: plugins/codexclaw/scripts/gate.mjs.
+File: plugins/cursorclaw/scripts/gate.mjs.
 Replace original :148–154 with:
 
 ~~~~javascript
@@ -203,7 +203,7 @@ Known bypass: wording outside FORBIDDEN_PATTERNS or omitted check execution.
 Residual: semantic falsehood and unread skills require real review/probes.
 No final runtime enforcement of probabilistic skill judgment is claimed.
 
-File: plugins/codexclaw/test/gate.test.mjs.
+File: plugins/cursorclaw/test/gate.test.mjs.
 Append these tests after current :85 using existing imports:
 
 ~~~~javascript
@@ -231,7 +231,7 @@ fires the newly added reference branch and reads its reported path/line.
 
 ### 5.3 Real local-route contracts
 
-File: plugins/codexclaw/test/manifest-policy.test.mjs.
+File: plugins/cursorclaw/test/manifest-policy.test.mjs.
 Replace original :120–132 (first-incidental-reference L19 test) with:
 
 ~~~~javascript
@@ -288,7 +288,7 @@ each must fail the relevant assertion. Do not mutate the developer's live tree.
 
 ### 5.4 Existing catalog and attachment consumer compatibility
 
-File: plugins/codexclaw/components/subagent-config/test/spawn-attach-hook.test.ts.
+File: plugins/cursorclaw/components/subagent-config/test/spawn-attach-hook.test.ts.
 Add buildLeafSkillCatalog to the existing import from ../src/spawn-attach-hook.ts.
 Append:
 
@@ -308,7 +308,7 @@ test("concise dev metadata remains readable by the real leaf catalog", () => {
 
 test("concise entrypoint is delivered once without recursively inlining its refs", () => {
   const md = readFileSync(join(SKILLS_DIR, "dev", "SKILL.md"), "utf8").trim();
-  const first = inlineSkillBodies("use $cxc-dev", SKILLS_DIR);
+  const first = inlineSkillBodies("use $crc-dev", SKILLS_DIR);
   assert.ok(first.includes(md));
   assert.equal(first.indexOf(md), first.lastIndexOf(md));
   assert.equal(inlineSkillBodies(first, SKILLS_DIR), first);
@@ -343,7 +343,7 @@ If later checks find real generated drift, main must distinguish pre-existing
 drift from a consequence of this slice before expanding the file map.
 
 WP3 handoff: runtime loopArmDirective at
-plugins/codexclaw/components/pabcd-state/src/hook.ts:511–546 still says
+plugins/cursorclaw/components/pabcd-state/src/hook.ts:511–546 still says
 'HOTL (user asked for autonomous / continue-until-done)' and
 'HITL (no such ask)' at :531–534. wp3 must remove that competing default in favor
 of the loop owner's scoped intent contract, preserve explanation/plan-only/I
@@ -361,9 +361,9 @@ Main runs them only in the later authorized remote verification phase.
 Working directory: the exact candidate checkout on macmini-cf, not the local tree.
 
 ~~~~sh
-node --test --test-concurrency=1 plugins/codexclaw/test/manifest-policy.test.mjs plugins/codexclaw/test/skill-catalog.test.mjs plugins/codexclaw/test/port-provenance.test.mjs plugins/codexclaw/test/gate.test.mjs plugins/codexclaw/components/pabcd-state/test/attest-shape-hint.test.ts plugins/codexclaw/components/subagent-config/test/spawn-attach-hook.test.ts
-node plugins/codexclaw/scripts/inventory.mjs --check
-node plugins/codexclaw/scripts/gate.mjs
+node --test --test-concurrency=1 plugins/cursorclaw/test/manifest-policy.test.mjs plugins/cursorclaw/test/skill-catalog.test.mjs plugins/cursorclaw/test/port-provenance.test.mjs plugins/cursorclaw/test/gate.test.mjs plugins/cursorclaw/components/pabcd-state/test/attest-shape-hint.test.ts plugins/cursorclaw/components/subagent-config/test/spawn-attach-hook.test.ts
+node plugins/cursorclaw/scripts/inventory.mjs --check
+node plugins/cursorclaw/scripts/gate.mjs
 ~~~~
 
 The node test command directly names every planned test target. The gate imports

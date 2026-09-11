@@ -17,7 +17,7 @@ Loop archetype: spec-satisfaction repair. Verifier: GitHub CI `test (ubuntu-late
 
 ## Tasks (dependency-ordered)
 
-- **T1 e2e surface-split sync** — `plugins/codexclaw/test/hook-e2e.test.mjs`: the two `260710:` tests expect `[CXC-SUBAGENT-SCOPE]` prefix for v1-surface payloads (`spawn_agent` + no `task_name`), keep `[CXC-LEAF-GUARD]` for v2 payloads; rename tests `260710:` -> `260713:` and fix assertion messages. Local-verifiable.
+- **T1 e2e surface-split sync** — `plugins/cursorclaw/test/hook-e2e.test.mjs`: the two `260710:` tests expect `[CXC-SUBAGENT-SCOPE]` prefix for v1-surface payloads (`spawn_agent` + no `task_name`), keep `[CXC-LEAF-GUARD]` for v2 payloads; rename tests `260710:` -> `260713:` and fix assertion messages. Local-verifiable.
 - **T2 service test platform contract** — `messenger-bridge/test/service.test.ts`: `servicePaths` asserts per-platform paths (darwin plist / linux systemd unit / win32 Task Scheduler shape per `servicePaths()` impl); `uninstall/status no-op` asserts the real per-platform "not installed" contract from `service.ts` branches. Local(mac)-verifiable for darwin branch; linux/win branches verified via CI.
 - **T3 backup filename sanitize** — `cxc-ops/src/hook-trust.ts:423`: `.bak-${toISOString()}` -> `.bak-${toISOString().replace(/[:.]/g, "-")}`; update `hook-trust.test.ts` backup-path assertions if they pattern-match the suffix; rebuild dist.
 - **T4 `.gitattributes` LF enforcement** — new root file: `* text=auto eol=lf`. Expected to close F1, both frontmatter tests, multiline TOML, L18 structure scan, dispatcher ladder. (Verify on CI; residual path-separator items go to T5.)
@@ -42,8 +42,8 @@ Loop archetype: spec-satisfaction repair. Verifier: GitHub CI `test (ubuntu-late
   - `scripts/gate.mjs:172` — replace `f.replace(repoRoot + "/", "")` with `relative(repoRoot, f).split(sep).join("/")` (fixes L18 checkForbiddenClaims).
   - `subagent-config/test/spawn-attach-hook.test.ts:512` — skill-link regex separator-tolerant (v2 mention normalization compose).
   - `subagent-config/test/spawn-wrapper.test.ts:172` — L15 SURFACE_SKILL `/skills/` expectation separator-tolerant.
-  - `plugins/codexclaw/test/packaging.test.mjs:93-99` — runtime-graph keys normalized to POSIX (L19 walker sanity).
-  - `plugins/codexclaw/test/repo-map-packaging.test.mjs:80-82` — dynamic import via `pathToFileURL(...)` (fixes `d:` URL scheme).
+  - `plugins/cursorclaw/test/packaging.test.mjs:93-99` — runtime-graph keys normalized to POSIX (L19 walker sanity).
+  - `plugins/cursorclaw/test/repo-map-packaging.test.mjs:80-82` — dynamic import via `pathToFileURL(...)` (fixes `d:` URL scheme).
   - `messenger-bridge/test/server.test.ts:342-348` — parseServeArgs expectation platform-aware.
   - `pabcd-state/test/goal-active.test.ts:28-30` — resolveGoalsDbPath expectation platform-aware.
 - **Acceptance+**: pre-CI grep gate — no hardcoded POSIX-absolute path expectations left in the test files touched by T1/T5/T6 (evidence: rg output in C attest).

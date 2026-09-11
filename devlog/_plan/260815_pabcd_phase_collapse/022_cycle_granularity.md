@@ -4,7 +4,7 @@ status: superseded
 supersededBy: 023_final_design.md
 warning: 폐기됨 — task는 사이클 단위가 아니다. 계약은 one work-phase = one cycle.
 supersedes: [010_phase_tracking.md, 020_collapse_gate.md, 021_audit_fold_redesign.md]
-tags: [codexclaw, pabcd, goalplan, cycle-granularity]
+tags: [cursorclaw, pabcd, goalplan, cycle-granularity]
 unit: 260815_pabcd_phase_collapse
 ---
 

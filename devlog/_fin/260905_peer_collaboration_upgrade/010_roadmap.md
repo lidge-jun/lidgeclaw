@@ -28,8 +28,8 @@ During C:
 wp1 C:
 
     node devlog/_plan/260905_peer_collaboration_upgrade/evidence/check-docs.mjs --payload
-    node plugins/codexclaw/scripts/inventory.mjs --check
-    node --test --test-concurrency=1 plugins/codexclaw/test/skill-catalog.test.mjs plugins/codexclaw/test/inventory.test.mjs plugins/codexclaw/test/manifest-policy.test.mjs
+    node plugins/cursorclaw/scripts/inventory.mjs --check
+    node --test --test-concurrency=1 plugins/cursorclaw/test/skill-catalog.test.mjs plugins/cursorclaw/test/inventory.test.mjs plugins/cursorclaw/test/manifest-policy.test.mjs
 
 Wrap the wp1 commands in one receipt via sh -ec. Do not declare generated paths to
 hide source changes. Finish edits/staging/commits before final receipt. It binds the

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 // Pin the cxc-resolve seam (B1): assertions below expect literal `crc ...`
 // command lines, which would otherwise depend on the runner's PATH.
-process.env.CODEXCLAW_CXC = "cxc";
+process.env.CURSORCLAW_CRC = "cxc";
 import {
   detectRecallIntent,
   handleUserPromptSubmit,

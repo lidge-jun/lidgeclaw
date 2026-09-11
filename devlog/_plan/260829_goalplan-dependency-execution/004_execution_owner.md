@@ -23,7 +23,7 @@ goalplan 배열 순서
 - `spawn-wrapper.ts`는 agent를 만들지 않고 payload만 만든다(23). intent 라우팅(427, 440)과
   surface→스킬 라우팅(41, 163)은 있으나 `routeDispatch()`는 `{role, task_name, fork_turns, message}`만
   반환하며(471, 495) 생산 호출자가 없다. 문서도 "메인 에이전트가 inline으로 spawn한다"고 명시한다.
-- 모델/effort는 `.codexclaw/subagents.json`에 역할별로 저장된다(store.ts:16, 38, 215).
+- 모델/effort는 `.cursorclaw/subagents.json`에 역할별로 저장된다(store.ts:16, 38, 215).
   카탈로그는 선택 자료이고 스케줄러가 아니다.
 - `cxc review-round open`도 round를 기록하고 launch id와 파견 지시문만 반환한다. spawn 호출은
   없다(review-round-cli.ts:221, 232, 238).

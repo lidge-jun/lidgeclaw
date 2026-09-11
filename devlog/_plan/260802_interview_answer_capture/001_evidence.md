@@ -2,7 +2,7 @@
 
 All figures gathered 2026-08-02 from the live tree at
 `/Users/jun/developer/new/700_projects/codexclaw` (branch `dev`) and from
-`~/.codex/sessions/`.
+`~/.cursor/sessions/`.
 
 ## E1. The primary defect: the answer branch never runs
 
@@ -15,7 +15,7 @@ export function parseAnswers(toolResponse: unknown): Record<string, string[]> {
 ```
 
 Extracted from a real rollout
-(`~/.codex/sessions/2026/07/28/rollout-2026-07-28T05-18-59-019fa53b-...jsonl`),
+(`~/.cursor/sessions/2026/07/28/rollout-2026-07-28T05-18-59-019fa53b-...jsonl`),
 matching the `request_user_input` call id:
 
 ```
@@ -45,7 +45,7 @@ Implementation of wp2 must not start until that capture resolves the shape.
 
 ## E2. Ledger census: 222 questions, 0 answers
 
-Across every `*/.codexclaw/interviews/*.jsonl` in `700_projects`:
+Across every `*/.cursorclaw/interviews/*.jsonl` in `700_projects`:
 
 ```
 {'question_asked': 222, 'scan_completed': 17, 'rescan_completed': 12,
@@ -85,7 +85,7 @@ planned; a future cycle may delete them.
 
 ## E3. Interview state is empty in practice
 
-12 most recent `.codexclaw/sessions/*.json`: 11 have `interview: null`, one has
+12 most recent `.cursorclaw/sessions/*.json`: 11 have `interview: null`, one has
 all four dimensions at `"low"`, none reach `"max"`.
 
 No production code writes `InterviewTracker.dimensions`. The only writer of
@@ -123,7 +123,7 @@ available to ground it.
 ## E6. The test blind spot
 
 ```js
-// plugins/codexclaw/test/hook-e2e.test.mjs:487
+// plugins/cursorclaw/test/hook-e2e.test.mjs:487
 tool_response: { answers: { q1: { answers: ["A"] } } }
 ```
 

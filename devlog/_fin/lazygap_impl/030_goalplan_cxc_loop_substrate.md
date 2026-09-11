@@ -9,11 +9,11 @@ Status: DONE (shipped + tested) · 2026-07-01 · lazygap_impl loop 030 · class 
 > "030 adds" line is new.
 >
 > This is the substrate decade: `040` (work-aware Stop) and `080` (friction/seed) build on the
-> `.codexclaw/goalplans/<slug>/` artifact and ledger this doc defines.
+> `.cursorclaw/goalplans/<slug>/` artifact and ledger this doc defines.
 
 ## Why
 
-`$cxc-loop` is a prose contract (E7) today: "work-phase = one PABCD cycle, D closes to IDLE, the
+`$crc-loop` is a prose contract (E7) today: "work-phase = one PABCD cycle, D closes to IDLE, the
 agent self-advances." Nothing durable records WHAT the work-phases are, which criteria gate
 completion, or what evidence each produced. omo's loop is a durable plan with per-criterion
 evidence + a real quality gate; codexclaw's is a single FSM plus prose
@@ -41,30 +41,30 @@ work-aware and the dead `freeze.ts` acceptance-criteria slot reaches a live runt
   shipped goal-write path is the MAIN SESSION calling host tools `create_goal`/`get_goal`/
   `update_goal` — NOT codexclaw code. `Feature::Goals` is not directly detectable; availability
   is inferred from `goals_1.sqlite` presence/readability.
-- `.codexclaw/` layout: `state.ts:51` (`STATE_DIR=.codexclaw`, `SESSIONS_SUBDIR=sessions`,
+- `.cursorclaw/` layout: `state.ts:51` (`STATE_DIR=.cursorclaw`, `SESSIONS_SUBDIR=sessions`,
   `LEDGER_FILE=ledger.jsonl`, `INTERVIEWS_SUBDIR=interviews`); `freeze.ts:19`
-  (`.codexclaw/interview/freeze.json`); `freeze-cli.ts:67` (`.codexclaw/plan/<slug>/`).
+  (`.cursorclaw/interview/freeze.json`); `freeze-cli.ts:67` (`.cursorclaw/plan/<slug>/`).
 - Stop loop today is COARSE-state-only: `hook.ts` `handleStop` reads `orchestrationActive`,
   `phase`, goal-active, stagnation cap — it does NOT read any plan artifact (`hook.ts:423`).
 - D-close persists no work-phase cursor: `cxc orchestrate D` closes atomically to `IDLE`
   (`orchestrate-cli.ts:177`, `loop/SKILL.md:13`); the next work-phase starts with a fresh `P`.
 - Reset scopes: `reset.ts:4` — `--state` removes sessions+ledger+interviews, `--generated`
-  removes `.codexclaw/interview/`. Neither knows about goalplan paths yet.
+  removes `.cursorclaw/interview/`. Neither knows about goalplan paths yet.
 
 ## Design (diff-level)
 
 ### Storage (slug-namespaced, matches shipped plan layout — NOT a singleton)
 
 ```
-.codexclaw/goalplans/<slug>/goalplan.json      # the plan + current-work-phase cursor
-.codexclaw/goalplans/<slug>/ledger.jsonl       # append-only goalplan events
+.cursorclaw/goalplans/<slug>/goalplan.json      # the plan + current-work-phase cursor
+.cursorclaw/goalplans/<slug>/ledger.jsonl       # append-only goalplan events
 ```
 
 `<slug>` reuses `deriveSlug(objective)` (`freeze.ts:60`) so a goalplan lines up 1:1 with the
 freeze manifest's slug. This avoids the project-wide singleton Boyle flagged and matches
-`.codexclaw/plan/<slug>/`.
+`.cursorclaw/plan/<slug>/`.
 
-### Schema (`.codexclaw/goalplans/<slug>/goalplan.json`)
+### Schema (`.cursorclaw/goalplans/<slug>/goalplan.json`)
 
 ```jsonc
 {
@@ -124,7 +124,7 @@ export interface Goalplan {
   workPhases: GoalplanWorkPhase[]; criteria: GoalplanCriterion[]; host: GoalplanHostLink;
 }
 
-export function goalplanDir(cwd: string, slug: string): string;          // .codexclaw/goalplans/<slug>
+export function goalplanDir(cwd: string, slug: string): string;          // .cursorclaw/goalplans/<slug>
 export function readGoalplan(cwd: string, slug: string): Goalplan | null; // null if absent/unreadable
 export function writeGoalplan(cwd: string, plan: Goalplan): void;         // atomic tmp+rename, mkdir -p
 export function appendGoalplanLedger(cwd: string, slug: string, e: GoalplanLedgerEntry): void;
@@ -171,7 +171,7 @@ final D-close, and a gate hook can shell to it.
 
 ### Reset awareness
 
-`reset.ts` gains a `--goalplans` scope (removes `.codexclaw/goalplans/`); `--state` does NOT
+`reset.ts` gains a `--goalplans` scope (removes `.cursorclaw/goalplans/`); `--state` does NOT
 touch goalplans by default (a goalplan can outlive a session reset, like the freeze manifest).
 The doc must state this explicitly so reset semantics stay predictable.
 
@@ -191,7 +191,7 @@ The doc must state this explicitly so reset semantics stay predictable.
 - 030.3 — slug provenance (PREREQUISITE for 040, flagged by Kuhn A-gate). `state.slug` defaults to
   `""` (`state.ts:62`) and is only rehydrated if already persisted (`state.ts:87`); no shipped
   `writeState` sets a non-empty slug before Stop time, and `freeze-cli.ts:65` falls back to
-  `state.slug || sessionId`. 040's Stop cannot locate `.codexclaw/goalplans/<slug>/` without a
+  `state.slug || sessionId`. 040's Stop cannot locate `.cursorclaw/goalplans/<slug>/` without a
   reliable slug. 030.3 persists the slug into `state.json` at freeze/goalplan-init time (derive
   via `deriveSlug(objective)`), so Stop can resolve the goalplan dir. Until 030.3 lands, 040 must
   treat "no resolvable slug" exactly like "no goalplan" (fall back to coarse reason).
@@ -212,7 +212,7 @@ The doc must state this explicitly so reset semantics stay predictable.
 ## Invariants
 
 - No goal-DB write from codexclaw code; host goal is armed only by the main session at freeze.
-- All goalplan state is project-local under `.codexclaw/goalplans/<slug>/`.
+- All goalplan state is project-local under `.cursorclaw/goalplans/<slug>/`.
 - `readGoalplan` returns `null` (never throws) on absent/unreadable — callers degrade, never trap.
 - Coupling is one-directional and loose (see above); neither layer requires the other.
 - goalplan is the durable work-phase cursor the FSM does not hold across D-close; it never
@@ -223,7 +223,7 @@ The doc must state this explicitly so reset semantics stay predictable.
 | Check | Evidence |
 |-------|----------|
 | Schema round-trips | write then read returns an equal `Goalplan` |
-| Slug-namespaced, no collision | path is `.codexclaw/goalplans/<slug>/`, distinct from plan/interview dirs |
+| Slug-namespaced, no collision | path is `.cursorclaw/goalplans/<slug>/`, distinct from plan/interview dirs |
 | Absent/unreadable → null | missing file or bad JSON → `readGoalplan` returns `null`, no throw |
 | Derived helpers | `remainingWorkPhases`/`nextOpenTask`/`unmetCriteria`/`isGoalplanComplete` correct on fixtures |
 | Freeze seeding | after 030.1, a freeze with criteria yields a goalplan whose `criteria[].scenario` match |
@@ -233,7 +233,7 @@ The doc must state this explicitly so reset semantics stay predictable.
 
 ## Verification
 
-- `node --test plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts`
+- `node --test plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts`
 - `npm run build` (idempotent; +1 compiled module) ; `npm test` (full suite green) ;
   `npm run gate` (exit 0) ; `git diff --check`.
 

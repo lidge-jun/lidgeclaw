@@ -108,7 +108,7 @@ an exception.
 waits for every check to conclude green before merging, per the refusal table.
 - `git diff --stat origin/dev codex/agent-swarm-hygiene-l4 -- <the touched paths>` is
   empty, proving the merged tree equals the reviewed L4 content for those files.
-- `node plugins/codexclaw/scripts/gate.mjs` exit 0 and `node --test` skill-catalog +
+- `node plugins/cursorclaw/scripts/gate.mjs` exit 0 and `node --test` skill-catalog +
   manifest-policy 10/10 on a checkout of merged `dev`.
 - `080_merge_receipt.md` records merge commit SHAs, PR states, and the check evidence
   that was green at merge time.

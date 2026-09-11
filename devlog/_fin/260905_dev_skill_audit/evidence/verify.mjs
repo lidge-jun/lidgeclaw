@@ -37,7 +37,7 @@ function selfTest() {
     HASH: x => { x.hashes[0].actual = 'different-hash'; },
     CITATION: x => { x.citations[0].exists = false; },
     SOURCE: x => { delete x.sources[0].proof; },
-    SCOPE: x => x.changed.push('plugins/codexclaw/skills/dev/SKILL.md'),
+    SCOPE: x => x.changed.push('plugins/cursorclaw/skills/dev/SKILL.md'),
   };
   for (const [code, mutate] of Object.entries(mutations)) {
     const fixture = structuredClone(valid);
@@ -55,22 +55,22 @@ function verify(unit) {
   const inventory = JSON.parse(read('evidence/inventory.json'));
   assert.equal(inventory.baseline, base);
   const sources = JSON.parse(read('evidence/sources.json'));
-  const actualNames = fs.readdirSync(path.join(root, 'plugins/codexclaw/skills'))
+  const actualNames = fs.readdirSync(path.join(root, 'plugins/cursorclaw/skills'))
     .filter(n => /^dev($|-)/.test(n)).sort();
   const actualFiles = actualNames.flatMap(n => {
-    const dir = `plugins/codexclaw/skills/${n}`;
+    const dir = `plugins/cursorclaw/skills/${n}`;
     return fs.readdirSync(path.join(root, dir), { recursive: true })
       .filter(f => fs.statSync(path.join(root, dir, f)).isFile()).map(f => `${dir}/${f}`);
   }).sort();
   assert.deepEqual(inventory.files.map(f => f.path).sort(), actualFiles, 'inventory file list drift');
-  const installedPath = f => path.join(inventory.installedRoot, f.path.replace('plugins/codexclaw/skills/', ''));
+  const installedPath = f => path.join(inventory.installedRoot, f.path.replace('plugins/cursorclaw/skills/', ''));
   const installed = inventory.files.map(f => ({ file: f, hash: sha(installedPath(f)) }));
   for (const { file, hash } of installed)
     assert.equal(file.installedEqual, file.sha256 === hash, `installed equality drift: ${file.path}`);
   const installedFiles = actualNames.flatMap(n => {
     const dir = path.join(inventory.installedRoot, n);
     return fs.readdirSync(dir, { recursive: true }).filter(f => !f.endsWith('.DS_Store') &&
-      fs.statSync(path.join(dir, f)).isFile()).map(f => `plugins/codexclaw/skills/${n}/${f}`);
+      fs.statSync(path.join(dir, f)).isFile()).map(f => `plugins/cursorclaw/skills/${n}/${f}`);
   });
   assert.deepEqual(installedFiles.filter(f => !actualFiles.includes(f)).sort(), inventory.installedOnly,
     'installed-only file list drift');

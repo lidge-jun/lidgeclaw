@@ -33,7 +33,7 @@ one-shot map**: Aider's tree-sitter tags + PageRank, generated fresh per request
 
 1. `agents/openai.yaml` required for every skill dir (manifest-policy.test.mjs:51).
 2. skill-hub `references/catalog.md` row required (manifest-policy.test.mjs:144-158).
-3. Cache `.codexclaw/cache/repomap/` is wiped only by `cxc reset --all` (reset.ts
+3. Cache `.cursorclaw/cache/repomap/` is wiped only by `cxc reset --all` (reset.ts
    scopes); documented in SKILL.md rather than changing reset semantics.
 4. Lazy imports mandatory: upstream `utils.py` sys.exits on missing tiktoken at
    import time; `repomap.py` must parse args before heavy imports so `--help`
@@ -48,7 +48,7 @@ one-shot map**: Aider's tree-sitter tags + PageRank, generated fresh per request
 ## Philosophy compliance (lazygap 005)
 
 `cxc map` is a stateless one-shot CLI: no daemon, no MCP server, no maintained
-code graph. The diskcache tags cache under `.codexclaw/cache/repomap/` is a
+code graph. The diskcache tags cache under `.cursorclaw/cache/repomap/` is a
 rebuildable derived cache, explicitly allowed by `structure/00_philosophy.md`
 §2 (ast-grep runtime precedent). The LOCKED non-goal (LSP daemon / codegraph
 MCP) is untouched.
@@ -80,7 +80,7 @@ pure + test-importable via a main-module guard):
 2. `CODEXCLAW_PYTHON` env override, verbatim.
 3. `uv run --quiet --with-requirements <pinned reqs> python -B` — deps resolve
    into uv's rebuildable cache; first run pays the resolve, warm after.
-4. Existing venv at `$CODEXCLAW_HOME|~/.codexclaw/venvs/repomap` (philosophy §2
+4. Existing venv at `$CURSORCLAW_HOME|~/.cursorclaw/venvs/repomap` (philosophy §2
    user-level rebuildable derived cache; recall-FTS precedent). Auto-created
    only under `CODEXCLAW_MAP_BOOTSTRAP=1` (opt-in network).
 5. Bare `python3` — repomap.py's own exit-3 install hint remains the floor.
@@ -101,8 +101,8 @@ contract and useful for large feature-partitioned monorepos.
 ## Addendum 2026-07-07b — symlink-broken direct-exec guards (affordance silently dead)
 
 User report: new sessions stopped receiving the `cxc map` SessionStart affordance.
-Diagnosis: `~/.codex/plugins/cache/personal/codexclaw/0.1.0/components` is a SYMLINK
-to this repo's `plugins/codexclaw/components`. The direct-exec guards compared
+Diagnosis: `~/.cursor/plugins/cache/personal/codexclaw/0.1.0/components` is a SYMLINK
+to this repo's `plugins/cursorclaw/components`. The direct-exec guards compared
 `resolve(process.argv[1])` (symlink path kept) against `fileURLToPath(import.meta.url)`
 (realpath), so `main()` never ran via the cache path — hook exit 0, zero output.
 Evidence: same md5 cli.js emitted the 465-byte envelope via the real path and 0 bytes
@@ -116,7 +116,7 @@ messenger-bridge (`invokedPath` pattern), config-guard, subagent-config (stricte
 `file://` string pattern, same bug) — plus `bin/codexclaw.mjs` `isMain`. The
 `spawn-attach-hook.ts` realpath guard was the in-repo precedent. provider-bridge and
 pabcd-state have no guard (always dispatch) and were unaffected. Affordance wording
-now names `$cxc-ast-grep` explicitly for syntax-shape search (pointer-only doctrine
+now names `$crc-ast-grep` explicitly for syntax-shape search (pointer-only doctrine
 kept). Regression test: `map-affordance.test.ts` symlinks the compiled dist cli.js
 into a temp dir and asserts the envelope is emitted through the symlink.
 

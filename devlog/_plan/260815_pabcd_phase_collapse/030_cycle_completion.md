@@ -2,7 +2,7 @@
 created: 2026-08-15
 status: design
 workPhase: wp2
-tags: [codexclaw, goalplan, d-close]
+tags: [cursorclaw, goalplan, d-close]
 ---
 
 # 030 — CYCLE-COMPLETION-01: 미완 사이클을 닫지 못한다

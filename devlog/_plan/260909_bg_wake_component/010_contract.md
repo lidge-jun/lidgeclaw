@@ -11,7 +11,7 @@ wp2가 이 문서를 그대로 구현한다. 설계 근거는 `000_plan.md`.
 출력은 둘 중 하나뿐이다.
 
 빈 stdout + exit 0 — 놓아준다. 다음 경우 전부 여기로 간다.
-- `<cwd>/.codexclaw/bg/disabled` 존재
+- `<cwd>/.cursorclaw/bg/disabled` 존재
 - `CXC_BGWAKE`가 `0` / `off` / `false`
 - 미전달 완료 없음
 - 어떤 오류든 (레지스트리 파손, 파싱 실패, 권한 오류)
@@ -27,7 +27,7 @@ block — 미전달 완료가 있을 때만.
 reason 형태.
 
 ```
-[codexclaw bg] 백그라운드 작업 2건이 끝났습니다.
+[cursorclaw bg] 백그라운드 작업 2건이 끝났습니다.
 - build1 (complete, exit 0, 4m12s) — npm run build
 - probe2 (failed, exit 1, 31s) — node scripts/probe.mjs
 출력은 `cxc bg get <id> --tail 40`으로 봅니다. 전체 목록은 `cxc bg list`.
@@ -88,7 +88,7 @@ reason 형태.
 ## 파일 레이아웃
 
 ```
-<cwd>/.codexclaw/bg/
+<cwd>/.cursorclaw/bg/
   disabled          # 존재하면 웨이크 off. 내용은 해제 판정용 타임스탬프
   <id>.json         # 레코드
   <id>.out          # 합쳐진 stdout/stderr

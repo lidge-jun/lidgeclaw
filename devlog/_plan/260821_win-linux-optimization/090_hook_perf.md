@@ -15,7 +15,7 @@ fix" with no number is how a correctness regression enters a codebase.
 
 ## MODIFY / NEW / DELETE map
 
-### 1. MODIFY plugins/codexclaw/scripts/hook-bench.mjs
+### 1. MODIFY plugins/cursorclaw/scripts/hook-bench.mjs
 
 070 makes it run on Windows. This phase makes it comparable across platforms and runs.
 
@@ -75,7 +75,7 @@ function measureSpawnFloor(iterations) {
 `report.spawnFloorMs` carries it, and each hook gains
 `aboveFloorMs: warmP50Ms - spawnFloor.p50`.
 
-### 2. NEW plugins/codexclaw/scripts/hook-bench-compare.mjs
+### 2. NEW plugins/cursorclaw/scripts/hook-bench-compare.mjs
 
 ```js
 #!/usr/bin/env node
@@ -168,8 +168,8 @@ Append to the Windows cells only, non-blocking at first:
         if: runner.os == 'Windows'
         continue-on-error: true
         run: |
-          node plugins/codexclaw/scripts/hook-bench.mjs --iterations 15 --json > bench-${{ matrix.os }}.json
-          node plugins/codexclaw/scripts/hook-bench-compare.mjs devlog/_plan/260821_win-linux-optimization/bench-baseline.json bench-${{ matrix.os }}.json --max-regression-pct 25
+          node plugins/cursorclaw/scripts/hook-bench.mjs --iterations 15 --json > bench-${{ matrix.os }}.json
+          node plugins/cursorclaw/scripts/hook-bench-compare.mjs devlog/_plan/260821_win-linux-optimization/bench-baseline.json bench-${{ matrix.os }}.json --max-regression-pct 25
 ```
 
 `continue-on-error: true` is deliberate for the first N runs: shared CI runners are noisy,
@@ -178,7 +178,7 @@ blocking only after the recorded variance across ~10 runs justifies a threshold.
 
 ## TESTS
 
-NEW `plugins/codexclaw/test/hook-bench-report.test.mjs`
+NEW `plugins/cursorclaw/test/hook-bench-report.test.mjs`
 
 1. "the report carries schemaVersion, platform, and spawnFloorMs".
 2. "cold is excluded from the warm percentiles" - with `timings = [500, 10, 10, 10]`,
@@ -188,7 +188,7 @@ NEW `plugins/codexclaw/test/hook-bench-report.test.mjs`
    would disguise an unreliable measurement as a good result.
 4. "a single iteration yields null warm percentiles rather than NaN".
 
-NEW `plugins/codexclaw/test/hook-bench-compare.test.mjs`
+NEW `plugins/cursorclaw/test/hook-bench-compare.test.mjs`
 
 5. "an identical report compares clean" - exit 0.
 6. "a 50% per-hook regression fails at threshold 10 and passes at 60".
@@ -208,15 +208,15 @@ BEFORE the early return is added.
 Run from the repo root.
 
 ```powershell
-node --test --test-concurrency=1 "plugins/codexclaw/test/hook-bench-report.test.mjs" "plugins/codexclaw/test/hook-bench-compare.test.mjs"
+node --test --test-concurrency=1 "plugins/cursorclaw/test/hook-bench-report.test.mjs" "plugins/cursorclaw/test/hook-bench-compare.test.mjs"
 npm test
-node plugins/codexclaw/scripts/gate.mjs
+node plugins/cursorclaw/scripts/gate.mjs
 ```
 
 The baseline capture, which is this phase's actual deliverable:
 
 ```powershell
-node plugins/codexclaw/scripts/hook-bench.mjs --iterations 25 --json > devlog/_plan/260821_win-linux-optimization/bench-baseline.json
+node plugins/cursorclaw/scripts/hook-bench.mjs --iterations 25 --json > devlog/_plan/260821_win-linux-optimization/bench-baseline.json
 Get-Content devlog/_plan/260821_win-linux-optimization/bench-baseline.json | ConvertFrom-Json | Select-Object -ExpandProperty spawnFloorMs
 ```
 
@@ -224,9 +224,9 @@ The Defender comparison - run elevated, and restore the exclusion afterward:
 
 ```powershell
 Add-MpPreference -ExclusionPath (Get-Location).Path
-node plugins/codexclaw/scripts/hook-bench.mjs --iterations 25 --json > bench-no-defender.json
+node plugins/cursorclaw/scripts/hook-bench.mjs --iterations 25 --json > bench-no-defender.json
 Remove-MpPreference -ExclusionPath (Get-Location).Path
-node plugins/codexclaw/scripts/hook-bench-compare.mjs bench-no-defender.json devlog/_plan/260821_win-linux-optimization/bench-baseline.json --max-regression-pct 1000
+node plugins/cursorclaw/scripts/hook-bench-compare.mjs bench-no-defender.json devlog/_plan/260821_win-linux-optimization/bench-baseline.json --max-regression-pct 1000
 ```
 
 The threshold is deliberately huge: this run REPORTS a delta, it does not gate one.
@@ -234,15 +234,15 @@ The threshold is deliberately huge: this run REPORTS a delta, it does not gate o
 Both WSL tiers:
 
 ```bash
-wsl -d Ubuntu -- bash -lc "cd ~/codexclaw-wsl-checkout && node plugins/codexclaw/scripts/hook-bench.mjs --iterations 25 --json > /tmp/bench-native.json && node -e \"const r=require('/tmp/bench-native.json');console.log(r.spawnFloorMs)\""
-wsl -d Ubuntu -- bash -lc "cd /mnt/c/Users/super/Downloads/codexclaw && node plugins/codexclaw/scripts/hook-bench.mjs --iterations 25 --json > /tmp/bench-drvfs.json"
+wsl -d Ubuntu -- bash -lc "cd ~/codexclaw-wsl-checkout && node plugins/cursorclaw/scripts/hook-bench.mjs --iterations 25 --json > /tmp/bench-native.json && node -e \"const r=require('/tmp/bench-native.json');console.log(r.spawnFloorMs)\""
+wsl -d Ubuntu -- bash -lc "cd /mnt/c/Users/super/Downloads/codexclaw && node plugins/cursorclaw/scripts/hook-bench.mjs --iterations 25 --json > /tmp/bench-drvfs.json"
 ```
 
 Then, after any trim, the gate that decides whether it ships:
 
 ```powershell
-node plugins/codexclaw/scripts/hook-bench.mjs --iterations 25 --json > bench-after.json
-node plugins/codexclaw/scripts/hook-bench-compare.mjs devlog/_plan/260821_win-linux-optimization/bench-baseline.json bench-after.json --max-regression-pct 0
+node plugins/cursorclaw/scripts/hook-bench.mjs --iterations 25 --json > bench-after.json
+node plugins/cursorclaw/scripts/hook-bench-compare.mjs devlog/_plan/260821_win-linux-optimization/bench-baseline.json bench-after.json --max-regression-pct 0
 ```
 
 Exit 0 with a measured improvement on at least one hook and no regression anywhere, or

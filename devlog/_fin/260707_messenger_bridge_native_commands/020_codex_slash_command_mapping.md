@@ -3,11 +3,11 @@
 Status: DECIDED
 Date: 2026-07-07
 Related files:
-- `plugins/codexclaw/components/messenger-bridge/src/runner.ts`
-- `plugins/codexclaw/components/messenger-bridge/src/agent-service.ts`
-- `plugins/codexclaw/components/messenger-bridge/src/telegram-adapter.ts`
-- `plugins/codexclaw/components/messenger-bridge/src/discord-adapter.ts`
-- `plugins/codexclaw/components/messenger-bridge/src/db.ts`
+- `plugins/cursorclaw/components/messenger-bridge/src/runner.ts`
+- `plugins/cursorclaw/components/messenger-bridge/src/agent-service.ts`
+- `plugins/cursorclaw/components/messenger-bridge/src/telegram-adapter.ts`
+- `plugins/cursorclaw/components/messenger-bridge/src/discord-adapter.ts`
+- `plugins/cursorclaw/components/messenger-bridge/src/db.ts`
 
 ## Question
 
@@ -66,7 +66,7 @@ Why rejected:
 Introduce a bridge-owned command registry:
 
 ```text
-plugins/codexclaw/components/messenger-bridge/src/gateway-commands.ts
+plugins/cursorclaw/components/messenger-bridge/src/gateway-commands.ts
 ```
 
 Expected public shape:

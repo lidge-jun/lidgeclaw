@@ -1,9 +1,9 @@
 # 030 — Phase 3: reviewer search baseline (attachment)
 
 Write scope (disjoint):
-`plugins/codexclaw/components/subagent-config/src/spawn-wrapper.ts`,
-`plugins/codexclaw/components/subagent-config/test/*.ts`,
-`plugins/codexclaw/skills/search/SKILL.md`. Nothing else.
+`plugins/cursorclaw/components/subagent-config/src/spawn-wrapper.ts`,
+`plugins/cursorclaw/components/subagent-config/test/*.ts`,
+`plugins/cursorclaw/skills/search/SKILL.md`. Nothing else.
 
 Mechanism recap (001 RC3): `inferRole` (spawn-attach-hook.ts) already upgrades
 audit/review-worded spawns to `reviewer`; the gap is only that the reviewer
@@ -45,7 +45,7 @@ the spawn message." append:
 ```text
 PABCD A-gate audit/reviewer dispatches are in scope too: a plan auditor must
 verify references and external/current claims, so the audit dispatch packet
-attaches `$cxc-search` alongside `$cxc-dev-code-reviewer` (AUDIT-LOOP-01), and
+attaches `$crc-search` alongside `$crc-dev-code-reviewer` (AUDIT-LOOP-01), and
 the reviewer role baseline carries it by default (spawn-wrapper
 `ROLE_BASE_SKILLS.reviewer`).
 ```
@@ -71,14 +71,14 @@ the reviewer role baseline carries it by default (spawn-wrapper
   containing BOTH `dev-code-reviewer/SKILL.md` and `search/SKILL.md` mentions.
   Follow the file's existing harness (CODEXCLAW_SKILLS_DIR fixture, JSON stdin
   envelope).
-- ADD dedup case: same message but already containing `$cxc-search` -> the
+- ADD dedup case: same message but already containing `$crc-search` -> the
   mention block must NOT duplicate the search skill (excludeFolders path).
 
 ## Verification (phase-local)
 
 ```sh
-cd plugins/codexclaw/components/subagent-config && npm test
-rg -n "A-gate audit" plugins/codexclaw/skills/search/SKILL.md
+cd plugins/cursorclaw/components/subagent-config && npm test
+rg -n "A-gate audit" plugins/cursorclaw/skills/search/SKILL.md
 ```
 
 All tests green; SEARCH-ATTACH-01 extension grep-verifiable. dist/ is NOT

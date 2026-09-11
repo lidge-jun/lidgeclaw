@@ -110,7 +110,7 @@ test("dispatcher bootstrap ladder: help bypass, env override, uv rung, venv rung
   const bare = selectRepoMapCommand(["."], {}, { ...deps, hasUv: false, hasVenv: false }, "linux");
   assert.equal(bare.cmd, "python3");
   assert.ok(bare.args.includes("-B"));
-  // Venv location honors CODEXCLAW_HOME and defaults under ~/.cursorclaw.
+  // Venv location honors CURSORCLAW_HOME and defaults under ~/.cursorclaw.
   // Expected paths are built with join() to match the platform output of the
   // production helper (win32 join() yields backslash separators).
   assert.equal(
@@ -118,7 +118,7 @@ test("dispatcher bootstrap ladder: help bypass, env override, uv rung, venv rung
     join("/h", ".cursorclaw", "venvs", "repomap", "bin", "python3"),
   );
   assert.equal(
-    repoMapVenvPython({ CODEXCLAW_HOME: "/custom" }, "/h", "linux"),
+    repoMapVenvPython({ CURSORCLAW_HOME: "/custom" }, "/h", "linux"),
     join("/custom", "venvs", "repomap", "bin", "python3"),
   );
 });
@@ -134,7 +134,7 @@ test("wp06: the venv interpreter is Scripts\\python.exe on win32 and bin/python3
     join("/h", ".cursorclaw", "venvs", "repomap", "Scripts", "python.exe"),
   );
   assert.equal(
-    repoMapVenvPython({ CODEXCLAW_HOME: "/custom" }, "/h", "win32"),
+    repoMapVenvPython({ CURSORCLAW_HOME: "/custom" }, "/h", "win32"),
     join("/custom", "venvs", "repomap", "Scripts", "python.exe"),
   );
   assert.equal(

@@ -324,7 +324,7 @@ work phase <id> references unknown criterion '<id>'
 
 ## 17. 공개 표면에는 SKILL.md가 포함된다 (라운드 3 High)
 
-`000_plan.md`의 write scope와 `002_blast_radius.md`가 `plugins/codexclaw/skills/loop/SKILL.md`를
+`000_plan.md`의 write scope와 `002_blast_radius.md`가 `plugins/cursorclaw/skills/loop/SKILL.md`를
 필수 변경으로 두는데 050과 060의 변경 목록에 없다. 현재 SKILL.md는 task를 `{id,title,status}`로만
 설명하고 `ready`, `add-task`, `complete-task`, `meet-criterion`, `dependsOn`, `outcome`을 안내하지
 않는다.
@@ -462,7 +462,7 @@ S7 처분 상세: **070이 소비 스키마의 정본이다.** 020의 생성기 
 
 ## 26. corpus 수를 코드에 박지 않는다 (라운드 4 High)
 
-실측이 이미 어긋났다. 2026-08-29 재측정에서 `.codexclaw/goalplans/` 디렉터리 91개,
+실측이 이미 어긋났다. 2026-08-29 재측정에서 `.cursorclaw/goalplans/` 디렉터리 91개,
 `goalplan.json` **90개**다. 라운드 1 조사 시점의 89개가 아니다. 생성기가 `expected 89`를 단언하면
 구현 시작 직후 실패한다.
 
@@ -658,7 +658,7 @@ D-close 검사 순서 정본(wp5가 이 순서를 그대로 구현한다):
   "전체 After"라고 쓰면서 현재 HEAD 기준으로 다시 쓰는 것을 금지한다.
 - import를 바꾸는 문서는 **선행 문서의 import After를 직접 열어 읽고** 그 목록을 출발점으로 삼는다.
 - 각 import After 블록 위에 `// wpN 적용 후 + 이 wp 추가분` 주석과, 선행 wp가 넣은 이름을 명시한다.
-- **`npm run build`는 이 결함을 잡지 못한다.** `plugins/codexclaw/scripts/build.mjs`는 타입 제거와
+- **`npm run build`는 이 결함을 잡지 못한다.** `plugins/cursorclaw/scripts/build.mjs`는 타입 제거와
   파일 복사만 하고 심볼 해석을 하지 않는다. 따라서 build exit 0은 실행 자립성의 증거가 아니다.
   각 단계의 게이트는 **변경된 공개 경로를 실제로 호출하는 focused test**다. 문서의 검증 절에서
   "build가 타입·import 오류를 검출한다"는 주장을 삭제한다.
@@ -691,7 +691,7 @@ V12 처분: 테스트는 `node:path`의 `isAbsolute()`를 쓴다. 복구 안내�
 V13 처분: 락 안에서 marker·write보다 **먼저** 두 integrity helper를 실행한다. 실패 시 goalplan,
 state, 두 원장 모두 한 바이트도 바뀌지 않는 CLI·채팅 회귀를 둔다.
 
-V14 처분: 000의 write scope에 `plugins/codexclaw/components/pabcd-state/dist/`의 해당 파일들을
+V14 처분: 000의 write scope에 `plugins/cursorclaw/components/pabcd-state/dist/`의 해당 파일들을
 명시하고, 각 wp의 변경 manifest에도 넣는다. 최종 완료 조건에 dist freshness test를 결박한다.
 
 
@@ -706,7 +706,7 @@ V14 처분: 000의 write scope에 `plugins/codexclaw/components/pabcd-state/dist
 | W2 | Critical | 050이 `handleUserPromptSubmit(payload, platform)`의 **두 번째 인자를 `dcloseCommitHooks`로 교체**한다. 함수 안 `loopArmDirective(platform)`이 미정의 변수를 참조한다. D-close 본문은 private `handleOrchestrateCommand()` 안인데 hook 객체를 그 함수로 전달하는 diff가 없다(`hook.ts:592~607, 791~796`) | wp5 |
 | W3 | High | 020에서 `buildGoalplan()` 기본값이 v3가 되고 050 D-close가 outcome 무결성을 먼저 검사하는데, 기존 성공 fixture의 done task에 `outcome`이 없다. `seedBoundCycleAtC(..., "done")`(`orchestrate-cli.test.ts:738~749`)과 채팅 fixture(`hook.test.ts:675~695`) 모두 `{status:"done"}`만 만든다 | wp5 |
 | W4 | High | 채팅 D-close에 all-done 특례가 없다. bound chat이 plan을 읽기 전에 `workPhaseId` 누락을 거부하고, 줘도 all-done plan이 `no_active`로 거부된다. §35의 8단계 순서를 채팅이 위반한다 | wp5 |
-| W5 | High | 각 wp manifest에 tracked `dist/*.js`가 없고, 단계 순서가 `npm test`를 `npm run build`보다 먼저 실행한다. 루트 `npm test`에 `plugins/codexclaw/test/dist-freshness.test.mjs`가 포함되고 그것이 src와 tracked dist의 byte equality를 검사하므로, **첫 src 변경인 020 직후부터 stale dist로 실패**한다 | 000 + 020~070 |
+| W5 | High | 각 wp manifest에 tracked `dist/*.js`가 없고, 단계 순서가 `npm test`를 `npm run build`보다 먼저 실행한다. 루트 `npm test`에 `plugins/cursorclaw/test/dist-freshness.test.mjs`가 포함되고 그것이 src와 tracked dist의 byte equality를 검사하므로, **첫 src 변경인 020 직후부터 stale dist로 실패**한다 | 000 + 020~070 |
 
 W2 처분: **기존 `platform` 인자를 보존**하고 hook을 **세 번째 인자**로 추가한다.
 `handleOrchestrateCommand(..., dcloseCommitHooks)`에도 매개변수를 추가하고 호출부에서 명시적으로
@@ -756,13 +756,13 @@ W5 처분: **단계별 검증 순서를 고정한다.**
 
 | # | 심각도 | 지적 | 소유 |
 | --- | --- | --- | --- |
-| X1 | High | `dcloseRecovery: null`을 기본 상태에 추가하면서 `test/state.test.ts`만 갱신했다. 루트 E2E도 persisted state 전체를 `deepEqual`하며 새 필드가 없다(`plugins/codexclaw/test/hook-e2e.test.mjs:160`, `:183`). 루트 `npm test`가 `plugins/codexclaw/test/*.test.mjs`를 포함하므로 wp5에서 확정 실패한다 | wp5 |
+| X1 | High | `dcloseRecovery: null`을 기본 상태에 추가하면서 `test/state.test.ts`만 갱신했다. 루트 E2E도 persisted state 전체를 `deepEqual`하며 새 필드가 없다(`plugins/cursorclaw/test/hook-e2e.test.mjs:160`, `:183`). 루트 `npm test`가 `plugins/cursorclaw/test/*.test.mjs`를 포함하므로 wp5에서 확정 실패한다 | wp5 |
 | X2 | High | 채팅 D-close가 target 조회 **뒤에** recovery를 판정한다(`recoveringDclose && target.status === "done"`). 부분 커밋 뒤 target이 사라지면 marker가 맞아도 정리를 재개하지 못한다. 또 all-done에 `workPhaseId`가 들어오면 target 없이 닫아야 하는데 PABCD 행에 그것을 `closedWorkPhaseId`로 기록한다. 완료 기준에 all-done 특례를 부정하는 모순 문장이 남아 있다(`050:3291`) | wp5 |
 
-X1 처분: wp5의 변경 manifest에 `plugins/codexclaw/test/hook-e2e.test.mjs`를 추가하고, 그 파일의
+X1 처분: wp5의 변경 manifest에 `plugins/cursorclaw/test/hook-e2e.test.mjs`를 추가하고, 그 파일의
 두 exact shape 블록에 `dcloseRecovery: null`을 넣는 diff를 포함한다. §28 소유 표에도 등록한다.
 **교훈**: exact-shape `deepEqual` 단언은 `components/*/test/`뿐 아니라
-`plugins/codexclaw/test/*.test.mjs`에도 있다. state 필드를 추가하는 wp는 두 곳을 모두 검색한다.
+`plugins/cursorclaw/test/*.test.mjs`에도 있다. state 필드를 추가하는 wp는 두 곳을 모두 검색한다.
 
 X2 처분: 채팅 D-close 순서를 정본 §35의 8단계와 정확히 맞춘다.
 
@@ -2278,8 +2278,8 @@ for (const verb of ["steer", "add-work-phase", "add-criterion"]) {
 빼고 돌린 것이었다. 내가 pristine `f6111d6a`에서 직접 재확인했다.
 
 ```text
-node --test --test-concurrency=1 plugins/codexclaw/test/*.test.mjs   tests 163  pass 163  fail 0
-node --test                      plugins/codexclaw/test/*.test.mjs   tests 156  pass 147  fail 9
+node --test --test-concurrency=1 plugins/cursorclaw/test/*.test.mjs   tests 163  pass 163  fail 0
+node --test                      plugins/cursorclaw/test/*.test.mjs   tests 156  pass 147  fail 9
 ```
 
 dist는 clean이었다. 병렬에서 등록 개수까지 줄어드는 이유는 root `*.test.mjs`들이 같은 임시 경로와 git
@@ -2356,11 +2356,11 @@ After"나 "그대로 만든다"를 선언하는 블록은 그 자체가 정본�
 경쟁이다.
 
 ```text
-plugins/codexclaw/test/hook-e2e.test.mjs:29
+plugins/cursorclaw/test/hook-e2e.test.mjs:29
 // To stay immune to the C10 build/test contention (build.test.mjs and
 // packaging.test.mjs rebuild dist in parallel workers and would clobber a cli.js mid-read)
 
-plugins/codexclaw/scripts/build.mjs:74
+plugins/cursorclaw/scripts/build.mjs:74
 if (existsSync(distDir)) rmSync(distDir, { recursive: true, force: true });
 ```
 
@@ -2409,7 +2409,7 @@ Fermat은 코드 실행 가능성·변이 검출 각도였다. 판정은 CHANGES
 
 | # | 위치 | 결함 | 결과 |
 | --- | --- | --- | --- |
-| 1 | 070:864~865 | 백슬래시가 두 배(`/^\\[codexclaw`) | 그대로 옮기면 `Unterminated regexp literal`로 `goalplan.test.ts` 기존 38건까지 무너진다 |
+| 1 | 070:864~865 | 백슬래시가 두 배(`/^\\[cursorclaw`) | 그대로 옮기면 `Unterminated regexp literal`로 `goalplan.test.ts` 기존 38건까지 무너진다 |
 | 2 | 070:899~901 | `escapeRe()` 본문이 아무것도 이스케이프하지 않는다 | `mktemp` 경로의 `.`이 와일드카드로 남아 단언이 헐거워진다 |
 | 3 | 070 §4.7 전체 | 두 테스트가 쓰는 `NOW`가 `goalplan.test.ts`에 없다(`rg -n '\bNOW\b'` 0건) | 미해석 식별자로 컴파일 실패 |
 
@@ -2475,7 +2475,7 @@ if (process.argv[1] !== undefined && process.argv[1].endsWith("capture-goalplan-
 
 "직접 실행일 때만 돈다"는 가드인데, `node --test`도 `argv[1]`을 발견한 파일로 채운다. 실측으로 확인했다 —
 `node --test`에서 `NODE_TEST_CONTEXT=child-v8`이고 `argv[1]`이 그 파일이다. 그래서 가드가 뚫리고,
-컴포넌트 cwd에 없는 `.codexclaw/goalplans`를 `readdirSync`해 `ENOENT`로 죽는다.
+컴포넌트 cwd에 없는 `.cursorclaw/goalplans`를 `readdirSync`해 `ENOENT`로 죽는다.
 
 | 명령 | 결과 |
 | --- | --- |

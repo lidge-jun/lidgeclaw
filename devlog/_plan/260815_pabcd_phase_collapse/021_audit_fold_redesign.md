@@ -4,7 +4,7 @@ status: superseded
 supersededBy: 023_final_design.md
 warning: 폐기됨 — porcelain 해시는 source-identity.ts의 열등한 재발명이었다.
 supersedes: [010_phase_tracking.md, 020_collapse_gate.md]
-tags: [codexclaw, pabcd, attest, gate, audit-fold]
+tags: [cursorclaw, pabcd, attest, gate, audit-fold]
 unit: 260815_pabcd_phase_collapse
 ---
 
@@ -88,8 +88,8 @@ B는 코드 변화로. 남의 위상 부산물로는 증명할 수 없다.
 
 ### A>B — 서브에이전트 파견 흔적
 
-`subagent-evidence.ts`가 이미 `.codexclaw/evidence/`와
-`.codexclaw/evidence-attempts/`에 `sessionId-agentId` 키로 receipt를
+`subagent-evidence.ts`가 이미 `.cursorclaw/evidence/`와
+`.cursorclaw/evidence-attempts/`에 `sessionId-agentId` 키로 receipt를
 남긴다. 216개가 쌓여 있다. A>B는 **A 위상 진입 이후 이 세션 이름으로 생긴
 receipt/attempt 파일**을 요구한다.
 

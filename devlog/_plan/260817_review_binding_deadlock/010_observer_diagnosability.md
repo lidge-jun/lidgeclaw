@@ -2,7 +2,7 @@
 created: 2026-08-17
 status: design
 workPhase: wp2
-tags: [codexclaw, observer, diagnosability]
+tags: [cursorclaw, observer, diagnosability]
 ---
 
 # 010 — observer의 침묵을 없앤다

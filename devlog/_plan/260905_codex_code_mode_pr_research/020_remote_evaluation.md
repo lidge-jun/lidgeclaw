@@ -47,17 +47,17 @@ Paths in this document are repository-relative unless absolute. Authoring root:
 
 | Owner | Current evidence | Decision |
 | --- | --- | --- |
-| `.github/workflows/packed-install.yml:43–79,115–160` | committed-dist check, tar/SHA256, installer JSON path, isolated CODEX_HOME, installed dispatcher | Reuse operations, not a second packer. Current selected doctor checks permit WARN; recorder requires PASS for its four named checks. |
-| `plugins/codexclaw/scripts/check-versions.mjs:26–30,42–62` | strips build metadata; checks manifest/component/inventory surfaces | Not a cache freshness verifier. Keep unchanged; compare full manifest version and payload digest in the run packet. |
+| `.github/workflows/packed-install.yml:43–79,115–160` | committed-dist check, tar/SHA256, installer JSON path, isolated CURSOR_HOME, installed dispatcher | Reuse operations, not a second packer. Current selected doctor checks permit WARN; recorder requires PASS for its four named checks. |
+| `plugins/cursorclaw/scripts/check-versions.mjs:26–30,42–62` | strips build metadata; checks manifest/component/inventory surfaces | Not a cache freshness verifier. Keep unchanged; compare full manifest version and payload digest in the run packet. |
 | `scripts/dev-symlink.sh:19,48–59` | hardcoded 0.1.0 and rm/symlink replacement | Never use for these experiments. Use independent real-copy installations. |
-| `plugins/codexclaw/components/cxc-ops/src/doctor.ts:394–487` | installed-root and per-handler trust diagnostics; empty trust set WARN | Invoke installed dispatcher. A version match does not prove active-session adoption or content equality. |
-| `plugins/codexclaw/components/cxc-ops/src/hook-trust.ts:101–131,368–369,441–464` | handler identity hashes; follows config symlink; bootstrap/safety pin; backup/rollback | Do not call retrust from recorder. Reject escaping/symlinked config; retain host approval. Trust hash is not dist-content hash. |
-| `plugins/codexclaw/scripts/hook-bench.mjs:23–47,60–107,149–162,192–252` | real compiled entrypoint replay, isolated home, cold/warm/spawn-floor metrics | Add only installed-root selection, harness identity and output-byte accounting. Synthetic replay is not host invocation/trust evidence. |
-| `plugins/codexclaw/scripts/hook-bench-compare.mjs:28–58` | per-hook comparison, missing hooks fail; incomplete timings/errors not rejected | Leave implementation unchanged; analyzer validates reports before using it. Zero/negative floor-adjusted baseline is UNKNOWN, not percent gain. |
-| `plugins/codexclaw/components/cxc-ops/src/activation-trace.ts:18–42,78–120,130–150` | four-layer schema; bytes/4; opt-in writer | Leave unchanged. Search found no production TraceBuilder/emitTrace callers. An env switch alone does not collect observations. |
-| `plugins/codexclaw/components/messenger-bridge/src/runner.ts:79–105,109–199,379–392` | exec argv, JSONL events, inherited process environment | Reuse known argv shapes. Do not import the messenger lifecycle: no env/tier/raw-artifact contract and resume fallback would contaminate trials. |
-| `plugins/codexclaw/components/recall/src/rollout.ts:214–256` | response_item-only parser | Do not use as evidence filter: loses turn_context, unknown events and custom-tool calls. Analyzer reads original JSONL with line anchors. |
-| `plugins/codexclaw/test/hook-e2e.test.mjs:827–859` | cache-relative skills fixture and compiled hook output | Reuse activation case, not its skip-on-missing-dist behavior as installation success. |
+| `plugins/cursorclaw/components/cxc-ops/src/doctor.ts:394–487` | installed-root and per-handler trust diagnostics; empty trust set WARN | Invoke installed dispatcher. A version match does not prove active-session adoption or content equality. |
+| `plugins/cursorclaw/components/cxc-ops/src/hook-trust.ts:101–131,368–369,441–464` | handler identity hashes; follows config symlink; bootstrap/safety pin; backup/rollback | Do not call retrust from recorder. Reject escaping/symlinked config; retain host approval. Trust hash is not dist-content hash. |
+| `plugins/cursorclaw/scripts/hook-bench.mjs:23–47,60–107,149–162,192–252` | real compiled entrypoint replay, isolated home, cold/warm/spawn-floor metrics | Add only installed-root selection, harness identity and output-byte accounting. Synthetic replay is not host invocation/trust evidence. |
+| `plugins/cursorclaw/scripts/hook-bench-compare.mjs:28–58` | per-hook comparison, missing hooks fail; incomplete timings/errors not rejected | Leave implementation unchanged; analyzer validates reports before using it. Zero/negative floor-adjusted baseline is UNKNOWN, not percent gain. |
+| `plugins/cursorclaw/components/cxc-ops/src/activation-trace.ts:18–42,78–120,130–150` | four-layer schema; bytes/4; opt-in writer | Leave unchanged. Search found no production TraceBuilder/emitTrace callers. An env switch alone does not collect observations. |
+| `plugins/cursorclaw/components/messenger-bridge/src/runner.ts:79–105,109–199,379–392` | exec argv, JSONL events, inherited process environment | Reuse known argv shapes. Do not import the messenger lifecycle: no env/tier/raw-artifact contract and resume fallback would contaminate trials. |
+| `plugins/cursorclaw/components/recall/src/rollout.ts:214–256` | response_item-only parser | Do not use as evidence filter: loses turn_context, unknown events and custom-tool calls. Analyzer reads original JSONL with line anchors. |
+| `plugins/cursorclaw/test/hook-e2e.test.mjs:827–859` | cache-relative skills fixture and compiled hook output | Reuse activation case, not its skip-on-missing-dist behavior as installation success. |
 
 Necessity decisions: do not add a packer, SSH wrapper, model client, telemetry hook,
 cachebuster implementation, or another activation schema. A recorder is needed
@@ -70,17 +70,17 @@ neither is wired into normal sessions, a CLI dispatcher, hooks, or CI in wp1.
 
 | Order | Action | Exact path | Delta |
 | --- | --- | --- | --- |
-| 1 | MODIFY | `plugins/codexclaw/scripts/hook-bench.mjs` | Section 4 hunks: root override, stable harness digest, byte sums, environment override removal. |
-| 1 | MODIFY | `plugins/codexclaw/test/hook-bench-cwd.test.mjs` | Section 4 final hunk: ambient skill override regression. |
-| 2 | NEW | `plugins/codexclaw/scripts/probe-recorder.mjs` | Complete file in 021 §2; host-local run and artifact identity only. |
-| 3 | NEW | `plugins/codexclaw/scripts/probe-evidence.mjs` | Complete file in 021 §3; offline run/benchmark checks. Imports existing compareReports and recorder's file digest only. |
-| 4 | NEW | `plugins/codexclaw/test/probe-evidence.test.mjs` | Complete starter/regression file in 021 §4; additional mandatory cases specified there with constructible fixtures. |
+| 1 | MODIFY | `plugins/cursorclaw/scripts/hook-bench.mjs` | Section 4 hunks: root override, stable harness digest, byte sums, environment override removal. |
+| 1 | MODIFY | `plugins/cursorclaw/test/hook-bench-cwd.test.mjs` | Section 4 final hunk: ambient skill override regression. |
+| 2 | NEW | `plugins/cursorclaw/scripts/probe-recorder.mjs` | Complete file in 021 §2; host-local run and artifact identity only. |
+| 3 | NEW | `plugins/cursorclaw/scripts/probe-evidence.mjs` | Complete file in 021 §3; offline run/benchmark checks. Imports existing compareReports and recorder's file digest only. |
+| 4 | NEW | `plugins/cursorclaw/test/probe-evidence.test.mjs` | Complete starter/regression file in 021 §4; additional mandatory cases specified there with constructible fixtures. |
 | 5 | MODIFY | `docs/native-thin-harness.md` | Section 4 final SoT hunk: measurement does not establish runtime delivery or actual model identity. |
 
 No DELETE, new dependencies, package scripts, workflow, manifest, component source,
 component dist, activation-trace, or production hook changes in this wp1 slice.
 
-Audit correction: the recorder must not inherit the host's executable search path. After validating the entire installed payload, provision two experiment-owned cxc/codex launchers in the fresh isolated home, prepend only that launcher directory and the selected Node/system paths, and set CODEXCLAW_CXC to the absolute candidate dispatcher. Record and hash those launchers. Test a conflicting global cxc that writes a marker: the actual launched cxc must be the candidate and the global marker must stay absent. A separate record(spec) fixture places a symlinked dispatcher inside the otherwise valid payload; it must be rejected before doctor or any linked target executes. Final native probes also verify the actual executable resolution rather than trusting PATH construction alone.
+Audit correction: the recorder must not inherit the host's executable search path. After validating the entire installed payload, provision two experiment-owned cxc/codex launchers in the fresh isolated home, prepend only that launcher directory and the selected Node/system paths, and set CURSORCLAW_CRC to the absolute candidate dispatcher. Record and hash those launchers. Test a conflicting global cxc that writes a marker: the actual launched cxc must be the candidate and the global marker must stay absent. A separate record(spec) fixture places a symlinked dispatcher inside the otherwise valid payload; it must be rejected before doctor or any linked target executes. Final native probes also verify the actual executable resolution rather than trusting PATH construction alone.
 Candidate payload construction/version changes belong to the main roadmap's
 candidate owner, not this measurement plan. New `.mjs` files need no component
 build; existing component gates are regression checks only.
@@ -96,20 +96,20 @@ an existing Codex option. Run the same controller-side benchmark file for both
 payloads so benchmark instrumentation does not require modifying the baseline.
 
 ```diff
---- a/plugins/codexclaw/scripts/hook-bench.mjs
-+++ b/plugins/codexclaw/scripts/hook-bench.mjs
+--- a/plugins/cursorclaw/scripts/hook-bench.mjs
++++ b/plugins/cursorclaw/scripts/hook-bench.mjs
 @@
  import { spawnSync } from "node:child_process";
 +import { createHash } from "node:crypto";
 @@
--const MANIFEST_PATH = join(PLUG_ROOT, ".codex-plugin", "plugin.json");
+-const MANIFEST_PATH = join(PLUG_ROOT, ".cursor-plugin", "plugin.json");
 +const HARNESS_SHA256 = createHash("sha256")
 +  .update(readFileSync(fileURLToPath(import.meta.url))).digest("hex");
 @@
 -function loadHooks() {
 -  const manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf8"));
 +function loadHooks(pluginRoot = PLUG_ROOT) {
-+  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8"));
++  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8"));
 @@
 -    const absPath = join(PLUG_ROOT, relPath.replace(/^\.\//, ""));
 -    if (!existsSync(absPath)) continue;
@@ -172,8 +172,8 @@ extension keeps existing consumers intact; the new analyzer requires these field
 No matcher simulation is added. Scope says what this benchmark cannot prove.
 
 ```diff
---- a/plugins/codexclaw/test/hook-bench-cwd.test.mjs
-+++ b/plugins/codexclaw/test/hook-bench-cwd.test.mjs
+--- a/plugins/cursorclaw/test/hook-bench-cwd.test.mjs
++++ b/plugins/cursorclaw/test/hook-bench-cwd.test.mjs
 @@
  test("the bench env sets USERPROFILE alongside HOME", () => {
 @@
@@ -215,7 +215,7 @@ No matcher simulation is added. Scope says what this benchmark cannot prove.
    `/Users/junny/cxc-probes/260905/`. `home`, `work`, prompt, approval record and
    installer JSON are inside that run root. `work` is a dedicated fixture checkout,
    not the canonical initiative or an active user checkout. Never reuse `output`.
-2. Set HOME/USERPROFILE to that run's home; CODEX_HOME/CODEX_SQLITE_HOME to its
+2. Set HOME/USERPROFILE to that run's home; CURSOR_HOME/CODEX_SQLITE_HOME to its
    `.codex`. Recorder allowlists environment instead of inheriting CXC overrides,
    NODE_OPTIONS, provider credentials, or an active task's session IDs.
 3. Credentials are provisioned separately by the authorized operator using the
@@ -224,7 +224,7 @@ No matcher simulation is added. Scope says what this benchmark cannot prove.
    these scripts. A provider requiring additional env access is a main-reviewed
    plan amendment, not an automatic environment fallback.
 4. Resolve the installed root from actual `codex plugin add ... --json` output;
-   require its real path under isolated CODEX_HOME and no payload/config symlinks.
+   require its real path under isolated CURSOR_HOME and no payload/config symlinks.
    Hash full payload, config, Codex binary, prompt, approval note and controller.
    Record full manifest version and clean source SHA. Dirty source is refused;
    main must first commit the intended candidate, never discard dirty work.
@@ -233,7 +233,7 @@ No matcher simulation is added. Scope says what this benchmark cannot prove.
    invent a `codex plugin add /archive.tar.gz` API. An extracted archive is not an
    installed plugin. Main records source→archive→installer→payload association in
    the approval note, including exact source SHA and expected manifest version.
-6. Recorder calls installed `bin/cxc.mjs doctor --json` before inference and after
+6. Recorder calls installed `bin/cursorclaw.mjs doctor --json` before inference and after
    completion. Require unique PASS checks for manifest/hooks/hook-trust/install-root.
    Raw doctor process exit and stderr are retained; other existing WARN/FAIL
    categories are reviewed separately. The four selected checks are not claimed
@@ -349,7 +349,7 @@ uses read/tool/output evidence and an independent behavior oracle; a prompt that
 names a skill, an injected body, or a zero-error tool call alone proves too little.
 
 Mandatory reachable hook fixtures are owned by the future
-`plugins/codexclaw/test/probe-evidence.test.mjs` additions in **021 §5** (compiled
+`plugins/cursorclaw/test/probe-evidence.test.mjs` additions in **021 §5** (compiled
 manifest-driven spawn V1/V2, nonmatch, repeated input, protection and completion
 cases). Reuse existing hook-e2e.test.mjs:827's cache-shaped setup and existing
 invariant suites. The generic matcherless benchmark is explicitly not their
@@ -382,7 +382,7 @@ node --version
 command -v codex
 codex --version
 codex exec --help
-codex plugin marketplace add --help
+Cursor plugin install add --help
 codex plugin add --help
 ```
 
@@ -396,13 +396,13 @@ rerun discovery now. No CLI upgrade is authorized by this plan.
 ### 8.2 Focused proposed script verification
 
 ```bash
-node --check plugins/codexclaw/scripts/probe-recorder.mjs
-node --check plugins/codexclaw/scripts/probe-evidence.mjs
+node --check plugins/cursorclaw/scripts/probe-recorder.mjs
+node --check plugins/cursorclaw/scripts/probe-evidence.mjs
 node --test --test-concurrency=1 \
-  plugins/codexclaw/test/probe-evidence.test.mjs \
-  plugins/codexclaw/test/hook-bench-cwd.test.mjs \
-  plugins/codexclaw/test/hook-bench-report.test.mjs \
-  plugins/codexclaw/test/hook-bench-compare.test.mjs
+  plugins/cursorclaw/test/probe-evidence.test.mjs \
+  plugins/cursorclaw/test/hook-bench-cwd.test.mjs \
+  plugins/cursorclaw/test/hook-bench-report.test.mjs \
+  plugins/cursorclaw/test/hook-bench-compare.test.mjs
 ```
 
 The new test paths are created during B from 021, so these commands cannot be
@@ -421,11 +421,11 @@ is the common controller checkout, not whichever candidate was last installed.
 : "${REPO:?set controller checkout}"
 BASE=/Users/junny/cxc-probes/260905
 umask 077
-node "$REPO/plugins/codexclaw/scripts/probe-recorder.mjs" "$BASE/baseline/spec.json"
+node "$REPO/plugins/cursorclaw/scripts/probe-recorder.mjs" "$BASE/baseline/spec.json"
 rc=$?
 printf 'baseline recorder rc=%s\n' "$rc"
 # Stop here if rc is not 0; do not auto-retry or silently reuse output.
-node "$REPO/plugins/codexclaw/scripts/probe-evidence.mjs" run "$BASE/baseline/output"
+node "$REPO/plugins/cursorclaw/scripts/probe-evidence.mjs" run "$BASE/baseline/output"
 rc=$?
 printf 'baseline evidence rc=%s\n' "$rc"
 # Expected UNKNOWN/2 until real, independently reviewed proof.json is available.
@@ -434,11 +434,11 @@ printf 'baseline evidence rc=%s\n' "$rc"
 After review and identical fixture/config conditions, run candidate separately:
 
 ```bash
-node "$REPO/plugins/codexclaw/scripts/probe-recorder.mjs" "$BASE/candidate/spec.json"
+node "$REPO/plugins/cursorclaw/scripts/probe-recorder.mjs" "$BASE/candidate/spec.json"
 rc=$?
 printf 'candidate recorder rc=%s\n' "$rc"
 # Stop here if rc is not 0.
-node "$REPO/plugins/codexclaw/scripts/probe-evidence.mjs" run "$BASE/candidate/output"
+node "$REPO/plugins/cursorclaw/scripts/probe-evidence.mjs" run "$BASE/candidate/output"
 rc=$?
 printf 'candidate evidence rc=%s\n' "$rc"
 ```
@@ -457,16 +457,16 @@ result or version guess. These commands do not produce model/tier proof.
 ```bash
 : "${BASELINE_PLUGIN:?installer-returned baseline root}"
 : "${CANDIDATE_PLUGIN:?installer-returned candidate root}"
-node "$REPO/plugins/codexclaw/scripts/hook-bench.mjs" \
+node "$REPO/plugins/cursorclaw/scripts/hook-bench.mjs" \
   --plugin-root "$BASELINE_PLUGIN" --iterations 25 --json > "$BASE/baseline/bench.json"
 rc=$?
 printf 'baseline bench rc=%s\n' "$rc"
 # Stop on nonzero rc; preserve stderr separately if diagnosing a failure.
-node "$REPO/plugins/codexclaw/scripts/hook-bench.mjs" \
+node "$REPO/plugins/cursorclaw/scripts/hook-bench.mjs" \
   --plugin-root "$CANDIDATE_PLUGIN" --iterations 25 --json > "$BASE/candidate/bench.json"
 rc=$?
 printf 'candidate bench rc=%s\n' "$rc"
-node "$REPO/plugins/codexclaw/scripts/probe-evidence.mjs" bench \
+node "$REPO/plugins/cursorclaw/scripts/probe-evidence.mjs" bench \
   "$BASE/baseline/bench.json" "$BASE/candidate/bench.json" 10
 rc=$?
 printf 'benchmark analysis rc=%s\n' "$rc"
@@ -482,10 +482,10 @@ retry-as-fix for failures. Benchmark env is synthetic; no shared provider startu
 
 ```bash
 node --test --test-concurrency=1 \
-  plugins/codexclaw/components/cxc-ops/test/hook-trust.test.ts \
-  plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts \
-  plugins/codexclaw/components/pabcd-state/test/worktree-guard.test.ts \
-  plugins/codexclaw/components/subagent-config/test/spawn-attach-hook.test.ts
+  plugins/cursorclaw/components/cxc-ops/test/hook-trust.test.ts \
+  plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts \
+  plugins/cursorclaw/components/pabcd-state/test/worktree-guard.test.ts \
+  plugins/cursorclaw/components/subagent-config/test/spawn-attach-hook.test.ts
 ```
 
 For a candidate that changes component source, main's candidate owner must build

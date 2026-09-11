@@ -9,7 +9,7 @@ Status: PLANNED
 
 ## The defect, exactly
 
-`plugins/codexclaw/components/pabcd-state/src/subagent-evidence.ts:196-199`:
+`plugins/cursorclaw/components/pabcd-state/src/subagent-evidence.ts:196-199`:
 
 ```ts
 const attempts = readAttempts(cwd, sessionId, agentId);
@@ -37,7 +37,7 @@ this precedent already (`hook.ts:1027-1031`): bounded blocks, then release.
 
 ## Audit round 1: FAIL — what changed
 
-Auditor verdict FAIL (`.codexclaw/evidence/260826_readonly_gate_audit.md`), 4 blockers.
+Auditor verdict FAIL (`.cursorclaw/evidence/260826_readonly_gate_audit.md`), 4 blockers.
 All four are accepted; the design below is the replacement, not a patch of the old one.
 
 **B1 — bounded release is an opt-out.** Accepted, and it is the central risk: any
@@ -179,8 +179,8 @@ no receipt is REFUSED. A human override is a separately named
 and is likewise ledgered. Test that a bare resolve cannot re-permit completion.
 
 Audit finding 5 (accepted): a verb added only to the component CLI is dead. The
-resolve verb must land in `plugins/codexclaw/bin/cxc.mjs` `COMMAND_TABLE`, in
-`bin/codexclaw.mjs`, and in `plugins/codexclaw/test/payload-bin.test.mjs`.
+resolve verb must land in `plugins/cursorclaw/bin/cursorclaw.mjs` `COMMAND_TABLE`, in
+`bin/codexclaw.mjs`, and in `plugins/cursorclaw/test/payload-bin.test.mjs`.
 
 ### Ordering invariant
 
@@ -221,6 +221,6 @@ Amend test 8 (the only test locking the old behavior). New tests:
 
 Triggered by calling `runSubagentStopGate` four times with a payload carrying no valid
 receipt. Observable proof it ran: empty return on calls 4-6, AND an unresolved entry in
-`.codexclaw/sessions/<session>.json` `unverifiedSubagents`, AND `update_goal
+`.cursorclaw/sessions/<session>.json` `unverifiedSubagents`, AND `update_goal
 {status:"complete"}` denied by GOAL-COMPLETE-GATE-01 while that entry is unresolved.
 The third is the one that matters: it proves the consumer, not just the writer.

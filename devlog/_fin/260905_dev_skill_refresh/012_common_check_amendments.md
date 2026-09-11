@@ -2,7 +2,7 @@
 
 Galileo independently derived four coherent scenario plans but found record-scope and verification wording tensions. Accept: automatic C0/C1 duties must not revive merely because a log exists; explicit user/release record requests remain controlling. Manual C1 repro must be observed with limits. PABCD C must explicitly allow docs-only verification.
 
-## MODIFY plugins/codexclaw/skills/dev/SKILL.md
+## MODIFY plugins/cursorclaw/skills/dev/SKILL.md
 
 Before:
 
@@ -21,7 +21,7 @@ not reinstate them. An explicit user request or a documented release-record cont
 still governs its named log. Do not create an unrelated record to satisfy this section.
 `````
 
-## MODIFY plugins/codexclaw/skills/dev/SKILL.md
+## MODIFY plugins/cursorclaw/skills/dev/SKILL.md
 
 Before:
 
@@ -35,7 +35,7 @@ After:
 | C0/C1 | Smallest relevant proof: text consistency for C0; focused test/checker for C1, or an observed repro with stated limits when automation does not fit |
 `````
 
-## MODIFY plugins/codexclaw/skills/pabcd/SKILL.md
+## MODIFY plugins/cursorclaw/skills/pabcd/SKILL.md
 
 Before:
 

@@ -22,14 +22,14 @@ Status: PLANNED — work-phase wp4 (issue #27). Rewritten after A-gate round 2.
 ## Prerequisite
 
 010 must have committed the regenerated `cxc-ops` dist files. Verified today:
-`git diff --exit-code plugins/codexclaw/components/*/dist` exits 1, and `build.mjs`
+`git diff --exit-code plugins/cursorclaw/components/*/dist` exits 1, and `build.mjs`
 reproduces exactly those two files — committed dist lags source. Without 010, lane 2
 fails on a clean checkout the moment it is introduced (004 #7).
 
 ## Lane 1 — `ci.yml`
 
 `os: [ubuntu-latest, windows-latest, macos-latest]`. Steps unchanged plus
-`node plugins/codexclaw/scripts/inventory.mjs --check`.
+`node plugins/cursorclaw/scripts/inventory.mjs --check`.
 
 macOS is added because it is the primary development platform and the only untested
 one — a path-case or BSD-tool difference would ship undetected.
@@ -39,11 +39,11 @@ one — a path-case or BSD-tool difference would ship undetected.
 Matrix: ubuntu, windows, macos.
 
 1. `npm ci`
-2. `node plugins/codexclaw/scripts/build.mjs`
-3. `git diff --exit-code plugins/codexclaw/components` — committed dist matches source
-4. archive `plugins/codexclaw/` → `codexclaw-payload-<sha>.tar.gz` + `SHA256SUMS`
+2. `node plugins/cursorclaw/scripts/build.mjs`
+3. `git diff --exit-code plugins/cursorclaw/components` — committed dist matches source
+4. archive `plugins/cursorclaw/` → `codexclaw-payload-<sha>.tar.gz` + `SHA256SUMS`
 5. extract to a temp dir and run the payload dispatcher with no `cxc` on PATH:
-   `node <extracted>/bin/cxc.mjs orchestrate status` (mirrors `payload-bin.test.mjs`)
+   `node <extracted>/bin/cursorclaw.mjs orchestrate status` (mirrors `payload-bin.test.mjs`)
 6. fake-home residue simulation: copy the payload into a temp home, run the
    uninstall residue assertion, confirm zero leftovers
 7. upload the archive + checksums as workflow artifacts for lane 4
@@ -59,8 +59,8 @@ CXC_LIFECYCLE_HOME="$RUNNER_TEMP/codex-home"; mkdir -p "$CXC_LIFECYCLE_HOME"
 # the installed product must NOT rely on a PATH cxc (004 #6)
 if command -v cxc >/dev/null 2>&1; then echo 'unexpected cxc on PATH'; exit 1; fi
 
-export CODEX_HOME="$CXC_LIFECYCLE_HOME"
-codex plugin marketplace add "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" --ref "$GITHUB_SHA"
+export CURSOR_HOME="$CXC_LIFECYCLE_HOME"
+Cursor plugin install add "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" --ref "$GITHUB_SHA"
 
 # Resolve the INSTALLED payload from the installer's own output, not from find(1).
 # A bare find matches three trees — installed cache, marketplace staging, marketplace
@@ -71,10 +71,10 @@ install_and_resolve() {   # $1 = expected ref label, for the log
   installed=$(node -e "process.stdout.write(JSON.parse(process.argv[1]).installedPath||'')" "$json")
   [ -n "$installed" ] || { echo 'plugin add --json did not report installedPath'; return 1; }
   case "$installed" in
-    "$CODEX_HOME"/plugins/cache/*) : ;;
+    "$CURSOR_HOME"/plugins/cache/*) : ;;
     *) echo "refusing payload outside the install cache: $installed"; return 1 ;;
   esac
-  manifest="$installed/.codex-plugin/plugin.json"
+  manifest="$installed/.cursor-plugin/plugin.json"
   [ -f "$manifest" ] || { echo "no manifest at $manifest"; return 1; }
   PLUGIN_ROOT="$installed"
   PLUGIN_VERSION=$(node -p "require('$manifest').version")
@@ -85,23 +85,23 @@ install_and_resolve() {   # $1 = expected ref label, for the log
 install_and_resolve head
 HEAD_VERSION="$PLUGIN_VERSION"
 
-node "$PLUGIN_ROOT/bin/cxc.mjs" hooks retrust --key codexclaw@codexclaw \
-  --codex-home "$CODEX_HOME" --bootstrap-ok
-node "$PLUGIN_ROOT/bin/cxc.mjs" doctor --json
+node "$PLUGIN_ROOT/bin/cursorclaw.mjs" hooks retrust --key codexclaw@codexclaw \
+  --codex-home "$CURSOR_HOME" --bootstrap-ok
+node "$PLUGIN_ROOT/bin/cursorclaw.mjs" doctor --json
 
 # Upgrade path: drop to the PREVIOUS release, then return to HEAD.
 codex plugin remove codexclaw@codexclaw
-codex plugin marketplace remove codexclaw
-codex plugin marketplace add "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" --ref v0.1.0
+Cursor plugin install remove codexclaw
+Cursor plugin install add "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" --ref v0.1.0
 install_and_resolve v0.1.0
 OLD_VERSION="$PLUGIN_VERSION"
 
 # A marketplace source cannot be re-pointed in place: adding the same name from a
 # different ref fails with "already added from a different source". Remove the
 # marketplace first — the installed plugin does NOT need removing (004r6 #1,
-# verified by executing this sequence in an isolated CODEX_HOME).
-codex plugin marketplace remove codexclaw
-codex plugin marketplace add "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" --ref "$GITHUB_SHA"
+# verified by executing this sequence in an isolated CURSOR_HOME).
+Cursor plugin install remove codexclaw
+Cursor plugin install add "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" --ref "$GITHUB_SHA"
 install_and_resolve head-again
 
 # The upgrade must be observable, not assumed: an unchanged version means the
@@ -109,14 +109,14 @@ install_and_resolve head-again
 [ "$PLUGIN_VERSION" != "$OLD_VERSION" ] || { echo "upgrade no-op: still $OLD_VERSION"; exit 1; }
 [ "$PLUGIN_VERSION"  = "$HEAD_VERSION" ] || { echo "unexpected version $PLUGIN_VERSION"; exit 1; }
 
-node "$PLUGIN_ROOT/bin/cxc.mjs" hooks retrust --key codexclaw@codexclaw \
-  --codex-home "$CODEX_HOME" --bootstrap-ok
+node "$PLUGIN_ROOT/bin/cursorclaw.mjs" hooks retrust --key codexclaw@codexclaw \
+  --codex-home "$CURSOR_HOME" --bootstrap-ok
 
 codex plugin remove codexclaw@codexclaw
-# residue assertion over $CODEX_HOME
+# residue assertion over $CURSOR_HOME
 ```
 
-`codex plugin marketplace` exposes `add|list|upgrade|remove` and `codex plugin`
+`Cursor plugin install` exposes `add|list|upgrade|remove` and `codex plugin`
 exposes `add|list|marketplace|remove` (verified against the local CLI), so every verb
 above exists.
 
@@ -124,7 +124,7 @@ Three properties make this lane real rather than decorative: `--ref "$GITHUB_SHA
 pins an immutable commit instead of a moving branch; the PATH assertion proves the
 commands exercise the **installed payload**, not a checkout binary; and
 `install_and_resolve` takes the payload path from `plugin add --json`, refuses anything
-outside `$CODEX_HOME/plugins/cache`, and the lane **asserts** the version changed across
+outside `$CURSOR_HOME/plugins/cache`, and the lane **asserts** the version changed across
 the upgrade — a silent no-op upgrade fails the job instead of passing quietly. `cxc` is not
 on PATH after a marketplace install (`README.md:74-80`, `cxc-resolve.ts:4-14`).
 

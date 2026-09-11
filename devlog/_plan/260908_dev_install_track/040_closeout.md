@@ -14,7 +14,7 @@ three READMEs, and two of three open PRs are merged. One PR is deliberately held
 | PR 93 | MERGED — `ccf990ea`, after conflict resolution and two defect fixes |
 | PR 91 | **HELD** — verified BLOCKER, not merged |
 | Suite | 2,697 tests, 2,696 pass, 0 fail, 1 skip |
-| Install | byte-identical to `plugins/codexclaw`, 0 symlinks, `cxc doctor` overall PASS |
+| Install | byte-identical to `plugins/cursorclaw`, 0 symlinks, `cxc doctor` overall PASS |
 
 ## What was actually wrong at the start
 
@@ -30,13 +30,13 @@ being unusable: it hardcoded `VERSION="0.1.0"` against a live cache directory of
 An independent review found, and this session verified, that `ROLE_AGENT_TYPE.executor` would emit
 `agent_type: "executor"` unconditionally while `executor` is not a codex-rs built-in. It resolves
 only after a manual `cxc subagents register executor` plus a session restart. `dev` today declares
-`Record<RoleName, "explorer" | "worker">` at `spawn-wrapper.ts:24`, and `~/.codex/agents/` on this
+`Record<RoleName, "explorer" | "worker">` at `spawn-wrapper.ts:24`, and `~/.cursor/agents/` on this
 host is empty, so this machine is in the affected population. Merging it would break the executor
 dispatch path that PABCD's B phase depends on.
 
 The routing and exit-verification half of that PR is sound and was confirmed correct by the
 reviewer. A fallback in `resolveSpawnPayload` — emit `"worker"` when
-`$CODEX_HOME/agents/executor.toml` is absent — would resolve it, since both the exit gate and
+`$CURSOR_HOME/agents/executor.toml` is absent — would resolve it, since both the exit gate and
 `inferRole` already accept `worker`. That work belongs to the PR author.
 
 ## What the reviews caught that the plan did not
@@ -80,12 +80,12 @@ Re-measured on the final head rather than carried from an earlier cycle.
 |---|---|---|
 | local == remote | `git rev-parse HEAD origin/dev` | both `6edae5451a05b32de209c353727854a83c4eced5` |
 | fast-forward | `git merge-base --is-ancestor 6d70ef44 HEAD` | FF_ANCESTRY_PROVEN, no force push |
-| dist drift | `git status --porcelain plugins/codexclaw/components` after `npm run build` | empty |
+| dist drift | `git status --porcelain plugins/cursorclaw/components` after `npm run build` | empty |
 | suite | `npm test` | tests 2697, pass 2696, fail 0, skip 1 |
 | gate | `npm run gate` | OK |
-| install fidelity | `diff -rq plugins/codexclaw <cache>/<version>` | exit 0 |
+| install fidelity | `diff -rq plugins/cursorclaw <cache>/<version>` | exit 0 |
 | no symlinks | `find <cache> -type l \| wc -l` | 0 |
-| doctor | `node <cache>/<version>/bin/cxc.mjs doctor` | overall: PASS, 24 hook hashes trusted |
+| doctor | `node <cache>/<version>/bin/cursorclaw.mjs doctor` | overall: PASS, 24 hook hashes trusted |
 
 Hook trust survived every reinstall in this unit. That is consistent with the corrected
 understanding: the trust hash covers the hook declaration, and no `hooks/*.json` declaration changed

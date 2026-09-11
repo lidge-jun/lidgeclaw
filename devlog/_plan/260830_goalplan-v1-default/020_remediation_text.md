@@ -26,7 +26,7 @@ invent a command. `final layer: none` is an allowed answer, and so is
 
 ## Change map
 
-### MODIFY `plugins/codexclaw/components/pabcd-state/src/goalplan.ts`
+### MODIFY `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts`
 
 ```diff
    const gate = plan.finalGate;
@@ -89,7 +89,7 @@ final-gate.test.ts:129   assert.match(reasons(p, ctx(cwd())), /requires a finalG
 final-gate.test.ts:337   assert.match(reasons(back as Goalplan, ctx(dir)), /requires a finalGate/)
 ```
 
-### MODIFY `plugins/codexclaw/components/pabcd-state/test/final-gate.test.ts`
+### MODIFY `plugins/cursorclaw/components/pabcd-state/test/final-gate.test.ts`
 
 Retarget both to the new wording, and assert the absence of the phantom flag so
 the fix cannot silently regress:

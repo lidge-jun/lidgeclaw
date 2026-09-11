@@ -1,6 +1,6 @@
 ---
 created: 2026-06-30
-tags: [codexclaw, l14, subagent, skill-routing, design, sot]
+tags: [cursorclaw, l14, subagent, skill-routing, design, sot]
 aliases: [L14 Design, subagent skill routing, cxc skill attachment]
 ---
 
@@ -30,7 +30,7 @@ so the subagent actually loads the discipline instead of being told about it in 
 ## Current state (what is real today)
 
 - Surface skills are split out and on-demand: `cxc-search`, `cxc-dev-architecture`,
-  `cxc-dev-backend`, etc. (`plugins/codexclaw/skills/*/`). Step 1 is done.
+  `cxc-dev-backend`, etc. (`plugins/cursorclaw/skills/*/`). Step 1 is done.
 - `spawn-wrapper.ts` builds resolvable message mentions for the production path on both
   surfaces. V1 callers may manually use `buildSpawnItems`/`SpawnPayload.items` as the
   strongest v1-only channel. `SURFACE_SKILL` and `ROLE_BASE_SKILLS` resolve the exact
@@ -44,9 +44,9 @@ so the subagent actually loads the discipline instead of being told about it in 
 
 Net: routing is "split into skills" and its attachment intent is encoded at dispatch only
 when the dispatcher explicitly names the resolved role/surface set. Prefer
-`[$cxc-<name>](skill://<abs SKILL.md>)`; use plugin-native
+`[$crc-<name>](skill://<abs SKILL.md>)`; use plugin-native
 `$codexclaw:cxc-<name>` when a path is not link-safe. The hook recognizes bare
-`$cxc-<name>` only as legacy normalization/dedupe input and rewrites it to a resolvable
+`$crc-<name>` only as legacy normalization/dedupe input and rewrites it to a resolvable
 form when the folder is known. It never emits a bare form and never adds a missing skill.
 The same hook applies configured model+effort routing and the leaf-topology guard on both
 surfaces; those responsibilities do not change the dispatcher's skill list.
@@ -100,7 +100,7 @@ spawn hook compensates only when the V2 message reaches it as plaintext by inlin
 SKILL.md bodies for recognized cxc mentions. Native ChatGPT-backend V2 presents encrypted
 ciphertext, so normalization and inlining are safe no-ops there. When no body can be
 inlined, the hook appends a plaintext `[CXC-SKILL-AFFORDANCE]` block telling the child to
-self-load any `$cxc-<folder>` / `$codexclaw:cxc-<folder>` mention by reading
+self-load any `$crc-<folder>` / `$codexclaw:cxc-<folder>` mention by reading
 `<skillsDir>/<folder>/SKILL.md`; fork inheritance remains a secondary channel. The native
 V2 hook also reliably prepends the leaf guard and injects configured model/effort fields.
 
@@ -108,8 +108,8 @@ V2 hook also reliably prepends the leaf guard and injects configured model/effor
 When `message` is plaintext, the spawn PreToolUse hook scans it for known cxc mentions,
 repairs broken links or bare names via `updatedInput`, and appends recognized skill bodies
 on V2-shaped spawns. It never invents a missing message or a missing skill. The preferred output is
-`[$cxc-<name>](skill://<abs SKILL.md>)`; when the path is not link-safe, the output is the
-plugin-native `$codexclaw:cxc-<name>` fallback. Bare `$cxc-<name>` recognition remains
+`[$crc-<name>](skill://<abs SKILL.md>)`; when the path is not link-safe, the output is the
+plugin-native `$codexclaw:cxc-<name>` fallback. Bare `$crc-<name>` recognition remains
 only as legacy detection/dedupe input, never as an emitted or taught attachment form.
 
 ---
@@ -224,7 +224,7 @@ Routing table wording is weak prose and (until the 2026-07-05 implicit expansion
 which added six metadata rows, not router bodies) only `cxc-dev` was implicit-visible;
 `dev-*` routers remain implicit-off today. Intent:
 strengthen the routing table to STRICT ("MUST read the matching `dev-*` SKILL.md before
-writing in that surface"), and let the `$cxc-dev` directive enumerate the exact surface
+writing in that surface"), and let the `$crc-dev` directive enumerate the exact surface
 skills to attach. Design 14.A/14.B make this concrete for the **subagent** path; the
 main-agent path is the same routing map surfaced as a directive.
 

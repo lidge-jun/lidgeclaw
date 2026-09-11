@@ -7,7 +7,7 @@ state cannot be recovered by the existing CLI, and narrative-only identity can v
 
 NEW src/session-binding.ts in pabcd-state: current native identity from unmodified
 CODEX_THREAD_ID (UUID shape), corroborated against highest numeric state_N.sqlite
-under CODEX_SQLITE_HOME/CODEX_HOME/default. Read-only DB lookup by exact ID, require
+under CODEX_SQLITE_HOME/CURSOR_HOME/default. Read-only DB lookup by exact ID, require
 nonarchived row and realpath cwd equality. Failure returns actionable nonzero result,
 never selects latest session or scans transcripts. Do not claim security against
 an actor controlling the same OS environment/database. This is accidental-collision
@@ -18,7 +18,7 @@ NEW session-cli.ts: `cxc session current [--json]` reads identity/state availabi
 No arbitrary --session argument. Reject symlink state paths, preserve existing bytes,
 refuse corrupt/wrong-identity state. Return cwd, sessionId, identity source, created,
 statePath and hooksVerified:false. Binding does not prove hooks ran or arm a goal.
-MODIFY cli.ts + bin/codexclaw.mjs + plugins/codexclaw/bin/cxc.mjs: lazy-route session command and help.
+MODIFY cli.ts + bin/codexclaw.mjs + plugins/cursorclaw/bin/cursorclaw.mjs: lazy-route session command and help.
 MODIFY orchestrate-cli.ts status only: prefer validated native env ID over latest
 when present; missing exact state must report missing, not fake IDLE. Plain terminal
 fallback retained for compatibility and labelled when used. Writes remain explicit.
@@ -59,8 +59,8 @@ sole create path. Existing corrupt, wrong-ID or nonregular file is preserved/ref
 Live `cxc` is an npm link to dirty development0.2.16 while native plugin0.2.20 is
 installed. `cxc-resolve.ts` currently prefers any PATH file, so even new recovery
 hints can invoke an old CLI that lacks `session`. Modify its existing resolution
-ladder: explicit CODEXCLAW_CXC override remains first; existing payload-resident
-bin/cxc.mjs precedes PATH; PATH is fallback only without a payload dispatcher.
+ladder: explicit CURSORCLAW_CRC override remains first; existing payload-resident
+bin/cursorclaw.mjs precedes PATH; PATH is fallback only without a payload dispatcher.
 Use the existing degraded-mode test to seed a stale PATH cxc and prove hints still
 point to the emitting payload, preserving explicit override behavior. No new test
 case/count, no global npm-link or original checkout mutation. Regenerate cxc-resolve

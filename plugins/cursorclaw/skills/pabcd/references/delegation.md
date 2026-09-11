@@ -32,7 +32,7 @@ represented, report that gap rather than silently weakening it.
 For implementation dispatch, prefer `executor` when exposed by the live schema.
 Existing installations without it may use built-in `worker`; both names route to
 logical executor settings and the same receipt gate. The payload resolver selects
-worker when `$CODEX_HOME/agents/executor.toml` is missing. If registration exists
+worker when `$CURSOR_HOME/agents/executor.toml` is missing. If registration exists
 but the current session has not loaded it, use the live schema rather than assuming
 that disk presence proves availability. Registering `executor` is optional: run
 `cxc subagents register executor`, then restart Codex before selecting that native

@@ -11,7 +11,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT"></a>
 </p>
 
-[codexclaw](https://github.com/lidge-jun/codexclaw)의 **Cursor 런타임 포크**입니다. Codex 플러그인 대신 Cursor 플러그인(skills / rules / agents / commands / hooks)으로 같은 개발 규율(dev 스킬 패밀리, PABCD, 서브에이전트 역할)을 담습니다.
+[cursorclaw](https://github.com/lidge-jun/codexclaw)의 **Cursor 런타임 포크**입니다. Codex 플러그인 대신 Cursor 플러그인(skills / rules / agents / commands / hooks)으로 같은 개발 규율(dev 스킬 패밀리, PABCD, 서브에이전트 역할)을 담습니다.
 
 **0.2.0** 패리티 패키징: 전체 스킬, Codex급 훅 팬아웃, 에이전트/커맨드, dogfood `.cursor/` 배선, `crc` CLI. 자세한 표는 [PORTING.md](PORTING.md), 업스트림 핀은 [UPSTREAM.lock](UPSTREAM.lock).
 

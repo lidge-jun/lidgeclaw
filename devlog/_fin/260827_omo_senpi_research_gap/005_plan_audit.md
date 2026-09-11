@@ -26,5 +26,5 @@ Blocker끼리 충돌하지 않는다. owner 분리는 activation trace와 old-pa
 - Senpi IntentGate는 user text를 파싱하는 함수가 아니라 모델용 prompt section이다: `devlog/.senpi/packages/coding-agent/src/core/dynamic-prompt/intent-gate.ts:14-45`, `devlog/.senpi/packages/coding-agent/src/core/dynamic-prompt/build.ts:61-90`.
 - OMO Senpi adapter가 keyword parser와 session arming을 소유한다: `devlog/.omo/packages/omo-senpi/src/components/skill-pointers/index.ts:23-58`, `devlog/.omo/packages/omo-senpi/src/components/ultrawork/index.ts:283-383`.
 - OMO Codex와 Senpi adapter는 겹침/억제 규칙이 다르다: `devlog/.omo/packages/omo-codex/plugin/components/ultrawork/src/codex-hook.ts:5-85`, `devlog/.omo/packages/omo-senpi/src/components/ultrawork/index.ts:4-15`.
-- CodexClaw Tier 3는 현재 opt-in, one-shot, non-durable 계약이다: `plugins/codexclaw/skills/search/SKILL.md:118-177`.
-- CodexClaw activation recorder는 정의됐지만 production caller가 확인되지 않아 dormant 후보로 조사한다: `plugins/codexclaw/components/cxc-ops/src/activation-trace.ts:45-140`, `plugins/codexclaw/components/pabcd-state/src/release-gate.ts:387-395`.
+- CodexClaw Tier 3는 현재 opt-in, one-shot, non-durable 계약이다: `plugins/cursorclaw/skills/search/SKILL.md:118-177`.
+- CodexClaw activation recorder는 정의됐지만 production caller가 확인되지 않아 dormant 후보로 조사한다: `plugins/cursorclaw/components/cxc-ops/src/activation-trace.ts:45-140`, `plugins/cursorclaw/components/pabcd-state/src/release-gate.ts:387-395`.

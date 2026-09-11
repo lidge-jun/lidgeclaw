@@ -13,7 +13,7 @@ and `cxc loop` CLI routing. Run full gate.
 1. Line ~72: `assert.match(init.output, /objective: Ship the loop/)`
    No change needed (checks objective content, not prefix).
 
-2. Line ~77: implicit — the `init` output starts with `[codexclaw goalplan:`
+2. Line ~77: implicit — the `init` output starts with `[cursorclaw goalplan:`
    but no test asserts that prefix. Verify by running.
 
 3. Line ~82: `assert.match(show.output, /criteria: 1 \(unmet 1\)/)`
@@ -22,7 +22,7 @@ and `cxc loop` CLI routing. Run full gate.
 4. Line ~86-87: `assert.match(val.output, /FAIL/)` — No change needed.
 
 **Conclusion:** goalplan.test.ts assertions check content patterns, not the
-`[codexclaw goalplan:` vs `[codexclaw loop:` prefix. Run to verify; update
+`[cursorclaw goalplan:` vs `[cursorclaw loop:` prefix. Run to verify; update
 only if a test fails on the new prefix.
 
 ### NEW test block in `goalplan.test.ts`: D-close auto-advance
@@ -125,7 +125,7 @@ node dist/cli.js goalplan show --objective "test loop alias" --cwd /tmp/test-loo
 
 ## Verification Commands
 ```bash
-cd plugins/codexclaw
+cd plugins/cursorclaw
 npm test                    # all unit tests
 node scripts/gate.mjs       # full gate
 ```

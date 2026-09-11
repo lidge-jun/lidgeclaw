@@ -206,8 +206,8 @@ The assertion compares **SemVer core + prerelease**, ignoring build metadata:
 | `inventory.json` `plugin.*Version` | mirrors the two above | as above |
 
 wp8 file surfaces, previously missing from the map:
-`package.json`, `plugins/codexclaw/.codex-plugin/plugin.json`,
-`plugins/codexclaw/components/*/package.json`, `plugins/codexclaw/inventory.json`,
+`package.json`, `plugins/cursorclaw/.cursor-plugin/plugin.json`,
+`plugins/cursorclaw/components/*/package.json`, `plugins/cursorclaw/inventory.json`,
 `CHANGELOG.md`.
 
 Added acceptance criteria:

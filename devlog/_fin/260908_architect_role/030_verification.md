@@ -13,7 +13,7 @@ architect proposes and checks reflection; independent reviewer retains A.
 Source worktree: /home/jun/code-worktrees/codexclaw/architect-role.
 Branch: codex/architect-role. Base: 6e97e73.
 Implementation commits: cd68ff3, 6db5134, d38c6c0. Workflow: 79840dc, 4bc45a7.
-Native evidence root: /home/jun/code/codexclaw/.codexclaw/evidence/01a0829e-d196-7b31-bed9-9551e9ea3c18.
+Native evidence root: /home/jun/code/codexclaw/.cursorclaw/evidence/01a0829e-d196-7b31-bed9-9551e9ea3c18.
 Logs: /home/jun/tmp/cxc-architect-handoff.nnzEDx.
 
 ## Observed verification

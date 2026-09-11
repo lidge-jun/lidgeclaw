@@ -3,7 +3,7 @@
 Status: RESEARCH (design input for cxc-loop; NO code change) · 2026-07-01 · cxc-search Tier 1 discovery
 
 > The operator's point: the divergence work is also a LOOP improvement, so it must be
-> recorded against `cxc-loop` (`plugins/codexclaw/skills/loop/SKILL.md`), not only as a
+> recorded against `cxc-loop` (`plugins/cursorclaw/skills/loop/SKILL.md`), not only as a
 > PABCD-phase change. This doc surveys the established autonomous-loop patterns (Ralph,
 > autoresearch, long-running agent harnesses) and maps each to a concrete `cxc-loop`
 > improvement. Upstream: `004_ipabcd_divergence_flow.md`, `structure/50_emergence_gap.md`.
@@ -41,7 +41,7 @@ primary URLs (Tier 2) before quoting an exact phrasing or metric.
   agent guidance; OpenAI long-horizon execution notes.
 - Recurring patterns: persist state to the filesystem (not context), compact/summarize
   across context resets, an explicit stop/continue decision per turn, and verification
-  gates between segments. Maps directly onto codexclaw's Stop hook + `.codexclaw/` state.
+  gates between segments. Maps directly onto codexclaw's Stop hook + `.cursorclaw/` state.
 
 ### R4 — Self-Improving Coding Agent (SICA)
 - Primary: arXiv:2504.15228 "A Self-Improving Coding Agent."
@@ -51,7 +51,7 @@ primary URLs (Tier 2) before quoting an exact phrasing or metric.
 
 ## What `cxc-loop` says today (the gap)
 
-`plugins/codexclaw/skills/loop/SKILL.md` (48 lines) is a pure HOTL PABCD-continuation
+`plugins/cursorclaw/skills/loop/SKILL.md` (48 lines) is a pure HOTL PABCD-continuation
 contract: "one work-phase = one PABCD cycle," Stop blocks premature termination via coarse
 signals (active goal + in-flight cycle + `MAX_STOP_BLOCKS` stagnation cap). It has:
 
@@ -69,10 +69,10 @@ in loop terms.
 
 | # | Pattern (source) | cxc-loop improvement | Tier |
 | - | ---------------- | -------------------- | ---- |
-| L1 | Durable plan/spec the loop re-reads (R1, R3) | Loop reads a fixed `.codexclaw/plan/*` each pass; progress written to disk so a fresh pass resumes without chat history | E7 doctrine + E2 (Stop can name the file to read) |
+| L1 | Durable plan/spec the loop re-reads (R1, R3) | Loop reads a fixed `.cursorclaw/plan/*` each pass; progress written to disk so a fresh pass resumes without chat history | E7 doctrine + E2 (Stop can name the file to read) |
 | L2 | True-objective metric + baseline/best memory (R2, R4) | Persist an operator/`evaluate.sh` metric per work-phase in the ledger; loop carries baseline/best across passes | E2 / CLI |
 | L3 | Plateau → diverge, not just turn-cap (R2, novelty search) | Replace/augment `MAX_STOP_BLOCKS` turn-cap with a metric-delta check: N non-improving passes → Stop injects "diverge/step-back" instead of releasing | **E2 (key)** |
-| L4 | Ideas backlog + kept-candidate archive (R2) | `update_notes append_idea`-style backlog + a kept-candidate archive (the QD archive from `002`) persisted under `.codexclaw/` | E2 data model |
+| L4 | Ideas backlog + kept-candidate archive (R2) | `update_notes append_idea`-style backlog + a kept-candidate archive (the QD archive from `002`) persisted under `.cursorclaw/` | E2 data model |
 | L5 | keep/discard with confidence (R2) | Loop's per-pass record is keep/discard on the metric (revert worktree on discard), with a noise-floor confidence before keep | E7 + E2 ledger |
 | L6 | Fresh-context resilience (R1, R3) | Loop survives context compaction by reloading plan+metric+archive from disk, not memory (codexclaw already compacts; wire the reload) | E2 (SessionStart/Stop) |
 

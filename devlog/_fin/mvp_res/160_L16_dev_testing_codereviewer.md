@@ -19,32 +19,32 @@ verification rules.
 
 ## Scope (decision-complete)
 Files to add/edit:
-- `plugins/codexclaw/skills/dev-testing/SKILL.md`
-- `plugins/codexclaw/skills/dev-testing/agents/openai.yaml`
-- `plugins/codexclaw/skills/dev-testing/references/backend-testing.md`
-- `plugins/codexclaw/skills/dev-testing/references/ci-pipeline.md`
-- `plugins/codexclaw/skills/dev-testing/references/edge-first-testing.md`
-- `plugins/codexclaw/skills/dev-testing/references/load-testing.md`
-- `plugins/codexclaw/skills/dev-testing/references/ml-evaluation.md`
-- `plugins/codexclaw/skills/dev-testing/scripts/with_server.py`
-- `plugins/codexclaw/skills/dev-testing/examples/*.py`
-- `plugins/codexclaw/skills/dev-code-reviewer/SKILL.md`
-- `plugins/codexclaw/skills/dev-code-reviewer/agents/openai.yaml`
-- `plugins/codexclaw/skills/dev-code-reviewer/references/ai-assisted-review.md`
-- `plugins/codexclaw/skills/dev-code-reviewer/references/tech-debt.md`
+- `plugins/cursorclaw/skills/dev-testing/SKILL.md`
+- `plugins/cursorclaw/skills/dev-testing/agents/openai.yaml`
+- `plugins/cursorclaw/skills/dev-testing/references/backend-testing.md`
+- `plugins/cursorclaw/skills/dev-testing/references/ci-pipeline.md`
+- `plugins/cursorclaw/skills/dev-testing/references/edge-first-testing.md`
+- `plugins/cursorclaw/skills/dev-testing/references/load-testing.md`
+- `plugins/cursorclaw/skills/dev-testing/references/ml-evaluation.md`
+- `plugins/cursorclaw/skills/dev-testing/scripts/with_server.py`
+- `plugins/cursorclaw/skills/dev-testing/examples/*.py`
+- `plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md`
+- `plugins/cursorclaw/skills/dev-code-reviewer/agents/openai.yaml`
+- `plugins/cursorclaw/skills/dev-code-reviewer/references/ai-assisted-review.md`
+- `plugins/cursorclaw/skills/dev-code-reviewer/references/tech-debt.md`
 
 Concrete source -> target map:
-- `/Users/jun/.cli-jaw-3459/skills/dev-testing/SKILL.md` -> `plugins/codexclaw/skills/dev-testing/SKILL.md`
-- `/Users/jun/.cli-jaw-3459/skills/dev-testing/references/*` -> `plugins/codexclaw/skills/dev-testing/references/`
-- `/Users/jun/.cli-jaw-3459/skills/dev-testing/scripts/*` -> `plugins/codexclaw/skills/dev-testing/scripts/`
-- `/Users/jun/.cli-jaw-3459/skills/dev-testing/examples/*` -> `plugins/codexclaw/skills/dev-testing/examples/`
-- `/Users/jun/.cli-jaw-3459/skills/dev-code-reviewer/SKILL.md` -> `plugins/codexclaw/skills/dev-code-reviewer/SKILL.md`
-- `/Users/jun/.cli-jaw-3459/skills/dev-code-reviewer/references/*` -> `plugins/codexclaw/skills/dev-code-reviewer/references/`
-- `devlog/.lazycodex/plugins/omo/skills/review-work/SKILL.md` -> `plugins/codexclaw/skills/dev-code-reviewer/SKILL.md`, `dev-testing/SKILL.md`, and L17 `dev-security`
-- `devlog/.lazycodex/plugins/omo/skills/remove-ai-slops/SKILL.md` -> `plugins/codexclaw/skills/dev-code-reviewer/SKILL.md` anti-pattern catalog plus `dev-testing` regression-first invariant
-- `devlog/.lazycodex/plugins/omo/skills/comment-checker/SKILL.md` -> `plugins/codexclaw/skills/dev-code-reviewer/SKILL.md` feedback handling
-- `devlog/.lazycodex/plugins/omo/skills/visual-qa/SKILL.md` -> `plugins/codexclaw/skills/dev-testing/SKILL.md` visual/TUI verification procedure
-- `devlog/.lazycodex/plugins/omo/skills/programming/SKILL.md` -> `plugins/codexclaw/skills/dev-testing/SKILL.md` red-green-refactor and regression lock rules
+- `/Users/jun/.cli-jaw-3459/skills/dev-testing/SKILL.md` -> `plugins/cursorclaw/skills/dev-testing/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-testing/references/*` -> `plugins/cursorclaw/skills/dev-testing/references/`
+- `/Users/jun/.cli-jaw-3459/skills/dev-testing/scripts/*` -> `plugins/cursorclaw/skills/dev-testing/scripts/`
+- `/Users/jun/.cli-jaw-3459/skills/dev-testing/examples/*` -> `plugins/cursorclaw/skills/dev-testing/examples/`
+- `/Users/jun/.cli-jaw-3459/skills/dev-code-reviewer/SKILL.md` -> `plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-code-reviewer/references/*` -> `plugins/cursorclaw/skills/dev-code-reviewer/references/`
+- `devlog/.lazycodex/plugins/omo/skills/review-work/SKILL.md` -> `plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md`, `dev-testing/SKILL.md`, and L17 `dev-security`
+- `devlog/.lazycodex/plugins/omo/skills/remove-ai-slops/SKILL.md` -> `plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md` anti-pattern catalog plus `dev-testing` regression-first invariant
+- `devlog/.lazycodex/plugins/omo/skills/comment-checker/SKILL.md` -> `plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md` feedback handling
+- `devlog/.lazycodex/plugins/omo/skills/visual-qa/SKILL.md` -> `plugins/cursorclaw/skills/dev-testing/SKILL.md` visual/TUI verification procedure
+- `devlog/.lazycodex/plugins/omo/skills/programming/SKILL.md` -> `plugins/cursorclaw/skills/dev-testing/SKILL.md` red-green-refactor and regression lock rules
 
 Exact behavior:
 - L4 router stubs only activated the skills; L16 ports full testing and review

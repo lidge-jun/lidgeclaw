@@ -12,21 +12,21 @@ Status: DONE (shipped + tested) · 2026-07-01 · lazygap_impl loop 010 · class 
 ## Why
 
 Today a dispatched subagent's "done" claim is never verified at runtime: codexclaw registers
-6 hooks, none on the `SubagentStop` surface (`plugins/codexclaw/.codex-plugin/plugin.json`
+6 hooks, none on the `SubagentStop` surface (`plugins/cursorclaw/.cursor-plugin/plugin.json`
 hooks array). A child can report success having done nothing, and the parent integrates that
 on trust. This blocks `020` (skill-attached dispatch): a "reviewer, red-team per `cxc-dev`"
 verdict is only trustworthy if the child had to produce evidence. 010 supplies that trust.
 
 ## Ground Truth (read before edit)
 
-- codexclaw hooks dir: `plugins/codexclaw/hooks/` (6 JSON manifests). Add a 7th.
+- codexclaw hooks dir: `plugins/cursorclaw/hooks/` (6 JSON manifests). Add a 7th.
 - Hook manifest shape (matcher + command -> dist cli.js): see
-  `plugins/codexclaw/hooks/post-tool-use-capturing-interview-answers.json`
+  `plugins/cursorclaw/hooks/post-tool-use-capturing-interview-answers.json`
   (`"matcher": "^request_user_input$"`, command `... cli.js hook post-tool-use`).
-- CLI dispatcher: `plugins/codexclaw/components/pabcd-state/src/cli.ts:74-95` — `event` switch
+- CLI dispatcher: `plugins/cursorclaw/components/pabcd-state/src/cli.ts:74-95` — `event` switch
   with a FAIL-CLOSED branch for `pre-tool-use` and a fail-open try for the rest. A new
   `subagent-stop` branch goes inside the fail-open try (release on any error).
-- Parsers: `plugins/codexclaw/components/pabcd-state/src/parse.ts:51` (`parseStop`) is the
+- Parsers: `plugins/cursorclaw/components/pabcd-state/src/parse.ts:51` (`parseStop`) is the
   template; payload types live in `hook.ts:37` (`StopPayload`). Add `SubagentStopPayload` +
   `parseSubagentStop`.
 - omo reference (the pattern to translate, do NOT copy paths):
@@ -42,7 +42,7 @@ verdict is only trustworthy if the child had to produce evidence. 010 supplies t
 
 ## Design (diff-level)
 
-New hook manifest `plugins/codexclaw/hooks/subagent-stop-verifying-evidence.json`:
+New hook manifest `plugins/cursorclaw/hooks/subagent-stop-verifying-evidence.json`:
 
 ```json
 {
@@ -55,7 +55,7 @@ New hook manifest `plugins/codexclaw/hooks/subagent-stop-verifying-evidence.json
             "type": "command",
             "command": "node \"${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js\" hook subagent-stop",
             "timeout": 10,
-            "statusMessage": "(codexclaw) Verifying subagent evidence"
+            "statusMessage": "(cursorclaw) Verifying subagent evidence"
           }
         ]
       }
@@ -103,15 +103,15 @@ New types + parser (`hook.ts` + `parse.ts`):
 - `parseSubagentStop(raw): SubagentStopPayload | null` — mirror `parseStop` (`parse.ts:51`):
   `asObject` + `str` + event-name check + tolerant optional fields.
 
-New module `plugins/codexclaw/components/pabcd-state/src/subagent-evidence.ts`
+New module `plugins/cursorclaw/components/pabcd-state/src/subagent-evidence.ts`
 (direct `node:fs`, NO fs-injection seam — matches `interview-ledger.ts`/`state.ts`, per A-gate):
-1. `EVIDENCE_ROOT = ".codexclaw/evidence"` (project-local, under `cwd`).
+1. `EVIDENCE_ROOT = ".cursorclaw/evidence"` (project-local, under `cwd`).
 2. `extractReceiptPath(lastMessage): string | null` — last-line marker
    `EVIDENCE_RECORDED: <relpath>` (adopt omo's contract; also accept codexclaw `--evidence`).
 3. `hasValidReceipt(cwd, receiptPath): boolean` — port omo's realpath/symlink/non-empty guard
-   (`isPathInsideDirectory` + `realpathSync`): path must resolve INSIDE `.codexclaw/evidence/`,
+   (`isPathInsideDirectory` + `realpathSync`): path must resolve INSIDE `.cursorclaw/evidence/`,
    be a real file (not a symlink), and be non-empty.
-4. Attempt state `.codexclaw/evidence-attempts/<session>-<agent_id>.json`:
+4. Attempt state `.cursorclaw/evidence-attempts/<session>-<agent_id>.json`:
    `readAttempts/writeAttempts/clearAttempts`; `MAX_ATTEMPTS = 3`.
 5. `transcriptHasContextPressure(agentTranscriptPath): boolean` — port omo's
    `CONTEXT_PRESSURE_MARKERS` (codex-hook.ts:32-40) bail. Reads the CHILD transcript
@@ -125,19 +125,19 @@ New module `plugins/codexclaw/components/pabcd-state/src/subagent-evidence.ts`
    - attempts >= MAX -> clear attempts, `""` (bounded; fail-open release, never trap).
 
 Verifier directive (block `reason`): a short imperative — "Your completion is unverified. Run
-the relevant checks and write output to `.codexclaw/evidence/<file>`; final line must be
+the relevant checks and write output to `.cursorclaw/evidence/<file>`; final line must be
 `EVIDENCE_RECORDED: <path>`. This is attempt N of 3." (codexclaw-native wording, English).
 
 Wire-up (`cli.ts`): inside the fail-open try, add
 `else if (event === "subagent-stop") { const p = parseSubagentStop(raw); if (p) output = runSubagentStopGate(p); }`.
-Register the manifest in `.codex-plugin/plugin.json` hooks array (now 7).
+Register the manifest in `.cursor-plugin/plugin.json` hooks array (now 7).
 
 ### Invariants
 
 - FAIL-OPEN: any IO/parse error -> release (`""`); the gate can never trap a session.
 - Bounded: at most `MAX_ATTEMPTS` blocks per (session, agent_id), then release.
-- Receipt path MUST resolve inside `.codexclaw/evidence/`, real, non-empty (no symlink escape).
-- No goal-DB access; all state under `.codexclaw/`.
+- Receipt path MUST resolve inside `.cursorclaw/evidence/`, real, non-empty (no symlink escape).
+- No goal-DB access; all state under `.cursorclaw/`.
 - Matcher scoped to write/verify `agent_type` only — read-only explorers are not gated.
 
 ## Acceptance
@@ -151,12 +151,12 @@ Register the manifest in `.codex-plugin/plugin.json` hooks array (now 7).
 | Bounded block | attempts at MAX -> `""` (release), never infinite |
 | Context-pressure bail | transcript has compaction marker -> `""` |
 | Fail-open on error | malformed stdin / unreadable fs -> `""`, never throws |
-| Manifest wired | `.codex-plugin/plugin.json` lists 7 hooks; e2e drives `cli.js hook subagent-stop` |
+| Manifest wired | `.cursor-plugin/plugin.json` lists 7 hooks; e2e drives `cli.js hook subagent-stop` |
 
 ## Verification
 
-- `node --test plugins/codexclaw/components/pabcd-state/test/subagent-evidence.test.ts`
-- extend `plugins/codexclaw/test/hook-e2e.test.mjs` with a `subagent-stop` case (block on
+- `node --test plugins/cursorclaw/components/pabcd-state/test/subagent-evidence.test.ts`
+- extend `plugins/cursorclaw/test/hook-e2e.test.mjs` with a `subagent-stop` case (block on
   missing receipt, release on valid receipt) driving the real dist entrypoint.
 - `npm run build` (idempotent; +1 compiled module) ; `npm test` (full suite green) ;
   `npm run gate` (exit 0) ; `git diff --check`.

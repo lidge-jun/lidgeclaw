@@ -1,4 +1,4 @@
-# L3 / 030 — `$cxc-orchestrate` Grammar Parser (pass L3a)
+# L3 / 030 — `$crc-orchestrate` Grammar Parser (pass L3a)
 
 Status: DONE (impl shipped + tested) · 2026-06-30 · mvp_hard loop L3 pass A · class C3 (new contract, no persistence yet)
 
@@ -27,27 +27,27 @@ orchestrate <I|P|A|B|C|D|status|reset> [--attest <json>]
 - Optional `--attest <json>`: a JSON object (the attestation). Parsed leniently —
   malformed JSON yields `attest: null` plus a `attestError` note, never throws.
 - Anchored: the command must appear as its own directive, not buried mid-sentence.
-  Accept an optional leading `$cxc-` / `cxc ` / `/` prefix so `$cxc-orchestrate p`,
+  Accept an optional leading `$crc-` / `cxc ` / `/` prefix so `$crc-orchestrate p`,
   `cxc orchestrate p`, and bare `orchestrate p` all parse (composer autocomplete
-  inserts the `$cxc-orchestrate` skill mention; the user then types the phase).
+  inserts the `$crc-orchestrate` skill mention; the user then types the phase).
 
 ## Reference (verified)
 
 - cli-jaw verb set `I|P|A|B|C|D|status|reset` ([handlers-runtime.ts](/Users/jun/Developer/new/700_projects/cli-jaw/src/cli/handlers-runtime.ts:447)).
-- codexclaw current loose detector (to be kept, NOT replaced) ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/hook.ts:48)).
-- attest JSON shape consumed by `coerceAttest` ([attest.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/attest.ts:45)).
+- codexclaw current loose detector (to be kept, NOT replaced) ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/hook.ts:48)).
+- attest JSON shape consumed by `coerceAttest` ([attest.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/attest.ts:45)).
 
 ## File change map (IN scope, L3a only)
 
-1. NEW `plugins/codexclaw/components/pabcd-state/src/orchestrate-grammar.ts`
+1. NEW `plugins/cursorclaw/components/pabcd-state/src/orchestrate-grammar.ts`
    - `export type OrchestrateVerb = Phase | "status" | "reset";`
    - `export interface OrchestrateCommand { verb: OrchestrateVerb; rawAttest: string | null; attest: Attestation | null; attestError?: string; }`
    - `export function parseOrchestrateCommand(prompt: string): OrchestrateCommand | null;`
      Returns null when no orchestrate command line is present. Uses `coerceAttest`
      from attest.ts to turn `--attest <json>` into an `Attestation | null`.
    - Keep it under 120 lines, pure, no IO.
-2. NEW `plugins/codexclaw/components/pabcd-state/test/orchestrate-grammar.test.ts`
-   - parses `orchestrate p`, `$cxc-orchestrate P`, `cxc orchestrate status`,
+2. NEW `plugins/cursorclaw/components/pabcd-state/test/orchestrate-grammar.test.ts`
+   - parses `orchestrate p`, `$crc-orchestrate P`, `cxc orchestrate status`,
      `orchestrate reset`.
    - phase case-insensitivity; rejects junk (`orchestrate x`, `orchestrate`, empty).
    - `--attest {json}` parsed into `attest`; malformed JSON → `attest:null` +
@@ -66,7 +66,7 @@ orchestrate <I|P|A|B|C|D|status|reset> [--attest <json>]
 ## Accept criteria (testable)
 
 - `parseOrchestrateCommand("orchestrate p")` → `{verb:"P", attest:null, rawAttest:null}`.
-- `parseOrchestrateCommand("$cxc-orchestrate A --attest {\"from\":\"P\",\"to\":\"A\",\"did\":\"x\"}")`
+- `parseOrchestrateCommand("$crc-orchestrate A --attest {\"from\":\"P\",\"to\":\"A\",\"did\":\"x\"}")`
   → `verb:"A"`, `attest` coerced to `{from:"P",to:"A",did:"x"}`.
 - `parseOrchestrateCommand("orchestrate status")` → `verb:"status"`.
 - `parseOrchestrateCommand("please plan this feature")` → `null` (not a command).
@@ -82,7 +82,7 @@ orchestrate <I|P|A|B|C|D|status|reset> [--attest <json>]
 
 ## Audit focus (for A gate)
 
-- Does the anchor/prefix handling correctly accept `$cxc-orchestrate p` (autocomplete
+- Does the anchor/prefix handling correctly accept `$crc-orchestrate p` (autocomplete
   inserts the mention) without also matching prose? Is the verb whitelist exhaustive?
 - Is `coerceAttest` reuse correct, or does the parser need its own JSON extraction
   for the `--attest {…}` segment (brace-balanced, since JSON can contain spaces)?
@@ -107,8 +107,8 @@ Verdict: **PLAN OK with fixes**. Folded into the build scope:
    AUTHORITATIVE path and must be tried FIRST with an early return; the loose
    `detectTrigger` only runs when the strict parser returns null. L3a stays parser-only.
 4. **MEDIUM — prefix model**: native plugin mentions render as `$codexclaw:cxc-orchestrate`;
-   raw `$cxc-orchestrate` is hook-parsed shorthand. The parser accepts leading
-   `$codexclaw:cxc-orchestrate`, `$cxc-orchestrate`, `cxc orchestrate`, `/orchestrate`,
+   raw `$crc-orchestrate` is hook-parsed shorthand. The parser accepts leading
+   `$codexclaw:cxc-orchestrate`, `$crc-orchestrate`, `cxc orchestrate`, `/orchestrate`,
    and bare `orchestrate`. Tests cover the namespaced form.
 5. **LOW — added tests**: `orchestrate idle` rejects; `orchestrate proper testing`
    rejects; `please orchestrate p` mid-sentence rejects (command must be line-anchored);
@@ -120,7 +120,7 @@ Verdict: **PLAN OK with fixes**. Folded into the build scope:
 ### Grammar precedence / line-anchoring (resolved)
 
 The command must be its own line (optionally prefixed). Match per-line: trim each
-line, strip an optional leading `$codexclaw:cxc-`/`$cxc-`/`cxc `/`/` prefix, then
+line, strip an optional leading `$codexclaw:cxc-`/`$crc-`/`cxc `/`/` prefix, then
 require the line to START with `orchestrate <verb>`. A verb not in the whitelist or
 a non-anchored occurrence → null. This is why "please orchestrate p" (mid-sentence)
 does not parse.

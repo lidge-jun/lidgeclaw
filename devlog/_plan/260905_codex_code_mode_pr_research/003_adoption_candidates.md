@@ -13,7 +13,7 @@ CodexClaw의 native capability 문서에 아래 구분을 넣는 것이 첫 후�
 
 `js_repl=true`, `tool_search=true`처럼 제거된 플래그를 복구책으로 안내하지 않는다. [`features/src/lib.rs:985`](https://github.com/openai/codex/blob/d2d5b70241fb448044c1c088a977cc720d70443a/codex-rs/features/src/lib.rs#L985)와 [#25031](https://github.com/openai/codex/pull/25031)이 근거다.
 
-현재 관련 owner는 `structure/60_native_capabilities.md`와 `plugins/codexclaw/skills/dev/SKILL.md`다. 변경한다면 기존 capability routing 문맥에서 연결하고, 모든 task에 큰 도구 설명을 상시 주입하지 않는다.
+현재 관련 owner는 `structure/60_native_capabilities.md`와 `plugins/cursorclaw/skills/dev/SKILL.md`다. 변경한다면 기존 capability routing 문맥에서 연결하고, 모든 task에 큰 도구 설명을 상시 주입하지 않는다.
 
 ## Code-mode 활용 규약
 

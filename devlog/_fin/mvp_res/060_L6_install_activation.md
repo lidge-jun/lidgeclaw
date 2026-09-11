@@ -14,12 +14,12 @@ because build/install verification must prove both feature activation and config
 
 ## Scope (decision-complete)
 - Files added/edited:
-  - `plugins/codexclaw/components/config-guard/src/features.ts`
-  - `plugins/codexclaw/components/config-guard/src/activate.ts`
-  - `plugins/codexclaw/components/config-guard/src/deactivate.ts`
-  - `plugins/codexclaw/components/config-guard/src/cli.ts`
-  - `plugins/codexclaw/components/config-guard/test/features.test.ts`
-  - `plugins/codexclaw/components/config-guard/test/activate.test.ts`
+  - `plugins/cursorclaw/components/config-guard/src/features.ts`
+  - `plugins/cursorclaw/components/config-guard/src/activate.ts`
+  - `plugins/cursorclaw/components/config-guard/src/deactivate.ts`
+  - `plugins/cursorclaw/components/config-guard/src/cli.ts`
+  - `plugins/cursorclaw/components/config-guard/test/features.test.ts`
+  - `plugins/cursorclaw/components/config-guard/test/activate.test.ts`
   - `bin/codexclaw.mjs`
 - Declared flags:
   - `multi_agent`
@@ -37,7 +37,7 @@ because build/install verification must prove both feature activation and config
   - read state using `codex features list`.
   - back up `config.toml`.
   - enable only declared flags not already true.
-  - write `.codexclaw-install.json` with prior/enabled/failed state and hash.
+  - write `.cursorclaw-install.json` with prior/enabled/failed state and hash.
 - Deactivation behavior:
   - read install manifest.
   - skip safely when manifest is missing.
@@ -46,7 +46,7 @@ because build/install verification must prove both feature activation and config
 - Must-NOT-Have:
   - No hand-rolled TOML editing.
   - No provider/model config writes.
-  - No mutation of real `~/.codex` in tests.
+  - No mutation of real `~/.cursor` in tests.
   - No substring parsing of feature names.
 
 ## IPABCD micro-cycle
@@ -83,8 +83,8 @@ None for Phase 1. Provider/ocx activation remains Phase 2.
 - `devlog/_plan/260629_codexclaw_mvp/028_phase1_integration.md`
 - `devlog/_plan/260629_codexclaw_mvp/028.1_install_activation.md`
 - `devlog/_plan/260629_codexclaw_mvp/028.2_pass6_P_plan.md`
-- `plugins/codexclaw/components/config-guard/src/features.ts`
-- `plugins/codexclaw/components/config-guard/src/activate.ts`
-- `plugins/codexclaw/components/config-guard/src/deactivate.ts`
+- `plugins/cursorclaw/components/config-guard/src/features.ts`
+- `plugins/cursorclaw/components/config-guard/src/activate.ts`
+- `plugins/cursorclaw/components/config-guard/src/deactivate.ts`
 - `bin/codexclaw.mjs`
 - codex-rs CLI `features list/enable/disable` behavior.

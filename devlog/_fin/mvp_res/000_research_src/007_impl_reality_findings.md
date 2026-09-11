@@ -10,7 +10,7 @@ Status: CANONICAL FINDINGS · jun 2026-06-30 · gpt-5.5 ×3 병렬 (Galileo=cli-
 - jawcode: `.jwc/goal/{brief.md,goals.json,ledger.jsonl}` + checkpoint/quality-gate hash (goal-engine.ts:134/179/1294).
 - omo: native goal은 continuation owner지만 `.omo/ulw-loop/`에 plan-io 원자쓰기 + ledger append (plan-io.ts:55/105).
 - **결정**: codexclaw도 native `ThreadGoal`은 자율 continuation 구동에만 위임하고, **plan hash / checkpoints /
-  assumptions / phase-evidence는 codexclaw 소유 보조 ledger(`.codexclaw/`)에 둔다.** INDEX의 "goal lifecycle
+  assumptions / phase-evidence는 codexclaw 소유 보조 ledger(`.cursorclaw/`)에 둔다.** INDEX의 "goal lifecycle
   100% 위임" 문구는 "continuation 구동만 위임, 감사추적은 codexclaw 소유"로 정정. (L10.3 / INDEX A-block)
 
 ## ★ R-2: 증거 게이트(attest)가 prompt prose로 격하됨 — 런타임 enforcement 필요
@@ -39,7 +39,7 @@ Status: CANONICAL FINDINGS · jun 2026-06-30 · gpt-5.5 ×3 병렬 (Galileo=cli-
 - cli-jaw: I→P에 `interview`/`seedSpec`/`researchReport` 구조 carry, C가 Seed AC 증거 검사.
 - codexclaw: native create_goal은 objective-only, shipped State에 tracker/seed/researchReport 없음.
 - **결정**: freeze가 **구조적 evidence bundle**(dimensions/assumptions/contradictions/seed·AC/research report)을
-  `.codexclaw/` plan artifact로 굳히고, goal 진입 시 그 ref를 주입. objective+hash만으로 핸드오프하지 않는다. (L8/L10.3)
+  `.cursorclaw/` plan artifact로 굳히고, goal 진입 시 그 ref를 주입. objective+hash만으로 핸드오프하지 않는다. (L8/L10.3)
 
 ## ★ R-6: HOTL stop/pause 감사 누락
 - cli-jaw: blocked/paused goal은 기록된 progress + 독립 리뷰어 + `goal pause --agent --audit` 필수(typed pauseAudit).
@@ -75,7 +75,7 @@ Status: CANONICAL FINDINGS · jun 2026-06-30 · gpt-5.5 ×3 병렬 (Galileo=cli-
 - L2: transcript idempotency + PostCompact 등록 검토.
 - L6: bootstrap(hook trust/agent 등록) 경계 명확화.
 - 신규: HOTL stop/pause 감사 loop + native-goal↔PABCD continuation 묶기 loop.
-- 보조 ledger 결정: native goal은 continuation only; plan/ledger/evidence는 `.codexclaw/` 소유.
+- 보조 ledger 결정: native goal은 continuation only; plan/ledger/evidence는 `.cursorclaw/` 소유.
 
 ## jawcode가 가졌고 codexclaw(plugin)는 없는 능력 (설계 제약으로 못박을 것)
 - AgentSession 내부 직접 호출(createGoal/replaceGoal, active tools, hidden message append) — plugin 불가.

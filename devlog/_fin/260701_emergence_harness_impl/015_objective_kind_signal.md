@@ -27,7 +27,7 @@ gate, so ordinary build work would wrongly inherit divergence cost.
 ## Design (diff-level)
 
 1. 015.1 — define the objective-kind signal `"satisfy" | "maximize"`. Shipped sources:
-   - explicit: a project-local tag in `.codexclaw/objective-kind/<session>.json`, set by
+   - explicit: a project-local tag in `.cursorclaw/objective-kind/<session>.json`, set by
      `cxc metric kind --session <id> satisfy|maximize`, OR
    - inferred: `maximize` when decade-010 has a metric for the SAME session, else `satisfy`.
    `satisfy` is the DEFAULT so ordinary build work pays zero divergence overhead. A standalone
@@ -40,7 +40,7 @@ gate, so ordinary build work would wrongly inherit divergence cost.
 
 - `satisfy` is the safe default when unsignalled (no divergence overhead by accident).
 - Read-only at the hook layer; no native goal-DB write.
-- Project-local under `.codexclaw/`.
+- Project-local under `.cursorclaw/`.
 
 ## Acceptance
 

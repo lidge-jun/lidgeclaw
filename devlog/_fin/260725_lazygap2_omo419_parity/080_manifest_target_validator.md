@@ -7,13 +7,13 @@
 초기 판정은 "doctor에 runtime target 검사가 없다"였다. 리뷰어가 이를 반박했고 확인 결과
 **검사는 이미 존재한다 — build 시점에.**
 
-- `plugins/codexclaw/scripts/build.mjs:101-121` — manifest가 열거한 각 hook JSON을 열고
+- `plugins/cursorclaw/scripts/build.mjs:101-121` — manifest가 열거한 각 hook JSON을 열고
   `${PLUGIN_ROOT}/....js` command target의 존재를 확인한다.
-- `plugins/codexclaw/scripts/build.mjs:124-139` — MCP 설정의 `.js` args target 존재를 확인한다.
+- `plugins/cursorclaw/scripts/build.mjs:124-139` — MCP 설정의 `.js` args target 존재를 확인한다.
 
 진짜 gap은 두 가지다.
 
-1. **doctor가 이 검증기를 재사용하지 않는다.** `plugins/codexclaw/components/cxc-ops/src/doctor.ts:59-113,178-209`는
+1. **doctor가 이 검증기를 재사용하지 않는다.** `plugins/cursorclaw/components/cxc-ops/src/doctor.ts:59-113,178-209`는
    자체 검사를 하고 build 로직과 분리돼 있다. 설치된 플러그인을 진단할 때 build 시점 지식이 없다.
 2. **build 검사도 불완전하다:** 비어있지 않음(0바이트), plugin root 경로 포함(심링크 이탈),
    `commandWindows` 변형을 보지 않는다.
@@ -27,14 +27,14 @@
 
 ## WP7 P 실측: 공용 모듈 위치를 바꿔야 한다
 
-초안은 `plugins/codexclaw/scripts/lib/manifest-targets.mjs`를 만들어 build와 doctor가
+초안은 `plugins/cursorclaw/scripts/lib/manifest-targets.mjs`를 만들어 build와 doctor가
 공유하자고 했다. 실측 결과 **그 위치로는 doctor가 쓸 수 없다.**
 
 ### 확인한 사실
 
 | 사실 | 근거 |
 | --- | --- |
-| 빌드는 `components/*/src/*.ts`만 `dist/*.js`로 컴파일한다 | `plugins/codexclaw/scripts/build.mjs:25-27`, `:70-71`, `:153-155` |
+| 빌드는 `components/*/src/*.ts`만 `dist/*.js`로 컴파일한다 | `plugins/cursorclaw/scripts/build.mjs:25-27`, `:70-71`, `:153-155` |
 | `scripts/`는 빌드 대상이 아니다 | 같은 파일 `COMPONENTS` 배열에 없다 |
 | 빌드는 `.ts` → `.js` 스펙만 재작성한다 | `build.mjs:44-52`의 `rewriteSpecifiers` |
 | doctor는 `components/cxc-ops/src/doctor.ts` → `dist/doctor.js` | `ls components/cxc-ops/dist/` |
@@ -58,10 +58,10 @@
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/components/cxc-ops/src/manifest-targets.ts` | **신규** — 공용 검증기 |
-| `plugins/codexclaw/scripts/build.mjs` | `:101-139` 인라인 로직 → 소스 `.ts` 동적 import 후 호출 |
-| `plugins/codexclaw/components/cxc-ops/src/doctor.ts` | `./manifest-targets.ts` import, **기존 hook 검사 블록(`:77-91`, 주석 "2. each manifest-referenced hook file exists")을 이것으로 교체** (중복 방지, 블로커 7) |
-| `plugins/codexclaw/components/cxc-ops/test/manifest-targets.test.ts` | 신규 테스트 |
+| `plugins/cursorclaw/components/cxc-ops/src/manifest-targets.ts` | **신규** — 공용 검증기 |
+| `plugins/cursorclaw/scripts/build.mjs` | `:101-139` 인라인 로직 → 소스 `.ts` 동적 import 후 호출 |
+| `plugins/cursorclaw/components/cxc-ops/src/doctor.ts` | `./manifest-targets.ts` import, **기존 hook 검사 블록(`:77-91`, 주석 "2. each manifest-referenced hook file exists")을 이것으로 교체** (중복 방지, 블로커 7) |
+| `plugins/cursorclaw/components/cxc-ops/test/manifest-targets.test.ts` | 신규 테스트 |
 
 ### 보존해야 할 기존 build 오류 4종 + JSON 파싱 2경로 (블로커 2)
 
@@ -142,7 +142,7 @@ fixture도 합성 절대경로가 아니라 **실제 payload 트리를 임시 �
 
 ### `commandWindows`에 대한 정직한 기록 (WP7 P 실측 + A 라운드 2 보강)
 
-`rg -l 'commandWindows' plugins/codexclaw/hooks/` 결과 **0건**이다. 이 저장소의 훅은
+`rg -l 'commandWindows' plugins/cursorclaw/hooks/` 결과 **0건**이다. 이 저장소의 훅은
 `command` 하나만 쓴다 (예: `stop-checking-pabcd-continuation.json`의
 `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook stop`).
 
@@ -314,7 +314,7 @@ for each check in {A1, A2, A3, A4}:
   2. npm test  → 해당 테스트만 실패(RED)임을 출력으로 확인
   3. 주석 복원
   4. npm test  → exit 0 (GREEN)
-  5. shasum -a 256 plugins/codexclaw/components/cxc-ops/src/manifest-targets.ts
+  5. shasum -a 256 plugins/cursorclaw/components/cxc-ops/src/manifest-targets.ts
      → mutation 이전에 기록해 둔 해시와 일치 확인
 ```
 
@@ -356,7 +356,7 @@ B4 계열은 **fixture 전용**이다 — 이 저장소 훅에는 `commandWindow
 | C2b | 같은 fixture에서 `components/pabcd-state/dist/cli.js` 삭제 | `error` **11건** (같은 target을 11개 훅이 참조) | 자동 |
 
 **C2의 target을 이름으로 못 박는 이유 (블로커 5/라운드 2):** 훅 target은 공유된다.
-실측(`grep -oh 'PLUGIN_ROOT}/[^"]*\.js' plugins/codexclaw/hooks/*.json | sort | uniq -c`):
+실측(`grep -oh 'PLUGIN_ROOT}/[^"]*\.js' plugins/cursorclaw/hooks/*.json | sort | uniq -c`):
 `provider-bridge/dist/cli.js` 1회, `subagent-config/dist/spawn-attach-hook.js` 1회,
 `cxc-ops/dist/cli.js` 2회, `recall/dist/cli.js` 3회, `pabcd-state/dist/cli.js` **11회**.
 그래서 "1건"을 기대하려면 유일 참조 target을 지정해야 하고, 공유 target의 다중 보고는
@@ -370,8 +370,8 @@ C2b로 별도 고정한다. 참조 횟수는 fixture 생성 시 소스에서 세
 | # | 시나리오 | 기대 | 검증 |
 | --- | --- | --- | --- |
 | D1 | `npm run build` | exit 0, 파일 수 111 → 112 | 자동 |
-| D1b | dist 델타가 `dist/manifest-targets.js` 신규 + `dist/doctor.js` 변경 **둘뿐** | `git diff --stat 5692826e20f768b3005552f5234ff23160979644..HEAD -- plugins/codexclaw/components/` 출력의 `dist/` 항목이 정확히 그 두 파일 (기준 SHA = WP7 시작 시점 HEAD, WP6 커밋) | **수동 (C 단계 감사)** |
-| D2 | doctor 스모크 | `node plugins/codexclaw/bin/cxc.mjs doctor` 출력에 `mcp-targets` 줄이 등장한다. **exit 0을 기대하지 않는다** — 현재 baseline이 이미 exit 1이다 (`goalplan`/`skill-hub` 스킬 검사 기존 실패) | 자동 |
+| D1b | dist 델타가 `dist/manifest-targets.js` 신규 + `dist/doctor.js` 변경 **둘뿐** | `git diff --stat 5692826e20f768b3005552f5234ff23160979644..HEAD -- plugins/cursorclaw/components/` 출력의 `dist/` 항목이 정확히 그 두 파일 (기준 SHA = WP7 시작 시점 HEAD, WP6 커밋) | **수동 (C 단계 감사)** |
+| D2 | doctor 스모크 | `node plugins/cursorclaw/bin/cursorclaw.mjs doctor` 출력에 `mcp-targets` 줄이 등장한다. **exit 0을 기대하지 않는다** — 현재 baseline이 이미 exit 1이다 (`goalplan`/`skill-hub` 스킬 검사 기존 실패) | 자동 |
 | D3 | doctor 중복 없음 | hook 파일 하나가 없을 때 `hooks` FAIL이 **한 번만** 뜬다 (기존 블록을 교체했으므로) | 자동 |
 | D5 | **기존 doctor 계약 보존** | `components/cxc-ops/test/cxc-ops.test.ts:65-74`를 **수정하지 않고** 통과 | 자동 |
 | D6 | malformed **hook** JSON에서 doctor | `hooks` FAIL 1건 + `mcp-targets` severity가 **`WARN`** (`not evaluated after hook parse failure`). **PASS면 실패** | 자동 |
@@ -401,7 +401,7 @@ D8은 root 환경에서 `chmod 000`이 무력하므로, 그 경우 파일을 디
 - `npm run build` — **baseline 실측**: exit 0, 111 files compiled.
   사슬: `package.json:22` → `scripts/build.mjs`. 이 슬라이스가 그 파일을 바꾼다.
   → **관측한다.**
-- `node plugins/codexclaw/bin/cxc.mjs doctor` — **baseline 실측**: exit 1
+- `node plugins/cursorclaw/bin/cursorclaw.mjs doctor` — **baseline 실측**: exit 1
   (기존 `goalplan`/`skill-hub` 스킬 검사 실패). 새 출력 줄의 등장만 단정한다.
   → **관측한다.**
 - 좁은 타입체크 — **B 완료 후** 실행할 verifier (블로커 4/라운드 2 → 라운드 3 정정,
@@ -410,9 +410,9 @@ D8은 root 환경에서 `chmod 000`이 무력하므로, 그 경우 파일을 디
   ```
   npx tsc --noEmit --allowImportingTsExtensions --module nodenext --target es2022 \
     --moduleResolution nodenext \
-    plugins/codexclaw/components/cxc-ops/src/manifest-targets.ts \
-    plugins/codexclaw/components/cxc-ops/src/doctor.ts \
-    plugins/codexclaw/components/cxc-ops/test/manifest-targets.test.ts
+    plugins/cursorclaw/components/cxc-ops/src/manifest-targets.ts \
+    plugins/cursorclaw/components/cxc-ops/src/doctor.ts \
+    plugins/cursorclaw/components/cxc-ops/test/manifest-targets.test.ts
   ```
 
   세 파일은 이 슬라이스가 손대는 **TypeScript 파일 전부**다. 이 슬라이스는 그 밖에
@@ -426,7 +426,7 @@ D8은 root 환경에서 `chmod 000`이 무력하므로, 그 경우 파일을 디
 
   ```
   npx tsc --noEmit --allowImportingTsExtensions --module nodenext --target es2022 \
-    --moduleResolution nodenext plugins/codexclaw/components/cxc-ops/src/doctor.ts
+    --moduleResolution nodenext plugins/cursorclaw/components/cxc-ops/src/doctor.ts
   ```
 
   → exit 0, 출력 없음. 이 슬라이스가 손대는 기존 표면의 타입 오류는 **0건**이다

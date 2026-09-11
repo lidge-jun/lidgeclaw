@@ -9,7 +9,7 @@ import * as affordance from "../src/map-affordance.ts";
 import { runReset } from "../src/reset.ts";
 import { supportsSymlinks, symlinkDirSync } from "../test-support/symlink-support.ts";
 
-process.env.CODEXCLAW_CXC = "cxc";
+process.env.CURSORCLAW_CRC = "cxc";
 const plugin = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const payload = (cwd: string, event: string, session = "parent", extra = {}) =>
   JSON.stringify({ cwd, session_id: session, hook_event_name: event, ...extra });

@@ -44,7 +44,7 @@ test("a soft enable failure records its exit code and stderr in the manifest", (
   // The other declared flags are unaffected.
   for (const key of DECLARED_FEATURES) {
     if (key === SOFT) continue;
-    assert.equal(m.flags[key].enabledByCodexclaw, true);
+    assert.equal(m.flags[key].enabledByCursorclaw, true);
     assert.equal(m.flags[key].failure, undefined);
   }
 });
@@ -66,7 +66,7 @@ test("a malformed failure field drops that field without rejecting the manifest"
     configPath: join(home, "config.toml"),
     backupPath: null,
     postActivateHash: null,
-    flags: { [SOFT]: { priorEnabled: false, enabledByCodexclaw: false, enableFailed: true, failure: "not an object" } },
+    flags: { [SOFT]: { priorEnabled: false, enabledByCursorclaw: false, enableFailed: true, failure: "not an object" } },
     tableKeys: {},
   });
   const parsed = parseInstallManifest(raw);
@@ -95,7 +95,7 @@ test("every SOFT_FEATURES member has an impact statement", () => {
 });
 
 test("the warning names the impact, the exit code, and both recovery commands", () => {
-  const out = renderSoftFailureWarning(SOFT, { priorEnabled: false, enabledByCodexclaw: false, enableFailed: true, failure: { exitCode: 2, message: "unknown feature key" } });
+  const out = renderSoftFailureWarning(SOFT, { priorEnabled: false, enabledByCursorclaw: false, enableFailed: true, failure: { exitCode: 2, message: "unknown feature key" } });
   assert.match(out, /경고/);
   assert.match(out, /exit 2/);
   assert.match(out, /request_user_input/);

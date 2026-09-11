@@ -49,9 +49,9 @@ const shellQuote = value => "'" + value.replaceAll("'", "'\\''") + "'";
 export function probeEnv(home, launchDir, pluginRoot) {
   return {
     PATH: [launchDir, dirname(process.execPath), "/usr/bin", "/bin", "/usr/sbin", "/sbin"].join(":"),
-    CODEXCLAW_CXC: shellQuote(process.execPath) + " " + shellQuote(join(pluginRoot, "bin", "cxc.mjs")),
+    CURSORCLAW_CRC: shellQuote(process.execPath) + " " + shellQuote(join(pluginRoot, "bin", "cxc.mjs")),
     LANG: "en_US.UTF-8", HOME: home, USERPROFILE: home,
-    CODEX_HOME: join(home, ".codex"), CODEX_SQLITE_HOME: join(home, ".codex"),
+    CURSOR_HOME: join(home, ".codex"), CODEX_SQLITE_HOME: join(home, ".codex"),
     TMPDIR: join(home, "tmp"),
   };
 }
@@ -95,7 +95,7 @@ function prepare(spec) {
   real(join(root, "approval.md"));
   const installed = json(real(join(root, "install.json")));
   const pluginRoot = real(installed.installedPath || installed.path || "");
-  if (!inside(codexHome, pluginRoot)) throw new Error("installed root outside isolated CODEX_HOME");
+  if (!inside(codexHome, pluginRoot)) throw new Error("installed root outside isolated CURSOR_HOME");
   const manifest = json(join(pluginRoot, ".cursor-plugin", "plugin.json"));
   if (manifest.name !== "cursorclaw" || manifest.version !== spec.expectedVersion) throw new Error("manifest identity mismatch");
   const timeoutMs = spec.timeoutMs ?? 180000;
@@ -108,7 +108,7 @@ function prepare(spec) {
   const launchDir = join(home, "probe-bin");
   mkdirSync(launchDir, {mode:0o700});
   const env = probeEnv(home, launchDir, pluginRoot);
-  writeFileSync(join(launchDir, "cxc"), "#!/bin/sh\nexec " + env.CODEXCLAW_CXC + ' "$@"\n', {flag:"wx", mode:0o700});
+  writeFileSync(join(launchDir, "cxc"), "#!/bin/sh\nexec " + env.CURSORCLAW_CRC + ' "$@"\n', {flag:"wx", mode:0o700});
   writeFileSync(join(launchDir, "codex"), "#!/bin/sh\nexec " + shellQuote(codexBin) + ' "$@"\n', {flag:"wx", mode:0o700});
   const out = join(root, "output");
   mkdirSync(out, {mode:0o700}); // exclusive; a failed run is never overwritten
@@ -225,7 +225,7 @@ export async function record(spec) {
     schemaVersion:1, candidate:spec.candidate, sourceSha:p.sourceSha,
     pluginRoot:p.pluginRoot, version:spec.expectedVersion,
     codexBin:p.codexBin, codexSha256:before.codex,
-    dispatch:{path:p.env.PATH, cxc:p.env.CODEXCLAW_CXC, launcherRoot:p.launchDir},
+    dispatch:{path:p.env.PATH, cxc:p.env.CURSORCLAW_CRC, launcherRoot:p.launchDir},
     recorderSha256:before.recorder,
     approvalSha256:before.approval,
     installSha256:before.install, promptSha256:digest(prompt),

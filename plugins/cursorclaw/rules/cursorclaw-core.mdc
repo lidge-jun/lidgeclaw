@@ -22,4 +22,4 @@ This environment runs **cursorclaw**, the Cursor port of codexclaw.
 
 ## Naming
 
-Upstream Codex used `$cxc-*` skill ids and `cxc` CLI. On Cursor those are `skills/<folder>` and `crc`.
+Upstream Codex used `$crc-*` skill ids and `cxc` CLI. On Cursor those are `skills/<folder>` and `crc`.

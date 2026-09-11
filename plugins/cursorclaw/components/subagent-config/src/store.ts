@@ -4,7 +4,7 @@
  * Per-role subagent model mode + prompt override for the configurable roles
  * (explorer/reviewer/executor/architect). Missing file -> defaults; malformed values are
  * normalized per-field (strict reconstruct, never throws on read). Writes are
- * atomic (temp + rename). User defaults live in CODEXCLAW_HOME; native
+ * atomic (temp + rename). User defaults live in CURSORCLAW_HOME; native
  * Codex config is never mutated. Default mode needs
  * no ocx (uses the main Codex model).
  */
@@ -126,7 +126,7 @@ export function configScope(value: unknown = "project"): ConfigScope {
 }
 
 export function cxcHome(env: NodeJS.ProcessEnv = process.env): string {
-  return (env.CURSORCLAW_HOME || env.CODEXCLAW_HOME)?.trim() || join(homedir(), ".cursorclaw");
+  return (env.CURSORCLAW_HOME || env.CURSORCLAW_HOME)?.trim() || join(homedir(), ".cursorclaw");
 }
 
 export function globalStorePath(env: NodeJS.ProcessEnv = process.env): string {
@@ -136,8 +136,8 @@ export function globalStorePath(env: NodeJS.ProcessEnv = process.env): string {
 /** Compatibility with the unpublished first scoped-settings patch. Reads never migrate. */
 function readGlobalRaw(env: NodeJS.ProcessEnv, forWrite = false): RawConfig {
   const canonical = globalStorePath(env);
-  if (!existsSync(canonical) && !(env.CURSORCLAW_HOME || env.CODEXCLAW_HOME)?.trim()) {
-    const legacy = join(env.CODEX_HOME?.trim() || join(homedir(), ".codex"), "codexclaw", STORE_FILE);
+  if (!existsSync(canonical) && !(env.CURSORCLAW_HOME || env.CURSORCLAW_HOME)?.trim()) {
+    const legacy = join(env.CURSOR_HOME?.trim() || join(homedir(), ".codex"), "codexclaw", STORE_FILE);
     if (existsSync(legacy)) return readRaw(legacy, forWrite);
   }
   return readRaw(canonical, forWrite);

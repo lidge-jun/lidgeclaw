@@ -7,7 +7,7 @@ accumulate state until answers land in the ledger.
 
 IN (edited): `components/pabcd-state/src/interview-ledger.ts`,
 `components/pabcd-state/test/interview-ledger.test.ts`,
-`plugins/codexclaw/test/hook-e2e.test.mjs`.
+`plugins/cursorclaw/test/hook-e2e.test.mjs`.
 
 IN (regression-check only, no change expected):
 `components/pabcd-state/test/rescan-coordinator.test.ts` — imports
@@ -88,7 +88,7 @@ returns empty exactly as today.
    never throw.
 5. Regression: the existing object-shaped path is unchanged.
 
-`plugins/codexclaw/test/hook-e2e.test.mjs` — the fixture at :487 currently feeds
+`plugins/cursorclaw/test/hook-e2e.test.mjs` — the fixture at :487 currently feeds
 an object. Do NOT replace it (that path is real too); ADD a sibling case using the
 verbatim string body recorded in `001_evidence.md` E1, asserting an
 `answer_recorded` row appears.
@@ -113,7 +113,7 @@ npm test                 # full suite green
 npm run build            # hooks execute dist/, so rebuild before probing
 # then feed a string-shaped payload to the built CLI in a temp cwd and confirm
 # the ledger contains both question_asked and answer_recorded
-node plugins/codexclaw/components/pabcd-state/dist/cli.js hook post-tool-use
+node plugins/cursorclaw/components/pabcd-state/dist/cli.js hook post-tool-use
 ```
 
 ## Accept criteria

@@ -1,6 +1,6 @@
 /**
  * project-root.test.ts — the dashboard API must operate on the PROJECT root's
- * .cursorclaw/, not the vite dev-server cwd (plugins/codexclaw/gui/). Regression
+ * .cursorclaw/, not the vite dev-server cwd (plugins/cursorclaw/gui/). Regression
  * for the bug where GUI saves landed in gui/.cursorclaw/subagents.json, which no
  * spawn-time hook ever reads.
  */

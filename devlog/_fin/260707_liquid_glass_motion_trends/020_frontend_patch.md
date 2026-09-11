@@ -1,7 +1,7 @@
 # 020 — WP2 Patch Notes: dev-frontend
 
 Executed per `010_plan.md` (post-audit round 2). All paths relative to
-`plugins/codexclaw/skills/dev-frontend/`.
+`plugins/cursorclaw/skills/dev-frontend/`.
 
 ### references/core/liquid-glass.md — NEW (glass implementation owner)
 - **Changes**: 120-line reference. FE-LIQUID-LAYER-01 (DEFAULT, HIG-ported

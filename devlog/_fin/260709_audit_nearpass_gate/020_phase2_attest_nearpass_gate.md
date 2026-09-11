@@ -1,8 +1,8 @@
 # 020 — Phase 2: attest near-pass gate (enforcement)
 
-Write scope (disjoint): `plugins/codexclaw/components/pabcd-state/src/attest.ts`,
-`plugins/codexclaw/components/pabcd-state/src/hook.ts`,
-`plugins/codexclaw/components/pabcd-state/test/*.ts`. Nothing else.
+Write scope (disjoint): `plugins/cursorclaw/components/pabcd-state/src/attest.ts`,
+`plugins/cursorclaw/components/pabcd-state/src/hook.ts`,
+`plugins/cursorclaw/components/pabcd-state/test/*.ts`. Nothing else.
 
 Depends on 010's verdict taxonomy (doctrine names the same enum). Must NOT
 change C>D semantics or the FSM shape.
@@ -89,13 +89,13 @@ Replace the array with:
 
 ```ts
   A: [
-    "[codexclaw: AUDIT]",
+    "[cursorclaw: AUDIT]",
     "Audit the plan adversarially before building. Dispatch an independent reviewer",
     "(sub-agent) to challenge assumptions, find blockers, and verify references. If",
     "spawn_agent is not in your visible tools, tool_search for it first (the",
     "multi_agent_v1.* collab tools are deferred). Attach the discipline as $cxc mentions",
-    "in the spawn message ($cxc-dev-code-reviewer AND $cxc-search plus the matching",
-    "$cxc-dev-* surface skill); the spawn-attach hook fills in missing baselines. Ask",
+    "in the spawn message ($crc-dev-code-reviewer AND $crc-search plus the matching",
+    "$crc-dev-* surface skill); the spawn-attach hook fills in missing baselines. Ask",
     "the reviewer to end with a final line: VERDICT: PASS | GO-WITH-FIXES (blockers=N)",
     "| FAIL. A is a loop (AUDIT-LOOP-01): on FAIL, synthesize (REVIEW-SYNTHESIS-01),",
     "amend the plan, re-audit with the SAME reviewer; advance only when YOU judge the",
@@ -155,7 +155,7 @@ Replace with:
 ## Verification (phase-local)
 
 ```sh
-cd plugins/codexclaw/components/pabcd-state && npm test
+cd plugins/cursorclaw/components/pabcd-state && npm test
 ```
 
 All tests green; new tests present for c1/c2/c3. dist/ is NOT rebuilt in this

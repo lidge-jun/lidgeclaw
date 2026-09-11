@@ -2,7 +2,7 @@
 created: 2026-08-15
 status: evidence
 workPhase: wp4
-tags: [codexclaw, self-observation, source-delta]
+tags: [cursorclaw, self-observation, source-delta]
 ---
 
 # 051 — 게이트가 저자를 막았다
@@ -40,7 +40,7 @@ wp4의 구현은 B에 들어가기 전에 끝나 있었다. 감사 지적을 접
 031에서 리뷰어가 판정한 내용과도 일치한다:
 
 > 031 사례는 CLI 경로라면 걸렸습니다. 이전 사이클에서 구현·커밋이 끝난 뒤
-> B에 진입했다면 그 상태가 baseline이고, B 안에서는 .codexclaw 부산물 외
+> B에 진입했다면 그 상태가 baseline이고, B 안에서는 .cursorclaw 부산물 외
 > 변화가 없으므로 B>C가 same으로 거부됩니다.
 
 예측이 정확했다.

@@ -48,7 +48,7 @@
 ## 5) 사용한 명령
 
 ```bash
-rg --files plugins/codexclaw/skills structure plugins/codexclaw/agents
+rg --files plugins/cursorclaw/skills structure plugins/cursorclaw/agents
 rg -n -o '\b[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-[0-9]{2}\b' <허용 범위>
 comm -12 <(rg ... skills | sort -u) <(rg ... structure | sort -u)
 rg -n -i 'canonical wording|canonical owner|owned by|single source of truth' <허용 범위>

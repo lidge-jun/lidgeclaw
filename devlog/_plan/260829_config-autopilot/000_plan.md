@@ -2,7 +2,7 @@
 
 ## Objective
 
-codexclaw가 사용자 `~/.codex/config.toml`의 **비-feature 키**를 안전하게 켜고 되돌릴 수 있게 만든다.
+codexclaw가 사용자 `~/.cursor/config.toml`의 **비-feature 키**를 안전하게 켜고 되돌릴 수 있게 만든다.
 그리고 interview가 키워드 없이는 절대 뜨지 않는 현재 진입 규칙에 정책 층을 얹는다.
 
 출발점은 260829_memory-upgrade 플랜의 wp5가 **실행 불가**라는 사실이다.
@@ -13,7 +13,7 @@ wp5는 `memories.dedicated_tools = true`를 요구하지만, config-guard가 가
 
 | 사실 | 근거 |
 |---|---|
-| `dedicated_tools`는 `[features]`가 아니라 `[memories]` 테이블 키 | `~/.codex/config.toml` 65행 `[features]` vs 454행 `[memories]`; codex-rs `config/src/types.rs:299,344` (기본값 false) |
+| `dedicated_tools`는 `[features]`가 아니라 `[memories]` 테이블 키 | `~/.cursor/config.toml` 65행 `[features]` vs 454행 `[memories]`; codex-rs `config/src/types.rs:299,344` (기본값 false) |
 | config-guard는 config.toml을 파싱하지 않는다고 스스로 선언 | `components/config-guard/src/features.ts:1-4` |
 | 선언 어휘가 네 개 boolean 플래그로 닫혀 있다 | `features.ts:6` `DECLARED_FEATURES`, `features.ts:44` `declared.has(name)` 필터 |
 | 유일한 직접 편집은 setter가 아니라 CLI 사후 복구 | `activate.ts:58` `preserveMultiAgentV2Table` |
@@ -39,12 +39,12 @@ wp5는 `memories.dedicated_tools = true`를 요구하지만, config-guard가 가
 - Loop archetype: verifier-defined. `npm test` + `cxc doctor`가 done을 정의한다.
 - Trigger: 사용자 요청 — 도구 활성화까지 포함한 계획 확장, opencodex식 config.toml 자동 조작 배포, interview 기본 진입.
 - Goal: `cxc`가 화이트리스트된 비-feature 설정 키를 켜고, 외부 드리프트 뒤에도 자기 것만 되돌리고, interview 진입을 정책으로 고를 수 있다.
-- Non-goals: `generate_memories` 값 결정(260829_memory-upgrade 020 §0.4 미결, 사용자 소관), `~/.codex/memories` 쓰기, 실제 사용자 config.toml에 대한 이번 사이클 쓰기, `dedicated_tools` 기본 활성화.
+- Non-goals: `generate_memories` 값 결정(260829_memory-upgrade 020 §0.4 미결, 사용자 소관), `~/.cursor/memories` 쓰기, 실제 사용자 config.toml에 대한 이번 사이클 쓰기, `dedicated_tools` 기본 활성화.
 - Verifier: `npm test` (node --test, 신규 테스트 포함), `cxc doctor` overall PASS.
 - Stop condition: c1~c6 전부 met + 각 decade doc이 한 사이클로 소진.
 - Memory artifact: 이 유닛 `devlog/_plan/260829_config-autopilot/` + 바인딩된 goalplan/ledger.
-- Write scope: `plugins/codexclaw/components/config-guard/{src,test}`, `plugins/codexclaw/components/pabcd-state/{src,test}`, `plugins/codexclaw/hooks`, `devlog/_plan/260829_config-autopilot/`.
-- Out-of-scope: `~/.codex/memories`(read-only 절대, md5 `9c6bdc0b2c879b0a3b20632aec83c81e`), 실제 `~/.codex/config.toml`, `devlog/_plan/260829_goalplan-dependency-execution/`(다른 세션 소유), `devlog/_plan/260829_memory-upgrade/`(선행 유닛, 참조만).
+- Write scope: `plugins/cursorclaw/components/config-guard/{src,test}`, `plugins/cursorclaw/components/pabcd-state/{src,test}`, `plugins/cursorclaw/hooks`, `devlog/_plan/260829_config-autopilot/`.
+- Out-of-scope: `~/.cursor/memories`(read-only 절대, md5 `9c6bdc0b2c879b0a3b20632aec83c81e`), 실제 `~/.cursor/config.toml`, `devlog/_plan/260829_goalplan-dependency-execution/`(다른 세션 소유), `devlog/_plan/260829_memory-upgrade/`(선행 유닛, 참조만).
 - 예상 종료: DONE. BLOCKED은 상위 API 부재, NEEDS_HUMAN은 generate_menories 결정 요구 지점, BUDGET_EXHAUSTED는 서브에이전트 쿼터 소진(이미 2기 사망 — MONTHLY_REQUEST_COUNT).
 - HOTL 자원 경계: 도구 범위는 로컬 파일 편집 + `node --test` + `cxc`. 네트워크 쓰기 없음. push 없음. 벽시계 무제한, 서브에이전트는 쿼터 소진 상태라 인라인 검증 우선.
 
@@ -71,11 +71,11 @@ goalplan `criteria[]`와 1:1로 대응한다.
 - c3 — 외부 writer가 config.toml을 수정한 뒤에도 `cxc disable`이 codexclaw가 설정한 키만 되돌리고 남의 변경은 남긴다. 활성화 시나리오: 매니페스트 기록 후 무관한 줄을 삽입하고 deactivate를 호출한다.
 - c4 — 진입 정책이 `always`여도 goal 활성 상태에서는 진입하지 않는다. 활성화 시나리오: `getGoalActiveStatus`를 주입으로 `active`/`unreadable`로 고정하고 정책을 `always`로 둔다.
 - c5 — `cxc config`가 화이트리스트 밖 키를 거부하고 doctor/packaging 테스트가 초록이다.
-- c6 — 각 구현 사이클 종료 시 `npm test` 전체 통과 + 사용자 `~/.codex/memories` md5 불변.
+- c6 — 각 구현 사이클 종료 시 `npm test` 전체 통과 + 사용자 `~/.cursor/memories` md5 불변.
 
 ## SoT sync target (SOT-SYNC-01)
 
-`plugins/codexclaw/components/config-guard/src/features.ts` 상단 모듈 주석이 "이 모듈은 config.toml을
+`plugins/cursorclaw/components/config-guard/src/features.ts` 상단 모듈 주석이 "이 모듈은 config.toml을
 파싱하지 않는다"는 불변식을 선언한다. wp2가 그 불변식의 예외를 만들므로, 같은 사이클의 C에서
 그 주석과 `README`의 설정 관리 절을 갱신한다. 새 파일 `toml-edit.ts`가 편집 책임을 단독으로 지고
 `features.ts`는 위임 전용으로 남는 형태를 문서에 명시한다.

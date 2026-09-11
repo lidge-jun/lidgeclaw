@@ -2,7 +2,7 @@
 created: 2026-08-18
 status: done
 workPhase: wp7
-tags: [codexclaw, review-binding, spawn-surface, multi-agent-v1, hook-matcher]
+tags: [cursorclaw, review-binding, spawn-surface, multi-agent-v1, hook-matcher]
 ---
 
 # 070 — matcher는 빈 문자열이 아니라 `default`를 받아야 했다

@@ -30,7 +30,7 @@ const SESSION = "019f9d73-4c28-7723-ab52-346aca1d9bcb";
 function scratch(): { cwd: string; home: string; env: NodeJS.ProcessEnv } {
   const dir = mkdtempSync(join(tmpdir(), "cxc-memgate-"));
   const home = join(dir, "codex-home");
-  return { cwd: join(dir, "work"), home, env: { CODEX_HOME: home } };
+  return { cwd: join(dir, "work"), home, env: { CURSOR_HOME: home } };
 }
 
 function ptu(overrides: Record<string, unknown> = {}): string {
@@ -51,12 +51,12 @@ test("T2: every flat_tool_name variant of the memory write tool is recognized", 
   // separator appearing later.
   for (const name of ["memoriesadd_ad_hoc_note", "memories.add_ad_hoc_note", "memories_add_ad_hoc_note"]) {
     assert.ok(MEMORY_WRITE_TOOL_NAMES.has(name), `${name} must be gated`);
-    const attempt = classifyMemoryWrite(name, { filename: "n.md" }, "/w", memoriesRoot({ CODEX_HOME: "/h" }));
+    const attempt = classifyMemoryWrite(name, { filename: "n.md" }, "/w", memoriesRoot({ CURSOR_HOME: "/h" }));
     assert.equal(attempt.surface, "tool", `${name} must classify as a memory write`);
   }
   // The read tools are NOT the gate's business.
   for (const name of ["memoriessearch", "memories.list", "memories.read"]) {
-    assert.equal(classifyMemoryWrite(name, {}, "/w", memoriesRoot({ CODEX_HOME: "/h" })).surface, "");
+    assert.equal(classifyMemoryWrite(name, {}, "/w", memoriesRoot({ CURSOR_HOME: "/h" })).surface, "");
   }
 });
 
@@ -159,7 +159,7 @@ test("CLI grant rejects a non-canonical session id", () => {
 });
 
 test("file-edit surface: an apply_patch under the memories root is gated, elsewhere is not", () => {
-  const root = memoriesRoot({ CODEX_HOME: "/h" });
+  const root = memoriesRoot({ CURSOR_HOME: "/h" });
   const inside = "*** Add File: /h/memories/extensions/ad_hoc/notes/x.md\n+hi\n";
   assert.equal(classifyMemoryWrite("apply_patch", { command: inside }, "/w", root).surface, "edit");
   const outside = "*** Update File: /w/src/index.ts\n+hi\n";
@@ -172,7 +172,7 @@ test("file-edit surface: an apply_patch under the memories root is gated, elsewh
 });
 
 test("shell surface: a write into memories is gated; a read is not", () => {
-  const root = memoriesRoot({ CODEX_HOME: "/h" });
+  const root = memoriesRoot({ CURSOR_HOME: "/h" });
   const gated = classifyMemoryWrite("Bash", { command: "echo hi > /h/memories/notes.md" }, "/w", root);
   assert.equal(gated.surface, "shell");
   // Reading is what cxc-recall does constantly; gating it would break recall.

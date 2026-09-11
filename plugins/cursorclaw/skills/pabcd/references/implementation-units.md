@@ -74,7 +74,7 @@ is uncertain, the objective is maximize/deceptive, or the user asks for alternat
 In goal mode, the shipped automatic entry is the plateau Stop directive after recorded
 non-improving metrics. Either way, record N>=2 grounded candidates, choose early
 collapse at P for satisfy-spec work or late collapse at D for deceptive metrics, and
-keep all candidate provenance in `.codexclaw/divergence/`. The agent still owns every
+keep all candidate provenance in `.cursorclaw/divergence/`. The agent still owns every
 phase transition; no hook builds or races candidates automatically, and HITL P/A/B
 pauses remain real confirmation points.
 

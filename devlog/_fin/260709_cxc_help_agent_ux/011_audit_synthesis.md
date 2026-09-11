@@ -18,7 +18,7 @@ Verdict: `GO-WITH-FIXES (blockers=4)`
 3. **No-mutation proof too narrow**
    - Finding: the plan required no session/ledger/render-ledger mutation but only named the missing sessions-dir assertion.
    - Decision: accepted.
-   - Amendment: test scope now requires sessions dir, existing session JSON, `.codexclaw/ledger.jsonl`, and render ledger checks for help/unknown-verb paths.
+   - Amendment: test scope now requires sessions dir, existing session JSON, `.cursorclaw/ledger.jsonl`, and render ledger checks for help/unknown-verb paths.
 
 4. **Compiled unknown-verb path not pinned**
    - Finding: the top-level plan required dist CLI unknown-verb + session phase reporting, but the implementation contract only pinned dist help.

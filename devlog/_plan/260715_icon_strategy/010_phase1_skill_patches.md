@@ -4,7 +4,7 @@ Goal: make icon choice an explicit Design Read decision and give frontend
 implementation a consistent library/custom-icon route. This phase modifies exactly
 two skill files; icon guidance is inlined directly into new skill sections (no separate reference file).
 
-## MODIFY `plugins/codexclaw/skills/dev-uiux-design/SKILL.md`
+## MODIFY `plugins/cursorclaw/skills/dev-uiux-design/SKILL.md`
 
 ### 1. Modular References table (~lines 52-77)
 
@@ -88,7 +88,7 @@ The table is a default router, not a license to mix libraries within one layer.
 Implementation-level package selection, weights, and custom conversion belong to
 `dev-frontend` §4.
 
-## MODIFY `plugins/codexclaw/skills/dev-frontend/SKILL.md`
+## MODIFY `plugins/cursorclaw/skills/dev-frontend/SKILL.md`
 
 ### 1. Modular References table (~lines 32-62)
 
@@ -144,11 +144,11 @@ intentional choice.
 After WP2 applies the patches:
 
 ```sh
-rg -n 'iconography:|UX-ICON-01' plugins/codexclaw/skills/dev-uiux-design/SKILL.md
-rg -n 'FE-ICON-01|@phosphor-icons/react|Lucide-as-default' plugins/codexclaw/skills/dev-frontend/SKILL.md
+rg -n 'iconography:|UX-ICON-01' plugins/cursorclaw/skills/dev-uiux-design/SKILL.md
+rg -n 'FE-ICON-01|@phosphor-icons/react|Lucide-as-default' plugins/cursorclaw/skills/dev-frontend/SKILL.md
 # Negative assertion: no phantom reference links added
-rg -c 'references/icon-strategy.md|references/core/icon-strategy.md' plugins/codexclaw/skills/dev-uiux-design/SKILL.md plugins/codexclaw/skills/dev-frontend/SKILL.md && echo 'FAIL: phantom reference found' || echo 'OK: no phantom refs'
-git diff --check -- plugins/codexclaw/skills/dev-uiux-design/SKILL.md plugins/codexclaw/skills/dev-frontend/SKILL.md
+rg -c 'references/icon-strategy.md|references/core/icon-strategy.md' plugins/cursorclaw/skills/dev-uiux-design/SKILL.md plugins/cursorclaw/skills/dev-frontend/SKILL.md && echo 'FAIL: phantom reference found' || echo 'OK: no phantom refs'
+git diff --check -- plugins/cursorclaw/skills/dev-uiux-design/SKILL.md plugins/cursorclaw/skills/dev-frontend/SKILL.md
 ```
 
 Manual checks: the YAML remains valid; `§2.7` is between `§2.6` and `§3`; the

@@ -27,7 +27,7 @@ export const MEMORY_USAGE = [
   "  crc memory allow-write --session <id>",
   "",
   "Authorizes exactly ONE memory write (memories.add_ad_hoc_note, or an edit under",
-  "~/.codex/memories) for that session. The grant is consumed by the next write.",
+  "~/.cursor/memories) for that session. The grant is consumed by the next write.",
   "",
   "The ordinary path needs no command: when the user asks in their own words to",
   "remember something, the session records that request and the next write passes.",

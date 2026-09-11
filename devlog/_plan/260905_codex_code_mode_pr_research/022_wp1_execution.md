@@ -6,18 +6,18 @@ State: B in progress. Scope is the approved measurement foundation, not skill/ho
 
 | File | Change | Evidence |
 | --- | --- | --- |
-| `plugins/codexclaw/scripts/hook-bench.mjs` | Installed payload root, stable controller digest, raw output byte accounting, missing hook-file failure and removal of ambient routing/preload overrides | Remote red/green below; wider suite still pending |
-| `plugins/codexclaw/test/hook-bench-cwd.test.mjs` | Regression for inherited CXC/CODEXCLAW/NODE_OPTIONS overrides | Expected failure against baseline, then four tests pass against changed benchmark |
-| `plugins/codexclaw/scripts/probe-recorder.mjs` | Approved isolated recorder, candidate executable pin and lifecycle validation | Source written; remote regression and real run pending |
-| `plugins/codexclaw/scripts/probe-evidence.mjs` | Approved offline exact-identity/request analyzer | Source written; remote regression and real evidence pending |
-| `plugins/codexclaw/test/probe-evidence.test.mjs` | Negative/process/compiled-hook fixtures | Worker still completing; no pass claim yet |
+| `plugins/cursorclaw/scripts/hook-bench.mjs` | Installed payload root, stable controller digest, raw output byte accounting, missing hook-file failure and removal of ambient routing/preload overrides | Remote red/green below; wider suite still pending |
+| `plugins/cursorclaw/test/hook-bench-cwd.test.mjs` | Regression for inherited CXC/CODEXCLAW/NODE_OPTIONS overrides | Expected failure against baseline, then four tests pass against changed benchmark |
+| `plugins/cursorclaw/scripts/probe-recorder.mjs` | Approved isolated recorder, candidate executable pin and lifecycle validation | Source written; remote regression and real run pending |
+| `plugins/cursorclaw/scripts/probe-evidence.mjs` | Approved offline exact-identity/request analyzer | Source written; remote regression and real evidence pending |
+| `plugins/cursorclaw/test/probe-evidence.test.mjs` | Negative/process/compiled-hook fixtures | Worker still completing; no pass claim yet |
 
 Remote source: `/Users/junny/codexclaw-probes/01a0702d-c493-7510-801f-7d8772a2689c/wp1-source`, cloned from the dedicated baseline copy. The baseline now has the real `065fa1e8` git object/index from an authorized bundle transfer; it is not a fake HEAD reconstructed from archive contents.
 
 ## Benchmark environment red/green
 
-- RED: copy only the new test into the baseline source copy, then run `node --test --test-name-pattern 'bench env removes ambient' plugins/codexclaw/test/hook-bench-cwd.test.mjs`. Exit 1; actual `probe-sentinel` survived where undefined was required. One test, one failure. Artifact: remote sibling `bench-env-red.log`.
-- GREEN: copy the changed benchmark and run `node --test plugins/codexclaw/test/hook-bench-cwd.test.mjs`. Exit 0; four tests passed, zero failed/skipped. Artifact: remote sibling `bench-env-green.log`.
+- RED: copy only the new test into the baseline source copy, then run `node --test --test-name-pattern 'bench env removes ambient' plugins/cursorclaw/test/hook-bench-cwd.test.mjs`. Exit 1; actual `probe-sentinel` survived where undefined was required. One test, one failure. Artifact: remote sibling `bench-env-red.log`.
+- GREEN: copy the changed benchmark and run `node --test plugins/cursorclaw/test/hook-bench-cwd.test.mjs`. Exit 0; four tests passed, zero failed/skipped. Artifact: remote sibling `bench-env-green.log`.
 - No production hook behavior or test expectations were weakened between these runs.
 
 ## Approved-contract refinement during implementation

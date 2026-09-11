@@ -1,11 +1,11 @@
 # 002 — Hook 아키텍처 탐색 보고 (탐색 에이전트 Plato, gpt-5.6-sol)
 
 수집: 2026-07-10, 사이클 1 P단계 병렬 탐색. 읽기 전용. 사이클 1 B의 근거 소스.
-경로 표기: 이하 `components/` = `plugins/codexclaw/components/`, `hooks/` = `plugins/codexclaw/hooks/`.
+경로 표기: 이하 `components/` = `plugins/cursorclaw/components/`, `hooks/` = `plugins/cursorclaw/hooks/`.
 
 ## 1) Hook 이벤트 맵
 
-> `cli/package.json`은 `src/index.ts`를 엔트리로 선언하지만 실제 `cli/src`는 비어 있다(`cli/package.json:10`). 활성 hook은 플러그인 manifest가 등록한 컴포넌트에서 실행된다(`plugins/codexclaw/.codex-plugin/plugin.json:22`).
+> `cli/package.json`은 `src/index.ts`를 엔트리로 선언하지만 실제 `cli/src`는 비어 있다(`cli/package.json:10`). 활성 hook은 플러그인 manifest가 등록한 컴포넌트에서 실행된다(`plugins/cursorclaw/.cursor-plugin/plugin.json:22`).
 
 | 이벤트 | 설정 및 핸들러 | 책임 |
 |---|---|---|

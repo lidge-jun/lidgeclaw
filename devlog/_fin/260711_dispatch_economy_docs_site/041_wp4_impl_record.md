@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, pabcd-initiative, docs-site, detail-pages, impl-record]
+tags: [cursorclaw, pabcd-initiative, docs-site, detail-pages, impl-record]
 ---
 
 # WP4 impl record — detail pages

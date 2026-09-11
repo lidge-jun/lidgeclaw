@@ -14,8 +14,8 @@ premise was tested rather than argued.
 Against current `src/subagent-evidence.ts`, in a fresh tmpdir:
 
 ```
-.codexclaw/evidence/junk.md   <- one byte, content "x"
-payload: agent_type=worker, last_assistant_message="done\nEVIDENCE_RECORDED: .codexclaw/evidence/junk.md"
+.cursorclaw/evidence/junk.md   <- one byte, content "x"
+payload: agent_type=worker, last_assistant_message="done\nEVIDENCE_RECORDED: .cursorclaw/evidence/junk.md"
 runSubagentStopGate(payload)  ->  ""      RELEASED on call 1
 ```
 

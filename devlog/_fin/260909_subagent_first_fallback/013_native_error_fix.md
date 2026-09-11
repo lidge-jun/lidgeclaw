@@ -4,7 +4,7 @@ Codex rewrites provider error codes into native wait messages. The decoder now r
 
 Structured permission codes still take precedence. Quoted task content, similar words, modified exact-message suffixes and HTTP 403 prose do not become eligible for another model. Unknown execution state still requires reconciliation. HTTP 403 remains conservative `reconcile`, not an explicitly decoded `stop`.
 
-Implementation: `plugins/codexclaw/components/subagent-config/src/fallback-errors.ts`, with its tracked compiled output. Four regression tests were added to the existing dispatch suite. The captured native messages failed before the repair; all 18 dispatch tests passed after it. Build compiled 166 files and validated layout; strict TypeScript checking of the decoder passed.
+Implementation: `plugins/cursorclaw/components/subagent-config/src/fallback-errors.ts`, with its tracked compiled output. Four regression tests were added to the existing dispatch suite. The captured native messages failed before the repair; all 18 dispatch tests passed after it. Build compiled 166 files and validated layout; strict TypeScript checking of the decoder passed.
 
 Native verification repeats the isolated setup and limitations documented in `012_isolated_native_verification.md`. The same native binary, real spawn/wait/close, trusted hook commands and compiled dispatch CLI are used. Only provider responses and the main's protocol choices are scripted. The tests verify the `main-direct` decision; they do not prove an unscripted main model's subsequent task execution or a live OCX/provider account.
 

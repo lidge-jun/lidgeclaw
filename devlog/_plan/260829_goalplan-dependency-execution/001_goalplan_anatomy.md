@@ -1,6 +1,6 @@
 # 001 — goalplan 현재 구조 해부
 
-출처: T1 파견(gpt-5.6-sol medium), 대상 plugins/codexclaw/components/pabcd-state/src/goalplan.ts(1094줄),
+출처: T1 파견(gpt-5.6-sol medium), 대상 plugins/cursorclaw/components/pabcd-state/src/goalplan.ts(1094줄),
 goalplan-cli.ts(396줄), goal-gate.ts(318줄). 본체가 스키마·CLI·원장 지점을 직접 재확인했다.
 
 ## 타입 구조
@@ -54,7 +54,7 @@ marker는 올릴 수만 있다. 공백 두 개가 있다.
 ## 디스크 레이아웃과 동시 쓰기
 
 ```text
-<cwd>/.codexclaw/goalplans/<slug>/
+<cwd>/.cursorclaw/goalplans/<slug>/
 ├─ goalplan.json
 ├─ ledger.jsonl
 ├─ schema-v2.marker               선택

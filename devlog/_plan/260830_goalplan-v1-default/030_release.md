@@ -8,7 +8,7 @@ Both `package.json` and `cli/package.json` are `"private": true`, so there is no
 npm publish step. The release commit `05db9d07` shows the actual procedure: every
 version surface moves together, the inventory is regenerated, and the changelog
 gains a section. The shipped artifact is the plugin cache under
-`$CODEX_HOME/plugins/cache/codexclaw/codexclaw/<version>+codex.<stamp>/`, which is
+`$CURSOR_HOME/plugins/cache/codexclaw/codexclaw/<version>+codex.<stamp>/`, which is
 what a running session loads.
 
 Version surfaces touched by `05db9d07` (the list to mirror):
@@ -16,8 +16,8 @@ Version surfaces touched by `05db9d07` (the list to mirror):
 ```
 CHANGELOG.md                                        package.json
 cli/package.json                                    package-lock.json
-plugins/codexclaw/.codex-plugin/plugin.json         plugins/codexclaw/inventory.json
-plugins/codexclaw/gui/package.json                  components/*/package.json  (8 components)
+plugins/cursorclaw/.cursor-plugin/plugin.json         plugins/cursorclaw/inventory.json
+plugins/cursorclaw/gui/package.json                  components/*/package.json  (8 components)
 ```
 
 That is the full 15-file set `git show --name-only 05db9d07` reports; the audit
@@ -28,15 +28,15 @@ leaves it untouched, that is not an error.
 **Two surfaces are NOT script-covered (audit blocker 3).** `collectSurfaces()` in
 `check-versions.mjs:42-64` yields 12 entries: `package.json`, `plugin.json`, the 8
 components, and the two `inventory.plugin.*` keys. It never reads
-`cli/package.json` or `plugins/codexclaw/gui/package.json`, both at 0.2.15 today.
+`cli/package.json` or `plugins/cursorclaw/gui/package.json`, both at 0.2.15 today.
 Bumping the covered ten and forgetting those two makes the script print OK at
 exit 0 over an inconsistent release — the exact failure this doc's Bypass section
 claimed was caught. Verify those two by reading them back manually.
 
-`plugins/codexclaw/scripts/check-versions.mjs` verifies they agree, but it takes
+`plugins/cursorclaw/scripts/check-versions.mjs` verifies they agree, but it takes
 the expected version as a required argument — bare invocation prints
 `usage: check-versions.mjs <release-version>` and does nothing. Run it as
-`node plugins/codexclaw/scripts/check-versions.mjs 0.2.16`. (Verified by running
+`node plugins/cursorclaw/scripts/check-versions.mjs 0.2.16`. (Verified by running
 it: bare invocation exits with the usage line.)
 
 ## Steps
@@ -45,8 +45,8 @@ it: bare invocation exits with the usage line.)
    loads `dist`, not `src`, so an unbuilt fix ships as no fix.
 2. `npm test` — full suite, not just the new file.
 3. Bump to `0.2.16` across every surface above; run
-   `node plugins/codexclaw/scripts/check-versions.mjs 0.2.16`.
-4. `node plugins/codexclaw/scripts/inventory.mjs` to regenerate `inventory.json`.
+   `node plugins/cursorclaw/scripts/check-versions.mjs 0.2.16`.
+4. `node plugins/cursorclaw/scripts/inventory.mjs` to regenerate `inventory.json`.
 5. CHANGELOG: a `0.2.16` section naming the user-visible change — new goalplans
    declare v1 and can be completed; v2/v3 remain opt-in and still gated.
 6. Commit. Per DEV-GIT-PUSH-01 the push is a separate decision; the user approved
@@ -83,7 +83,7 @@ ships mismatched metadata with a green check.
 ## dist is committed, and a test enforces it (audit blocker 5)
 
 `dist/` is gitignored but ~149 dist files are force-tracked, and
-`plugins/codexclaw/test/dist-freshness.test.mjs` asserts the committed `dist` is
+`plugins/cursorclaw/test/dist-freshness.test.mjs` asserts the committed `dist` is
 byte-identical to a fresh compile of `src`. Two consequences for this unit:
 
 - Editing `src` without rebuilding AND committing `dist` fails that test, with a

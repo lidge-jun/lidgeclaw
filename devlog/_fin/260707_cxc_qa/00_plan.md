@@ -40,7 +40,7 @@ developer's head. lazycodex closes this with three pieces we translate:
 - `devlog/.lazycodex/packages/web/content/docs/manual-qa.md`
 - Existing codexclaw: `skills/dev-testing/SKILL.md` (automated-test router),
   `components/pabcd-state/src/subagent-evidence.ts` (worker receipt gate,
-  `.codexclaw/evidence/`), doctrine DISPATCH-TASK-01/ACTOR-01/RETIRE-01.
+  `.cursorclaw/evidence/`), doctrine DISPATCH-TASK-01/ACTOR-01/RETIRE-01.
 
 ## Translation decisions (philosophy-checked)
 
@@ -48,7 +48,7 @@ developer's head. lazycodex closes this with three pieces we translate:
 | --- | --- | --- |
 | `call_omo_agent`/`task` oracles | Codex-native `multi_agent_v1.spawn_agent` (explorer role, read-only), 2 parallel passes | already our dispatch surface |
 | bundled bun `image-diff`/`tui-check` scripts | NOT vendored in v1. Web: Codex `view_image` + browser/playwright screenshot; TUI: `tmux capture-pane -p` + a plain `awk/wc` width check inline in the skill | no new runtime dep (bun), no vendored component; scripts are a v2 candidate if inline proves weak |
-| `.omo/evidence/<goal>/` | `.codexclaw/evidence/<session>/qa/` | rides the EXISTING subagent-evidence receipt dir; worker receipt gate keeps working unchanged |
+| `.omo/evidence/<goal>/` | `.cursorclaw/evidence/<session>/qa/` | rides the EXISTING subagent-evidence receipt dir; worker receipt gate keeps working unchanged |
 | 5-lane review-work orchestrator | NOT adopted as a separate skill. A-gate reviewer + C adversarial review + REVIEW-SYNTHESIS-01 already cover 4 lanes; cxc-qa IS the missing QA-executor lane | avoid duplicate review machinery; all-must-pass across 5 spawns is token-heavy for marginal gain |
 | all-must-pass verdict | per-scenario verdict matrix; any FAIL blocks the C>D claim (E7 discipline, no hook) | owner rule: no new guards |
 | WORKING:/BLOCKED: mailbox protocol | adopt as prose in the dispatch packet | matches DISPATCH-TASK-01 |
@@ -64,11 +64,11 @@ a headless API), always with a recorded reason. This is stricter than plain
 skip-with-reason and softer than the executor TOML; named here so the lineage
 is honest.
 
-Rejected outright: `~/.codex/agents/` role installs (we inline role prompts —
+Rejected outright: `~/.cursor/agents/` role installs (we inline role prompts —
 B-opt2 pattern), background lane respawn budgets as hook logic (E7 prose only),
 lazycodex marketplace/installer surfaces (N/A).
 
-## Deliverable: `plugins/codexclaw/skills/qa/SKILL.md` (cxc-qa)
+## Deliverable: `plugins/cursorclaw/skills/qa/SKILL.md` (cxc-qa)
 
 Frontmatter triggers: manual QA, QA this, does it actually work, visual QA,
 screenshot, TUI alignment, smoke test, 수동 QA, 실제로 되는지, 동작 확인, plus
@@ -84,7 +84,7 @@ stay in doctrine, automated testing stays in dev-testing):
    `curl -i`; CLI -> real invocation captured; TUI -> `tmux capture-pane -p`
    (+ `-e` ANSI copy) with a stated real width; web -> browser skill
    screenshot at a stated viewport, inspected with `view_image`.
-3. **Evidence contract** — `.codexclaw/evidence/<session>/qa/<scenario-id>/`:
+3. **Evidence contract** — `.cursorclaw/evidence/<session>/qa/<scenario-id>/`:
    `invocation.txt` (exact command), artifact (capture/screenshot/response),
    `verdict.json` ({scenario, criterion, surface, verdict, artifactRefs[]}).
    Every PASS points at a non-empty artifact (FAMILY-PROOF-01 alignment).
@@ -104,25 +104,25 @@ stay in doctrine, automated testing stays in dev-testing):
 
 ## File change map
 
-1. NEW `plugins/codexclaw/skills/qa/SKILL.md` — the skill (above).
-2. NEW `plugins/codexclaw/skills/qa/agents/openai.yaml` — display_name
+1. NEW `plugins/cursorclaw/skills/qa/SKILL.md` — the skill (above).
+2. NEW `plugins/cursorclaw/skills/qa/agents/openai.yaml` — display_name
    `cxc-qa`, `allow_implicit_invocation: false` (on-demand skill), required by
    manifest-policy.test.mjs:57 and doctor.ts:82.
-3. `plugins/codexclaw/skills/skill-hub/references/catalog.md` — registry row
+3. `plugins/cursorclaw/skills/skill-hub/references/catalog.md` — registry row
    (category: surface? no — capability; load_when: manual surface-driving QA
    after building/changing a user-facing surface; implicit false), required by
    manifest-policy.test.mjs:144.
-4. `plugins/codexclaw/skills/dev/SKILL.md` — Capability Routing Hub sentence +
+4. `plugins/cursorclaw/skills/dev/SKILL.md` — Capability Routing Hub sentence +
    **Skill Ownership Map row**: rule area "Manual surface QA / evidence
    matrix" -> canonical owner `cxc-qa`, stub locations `dev-testing` (§4.6
    keeps the native-tool routing: which browser/CU tool drives which surface;
    the PROCEDURE and evidence contract are cxc-qa's).
-5. `plugins/codexclaw/skills/dev-testing/SKILL.md` — §4.6 gains a canonical
+5. `plugins/cursorclaw/skills/dev-testing/SKILL.md` — §4.6 gains a canonical
    pointer: exploratory-tier tool choice stays here; the QA procedure,
    evidence matrix, adversarial classes, and teardown receipts are owned by
    `cxc-qa` (stub, not duplicate). Resolves the single-ownership conflict
    (audit blocker 2).
-6. `plugins/codexclaw/skills/pabcd/SKILL.md` — C-phase sentence: user-facing
+6. `plugins/cursorclaw/skills/pabcd/SKILL.md` — C-phase sentence: user-facing
    surface changes close C with a cxc-qa evidence matrix (E7).
 7. `structure/INDEX.md` + `structure/10_subagent_skill_routing.md` — skill
    inventory row + QA dispatch note (oracle passes are explorer-role,
@@ -143,7 +143,7 @@ subagent-evidence.ts, cli-jaw/jawcode ports (follow-on initiative sync).
   two adversarial classes (empty/absent input -> usage error captured;
   malformed flag/source -> error behavior captured), each scenario with
   invocation.txt + artifact + verdict.json under
-  `.codexclaw/evidence/<session>/qa/`, plus a teardown line (stateless CLI ->
+  `.cursorclaw/evidence/<session>/qa/`, plus a teardown line (stateless CLI ->
   explicit "no resources spawned" receipt with the checked evidence).
 - `npm test` green including manifest-policy (new skill passes openai.yaml +
   catalog registration checks).

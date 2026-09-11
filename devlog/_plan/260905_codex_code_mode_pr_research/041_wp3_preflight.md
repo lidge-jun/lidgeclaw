@@ -9,7 +9,7 @@ mechanical safety/state/evidence boundaries, not a new execution runtime.
 ## Fresh verifier grounding
 
 All execution is on macmini-cf. Baseline is clean source91e051df, whose plugin
-payload is identical to tested d8c63f0 (main git diff over plugins/codexclaw exits0).
+payload is identical to tested d8c63f0 (main git diff over plugins/cursorclaw exits0).
 Local work is source/doc inspection, editing and checkpointing only.
 
 - Direct source tests for hook, hook-continuation, map-affordance, goal-gate,

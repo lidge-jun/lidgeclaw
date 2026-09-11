@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, pabcd-initiative, cli-jaw, jawcode, dispatch-economy, port, plan, diff-level]
+tags: [cursorclaw, pabcd-initiative, cli-jaw, jawcode, dispatch-economy, port, plan, diff-level]
 ---
 
 # Loop 3 — downstream ports + GitHub publish (diff-level plan)

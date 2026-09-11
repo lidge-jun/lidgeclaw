@@ -2,7 +2,7 @@
 created: 2026-08-15
 status: evidence
 workPhase: wp9
-tags: [codexclaw, release, closeout]
+tags: [cursorclaw, release, closeout]
 ---
 
 # 086 — v0.2.2 릴리스 기록 및 유닛 종결

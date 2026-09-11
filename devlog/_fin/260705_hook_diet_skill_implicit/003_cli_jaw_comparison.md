@@ -76,8 +76,8 @@
 | 경로 | 장점 | 단점 |
 |------|------|------|
 | `../cli-jaw/skills_ref/` 직접 참조 | 즉시 226개 사용 가능 | 상대 경로 의존, 이동 시 깨짐 |
-| `plugins/codexclaw/skills_dormant/` | plugin 안에 정리됨 | 필요한 것만 복사해야 함 |
-| `~/.codex/skills_dormant/` | user scope | plugin과 분리됨 |
+| `plugins/cursorclaw/skills_dormant/` | plugin 안에 정리됨 | 필요한 것만 복사해야 함 |
+| `~/.cursor/skills_dormant/` | user scope | plugin과 분리됨 |
 | symlink to cli-jaw skills_ref | 두 장점 결합 | symlink 관리 |
 
 **1차 결정**: `../cli-jaw/skills_ref/` 직접 참조.

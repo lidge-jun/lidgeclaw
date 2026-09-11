@@ -16,7 +16,7 @@ Depends on WP1+WP2 committed locally. Push to origin/main is user-approved
 
 1. Preflight: `git status --short` (only intended changes; leave
    `devlog/_plan/260722_260722-repo-governance-config/` untracked),
-   `npm test` tail green, `node plugins/codexclaw/scripts/gate.mjs` exit 0.
+   `npm test` tail green, `node plugins/cursorclaw/scripts/gate.mjs` exit 0.
 2. `git push origin main` (fast-forward only; if remote moved, fetch+rebase
    first per maintainer-merge discipline).
 3. `git branch dev main && git push -u origin dev`.

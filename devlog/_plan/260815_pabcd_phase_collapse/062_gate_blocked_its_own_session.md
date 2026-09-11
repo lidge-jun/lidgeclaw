@@ -2,7 +2,7 @@
 created: 2026-08-15
 status: evidence
 workPhase: wp7
-tags: [codexclaw, review-binding, self-observation]
+tags: [cursorclaw, review-binding, self-observation]
 ---
 
 # 062 — 게이트가 자기 세션을 막았다 (그리고 그건 맞다)
@@ -29,7 +29,7 @@ orchestrate B: ...; the latest audit round r3 is in_flight, not approved
 observer가 회신을 기록하지 못했다. 이유는 단순하다 — **이 세션에는 그 훅이 없다.**
 
 ```
-$ ls ~/.codex/plugins/cache/codexclaw/codexclaw/
+$ ls ~/.cursor/plugins/cache/codexclaw/codexclaw/
 0.1.1
 0.2.1+codex.20260815170254
 

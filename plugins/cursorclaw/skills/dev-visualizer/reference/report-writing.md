@@ -186,7 +186,7 @@ verdict; otherwise the consulting cover (claim title, scope subtitle, meta) fits
 ## REPORT-POLISH-01 Polish after structure, and keep the numbers (DEFAULT)
 
 Order of work: storyline and headings (this file) → paragraph structure → sentence
-polish → layout → render check. Sentence polish for Korean is `$cxc-kwrite` (four
+polish → layout → render check. Sentence polish for Korean is `$crc-kwrite` (four
 passes: register, translationese/AI idioms, mechanical structure, rhythm). Use the
 patina Korean signs list as a second checklist: inflated significance, ~적 suffix
 stacking, three-item enumerations, connector openers (이러한 맥락에서, 이를 통해),

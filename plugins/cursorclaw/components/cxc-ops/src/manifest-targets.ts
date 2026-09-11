@@ -147,7 +147,7 @@ function checkTarget(
  */
 export function validateManifestTargets(pluginRoot: string): TargetIssue[] {
   const issues: TargetIssue[] = [];
-  const manifestPath = join(pluginRoot, ".codex-plugin", "plugin.json");
+  const manifestPath = join(pluginRoot, ".cursor-plugin", "plugin.json");
   if (!existsSync(manifestPath)) return issues;
   const manifest = readJson<PluginManifest>("hook", manifestPath);
 

@@ -3,7 +3,7 @@ created: 2026-08-17
 status: design
 workPhase: wp4
 supersedes: [030_stuck_round_recovery.md, 031_audit_fold.md]
-tags: [codexclaw, recovery, round-selection]
+tags: [cursorclaw, recovery, round-selection]
 ---
 
 # 032 — 라운드를 고르지 말고 launchId로 찾는다

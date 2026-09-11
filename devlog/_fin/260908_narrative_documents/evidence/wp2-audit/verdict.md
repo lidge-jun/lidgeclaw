@@ -3,13 +3,13 @@
 VERDICT: NEAR-PASS
 
 Scope: uncommitted diff at HEAD 956da759 plus new
-`plugins/codexclaw/skills/dev/references/reader-documents.md`, audited against
+`plugins/cursorclaw/skills/dev/references/reader-documents.md`, audited against
 `devlog/_plan/260908_narrative_documents/010_reader_documents.md` and
-`plugins/codexclaw/skills/dev/references/skill-ownership.md`.
+`plugins/cursorclaw/skills/dev/references/skill-ownership.md`.
 
 Checks run: `node devlog/_plan/260908_narrative_documents/evidence/check-links.mjs`
 over the 10 touched skill files -> `checked 51 relative links in 10 files; missing 0`.
-`node --test plugins/codexclaw/test/skill-catalog.test.mjs` -> 4 pass, 0 fail.
+`node --test plugins/cursorclaw/test/skill-catalog.test.mjs` -> 4 pass, 0 fail.
 
 Coverage: 9 of the 10 planned MODIFY targets landed and match the plan's intent
 (dev/SKILL.md:215, skill-ownership.md:31, diagram-viewer SKILL.md:44/46/57/73,
@@ -27,7 +27,7 @@ dev-diagram-viewer).
 
 ## BLOCKERS
 
-1. **Planned MODIFY missing** — `plugins/codexclaw/skills/README.md:44`. The plan
+1. **Planned MODIFY missing** — `plugins/cursorclaw/skills/README.md:44`. The plan
    ("## MODIFY ... README.md and top-level README.md") requires one line in the
    skills README family description stating that dev references now own
    reader-document structure. `rg -n "READER|reader"` over both READMEs returns
@@ -35,7 +35,7 @@ dev-diagram-viewer).
 
 ## NITS
 
-1. `plugins/codexclaw/skills/dev-diagram-viewer/reference/document-pdf.md:41-43` —
+1. `plugins/cursorclaw/skills/dev-diagram-viewer/reference/document-pdf.md:41-43` —
    the new pointer has no blank line before "Lead with the decision or result,
    then evidence, method and detailed records", so it renders as one paragraph
    that says "the rest of this section is print-specific" immediately followed by

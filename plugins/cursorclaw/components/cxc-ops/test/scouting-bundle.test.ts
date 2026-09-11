@@ -17,7 +17,7 @@ import {
 
 test("redactPaths replaces home directory with ~", () => {
   const result = redactPaths("/Users/jun/.codex/config.toml", "/Users/jun");
-  assert.equal(result, "~/.codex/config.toml");
+  assert.equal(result, "~/.cursor/config.toml");
 });
 
 test("redactPaths handles Windows-style paths", () => {
@@ -48,8 +48,8 @@ test("scanForSecrets returns empty for clean text", () => {
 
 test("generateBundle produces valid schema", () => {
   const root = mkdtempSync(join(tmpdir(), "bundle-"));
-  mkdirSync(join(root, ".codex-plugin"), { recursive: true });
-  writeFileSync(join(root, ".codex-plugin", "plugin.json"), JSON.stringify({ name: "test", version: "0.0.1", hooks: [] }));
+  mkdirSync(join(root, ".cursor-plugin"), { recursive: true });
+  writeFileSync(join(root, ".cursor-plugin", "plugin.json"), JSON.stringify({ name: "test", version: "0.0.1", hooks: [] }));
   mkdirSync(join(root, "skills", "dev", "agents"), { recursive: true });
   writeFileSync(join(root, "skills", "dev", "SKILL.md"), "---\nname: dev\n---");
   const bundle = generateBundle({ pluginRoot: root, homeDir: "/fake/home" });
@@ -60,8 +60,8 @@ test("generateBundle produces valid schema", () => {
 
 test("generateBundle does not include raw prompts or source bodies", () => {
   const root = mkdtempSync(join(tmpdir(), "bundle-"));
-  mkdirSync(join(root, ".codex-plugin"), { recursive: true });
-  writeFileSync(join(root, ".codex-plugin", "plugin.json"), JSON.stringify({ name: "test", version: "0.0.1" }));
+  mkdirSync(join(root, ".cursor-plugin"), { recursive: true });
+  writeFileSync(join(root, ".cursor-plugin", "plugin.json"), JSON.stringify({ name: "test", version: "0.0.1" }));
   const bundle = generateBundle({ pluginRoot: root, homeDir: "/fake" });
   const text = JSON.stringify(bundle);
   // Should not contain full file contents or prompts
@@ -141,8 +141,8 @@ test("generateBundle with no HOME set produces readable sections", () => {
   delete process.env.HOME;
   try {
     const root = mkdtempSync(join(tmpdir(), "bundle-nohome-"));
-    mkdirSync(join(root, ".codex-plugin"), { recursive: true });
-    writeFileSync(join(root, ".codex-plugin", "plugin.json"), JSON.stringify({ name: "codexclaw", version: "0.0.1", hooks: [] }));
+    mkdirSync(join(root, ".cursor-plugin"), { recursive: true });
+    writeFileSync(join(root, ".cursor-plugin", "plugin.json"), JSON.stringify({ name: "codexclaw", version: "0.0.1", hooks: [] }));
     const bundle = generateBundle({ pluginRoot: root });
     for (const section of bundle.sections) {
       assert.doesNotMatch(section.content, /(~.){5}/, `section ${section.name} is character-shredded`);

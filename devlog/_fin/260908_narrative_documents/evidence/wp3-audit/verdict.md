@@ -2,7 +2,7 @@
 
 VERDICT: NEAR-PASS
 
-Scope: uncommitted diff + new `plugins/codexclaw/skills/search/references/deep-research.md`
+Scope: uncommitted diff + new `plugins/cursorclaw/skills/search/references/deep-research.md`
 against `020_deep_research.md`, host `deep-research-work` 0.1.14, and `aside-jun` SKILL.md.
 
 ## What passes

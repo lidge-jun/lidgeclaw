@@ -1,6 +1,6 @@
 ---
 created: 2026-07-02
-tags: [codexclaw, recall, evaluation, benchmark, cli-jaw-comparison]
+tags: [cursorclaw, recall, evaluation, benchmark, cli-jaw-comparison]
 aliases: [recall WP4 eval log]
 ---
 
@@ -41,7 +41,7 @@ stable on re-run).
   boundaries were already Buffer-based (UTF-8-safe), platform-neutral (date, basename)
   sort key replaces full-path string sort, no shell/POSIX-only APIs anywhere.
 - A codex-rescue verifier is auditing every layout assumption against the local
-  openai/codex source clone (CODEX_HOME resolution incl. Windows, rollout writer path
+  openai/codex source clone (CURSOR_HOME resolution incl. Windows, rollout writer path
   template + line terminator, SessionMeta serde fields, state_<N> naming, memories
   writer) — findings folded in on return.
 
@@ -59,7 +59,7 @@ Gaps accepted for Round 2 (in impact order):
 4. Hook: add "as discussed previously"-class patterns; suppress `codexclaw.mjs ...` and
    generic `chat/memory search` invocations, not just literal `cxc`.
 5. JSON output bounding (default clip + `--full`).
-6. Federation: document single-home (+`CODEX_HOME`/`--home` override) as an explicit
+6. Federation: document single-home (+`CURSOR_HOME`/`--home` override) as an explicit
    non-goal with rationale.
 7. Index freshness surfaced in the search envelope (lastIngestAt, files, sourceFiles,
    stale delta).
@@ -75,7 +75,7 @@ Gaps accepted for Round 2 (in impact order):
    every slot.
 4. Hook: `discussed previously/last time` patterns added; suppression now covers
    `codexclaw(.mjs) chat|memory search`, generic `chat/memory search "..."`, and
-   `$cxc-recall`.
+   `$crc-recall`.
 5. JSON bounding: text/title/context clipped at 500 chars with a `clipped` flag;
    `--full` opts out.
 6. Federation: documented as an explicit single-home non-goal in the skill

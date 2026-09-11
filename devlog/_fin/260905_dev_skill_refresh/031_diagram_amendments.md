@@ -2,7 +2,7 @@
 
 Dependency: owning decade plan. These exact edits run AFTER its original operations.
 
-## MODIFY plugins/codexclaw/test/visualize-inspection.test.mjs
+## MODIFY plugins/cursorclaw/test/visualize-inspection.test.mjs
 
 Before:
 
@@ -20,17 +20,17 @@ After:
       mkdirSync(dir, { recursive: true });
       writeFileSync(join(dir, 'SKILL.md'), 'current-contract');
     }
-    // Explicit override still wins over a populated, different CODEX_HOME.
-    result = run({ CODEX_HOME: defaultRoot, HOME: homeRoot });
+    // Explicit override still wins over a populated, different CURSOR_HOME.
+    result = run({ CURSOR_HOME: defaultRoot, HOME: homeRoot });
     assert.equal(result.status, 1);
     assert.match(result.stdout, /1\.0\.11/);
     for (const override of ['', undefined]) {
-      result = run({ CXC_VISUALIZE_ROOT: override, CODEX_HOME: defaultRoot, HOME: homeRoot });
+      result = run({ CXC_VISUALIZE_ROOT: override, CURSOR_HOME: defaultRoot, HOME: homeRoot });
       assert.equal(result.status, 0);
       assert.match(result.stdout, /version 2\.0\.0/);
     }
     for (const codexHome of ['', undefined]) {
-      result = run({ CXC_VISUALIZE_ROOT: undefined, CODEX_HOME: codexHome, HOME: homeRoot });
+      result = run({ CXC_VISUALIZE_ROOT: undefined, CURSOR_HOME: codexHome, HOME: homeRoot });
       assert.equal(result.status, 0);
       assert.match(result.stdout, /version 3\.0\.0/);
     }

@@ -6,7 +6,7 @@ Status: research snapshot 2026-07-02/03 (web + local code reading)
 
 | Interface | Mechanism | Session continuity | Bot fit |
 | --- | --- | --- | --- |
-| `codex exec --json` | one process per turn, JSONL events on stdout (`thread.started` carries thread_id; `item.*`; `turn.completed`) | `codex exec resume --last` / `codex exec resume <SESSION_ID>` | chosen — stateless, crash-safe, shares `~/.codex` rollouts with interactive codex |
+| `codex exec --json` | one process per turn, JSONL events on stdout (`thread.started` carries thread_id; `item.*`; `turn.completed`) | `codex exec resume --last` / `codex exec resume <SESSION_ID>` | chosen — stateless, crash-safe, shares `~/.cursor` rollouts with interactive codex |
 | `codex app-server` | resident JSON-RPC 2.0 server (stdio JSONL default) | `thread/start` / `thread/resume` / `turn/start` | rejected — resident-process lifecycle ownership conflicts with codexclaw no-harness philosophy |
 | `codex mcp-server` | Codex exposed as MCP tools | `codex` tool starts, `codex-reply` continues via threadId | only if orchestrator is MCP-native |
 | `@openai/codex-sdk` (npm, TS) | SDK; Python variant drives app-server over JSON-RPC | `startThread()` → `thread.run()` repeated, `resumeThread(threadId)` | good generally, but adds SDK dependency; exec CLI is sufficient here |
@@ -55,10 +55,10 @@ Sources (checked 2026-07-02): https://docs.openclaw.ai · https://docs.openclaw.
 
 - `bin/codexclaw.mjs`: thin delegator over compiled component CLIs — add
   `serve` (and later `service`) subcommands here.
-- `plugins/codexclaw/components/`: component-per-feature (src + dist + test)
+- `plugins/cursorclaw/components/`: component-per-feature (src + dist + test)
   convention — bridge lands as a new component (e.g. `messenger-bridge`).
-- `plugins/codexclaw/gui/`: Vite + React, pages/Subagents.tsx only; server
+- `plugins/cursorclaw/gui/`: Vite + React, pages/Subagents.tsx only; server
   handlers in `gui/src/server/handlers.ts`. GUI reads/writes only through
   codexclaw endpoints (api.ts header comment).
-- recall component already reads `~/.codex` rollouts (chat/memory search) —
+- recall component already reads `~/.cursor` rollouts (chat/memory search) —
   session listing for agent management can reuse it.

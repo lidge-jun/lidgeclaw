@@ -11,13 +11,13 @@ IPABCD state so parallel sessions in the same repo do not clobber each other?
   Write = tmp(`pid.now.tmp`) + rename (atomic). Missing/corrupt → safe default.
 - jawcode/gjc (`docs/memory-jwc.md`, `docs/session-switching-*`): sessions live at
   `~/.jwc/agent/sessions/<encoded-cwd>/<ts>_<uuidv7>.jsonl` — per-cwd dir, per-session file.
-- codex runtime: `~/.codex/sessions/YYYY/MM/DD/*.jsonl`; hook payload carries `session_id`,
+- codex runtime: `~/.cursor/sessions/YYYY/MM/DD/*.jsonl`; hook payload carries `session_id`,
   `turn_id`, `cwd`, `transcript_path` (verified earlier in hooks/src/events).
 
 ## Decision (Finding C resolution)
 IPABCD phase state is **session-scoped**, stored in the working tree (gitignored), omo-style:
-- State file: `<cwd>/.codexclaw/sessions/<sanitize(sessionId)>.json`  (one phase-state per session).
-- Ledger: `<cwd>/.codexclaw/ledger.jsonl` — SHARED append-only, each entry tagged with `sessionId`
+- State file: `<cwd>/.cursorclaw/sessions/<sanitize(sessionId)>.json`  (one phase-state per session).
+- Ledger: `<cwd>/.cursorclaw/ledger.jsonl` — SHARED append-only, each entry tagged with `sessionId`
   (unified cross-session audit trail for the repo).
 - `sessionId` is supplied by the caller (Pass 2 hook reads `session_id` from payload). Pass 1 state
   module takes it as a parameter.
@@ -28,7 +28,7 @@ IPABCD phase state is **session-scoped**, stored in the working tree (gitignored
   drive phase transitions. So phase state = sessionId only. (If a future per-subagent counter is
   needed, add an agentId-keyed file then — not now.)
 
-### Why working-tree `.codexclaw/` (not `~/.codex/...`)
+### Why working-tree `.cursorclaw/` (not `~/.cursor/...`)
 - Keeps IPABCD state next to the repo it describes; matches omo's `<cwd>/.omo`; already gitignored.
 - Survives across turns of the same session; isolated per session via the filename key.
 

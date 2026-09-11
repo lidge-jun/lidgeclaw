@@ -56,7 +56,7 @@ VERDICT: MERGE-WITH-FIXES (blockers=3). phantom claim 0, 테스트 물력화 0, 
 
 Medium 4건 (모두 신규 메커니즘의 잔여 결함, 기존 동작 회귀 아님; 리뷰어는 이 중 1·3·4를 머지 전 수정 권장 blockers=3으로 계수):
 
-1. evidence gate 영구 트랩 가능 — `pabcd-state/src/subagent-evidence.ts:196-210`: `.codexclaw/evidence/` 쓰기가 지속 실패하면 기존 MAX_ATTEMPTS fail-open 상한이 사라지고 무한 block.
+1. evidence gate 영구 트랩 가능 — `pabcd-state/src/subagent-evidence.ts:196-210`: `.cursorclaw/evidence/` 쓰기가 지속 실패하면 기존 MAX_ATTEMPTS fail-open 상한이 사라지고 무한 block.
 2. one-use capability 위조 가능 — `subagent-config/src/spawn-attach-hook.ts:354-390`: grant 파일이 무인증 JSON이라 shell 실행 가능한 child가 self-mint 가능 (다만 그런 child는 `codex exec` 직접 실행 등 더 쉬운 우회가 있어 실질 심각도 제한적).
 3. runner stderr 여전히 unbounded — `messenger-bridge/src/runner.ts:449`: stdout JSONL은 8MiB 바운드, stderr는 무제한 누적.
 4. Git-tracked 설정 판정이 git 오류 시 fail-open — `subagent-config/src/store.ts:174-184`: `git ls-files`(1.5s timeout) 실패 시 tracked 파일이 trust token 없이 적용됨.

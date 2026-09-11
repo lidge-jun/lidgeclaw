@@ -1,6 +1,6 @@
 ---
 created: 2026-07-02
-tags: [codexclaw, recall, skill, hook, trigger, plan]
+tags: [cursorclaw, recall, skill, hook, trigger, plan]
 aliases: [recall WP3 trigger plan]
 ---
 

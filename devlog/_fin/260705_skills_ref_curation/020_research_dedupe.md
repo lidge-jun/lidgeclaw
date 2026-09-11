@@ -14,7 +14,7 @@
 | SKILL.md 보유 디렉토리 | 227 |
 | registry 유령 항목 (SKILL.md 없음) | 6 — differential-review, insecure-defaults, modern-python, property-based-testing, static-analysis, terraform |
 | 미등록 SKILL.md | 2 — pptx_original, xlsx_original (legacy 중복) |
-| 비스킬 지원 디렉토리 | .codexclaw, .github, .pytest_cache, __pycache__, docs, references, scripts, tests, ooxml_core |
+| 비스킬 지원 디렉토리 | .cursorclaw, .github, .pytest_cache, __pycache__, docs, references, scripts, tests, ooxml_core |
 | active 중 skills_ref 부재 | meta-test, search-route-test (~/.cli-jaw/skills에만 존재 → import 시 active 디렉토리에서 별도 수급 필요) |
 
 ## 주요 중복 클러스터 (keep → drop)

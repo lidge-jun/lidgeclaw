@@ -25,10 +25,10 @@ This is compact repository/documentation maintenance, not a new autonomous loop.
   declares `AGPL-3.0-only`, retains the 2026 lidge-jun copyright, and preserves
   RepoMapper MIT and Aider Apache-2.0 notices. Do not rewrite vendored notices or
   dependency license metadata.
-- NEW `plugins/codexclaw/{LICENSE,NOTICE.md}`: same documents in the actual
+- NEW `plugins/cursorclaw/{LICENSE,NOTICE.md}`: same documents in the actual
   marketplace payload, which does not include root files.
 - MODIFY root `package.json`, only its root entry in `package-lock.json`, and
-  `plugins/codexclaw/.codex-plugin/plugin.json`: `MIT` -> `AGPL-3.0-only`.
+  `plugins/cursorclaw/.cursor-plugin/plugin.json`: `MIT` -> `AGPL-3.0-only`.
 - MODIFY three README badges/license sections and docs-site manifest reference
   and SoftwareApplication license URL. Preserve third-party attribution.
 - Extend the existing packaging artifact checks to cover tracked, identical root /
@@ -52,7 +52,7 @@ licenses on earlier distributed versions.
 - Source-to-payload license byte equality and exact SHA against the fetched GNU text.
 - Focused packaging + vendored RepoMapper tests; check unchanged third-party files
   and dependency lock entries. No repository-wide local suite or new dependencies.
-- `node plugins/codexclaw/scripts/gate.mjs`, staged diff, removal inventory and
+- `node plugins/cursorclaw/scripts/gate.mjs`, staged diff, removal inventory and
   precise ignore checks. Code/deployment assets must be unchanged.
 - Independent final review checks scope, metadata, payload inclusion and retained
   notices, not a legal opinion on every historical contribution.
@@ -67,7 +67,7 @@ licenses on earlier distributed versions.
   `git diff --check` passed. No repository-wide suite or runtime build was run.
 - Root and payload AGPL text exactly match GNU's 34,523-byte source,
   SHA-256 `0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0`.
-  NOTICE copies match. A `git archive HEAD:plugins/codexclaw` inventory includes
+  NOTICE copies match. A `git archive HEAD:plugins/cursorclaw` inventory includes
   both project legal files and the original vendor LICENSE/NOTICE.md.
 - Only the root license entry changed in package-lock.json. Original vendor
   notices and dependency metadata were compared and remained byte-for-byte intact.

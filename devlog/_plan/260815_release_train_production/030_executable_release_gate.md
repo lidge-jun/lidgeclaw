@@ -12,7 +12,7 @@ Status: PLANNED — work-phase wp3 (issue #26). Rewritten after A-gate round 2.
 - Non-goals: creating the workflows that call it (040), publishing (050)
 - Verifier: `npm test` plus both CLI paths run locally against fixtures
 - Stop condition: refusal and acceptance both demonstrated with captured output
-- Memory artifact: this doc + `.codexclaw/release/candidate-<version>.json`
+- Memory artifact: this doc + `.cursorclaw/release/candidate-<version>.json`
 - Terminal outcomes: DONE when the fail-closed path is observed firing
 
 ## What already exists
@@ -61,7 +61,7 @@ interface CandidateManifest {
 
 | Verb | Full syntax |
 | --- | --- |
-| `init` | `cxc release init --version <v> [--candidate <output-path>] [--sha <sha>]` — writes `.codexclaw/release/candidate-<v>.json` seeded with the full receipt set (see below) |
+| `init` | `cxc release init --version <v> [--candidate <output-path>] [--sha <sha>]` — writes `.cursorclaw/release/candidate-<v>.json` seeded with the full receipt set (see below) |
 | `receipt` | `cxc release receipt (--version <v> | --candidate <path>) --name <n> --evidence <e> [--sha <sha>] [--status present|failed|deferred] [--reason <r>]` |
 | `platform` | `cxc release platform (--version <v> | --candidate <path>) --platform ubuntu|windows|macos --sha <sha> --ci-run <id> [--passed|--failed]` |
 | `tests` | `cxc release tests (--version <v> | --candidate <path>) --pass <n> --fail <n> --sha <sha>` — sets `testSuite` |
@@ -72,7 +72,7 @@ Selector semantics (004r4 #2):
 
 - `init` always requires `--version <v>` (it is the manifest body). `--candidate` is
   optional there and names the **output path** to create; without it the path is
-  `.codexclaw/release/candidate-<v>.json`.
+  `.cursorclaw/release/candidate-<v>.json`.
 - The other five verbs operate on an existing candidate and take `--version <v>`
   **or** `--candidate <path>`, mutually exclusive. `--version` resolves the default
   path; zero matches and multiple matches are both explicit errors (004 #4).
@@ -101,12 +101,12 @@ run, the release is BLOCKED (004 #9, tightened in round 2).
 | `components/pabcd-state/src/release-gate.ts` | schema v2, five blocker rules, `allowDeferred` |
 | `components/pabcd-state/src/release-cli.ts` | NEW — six verbs, atomic writes, candidate resolution |
 | `components/pabcd-state/src/cli.ts` | route `release` |
-| `plugins/codexclaw/bin/cxc.mjs` | add `release` to `COMMAND_TABLE` |
+| `plugins/cursorclaw/bin/cursorclaw.mjs` | add `release` to `COMMAND_TABLE` |
 | `bin/codexclaw.mjs` | add the `release` case + help line — **required** by `payload-bin.test.mjs:36-45` parity (004 #2) |
 | `components/pabcd-state/test/release-gate.test.ts` | extend: stale sha, missing `capturedSha`, inventory mismatch, published-count mismatch, deferred |
 | `components/pabcd-state/test/release-cli.test.ts` | NEW — round-trip per verb, exit codes, zero/multi candidate errors |
-| `plugins/codexclaw/test/payload-bin.test.mjs` | (no edit — it already enforces parity; it must stay green) |
-| `.gitignore` | ignore `.codexclaw/release/` working candidates |
+| `plugins/cursorclaw/test/payload-bin.test.mjs` | (no edit — it already enforces parity; it must stay green) |
+| `.gitignore` | ignore `.cursorclaw/release/` working candidates |
 
 ## Field chains (PLAN-FIELD-CHAIN-01)
 
@@ -143,7 +143,7 @@ commit SHA or test count (020).
 | 5 | inventory mismatch refuses | mutate `inventory.json`, re-verify → exit 1 |
 | 6 | published-count drift refuses | `publishedCounts.tests` ≠ `testSuite.pass` → exit 1 |
 | 7 | candidate selection errors | `verify` with no candidate, and with two candidates and no `--version` → distinct errors |
-| 8 | both dispatchers route | `node bin/codexclaw.mjs release verify --version x` and `node plugins/codexclaw/bin/cxc.mjs release verify --version x` behave identically; `payload-bin.test.mjs` stays green |
+| 8 | both dispatchers route | `node bin/codexclaw.mjs release verify --version x` and `node plugins/cursorclaw/bin/cursorclaw.mjs release verify --version x` behave identically; `payload-bin.test.mjs` stays green |
 
 Each row is observed as a real CLI invocation. Unit tests prove the predicate; the
 CLI runs prove it is wired.

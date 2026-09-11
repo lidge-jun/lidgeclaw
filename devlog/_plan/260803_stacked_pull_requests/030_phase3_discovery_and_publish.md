@@ -7,8 +7,8 @@ published to `origin/dev`.
 
 ## Scope
 
-IN: `plugins/codexclaw/skills/dev/SKILL.md` (frontmatter `description` + `keywords`),
-`plugins/codexclaw/skills/dev-code-reviewer/SKILL.md` (frontmatter `keywords`),
+IN: `plugins/cursorclaw/skills/dev/SKILL.md` (frontmatter `description` + `keywords`),
+`plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md` (frontmatter `keywords`),
 `docs-site/src/content/docs/guides/skills.md` (only if it enumerates per-skill
 capabilities that now omit stacking), the devlog unit's own `040_summary.md`, and git
 publish actions.
@@ -67,9 +67,9 @@ Run and capture, with exit codes:
 ```sh
 npm run gate
 npm test
-rg -n "DEV-STACK-0" plugins/codexclaw/skills          # one definition site + pointers
-rg -n "stacked-prs.md" plugins/codexclaw/skills       # owner + every stub resolves
-ls plugins/codexclaw/skills/dev/references/stacked-prs.md
+rg -n "DEV-STACK-0" plugins/cursorclaw/skills          # one definition site + pointers
+rg -n "stacked-prs.md" plugins/cursorclaw/skills       # owner + every stub resolves
+ls plugins/cursorclaw/skills/dev/references/stacked-prs.md
 ```
 
 Pointer-resolution proof is the activation evidence for this unit

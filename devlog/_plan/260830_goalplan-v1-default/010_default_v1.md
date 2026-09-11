@@ -48,7 +48,7 @@ is why the fix is small — the version was always a parameter, just never expos
 
 ## Change map
 
-### MODIFY `plugins/codexclaw/components/pabcd-state/src/goalplan.ts`
+### MODIFY `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts`
 
 Extend the input type (after `:876`):
 
@@ -117,7 +117,7 @@ And a normalizer beside it, so a nonsense request cannot mint an unreadable plan
 +}
 ```
 
-### MODIFY `plugins/codexclaw/components/pabcd-state/src/goalplan-cli.ts`
+### MODIFY `plugins/cursorclaw/components/pabcd-state/src/goalplan-cli.ts`
 
 Audit blocker 2: the first draft of these two hunks elided the real surrounding
 lines and read as replacements, which would have deleted the `--criterion` body
@@ -161,7 +161,7 @@ Parser branch — a NEW `else if` in the existing chain. The `--criterion` body 
 Help text gains the flag on the `init` usage line and one note: choosing 2 or 3
 means committing to a final gate that no shipped verb can currently produce.
 
-### MODIFY `plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts`
+### MODIFY `plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts`
 
 Audit blocker 1: `:239` is a test named
 `"schema v3: buildGoalplan declares schemaVersion 3"` asserting

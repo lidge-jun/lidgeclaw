@@ -1,7 +1,7 @@
 /**
  * reset.ts — scoped codexclaw state cleanup (L20 / 203).
  *
- * Scopes (never touches codex global config under ~/.codex):
+ * Scopes (never touches codex global config under ~/.cursor):
  *  - "state":     PABCD state only — .cursorclaw/sessions/*.json + .cursorclaw/ledger.jsonl
  *                 + .cursorclaw/interviews/ and affordance-recovery/ hint markers
  *  - "generated": generated artifacts — .cursorclaw/interview/, freeze manifests

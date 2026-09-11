@@ -1,6 +1,6 @@
 ---
 created: 2026-07-02
-tags: [codexclaw, recall, fts5, trigram, sidecar-index, plan]
+tags: [cursorclaw, recall, fts5, trigram, sidecar-index, plan]
 aliases: [recall WP2 index plan]
 ---
 
@@ -11,7 +11,7 @@ aliases: [recall WP2 index plan]
 WP1's scan path costs ~2-5s per week-window and ~16s full-history (3.6GB corpus).
 WP2 adds a rebuildable sidecar SQLite index so `cxc chat search` answers in
 milliseconds over the FULL history, with Korean-capable FTS. The scan path stays as
-fallback; `~/.codex` stays strictly read-only.
+fallback; `~/.cursor` stays strictly read-only.
 
 cli-jaw superiority anchor: cli-jaw's chat search is LIKE-over-live-table with recency
 ordering only; its FTS5+trigram+bm25 machinery exists only for its (separate) memory
@@ -24,11 +24,11 @@ Class: C3 (persistence — a new codexclaw-owned derived cache on disk).
 
 ### Index home (new surface, disclosed)
 
-`$CODEXCLAW_HOME ?? ~/.codexclaw` + `/recall/index.sqlite`. Rationale: the index spans
-sessions across ALL projects, so project-local `.codexclaw/` cannot hold it; writing
-inside `~/.codex` would squat the Codex runtime's namespace. cli-jaw precedent: derived
+`$CURSORCLAW_HOME ?? ~/.cursorclaw` + `/recall/index.sqlite`. Rationale: the index spans
+sessions across ALL projects, so project-local `.cursorclaw/` cannot hold it; writing
+inside `~/.cursor` would squat the Codex runtime's namespace. cli-jaw precedent: derived
 index lives in the tool's own home (`~/.cli-jaw/memory/structured/index.sqlite`).
-It is a CACHE: deleting it only costs a rebuild; source of truth stays `~/.codex`.
+It is a CACHE: deleting it only costs a rebuild; source of truth stays `~/.cursor`.
 
 ### NEW `src/index-db.ts` — schema + lifecycle
 
@@ -104,7 +104,7 @@ implementation; findings 1/3/4/8/9/10/11/12 were already closed in code (trigger
 external-content FTS with delete-command semantics, LIKE `ESCAPE` fallback for <3-char
 words, WAL + busy_timeout, `--no-tools`/context/title+branch enrichment/default parity —
 all locked by the oracle test comparing index-mode vs scan-mode hits). Finding 5 (user-level
-`~/.codexclaw` vs project-local-state doctrine) was resolved by amending
+`~/.cursorclaw` vs project-local-state doctrine) was resolved by amending
 `structure/00_philosophy.md` §2, `structure/20_pabcd_dispatch_doctrine.md`, and
 `structure/INDEX.md` Boundary Rules to carve out user-level REBUILDABLE DERIVED CACHES.
 Finding 7 (concurrent appends): stat-before-read makes staleness self-healing (recorded
@@ -116,6 +116,6 @@ full-history queries 20-40ms (vs 2-16s scans); refresh-on-query picks up appende
 
 ### Verification (C gate)
 
-Full suite green; live: first build timing over real ~/.codex, then `cxc chat search`
+Full suite green; live: first build timing over real ~/.cursor, then `cxc chat search`
 p50 < 200ms full-history, Korean query hit-parity vs scan mode, refresh picks up a
 just-written session line.

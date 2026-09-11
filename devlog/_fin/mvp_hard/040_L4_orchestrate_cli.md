@@ -3,7 +3,7 @@
 Status: DONE (impl shipped + tested) · 2026-06-30 · mvp_hard loop L4 · class C3 (persistence, shares state with the hook)
 
 > L3b gave the HUMAN (chat) path its free-pass wire. L4 gives the AGENT/terminal path:
-> `cxc orchestrate <verb> [--attest <json>]` over the SAME `.codexclaw` file state, but
+> `cxc orchestrate <verb> [--attest <json>]` over the SAME `.cursorclaw` file state, but
 > GATED — forward transitions go through the un-weakened `transition()` + `validateAttest`,
 > so an agent must supply real evidence. This completes the invocation-source split:
 > chat = free-pass (L3b), CLI = gated (L4).
@@ -20,27 +20,27 @@ cxc orchestrate <I|P|A|B|C|D|status|reset> [--attest <json>] [--session <id>] [-
 ## Reference (verified)
 
 - cxc-ops CLI shape (subcommand switch, pluginRootFrom, direct-exec guard)
-  ([cli.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/cxc-ops/src/cli.ts:22)).
-- session files live at `.codexclaw/sessions/*.json`; reset enumerates them
-  ([reset.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/cxc-ops/src/reset.ts:54)).
+  ([cli.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/cxc-ops/src/cli.ts:22)).
+- session files live at `.cursorclaw/sessions/*.json`; reset enumerates them
+  ([reset.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/cxc-ops/src/reset.ts:54)).
 - gated `transition()` + `validateAttest` (agent path) — reused UNCHANGED
-  ([fsm.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/fsm.ts:78)).
+  ([fsm.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/fsm.ts:78)).
 - the L3a parser + L3b apply helper (the verb grammar / control verbs)
-  ([orchestrate-grammar.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/orchestrate-grammar.ts:1)).
+  ([orchestrate-grammar.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/orchestrate-grammar.ts:1)).
 - root CLI dispatch (`bin/codexclaw.mjs`) — add an `orchestrate` case
-  ([codexclaw.mjs](/Users/jun/Developer/new/700_projects/codexclaw/bin/codexclaw.mjs:56)).
+  ([cursorclaw.mjs](/Users/jun/Developer/new/700_projects/codexclaw/bin/codexclaw.mjs:56)).
 
 ## Session selection (CLI has no codex session id)
 
 The hook gets `session_id` from codex; the terminal CLI does not. Strategy:
 - `--session <id>` explicit wins.
-- else pick the most-recently-modified `.codexclaw/sessions/*.json` (the active session).
+- else pick the most-recently-modified `.cursorclaw/sessions/*.json` (the active session).
 - else (no sessions yet) use a default key `"cli"` and create it. This mirrors how a
   human would drive the same repo's loop from a terminal.
 
 ## File change map (IN scope)
 
-1. NEW `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts`
+1. NEW `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts`
    - `export interface OrchestrateCliArgs { verb: OrchestrateVerb; attest: Attestation | null; attestError?: string; session?: string; cwd: string; json: boolean; }`
    - `export function parseOrchestrateCliArgs(argv: string[], cwd: string): OrchestrateCliArgs | { error: string };`
      (reuse the grammar's verb whitelist + brace-balanced `--attest` extraction by
@@ -56,14 +56,14 @@ The hook gets `session_id` from codex; the terminal CLI does not. Strategy:
        return code 1 + the reason. On ok, `writeState` + `appendLedger(reason:"cli")`.
    - Pure-ish: does its own IO (readState/writeState/appendLedger) like a CLI command,
      but no network. Under 200 lines.
-2. MODIFY `plugins/codexclaw/components/pabcd-state/src/cli.ts`
+2. MODIFY `plugins/cursorclaw/components/pabcd-state/src/cli.ts`
    - add an `orchestrate` kind branch (alongside `freeze`) that calls
      `parseOrchestrateCliArgs` + `runOrchestrateCli` and writes output, exits with code.
 3. MODIFY `bin/codexclaw.mjs`
    - add `case "orchestrate":` that delegates to the compiled pabcd-state CLI
      (`components/pabcd-state/dist/cli.js orchestrate <args...>`), like cxcOps delegation.
    - update the default help line to include `orchestrate`.
-4. NEW `plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts`
+4. NEW `plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts`
    - arg parse: verb/attest/session/json/`--cwd`; bad verb → error.
    - AGENT-GATED: `orchestrate a` (P->A) WITHOUT attest → code 1 (gated, unlike the
      human free-pass); WITH a real `--attest` → advances, ledger reason "cli".
@@ -103,7 +103,7 @@ Two CLI correctness gaps found by the L20 gap sweep (200) were fixed (commit pen
   L5/L7 D-close contract. A separate `cxc orchestrate reset` after `D` is no longer
   required (it is now a harmless no-op).
 - **Session policy (G2):** an EXPLICIT `--session <id>` on a mutating verb may target
-  only an existing `.codexclaw/sessions/<id>.json` or the reserved terminal key `cli`.
+  only an existing `.cursorclaw/sessions/<id>.json` or the reserved terminal key `cli`.
   An unknown explicit id (typo or a fresh codex-style uuid the hook never created) is
   refused with a clear error instead of silently minting a divergent session. The
   implicit latest-mtime pick and the no-session `cli` bootstrap are unchanged.
@@ -120,7 +120,7 @@ Two CLI correctness gaps found by the L20 gap sweep (200) were fixed (commit pen
 
 ## Audit focus (for A gate)
 
-- Is the session-selection deterministic and safe when `.codexclaw/sessions/` is
+- Is the session-selection deterministic and safe when `.cursorclaw/sessions/` is
   empty or has many files? Does default "cli" collide with a real codex session id?
 - Does reusing `parseOrchestrateCommand("orchestrate " + argv.join(" "))` correctly
   handle a `--attest` JSON that contains spaces when passed as separate argv tokens

@@ -6,10 +6,10 @@ Dependencies: existing dev/interview/loop owners and current native tool schemas
 
 | Path | Operation | Before → after |
 |---|---|---|
-| `plugins/codexclaw/skills/dev/SKILL.md` §0 Intent Clarification | MODIFY | Generic clarification → prefer exposed/allowed async tool for useful mid-work questions, continue independent work, link canonical recipe |
-| `plugins/codexclaw/skills/dev/references/async-questions.md` | NEW | Canonical recipe below |
-| `plugins/codexclaw/skills/dev/references/skill-ownership.md` | MODIFY | Add one owner row linking async questions to the new dev reference; interview/loop/SOT are pointers |
-| `plugins/codexclaw/skills/loop/SKILL.md` | MODIFY | Add pointer for optional mid-work async questions without expecting replies; preserve host restrictions and existing Interview |
+| `plugins/cursorclaw/skills/dev/SKILL.md` §0 Intent Clarification | MODIFY | Generic clarification → prefer exposed/allowed async tool for useful mid-work questions, continue independent work, link canonical recipe |
+| `plugins/cursorclaw/skills/dev/references/async-questions.md` | NEW | Canonical recipe below |
+| `plugins/cursorclaw/skills/dev/references/skill-ownership.md` | MODIFY | Add one owner row linking async questions to the new dev reference; interview/loop/SOT are pointers |
+| `plugins/cursorclaw/skills/loop/SKILL.md` | MODIFY | Add pointer for optional mid-work async questions without expecting replies; preserve host restrictions and existing Interview |
 | `structure/60_native_capabilities.md` | MODIFY | Add dated async capability observation and canonical link; distinguish schema exposure from model runtime guarantee |
 
 ## New canonical reference content

@@ -28,7 +28,7 @@ import { cxcInvocation } from "./cxc-resolve.ts";
 /**
  * Resolve backtick-anchored `` `crc `` COMMAND prefixes to the invocation that
  * actually exists on this machine (cxc-resolve ladder). Called at RENDER time so
- * the env seam (CODEXCLAW_CXC) and per-machine PATH state are honored per emit,
+ * the env seam (CURSORCLAW_CRC) and per-machine PATH state are honored per emit,
  * not frozen at import.
  *
  * WHY backtick-anchored only (H1, 260724 fresh-install): noun phrases

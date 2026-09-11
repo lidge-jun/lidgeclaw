@@ -16,7 +16,7 @@
     "limitations": "Service returned results through existing profile; no cookie/account identifiers printed; no new login, posting, follow, messages, or settings changes. Results not used as technical proof."
   },
   "visualize": {
-    "command": "bash plugins/codexclaw/skills/dev-diagram-viewer/upstream/sync-check.sh",
+    "command": "bash plugins/cursorclaw/skills/dev-diagram-viewer/upstream/sync-check.sh",
     "exitCode": 1,
     "storedVersion": "1.0.11",
     "installedVersion": "1.0.29",

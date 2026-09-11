@@ -10,7 +10,7 @@ structure/*.md, checks false enforcement/count drift). Neither proves semantic a
 Semantic verifier: independent review of the eight decision-table scenarios in the
 proposed owner, including allowed and denied conditions; no actual peer messages.
 Stop: all wording consistent, focused gates pass, independent review has no blockers.
-Memory: this unit and .codexclaw/evidence/quiet-peers. Expected result DONE.
+Memory: this unit and .cursorclaw/evidence/quiet-peers. Expected result DONE.
 Escalation: reclaim after two failed agent packets; scope changes are P amendments.
 Tools: local docs edits, node checks, read-only subagents. No credential use here.
 Budget: user permits unlimited Astra/high delegation; no numeric token/cost cap.
@@ -22,8 +22,8 @@ No new fields, enums or serialization paths. Do not add mirror-string tests.
 ## File diffs (MODIFY)
 
 ```diff
---- plugins/codexclaw/skills/dev/references/peer-collaboration.md
-+++ plugins/codexclaw/skills/dev/references/peer-collaboration.md
+--- plugins/cursorclaw/skills/dev/references/peer-collaboration.md
++++ plugins/cursorclaw/skills/dev/references/peer-collaboration.md
 @@ -1,22 +1,36 @@
  # Independent peer collaboration
  
@@ -165,8 +165,8 @@ No new fields, enums or serialization paths. Do not add mirror-string tests.
 +A scenario review proves the wording, not live model compliance. Add runtime
 +machinery only for a separately scoped, demonstrated enforcement gap.
 
---- plugins/codexclaw/skills/dev/SKILL.md
-+++ plugins/codexclaw/skills/dev/SKILL.md
+--- plugins/cursorclaw/skills/dev/SKILL.md
++++ plugins/cursorclaw/skills/dev/SKILL.md
 @@ -159,11 +159,13 @@
  
  ### Capability Routing Hub
@@ -187,8 +187,8 @@ No new fields, enums or serialization paths. Do not add mirror-string tests.
  `cxc-qa`, or the matching `dev-*` owner for their named domains. `skill-hub` is deprecated.
  
 
---- plugins/codexclaw/skills/loop/SKILL.md
-+++ plugins/codexclaw/skills/loop/SKILL.md
+--- plugins/cursorclaw/skills/loop/SKILL.md
++++ plugins/cursorclaw/skills/loop/SKILL.md
 @@ -30,7 +30,10 @@
  Follow the live host tool contracts, including goal creation and blocked-status
  conditions. A plugin hook accepting a call is not proof that the call is authorized.
@@ -202,8 +202,8 @@ No new fields, enums or serialization paths. Do not add mirror-string tests.
  question-only wakes and independent task authority; apply this loop only to work
  the user actually authorized.
 
---- plugins/codexclaw/skills/pabcd/SKILL.md
-+++ plugins/codexclaw/skills/pabcd/SKILL.md
+--- plugins/cursorclaw/skills/pabcd/SKILL.md
++++ plugins/cursorclaw/skills/pabcd/SKILL.md
 @@ -125,8 +125,10 @@
  ## Delegation Model (subagents)
  
@@ -218,8 +218,8 @@ No new fields, enums or serialization paths. Do not add mirror-string tests.
  
  The main session owns the plan, host goal, and transitions. Before authorized
 
---- plugins/codexclaw/skills/search/SKILL.md
-+++ plugins/codexclaw/skills/search/SKILL.md
+--- plugins/cursorclaw/skills/search/SKILL.md
++++ plugins/cursorclaw/skills/search/SKILL.md
 @@ -24,10 +24,13 @@
  
  ## Divergence Candidate Grounding
@@ -239,8 +239,8 @@ No new fields, enums or serialization paths. Do not add mirror-string tests.
  When any PABCD workflow enters divergence mode (HITL manual entry or goal-mode
  plateau prompt), every N>=2 candidate must carry search provenance in the divergence
 
---- plugins/codexclaw/skills/loop/references/waiting.md
-+++ plugins/codexclaw/skills/loop/references/waiting.md
+--- plugins/cursorclaw/skills/loop/references/waiting.md
++++ plugins/cursorclaw/skills/loop/references/waiting.md
 @@ -5,7 +5,10 @@
  These continuation/dispatch rules concern this goal's own work and delegated
  subagents, not independent peer advice. Peer timeouts do not authorize retirement,
@@ -266,7 +266,7 @@ No new fields, enums or serialization paths. Do not add mirror-string tests.
 +read-only by default. Outbound contact is limited to explicit user requests or
 +necessary confirmed blocking CI/merge collision coordination, subject to host
 +permissions and wake checks in the canonical
- [peer collaboration reference](../plugins/codexclaw/skills/dev/references/peer-collaboration.md).
+ [peer collaboration reference](../plugins/cursorclaw/skills/dev/references/peer-collaboration.md).
  They retain separate user instructions, goals and FSMs; this adds no team manager.
  
 

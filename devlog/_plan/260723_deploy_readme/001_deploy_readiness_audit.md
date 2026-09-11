@@ -6,16 +6,16 @@ Verdict: COMPLETE. Fresh `npm test`: **1,201 passed / 0 failed**.
 ## Manifest & marketplace
 
 - Marketplace manifest: `.agents/plugins/marketplace.json` (repo root), marketplace
-  name `codexclaw`, plugin `codexclaw`, local source `./plugins/codexclaw`,
+  name `codexclaw`, plugin `codexclaw`, local source `./plugins/cursorclaw`,
   policy AVAILABLE / ON_INSTALL. This path is one of codex-rs's supported
   `MARKETPLACE_MANIFEST_RELATIVE_PATHS` (also `.claude-plugin/marketplace.json`).
-- Plugin manifest `plugins/codexclaw/.codex-plugin/plugin.json`: name/version
+- Plugin manifest `plugins/cursorclaw/.cursor-plugin/plugin.json`: name/version
   `codexclaw@0.1.0`, MIT, `skills: ./skills/`, **18** hook JSON registrations,
   `mcpServers: ./.mcp.json`, full interface block (displayName, brandColor #D7010F,
   screenshots, defaultPrompt). All referenced paths exist on disk — no dangling refs.
-- Local install confirmed working: `~/.codex/config.toml` has marketplace source →
+- Local install confirmed working: `~/.cursor/config.toml` has marketplace source →
   this repo and `[plugins."codexclaw@codexclaw"]`; cache at
-  `~/.codex/plugins/cache/codexclaw/codexclaw/0.1.0/`.
+  `~/.cursor/plugins/cache/codexclaw/codexclaw/0.1.0/`.
 
 ## Versioning / publish state
 
@@ -33,7 +33,7 @@ Verdict: COMPLETE. Fresh `npm test`: **1,201 passed / 0 failed**.
 | "13 surface-specific routers" | 12 `dev-*` routers + canonical parent `dev` | WRONG |
 | 1,110 tests passing | 1,201 passing (fresh run) | STALE |
 | 8 isolated components | 8 component dirs | OK |
-| Architecture `plugins/codexclaw/cli/` | does not exist; CLI = root `bin/codexclaw.mjs` + root `cli/` + component entrypoints | WRONG |
+| Architecture `plugins/cursorclaw/cli/` | does not exist; CLI = root `bin/codexclaw.mjs` + root `cli/` + component entrypoints | WRONG |
 | Hooks lifecycle list | omits recall + bg-terminal affordance hooks (4 newer) | STALE |
 | Docs badge/section → `pabcd_initiative` | plugin docs site is `lidge-jun.github.io/codexclaw/` (Astro configured, Pages workflow live) | STALE |
 | Logo `docs-site/public/logo.png` | exists, tracked | OK |
@@ -46,7 +46,7 @@ Verdict: COMPLETE. Fresh `npm test`: **1,201 passed / 0 failed**.
   `.gitignore` `dist/` (tracked-before-ignore). Hooks invoke
   `node ${PLUGIN_ROOT}/components/<name>/dist/cli.js` → clean clone works with no
   build step. Root `build.mjs` compiles components only.
-- **Gap:** `plugins/codexclaw/gui/dist` exists locally (7 files) but is untracked →
+- **Gap:** `plugins/cursorclaw/gui/dist` exists locally (7 files) but is untracked →
   clean marketplace install lacks the dashboard; messenger-bridge resolves
   `gui/dist` at runtime and reports "GUI build missing" (`server.ts`).
 
@@ -59,7 +59,7 @@ Verdict: COMPLETE. Fresh `npm test`: **1,201 passed / 0 failed**.
 5. Med — docs branding split: badge/Documentation → pabcd_initiative, while plugin
    manifest homepage + Pages deployment = `/codexclaw/`.
 6. Med — devlog is public (753 tracked files incl. 57 `_plan`) — needs explicit
-   release decision (plugin payload is only `plugins/codexclaw/`, so devlog does not
+   release decision (plugin payload is only `plugins/cursorclaw/`, so devlog does not
    ship to installs; it is a repo-hygiene question, not a payload leak).
 7. Low — no CHANGELOG.
 8. Low — npm publication blocked by design (private); README must not imply npm install.
@@ -68,7 +68,7 @@ Verdict: COMPLETE. Fresh `npm test`: **1,201 passed / 0 failed**.
 
 ## A-phase addendum (main-agent verified 2026-07-23, reviewer Ampere findings)
 
-10. High — CLI outside payload: `plugins/codexclaw/` contains `agents/ assets/
+10. High — CLI outside payload: `plugins/cursorclaw/` contains `agents/ assets/
     components/ gui/ hooks/ scripts/ skills/ test/` — NO `bin/`, NO `cli/`.
     `bin/codexclaw.mjs` and the `cli/` workspace live at REPO ROOT, outside the
     marketplace source. Clean marketplace install → hooks/MCP run (they invoke
@@ -80,8 +80,8 @@ Verdict: COMPLETE. Fresh `npm test`: **1,201 passed / 0 failed**.
     "twelve hooks"; GUI advertised as shipped. All confirmed by rg on 2026-07-23.
 12. Med — rule-ID recount (supersedes the 240 artifact): file-prefix-stripped
     dedup yields **155** unique rule IDs in the dev family. Correct command:
-    `rg -o -N "[A-Z][A-Z0-9]*(-[A-Z0-9]+)+-[0-9]{2}" plugins/codexclaw/skills/dev
-    plugins/codexclaw/skills/dev-* | sed 's/^[^:]*://' | sort -u | wc -l` → 155.
+    `rg -o -N "[A-Z][A-Z0-9]*(-[A-Z0-9]+)+-[0-9]{2}" plugins/cursorclaw/skills/dev
+    plugins/cursorclaw/skills/dev-* | sed 's/^[^:]*://' | sort -u | wc -l` → 155.
     (Unstripped pipe counts file:line duplicates → 240; README's "146" is simply
     old. No substantiation exists for "33 cross-reference pairs" — drop the clause.)
 13. Med — hook metric pinned: **18 active manifest registrations**; 21 JSON files

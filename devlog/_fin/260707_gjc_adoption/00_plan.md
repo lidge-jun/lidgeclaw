@@ -34,9 +34,9 @@ Two parallel gpt-5.5 explorer dispatches (2026-07-07):
    synthesis (per-blocker RCA, cross-blocker conflicts, accept/rebut decisions)
    before re-patching or re-dispatching; synthesis-free re-dispatch counts as a
    failed repair under LOOP-REPAIR-01.
-   Patched: `plugins/codexclaw/skills/pabcd/references/loop-engineering.md` §11.3
-   (canonical), `plugins/codexclaw/skills/pabcd/SKILL.md` (§11 stub + A-phase
-   fold-back sentence), `plugins/codexclaw/skills/loop/SKILL.md` (pointer).
+   Patched: `plugins/cursorclaw/skills/pabcd/references/loop-engineering.md` §11.3
+   (canonical), `plugins/cursorclaw/skills/pabcd/SKILL.md` (§11 stub + A-phase
+   fold-back sentence), `plugins/cursorclaw/skills/loop/SKILL.md` (pointer).
    Lineage: `../jawcode/devlog/_fin/260615_pabcd_synthesis_review_loops/`
    (design-note lineage — NOT production-validated; adopted on reasoning merit).
 2. **DISPATCH-ACTOR-01 / DISPATCH-RETIRE-01** — reuse the same-role agent across
@@ -45,7 +45,7 @@ Two parallel gpt-5.5 explorer dispatches (2026-07-07):
    reviewers; retire failed agent ids after one retry (`close_agent` +
    fresh-spawn with failure summary).
    Patched: `structure/20_pabcd_dispatch_doctrine.md` §3 (normative),
-   `plugins/codexclaw/skills/loop/SKILL.md` (pointer).
+   `plugins/cursorclaw/skills/loop/SKILL.md` (pointer).
    Lineage: `../jawcode/devlog/_fin/260614_subagent_cache_actor_lifecycle/`
    + `../jawcode/devlog/_plan/260616_actor_fresh_fallback/` (implementation-verified).
 

@@ -48,8 +48,8 @@ jobs:
           cache-dependency-path: package-lock.json
       - run: npm ci
       - run: npm test
-      - run: node plugins/codexclaw/scripts/inventory.mjs --check
-      - run: node plugins/codexclaw/scripts/gate.mjs
+      - run: node plugins/cursorclaw/scripts/inventory.mjs --check
+      - run: node plugins/cursorclaw/scripts/gate.mjs
 ```
 
 AFTER - the existing job keeps its shape and gains a shell, the CRLF checkout case, and
@@ -83,20 +83,20 @@ jobs:
           cache-dependency-path: package-lock.json
       - run: npm ci
       - run: npm test
-      - run: node plugins/codexclaw/scripts/inventory.mjs --check
-      - run: node plugins/codexclaw/scripts/gate.mjs
+      - run: node plugins/cursorclaw/scripts/inventory.mjs --check
+      - run: node plugins/cursorclaw/scripts/gate.mjs
       # The suites above are pure-function suites that pass identically on every
       # OS. These four commands are the ones that ACTUALLY execute the spawn
       # ladders, the bench, and the bundle - the surfaces where all 18 audited
       # defects lived (002).
       - name: Platform smoke
-        run: node plugins/codexclaw/scripts/platform-smoke.mjs
+        run: node plugins/cursorclaw/scripts/platform-smoke.mjs
       - name: Upload receipts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: receipts-${{ matrix.os }}-crlf${{ matrix.autocrlf }}
-          path: .codexclaw/evidence/
+          path: .cursorclaw/evidence/
           if-no-files-found: warn
 ```
 
@@ -149,12 +149,12 @@ jobs:
           cd ~/codexclaw-native
           npm ci
           npm test
-          node plugins/codexclaw/scripts/platform-smoke.mjs
+          node plugins/cursorclaw/scripts/platform-smoke.mjs
       - name: No wsl.exe subprocess parsing
         shell: wsl-bash {0}
         run: |
           cd "$(wslpath '${{ github.workspace }}')"
-          ! grep -rn "wsl\.exe\|wslpath" plugins/codexclaw/components plugins/codexclaw/scripts bin cli scripts \
+          ! grep -rn "wsl\.exe\|wslpath" plugins/cursorclaw/components plugins/cursorclaw/scripts bin cli scripts \
             --include="*.ts" --include="*.mjs" --include="*.js" \
             | grep -v "/dist/" | grep -v "/test/"
 ```
@@ -163,7 +163,7 @@ The `wslpath` call in the workflow itself is fine and is not what the grep forbi
 prohibition (001 2.3, enforced by wp07) is on codexclaw SOURCE shelling out to it, because
 of the UTF-16LE stdout hazard. A CI script converting one path is not a runtime code path.
 
-### 3. NEW plugins/codexclaw/scripts/platform-smoke.mjs
+### 3. NEW plugins/cursorclaw/scripts/platform-smoke.mjs
 
 The gap that let 18 defects through a green matrix. This executes the code paths that
 unit tests mock.
@@ -266,7 +266,7 @@ if (failures.length > 0) {
 console.log(`platform smoke OK on ${process.platform}`);
 ```
 
-### 4. MODIFY plugins/codexclaw/scripts/gate.mjs
+### 4. MODIFY plugins/cursorclaw/scripts/gate.mjs
 
 Add one structural rule so this campaign's own convention is machine-checked: a plan unit
 under `devlog/_plan/` whose `000_plan.md` declares N work-phases must have N decade docs,
@@ -278,10 +278,10 @@ hand today.
 
 ```json
   "scripts": {
-    "build": "node plugins/codexclaw/scripts/build.mjs",
-    "gate": "node plugins/codexclaw/scripts/gate.mjs",
-    "smoke": "node plugins/codexclaw/scripts/platform-smoke.mjs",
-    "test": "node --test --test-concurrency=1 \"plugins/codexclaw/components/pabcd-state/test/*.test.ts\" ..."
+    "build": "node plugins/cursorclaw/scripts/build.mjs",
+    "gate": "node plugins/cursorclaw/scripts/gate.mjs",
+    "smoke": "node plugins/cursorclaw/scripts/platform-smoke.mjs",
+    "test": "node --test --test-concurrency=1 \"plugins/cursorclaw/components/pabcd-state/test/*.test.ts\" ..."
   }
 ```
 
@@ -295,7 +295,7 @@ CHECK-BINDING-01 requires a `testReceiptPath` at C>D on goalplan-bound sessions,
 
 1. Every phase doc in this campaign ends with the same receipt line, so each work-phase's
    C>D consumes a receipt from ITS OWN run.
-2. CI uploads `.codexclaw/evidence/` per matrix cell (section 1), so a Windows receipt is
+2. CI uploads `.cursorclaw/evidence/` per matrix cell (section 1), so a Windows receipt is
    downloadable from the run that produced it.
 
 **Known caveat carried from 050 section 6:** `receipt-cli.ts:79` uses `shell: false` by
@@ -311,7 +311,7 @@ That is a documented wrapper, not a code change, and explicitly not a reason to 
 
 ## TESTS
 
-NEW `plugins/codexclaw/test/platform-smoke.test.mjs`
+NEW `plugins/cursorclaw/test/platform-smoke.test.mjs`
 
 1. "every check returns a string or null" - import the check table and assert the
    contract, so a check that throws cannot silently pass.
@@ -334,8 +334,8 @@ Run from the repo root; each must exit 0.
 ```powershell
 npm test
 npm run smoke
-node plugins/codexclaw/scripts/gate.mjs
-node plugins/codexclaw/scripts/inventory.mjs --check
+node plugins/cursorclaw/scripts/gate.mjs
+node plugins/cursorclaw/scripts/inventory.mjs --check
 ```
 
 The CRLF matrix cell, reproduced locally - this is the cell that did not exist before:

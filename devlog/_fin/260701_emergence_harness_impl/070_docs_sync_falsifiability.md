@@ -83,7 +83,7 @@ contract and cannot become a second deceptive proxy.
 ## Verification
 
 - HTML tag-balance check + `git diff --cached --check` (whitespace) after any HTML edit.
-- `node --test --test-concurrency=1 plugins/codexclaw/test/emergence-doc-sync.test.mjs`
+- `node --test --test-concurrency=1 plugins/cursorclaw/test/emergence-doc-sync.test.mjs`
 - `npm run build`; targeted runtime/doc tests; `npm run gate` if the surrounding worktree allows it.
 
 ## PABCD evidence

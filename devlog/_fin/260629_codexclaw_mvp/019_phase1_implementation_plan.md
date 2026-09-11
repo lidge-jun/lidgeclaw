@@ -7,7 +7,7 @@ flags), 022.3 (interview/goal rules), 023 (goal gate). Cite codex-rs + lazycodex
 
 ## Component layout (final for Phase 1)
 ```
-plugins/codexclaw/
+plugins/cursorclaw/
 ├── components/
 │   ├── pabcd-state/        # IPABCD FSM + hooks (UserPromptSubmit, Stop)
 │   │   └── src/{cli.ts, state.ts, fsm.ts, directives.ts, codex-hook.ts}
@@ -29,8 +29,8 @@ plugins/codexclaw/
   - `type Phase = "I"|"P"|"A"|"B"|"C"|"D"`
   - `interface State { phase: Phase; slug: string; updatedAt: string; flags: {interview:boolean; auditPassed:boolean; checkPassed:boolean}; supersededBy: string|null }`
   - `readState(cwd): State`  (missing/corrupt → safe default {phase:"I"...}, never throw)
-  - `writeState(cwd, State): void`  (atomic write to `.codexclaw/sessions/<sessionId>.json`; per-session, see 016)
-  - `appendLedger(cwd, {ts,from,to,reason,evidence}): void` (→ `.codexclaw/ledger.jsonl`)
+  - `writeState(cwd, State): void`  (atomic write to `.cursorclaw/sessions/<sessionId>.json`; per-session, see 016)
+  - `appendLedger(cwd, {ts,from,to,reason,evidence}): void` (→ `.cursorclaw/ledger.jsonl`)
 - Accept: unit tests for default/corrupt/roundtrip; pure where possible.
 
 ### T-022b — FSM predicates  (→ 022.1)

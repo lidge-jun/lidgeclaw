@@ -3,7 +3,7 @@
 Status: DECIDED
 Date: 2026-07-07
 Related goalplan:
-`.codexclaw/goalplans/codexclaw-messenger-bridge-telegram-discord-diff/goalplan.json`
+`.cursorclaw/goalplans/codexclaw-messenger-bridge-telegram-discord-diff/goalplan.json`
 
 ## Question
 

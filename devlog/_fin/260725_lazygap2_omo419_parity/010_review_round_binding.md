@@ -5,7 +5,7 @@
 ## 문제
 
 A→B는 리뷰어 출력 문자열과 메인 판단만 요구한다
-(`plugins/codexclaw/components/pabcd-state/src/attest.ts:170-189` — WP10 P 실측 정정,
+(`plugins/cursorclaw/components/pabcd-state/src/attest.ts:170-189` — WP10 P 실측 정정,
 초안의 `:148-190`은 `from/to` 검증과 `did` 검사까지 포함한 범위였다). 그래서 다음이
 통과한다:
 
@@ -20,10 +20,10 @@ A→B는 리뷰어 출력 문자열과 메인 판단만 요구한다
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts` | 타입 추가 (`ReviewRoundState`, `ReviewLane`) |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts` | 타입 추가 (`ReviewRoundState`, `ReviewLane`) |
 | 위 파일의 `reviveGoalplan` (`:100-158`) | **필수** — 미지 필드를 버리므로 revive 분기와 반환 객체를 함께 확장 |
-| `plugins/codexclaw/components/pabcd-state/src/review-round.ts` | 신규 — 라운드 수명 관리 |
-| `plugins/codexclaw/components/pabcd-state/test/review-round.test.ts` | 신규 테스트 |
+| `plugins/cursorclaw/components/pabcd-state/src/review-round.ts` | 신규 — 라운드 수명 관리 |
+| `plugins/cursorclaw/components/pabcd-state/test/review-round.test.ts` | 신규 테스트 |
 
 **후속 조각으로 미룬 파일** (이 슬라이스에서 건드리지 않는다):
 `src/attest.ts`(`A>B` 검증 확장, `:170-189` 블록), `src/orchestrate-cli.ts`
@@ -53,7 +53,7 @@ A→B는 리뷰어 출력 문자열과 메인 판단만 요구한다
 ### `goalplan.ts` — 타입 추가
 
 before: `Goalplan`에 리뷰 관련 필드가 없다
-(`plugins/codexclaw/components/pabcd-state/src/goalplan.ts:63-73` — WP10 P 실측 정정).
+(`plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:63-73` — WP10 P 실측 정정).
 
 **WP10 P 실측 — `reviveGoalplan`이 미지 필드를 조용히 버린다.** `goalplan.ts:148-158`의
 반환 객체는 알려진 8개 필드를 **명시적으로 나열**한다. 즉 `reviewRounds`를 타입에만
@@ -215,7 +215,7 @@ ghost 커서를 목록에서 복구하는 것과 같은 방침이다.
 
 ### `attest.ts` — `A>B` 확장
 
-before (`plugins/codexclaw/components/pabcd-state/src/attest.ts:148-190`): `did` 비어있지 않음, `auditOutput` 비어있지 않음,
+before (`plugins/cursorclaw/components/pabcd-state/src/attest.ts:148-190`): `did` 비어있지 않음, `auditOutput` 비어있지 않음,
 `auditVerdict ∈ {pass, near-pass, fail}`, `fail`은 전진 불가, 붙여넣은 꼬리의 FAIL 감지.
 
 after: 위를 모두 유지하고, **goalplan이 결박된 세션에서만** 추가로 요구한다.
@@ -276,8 +276,8 @@ attest 게이트 케이스(`in_flight`로 A>B 거부, verdict 불일치 거부, 
   ```
   npx tsc --noEmit --allowImportingTsExtensions --module nodenext --target es2022 \
     --moduleResolution nodenext --strict \
-    plugins/codexclaw/components/pabcd-state/src/review-round.ts \
-    plugins/codexclaw/components/pabcd-state/test/review-round.test.ts
+    plugins/cursorclaw/components/pabcd-state/src/review-round.ts \
+    plugins/cursorclaw/components/pabcd-state/test/review-round.test.ts
   ```
 
   `goalplan.ts`는 이 명령에 넣지 않는다 — `--strict`로 돌리면 기존 파일들의 `TS2352`

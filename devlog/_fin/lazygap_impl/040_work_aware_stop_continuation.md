@@ -60,7 +60,7 @@ export function buildStopBlock(phase: Phase, work?: StopWorkContext | null): str
   const label = STAGE_LABELS[phase] ?? phase;
   const nextCommand = STOP_NEXT_COMMAND[phase] ?? "`cxc orchestrate status`";
   const lines = [
-    `[codexclaw — continue PABCD] You are mid-cycle at ${phase} (${label}) with an active goal.`,
+    `[cursorclaw — continue PABCD] You are mid-cycle at ${phase} (${label}) with an active goal.`,
     "Do the real work of this phase, then self-advance with the concrete next command:",
     nextCommand,
   ];
@@ -104,7 +104,7 @@ export function readStopWorkContext(cwd: string, state: State): StopWorkContext 
   return {
     nextTaskTitle: next ? `${next.wp.title} → ${next.task.title}` : null,
     expectedEvidence: unmet[0]?.expectedEvidence ?? null,
-    ledgerPath: next || unmet.length ? `.codexclaw/goalplans/${slug}/ledger.jsonl` : null,
+    ledgerPath: next || unmet.length ? `.cursorclaw/goalplans/${slug}/ledger.jsonl` : null,
   };
 }
 ```
@@ -150,9 +150,9 @@ key is the per-session `state.slug`. So 040 folds the minimal 030.3: `cxc goalpl
 
 ## Verification
 
-- `node --test plugins/codexclaw/components/pabcd-state/test/hook.test.*` (Stop guard suite stays green)
+- `node --test plugins/cursorclaw/components/pabcd-state/test/hook.test.*` (Stop guard suite stays green)
 - add a `readStopWorkContext` unit test (goalplan present → enriched; absent/no-slug → null)
-- extend `plugins/codexclaw/test/hook-e2e.test.mjs` Stop case: with a seeded goalplan, the block
+- extend `plugins/cursorclaw/test/hook-e2e.test.mjs` Stop case: with a seeded goalplan, the block
   reason names the next task; without one, the reason is unchanged.
 - `npm run build` (idempotent) ; `npm test` (full suite green) ; `npm run gate` ; `git diff --check`.
 

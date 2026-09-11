@@ -19,7 +19,7 @@
 
 | 단계 | 방법 | 적용 | 범위 |
 |---|---|---|---|
-| 1 | `cxc bg off` → `.codexclaw/bg/disabled` | 다음 훅 실행부터 즉시 | 그 cwd만 |
+| 1 | `cxc bg off` → `.cursorclaw/bg/disabled` | 다음 훅 실행부터 즉시 | 그 cwd만 |
 | 1b | `CXC_BGWAKE=0` export | 새로 시작하는 세션부터 | 전역 |
 | 2 | 매니페스트에서 bg-wake 훅 3줄 + 훅 파일 3개 제거 | 재설치 후 | 전역 |
 | 3 | 컴포넌트 제거 (체크리스트) | 재설치 후 | 전역 |
@@ -32,14 +32,14 @@
 
 감사가 실제로 센 접점이다. "디렉터리만 지우면 끝"은 거짓이므로 그렇게 적지 않는다.
 
-1. `plugins/codexclaw/components/bg-wake/` 디렉터리
-2. `plugins/codexclaw/hooks/`의 bg-wake 훅 파일 3개
-3. `plugins/codexclaw/.codex-plugin/plugin.json` `hooks[]` 3줄
-4. `plugins/codexclaw/scripts/build.mjs` `COMPONENTS` 1줄
+1. `plugins/cursorclaw/components/bg-wake/` 디렉터리
+2. `plugins/cursorclaw/hooks/`의 bg-wake 훅 파일 3개
+3. `plugins/cursorclaw/.cursor-plugin/plugin.json` `hooks[]` 3줄
+4. `plugins/cursorclaw/scripts/build.mjs` `COMPONENTS` 1줄
 5. `package.json` test glob 1줄
-6. `plugins/codexclaw/bin/cxc.mjs` `COMMAND_TABLE`의 `bg` 1줄 + HELP 문자열(`:67`), `bin/codexclaw.mjs` case + HELP(`:249`), `plugins/codexclaw/test/payload-bin.test.mjs` 기대값
+6. `plugins/cursorclaw/bin/cursorclaw.mjs` `COMMAND_TABLE`의 `bg` 1줄 + HELP 문자열(`:67`), `bin/codexclaw.mjs` case + HELP(`:249`), `plugins/cursorclaw/test/payload-bin.test.mjs` 기대값
 7. `package-lock.json`의 `@codexclaw/bg-wake` 워크스페이스 항목 — `npm install`로 재생성
-8. `node plugins/codexclaw/scripts/inventory.mjs --write` 재실행. 훅 뱃지는 `README.md`, `README.ko.md`, `README.zh.md` **세 파일**에 있고 inventory가 셋을 함께 비교한다(`scripts/inventory.mjs:203-205,248-255,360-370`). 손으로 고치지 말고 반드시 `--write`로 돌린다.
+8. `node plugins/cursorclaw/scripts/inventory.mjs --write` 재실행. 훅 뱃지는 `README.md`, `README.ko.md`, `README.zh.md` **세 파일**에 있고 inventory가 셋을 함께 비교한다(`scripts/inventory.mjs:203-205,248-255,360-370`). 손으로 고치지 말고 반드시 `--write`로 돌린다.
 
 `packaging.test.mjs`의 ENTRYPOINTS와 `build.test.mjs`의 COMPONENTS는 **부분 목록이다.** skill-search가 둘 다에 없는 선례가 있으므로 bg-wake도 넣지 않는다. 접점이 그만큼 줄어든다.
 
@@ -53,7 +53,7 @@
 
 ## 데이터 모델
 
-`<cwd>/.codexclaw/bg/` 아래. `<taskId>.json`, `<taskId>.out`, `ledger.jsonl`, off 플래그 `disabled`.
+`<cwd>/.cursorclaw/bg/` 아래. `<taskId>.json`, `<taskId>.out`, `ledger.jsonl`, off 플래그 `disabled`.
 
 | 필드 | 뜻 |
 |---|---|
@@ -100,7 +100,7 @@
 
 **서브에이전트 한계.** 루트 Stop만 이 훅을 돌리고 스폰된 자식은 SubagentStop이다(`core/src/hook_runtime.rs:383-387`). 자식이 `CODEX_THREAD_ID`로 등록하면 부모 Stop과 id가 어긋난다. SessionStart 인수가 일부 구제하지만, **`cxc bg run`은 메인 세션에서 쓰는 것을 전제로 문서화한다.**
 
-**reset 접점.** `.codexclaw/bg/`는 `cxc reset --state`로 지워지지 않고 `reset all`에서만 사라진다(`components/cxc-ops/src/reset.ts:5-11`). reset.ts를 수정하지 않는다. 대신 `cxc bg`에 자체 정리 명령을 두고 이 동작을 문서에 적는다.
+**reset 접점.** `.cursorclaw/bg/`는 `cxc reset --state`로 지워지지 않고 `reset all`에서만 사라진다(`components/cxc-ops/src/reset.ts:5-11`). reset.ts를 수정하지 않는다. 대신 `cxc bg`에 자체 정리 명령을 두고 이 동작을 문서에 적는다.
 
 **허용 손실.** `deliveredAt`을 찍은 뒤 JSON 실패, 빈 reason, 또는 continuation 없는 block으로 Codex가 무시하면(`core/src/session/turn.rs:588-593`) 그 완료는 유실된다. 무한 block을 막는 대가다. 검증 계획에 명시적으로 넣는다.
 압축 직후에도 `deliveredAt`이 이미 찍힌 완료 본문은 재주입되지 않는다. 미전달분만 SessionStart가 살린다.

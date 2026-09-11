@@ -30,7 +30,7 @@ track sequences it into shippable phases.
 ## Constraints (LOCKED — inherited from philosophy + the patch plan non-goals)
 
 - No server / daemon / background population manager (no-server philosophy).
-- No goal-DB writes; all new state is project-local under `.codexclaw/`.
+- No goal-DB writes; all new state is project-local under `.cursorclaw/`.
 - No vendored evolutionary framework; the candidate archive = files + ledger.
 - No new subagent roles; divergence travels as skills + ledger via the 3 base roles.
 - No auto-verification of a remote judge score (operator-entered; a hook cannot read it).
@@ -69,11 +69,11 @@ This folder is complete and may move from `_plan` to `_fin` only when these gate
   - `573d7c3` — divergence archive and loop doctrine.
   - `98c47c2` — divergence doctrine applied to HITL PABCD.
   - `b811423` — collapse-point/falsifiability docs reconciliation.
-- Runtime files are present under `plugins/codexclaw/components/pabcd-state/src/metrics.ts`,
-  `plugins/codexclaw/components/pabcd-state/src/divergence.ts`,
-  `plugins/codexclaw/components/pabcd-state/src/hook.ts`, `bin/codexclaw.mjs`, and the loop/PABCD/search skills.
-- The implemented behavior is reflected in `structure/50_emergence_gap.md`, `plugins/codexclaw/skills/loop/SKILL.md`,
-  and `plugins/codexclaw/skills/pabcd/SKILL.md`.
+- Runtime files are present under `plugins/cursorclaw/components/pabcd-state/src/metrics.ts`,
+  `plugins/cursorclaw/components/pabcd-state/src/divergence.ts`,
+  `plugins/cursorclaw/components/pabcd-state/src/hook.ts`, `bin/codexclaw.mjs`, and the loop/PABCD/search skills.
+- The implemented behavior is reflected in `structure/50_emergence_gap.md`, `plugins/cursorclaw/skills/loop/SKILL.md`,
+  and `plugins/cursorclaw/skills/pabcd/SKILL.md`.
 - The active worktree was clean before this archival pass, and all rows in this folder are DONE.
 
 ## The one honest runtime lever

@@ -18,7 +18,7 @@ own trigger, and the rejections are recorded below with the numbers that caused 
 | Defender real-time protection | enabled (elevation unavailable; see Defender section) |
 | WSL distro | Ubuntu, kernel 6.6.114.1-microsoft-standard-WSL2, node v22.14.0 |
 | iterations | 25 per hook per run (cold excluded from warm percentiles) |
-| bench | `plugins/codexclaw/scripts/hook-bench.mjs --iterations 25 --json` |
+| bench | `plugins/cursorclaw/scripts/hook-bench.mjs --iterations 25 --json` |
 
 Spawn floor (bare `node -e ""`, 25 samples), the number every hook cost is measured against:
 
@@ -184,12 +184,12 @@ checkout on ext4.
 
 | file | change |
 | --- | --- |
-| `plugins/codexclaw/scripts/hook-bench.mjs` | 090 section 1a/1b: `platform`/`release`/`nodeVersion`/`command`, cold-vs-warm split, `spawnFloorMs`, `aboveFloorMs` (unclamped) |
-| `plugins/codexclaw/scripts/hook-bench-compare.mjs` | NEW - 090 section 2: per-hook diff on `aboveFloorMs`, exit 1 on regression past threshold or on a hook missing from the after report |
-| `plugins/codexclaw/test/hook-bench-report.test.mjs` | NEW - 090 TESTS 1-4 plus a spawn-floor sanity check |
-| `plugins/codexclaw/test/hook-bench-compare.test.mjs` | NEW - 090 TESTS 5-9 |
-| `plugins/codexclaw/components/pabcd-state/src/cli.ts` | trim 4c: ten terminal-only verb imports deferred to `await import()`; `main()` is async |
-| `plugins/codexclaw/components/pabcd-state/dist/*` | rebuilt |
+| `plugins/cursorclaw/scripts/hook-bench.mjs` | 090 section 1a/1b: `platform`/`release`/`nodeVersion`/`command`, cold-vs-warm split, `spawnFloorMs`, `aboveFloorMs` (unclamped) |
+| `plugins/cursorclaw/scripts/hook-bench-compare.mjs` | NEW - 090 section 2: per-hook diff on `aboveFloorMs`, exit 1 on regression past threshold or on a hook missing from the after report |
+| `plugins/cursorclaw/test/hook-bench-report.test.mjs` | NEW - 090 TESTS 1-4 plus a spawn-floor sanity check |
+| `plugins/cursorclaw/test/hook-bench-compare.test.mjs` | NEW - 090 TESTS 5-9 |
+| `plugins/cursorclaw/components/pabcd-state/src/cli.ts` | trim 4c: ten terminal-only verb imports deferred to `await import()`; `main()` is async |
+| `plugins/cursorclaw/components/pabcd-state/dist/*` | rebuilt |
 | `devlog/.../bench-baseline.json` | recorded 25-iteration win32 baseline |
 
 ## Verification

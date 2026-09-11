@@ -4,7 +4,7 @@ Status: planned. Depends on wp0 roadmap lock. Class C3; skill-first, no runtime 
 
 ## Exact scope
 
-NEW dev/references/peer-collaboration.md; MODIFY dev/search/pabcd/loop SKILL.md, dev/references/skill-ownership.md, structure/20_pabcd_dispatch_doctrine.md and structure/60_native_capabilities.md. All skill paths are under plugins/codexclaw/skills. Complete patch below. No metadata, hooks, global config, installed cache or other worktrees change.
+NEW dev/references/peer-collaboration.md; MODIFY dev/search/pabcd/loop SKILL.md, dev/references/skill-ownership.md, structure/20_pabcd_dispatch_doctrine.md and structure/60_native_capabilities.md. All skill paths are under plugins/cursorclaw/skills. Complete patch below. No metadata, hooks, global config, installed cache or other worktrees change.
 
 ## Execution and verification
 
@@ -18,7 +18,7 @@ Unknown stop eligibility means read only and continue independent work. No runti
 
 ```diff
 *** Begin Patch
-*** Add File: /Users/jun/.codex/worktrees/105d/codexclaw/plugins/codexclaw/skills/dev/references/peer-collaboration.md
+*** Add File: /Users/jun/.codex/worktrees/105d/codexclaw/plugins/cursorclaw/skills/dev/references/peer-collaboration.md
 +# Independent peer collaboration
 +
 +Use an existing task's living context when it could change a decision, resolve a
@@ -147,7 +147,7 @@ Unknown stop eligibility means read only and continue independent work. No runti
 +Add runtime machinery only after useful collaboration is established and a concrete
 +activation, delivery, or recovery gap justifies it. CI/merge is one domain example,
 +not the organizing model for all peers.
-*** Update File: /Users/jun/.codex/worktrees/105d/codexclaw/plugins/codexclaw/skills/dev/SKILL.md
+*** Update File: /Users/jun/.codex/worktrees/105d/codexclaw/plugins/cursorclaw/skills/dev/SKILL.md
 @@
  ### Capability Routing Hub
 +
@@ -156,7 +156,7 @@ Unknown stop eligibility means read only and continue independent work. No runti
 +task, read [peer collaboration](references/peer-collaboration.md): discover and
 +read selectively, consult or notify only for a concrete reason, and preserve each
 +task's user authority. No mandatory lookup for trivial work or per-turn polling.
-*** Update File: /Users/jun/.codex/worktrees/105d/codexclaw/plugins/codexclaw/skills/search/SKILL.md
+*** Update File: /Users/jun/.codex/worktrees/105d/codexclaw/plugins/cursorclaw/skills/search/SKILL.md
 @@
  ## Divergence Candidate Grounding
 +
@@ -164,7 +164,7 @@ Unknown stop eligibility means read only and continue independent work. No runti
 +use [peer collaboration](../dev/references/peer-collaboration.md) for selective
 +discovery and consultation. This does not activate a Tier-3 swarm; peer reports are
 +leads, not primary-source proof or independent corroboration.
-*** Update File: /Users/jun/.codex/worktrees/105d/codexclaw/plugins/codexclaw/skills/pabcd/SKILL.md
+*** Update File: /Users/jun/.codex/worktrees/105d/codexclaw/plugins/cursorclaw/skills/pabcd/SKILL.md
 @@
  ## Delegation Model (subagents)
 +
@@ -172,7 +172,7 @@ Unknown stop eligibility means read only and continue independent work. No runti
 +For context, contract negotiation, or material cross-task findings, follow
 +[peer collaboration](../dev/references/peer-collaboration.md). Each peer retains
 +its own goal, plan and phase authority; a peer message never advances either FSM.
-*** Update File: /Users/jun/.codex/worktrees/105d/codexclaw/plugins/codexclaw/skills/loop/SKILL.md
+*** Update File: /Users/jun/.codex/worktrees/105d/codexclaw/plugins/cursorclaw/skills/loop/SKILL.md
 @@
  ## Orchestrate mandate (ORCH-MANDATE-01, STRICT)
 +
@@ -186,7 +186,7 @@ Unknown stop eligibility means read only and continue independent work. No runti
 +The continuation/dispatch rules below concern this goal's own work and delegated
 +subagents, not independent peer advice. Peer timeouts do not authorize retirement,
 +replacement, forced wakeups, or an unconditional wait; use the peer contract above.
-*** Update File: /Users/jun/.codex/worktrees/105d/codexclaw/plugins/codexclaw/skills/dev/references/skill-ownership.md
+*** Update File: /Users/jun/.codex/worktrees/105d/codexclaw/plugins/cursorclaw/skills/dev/references/skill-ownership.md
 @@
  | Pre-write search | `dev` §1.5 | `dev-code-reviewer` |
 +| Independent peer collaboration | `dev/references/peer-collaboration.md` | `dev`, `search`, `pabcd`, `loop`, structure 20/60 |
@@ -197,7 +197,7 @@ Unknown stop eligibility means read only and continue independent work. No runti
 +The main/child rules below govern delegated subagents. Independent user-owned tasks
 +are peers, not additional employees of this main session. Their selective discovery,
 +consultation, notification and wake boundaries live in the canonical
-+[peer collaboration reference](../plugins/codexclaw/skills/dev/references/peer-collaboration.md).
++[peer collaboration reference](../plugins/cursorclaw/skills/dev/references/peer-collaboration.md).
 +They retain separate user instructions, goals and FSMs; this adds no team manager.
 *** Update File: /Users/jun/.codex/worktrees/105d/codexclaw/structure/60_native_capabilities.md
 @@
@@ -205,7 +205,7 @@ Unknown stop eligibility means read only and continue independent work. No runti
 +## 2.1 Independent Desktop tasks (2026-09-05 observation)
 +
 +These are existing user-owned tasks, not the V1/V2 child address space.
-+Canonical behavior: [peer collaboration](../plugins/codexclaw/skills/dev/references/peer-collaboration.md).
++Canonical behavior: [peer collaboration](../plugins/cursorclaw/skills/dev/references/peer-collaboration.md).
 +The current host catalog is authoritative; absence is a supported condition.
 +
 +| Exposed tool | Purpose | Boundary |

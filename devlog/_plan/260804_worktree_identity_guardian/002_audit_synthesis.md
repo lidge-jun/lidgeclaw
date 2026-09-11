@@ -42,7 +42,7 @@ are documented in the skill as accepted defense-in-depth limits.
 
 ## B6 (High) — custom worktree root not detected → ACCEPT (scope narrowing)
 RCA: app settings are closed-source; no verified readable source for a custom root.
-FOLD: detection = default `$CODEX_HOME/worktrees` + `CODEX_HOME` override + new
+FOLD: detection = default `$CURSOR_HOME/worktrees` + `CURSOR_HOME` override + new
 `CODEXCLAW_WORKTREE_ROOTS` env (path.delimiter-separated extra roots — round-2
 correction: `:` breaks Windows drive letters). Feature claims and injection wording
 narrowed to "default root + configured extra roots"; skill documents the limitation
@@ -70,7 +70,7 @@ feature detection (`git worktree move -h`) instead of version arithmetic.
 
 ## FQ6 (advisory) — rename-intent false positives / repeat injection → PARTIAL ACCEPT
 FOLD: rename guidance injects once per session (marker
-`.codexclaw/worktree-guard/<session>.json`). Negation/meta-discussion false
+`.cursorclaw/worktree-guard/<session>.json`). Negation/meta-discussion false
 positives are ACCEPTED as advisory-only residual (injection is guidance, not a
 gate) — documented in 010.
 

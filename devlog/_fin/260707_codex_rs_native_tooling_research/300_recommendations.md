@@ -5,7 +5,7 @@
 Current state:
 
 - Codex-rs exposes an extension contributor registry with `ToolContributor`, `ToolLifecycleContributor`, `ContextContributor`, `TurnLifecycleContributor`, `TurnInputContributor`, `McpServerContributor`, and `ApprovalReviewContributor`.
-- Codexclaw currently attaches skills/subagent routing through plugin hooks, message mentions, MCP/CLI surfaces, and `.codexclaw` files.
+- Codexclaw currently attaches skills/subagent routing through plugin hooks, message mentions, MCP/CLI surfaces, and `.cursorclaw` files.
 
 Recommendation:
 
@@ -43,7 +43,7 @@ Acceptance evidence:
 
 Current state:
 
-- Codexclaw has `.codexclaw/ledger.jsonl`, goalplans, divergence candidates, metric rows, and render observation ledgers.
+- Codexclaw has `.cursorclaw/ledger.jsonl`, goalplans, divergence candidates, metric rows, and render observation ledgers.
 - OMX docs define a stronger Rust-owned model: commands, events, snapshots, authority, backlog, replay, readiness, and worker lifecycle (`runtime-command-event-snapshot-schema.md:1-42`, `rust-runtime-thin-adapter-contract.md:3-18`).
 
 Recommendation:
@@ -54,7 +54,7 @@ Recommendation:
 
 Acceptance evidence:
 
-- Existing `.codexclaw/ledger.jsonl` remains readable.
+- Existing `.cursorclaw/ledger.jsonl` remains readable.
 - New docs state which events are semantic truth versus compatibility views.
 - No watcher-derived state becomes authoritative.
 
@@ -135,7 +135,7 @@ Why:
 ## Next Experiments
 
 1. `subagent-native-attachment-spike`: prove whether `SubagentStart` can inject enough context to replace message-prefix skill mentions.
-2. `event-ledger-vocabulary`: write a docs-only event schema mapping current `.codexclaw` ledgers to semantic events.
+2. `event-ledger-vocabulary`: write a docs-only event schema mapping current `.cursorclaw` ledgers to semantic events.
 3. `native-goal-extension-survey`: inspect `ext/goal` deeply and compare with Codexclaw goalplan schema.
 4. `source-proof-web-search-spike`: compare `agbrowse` evidence envelope with Codex-rs `ext/web-search` output.
 5. `unknowns-template-pilot`: apply the unknowns/deviation/objection pattern to one future C3 unit and measure whether A/C review catches more real blockers.

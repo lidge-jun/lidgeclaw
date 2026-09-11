@@ -96,7 +96,7 @@ test("compiled pabcd-state natural I hint emits advice and dedup without phase e
     });
     const res = spawnSync("node", [cli, "hook", "user-prompt-submit"], {
       input: payload, encoding: "utf8",
-      env: { ...process.env, CODEX_HOME: home, CODEX_SQLITE_HOME: home },
+      env: { ...process.env, CURSOR_HOME: home, CODEX_SQLITE_HOME: home },
     });
     assert.equal(res.status, 0, res.stderr);
     const ctx = JSON.parse(res.stdout).hookSpecificOutput.additionalContext;

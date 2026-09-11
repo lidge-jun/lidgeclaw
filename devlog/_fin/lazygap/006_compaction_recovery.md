@@ -9,7 +9,7 @@ Gap class: HARNESS (one real add, rest non-goal) · evidence: explorer Beauvoir
 
 | omo 실측 | codexclaw 실측 | 격차 | jaw식 보강 |
 | --- | --- | --- | --- |
-| `rules/hooks/hooks.json:40-52` + `rules/src/post-compact-directive.ts:3-39` + `lsp/...:106-109` + `git-bash/...:83-87` (3 PostCompact hooks: rule cache reset, LSP probe reset, reminder reset) | no PostCompact in `plugin.json:20-27`; only UserPromptSubmit re-inject (`hook.ts:156-176,265-303`) | omo recovers right after compaction; codexclaw waits for the next prompt | one `PostCompact` hook that resets the `.codexclaw/sessions` re-inject flag / ledger cursor and re-points the agent at local state files |
+| `rules/hooks/hooks.json:40-52` + `rules/src/post-compact-directive.ts:3-39` + `lsp/...:106-109` + `git-bash/...:83-87` (3 PostCompact hooks: rule cache reset, LSP probe reset, reminder reset) | no PostCompact in `plugin.json:20-27`; only UserPromptSubmit re-inject (`hook.ts:156-176,265-303`) | omo recovers right after compaction; codexclaw waits for the next prompt | one `PostCompact` hook that resets the `.cursorclaw/sessions` re-inject flag / ledger cursor and re-points the agent at local state files |
 | `telemetry/...` + `bootstrap/...` + `session-start-checking-auto-update.json` (SessionStart telemetry + bootstrap spawn + auto-update) | `session-start-ensuring-provider-bridge.json` + `provider-bridge/src/detect.ts` (detect-only, no ensure/sync, no config write) | omo auto-provisions/updates; codexclaw is detect-only by design | keep detect-only; at most strengthen the `doctor`/status line |
 
 ## Reinforcement shape (no-server)
@@ -49,7 +49,7 @@ Evidence: 2 explorers reading `cli-jaw/src/memory/*` + `src/prompt/builder.ts`.
 | Memory Flush — every N responses a separate spawn extracts to `episodes/*.md` (`memory-flush-controller.ts:85`) | NO — needs a response-loop + extractor spawn the hook layer can't drive |
 | Advanced Prompt Injection — Profile/Soul/Task-Snapshot into the system prompt (`injection.ts:19`) | NO — a plugin doesn't own the system prompt; cli-jaw is the orchestrator that assembles it |
 | Task Snapshot — index-search the prompt, inject <=4 hits (`builder.ts:536`) | PARTIAL — a local FTS5 index built/queried by CLI could inject via the hook |
-| Core Memory — static `MEMORY.md` + session memory injected (`builder.ts:423`) | YES — read a static `.codexclaw/` md and inject; genuinely server-free |
+| Core Memory — static `MEMORY.md` + session memory injected (`builder.ts:423`) | YES — read a static `.cursorclaw/` md and inject; genuinely server-free |
 | Indexing FTS5 / embedding / HTTP `/api/memory/*` / dashboard federation | NO — server, multi-instance sync, background catchall |
 
 ### Verdict
@@ -58,7 +58,7 @@ The memory non-goal is honest — most is structurally impossible for a single n
 plugin. Three items are genuinely no-server *candidates* (not commitments), and all overlap
 the PostCompact recovery above + the deferred external OS scheduler (`mvp_res/290`):
 1. transcript-tail History Block via `UserPromptSubmit` (Codex already passes the path);
-2. static `.codexclaw/` Core Memory md injection;
+2. static `.cursorclaw/` Core Memory md injection;
 3. local FTS5 index built/queried by CLI for a Task-Snapshot-style inject.
 
 No new commitment — the PostCompact hook above is the only memory-adjacent add this track

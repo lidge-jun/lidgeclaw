@@ -5,7 +5,7 @@ Date: 2026-09-06. Documentation only; no runtime/config/Interview changes.
 ## Independent review
 
 A reviewer Euclid (Grok-4.6) read the plan, source gates, cache evidence and existing
-owners; ran `node plugins/codexclaw/scripts/gate.mjs` with exit 0; returned
+owners; ran `node plugins/cursorclaw/scripts/gate.mjs` with exit 0; returned
 `No High/Critical plan blockers. VERDICT: PASS`.
 Earlier reviewer Hegel was retired after repeated bounded waits without a verdict;
 its in-progress work was not counted as a passed audit.
@@ -33,7 +33,7 @@ reviewer, and this exercise does not measure success rates or actual UI reply de
 
 ## Direct checks
 
-- `node plugins/codexclaw/scripts/gate.mjs` → exit 0, `[codexclaw gate] OK`.
+- `node plugins/cursorclaw/scripts/gate.mjs` → exit 0, `[cursorclaw gate] OK`.
   It reads SKILL.md, nested reference markdown and structure markdown (lines 147-170).
 - `git diff --check` → exit 0.
 - Direct Python link check → all four newly introduced Markdown links resolve:

@@ -32,7 +32,7 @@
 기존 `devlog/_plan` → `_fin` 관례를 사용한다. source-of-truth는 `structure/INDEX.md`, `structure/00_philosophy.md`, `structure/20_pabcd_dispatch_doctrine.md`다. 이번에는 정책 자체를 바꾸지 않으므로 해당 SoT도 수정하지 않는다.
 
 ```text
-plugins/codexclaw/skills/  읽기 전용 조사 대상
+plugins/cursorclaw/skills/  읽기 전용 조사 대상
   dev/ + dev-*/           13개 router와 참조 목록
   pabcd/ loop/ search/    교차 규칙
 devlog/_plan/260905_dev_skill_audit/
@@ -49,10 +49,10 @@ devlog/_plan/260905_dev_skill_audit/
 
 ## P 단계에서 실행한 검증
 
-- `node --input-type=module -e '...fs.readdirSync("plugins/codexclaw/skills").../^dev($|-)/...'`: exit 0. router 이름·SKILL 길이·전체 파일 수를 직접 읽었다. 인벤토리 누락 검출용이지 문장의 타당성 증명은 아니다.
+- `node --input-type=module -e '...fs.readdirSync("plugins/cursorclaw/skills").../^dev($|-)/...'`: exit 0. router 이름·SKILL 길이·전체 파일 수를 직접 읽었다. 인벤토리 누락 검출용이지 문장의 타당성 증명은 아니다.
 - `git diff --check`: exit 0. whitespace만 확인한다. 의미 검증은 하지 않는다.
-- `cxc map plugins/codexclaw/skills`: exit 0. Python/JS helper 중심 맵이며 Markdown 규칙을 대신 읽어주지 않는다.
-- `python3 plugins/codexclaw/skills/search/scripts/agbrowse_helper.py doctor`: exit 0, `/Users/jun/.local/bin/agbrowse` 확인.
+- `cxc map plugins/cursorclaw/skills`: exit 0. Python/JS helper 중심 맵이며 Markdown 규칙을 대신 읽어주지 않는다.
+- `python3 plugins/cursorclaw/skills/search/scripts/agbrowse_helper.py doctor`: exit 0, `/Users/jun/.local/bin/agbrowse` 확인.
 - `aside --version`: exit 0, `1.26.902.1732`. 로그인 상태나 API 성공까지 증명하지는 않는다.
 - `cxc receipt test --help`: 지원하지 않는 인자로 거절됨. 실행 계약은 실제 CLI 소스에서 확인 후 사용한다.
 

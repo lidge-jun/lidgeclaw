@@ -2,7 +2,7 @@
 created: 2026-08-15
 status: design
 workPhase: wp7
-tags: [codexclaw, source-receipt, c-to-d]
+tags: [cursorclaw, source-receipt, c-to-d]
 ---
 
 # 070 — C>D exitCode 필수화
@@ -37,7 +37,7 @@ assert.equal(validateAttest("C","D",{...base, checkOutput:"77 pass"}).ok, true);
 ```
 
 `source-receipt.ts`의 `parseSourceBoundReceipt(path, expectedKind)`는
-`.codexclaw/evidence` 안, symlink 아님, realpath도 안쪽, 정규 파일, 비어있지 않음
+`.cursorclaw/evidence` 안, symlink 아님, realpath도 안쪽, 정규 파일, 비어있지 않음
 다섯 가지를 `hasValidReceipt`에 위임해 검사하고, `SourceBoundReceipt`에
 `kind`/`sourceIdentity`/`command`/`exitCode`/`createdAt`를 담는다.
 
@@ -66,10 +66,10 @@ C>D에서 exitCode를 필수로 만든다. 없으면 거부한다.
    지금 판정은 identity만 비교하므로 **또 하나의 의식적 게이트**가 된다.
 3. 채팅 C>D는 `validateAttest`를 아예 타지 않으므로(`orchestrate-apply.ts:93`)
    exitCode 필수화만으로는 채팅에 아무 영향이 없다.
-4. producer가 identity 캡처 후 `.codexclaw/evidence`에 쓰면 트리가 달라진다 —
+4. producer가 identity 캡처 후 `.cursorclaw/evidence`에 쓰면 트리가 달라진다 —
    050에서 이미 겪은 자기오염 문제다.
 
-기존 `.codexclaw/evidence` 파일 216개도 대체물이 아니다. 구조화 receipt를
+기존 `.cursorclaw/evidence` 파일 216개도 대체물이 아니다. 구조화 receipt를
 발급하는 표면은 QA validator뿐이고 `kind:"qa"`를 쓰며, parser가 QA receipt로
 test 슬롯을 채우는 것을 명시적으로 거부한다(`source-receipt.test.ts:46`).
 

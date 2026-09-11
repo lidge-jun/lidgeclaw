@@ -28,7 +28,7 @@ remain in [the pre-cleanup tree](https://github.com/lidge-jun/codexclaw/tree/6ec
   reviewer (`.omo/evidence/cluster1-plan-audit-code-review.md`, verdict FAIL→fixed).
   - B (doc hardening): BUILD_LOG created, dangling `023_goal_creation_gate` refs fixed in loop
     docs, RESOLVED-as-status eliminated, L8–L11 schemas/caps/paths pinned (freeze manifest
-    `.codexclaw/interview/freeze.json`, PreToolUse hook path pinned).
+    `.cursorclaw/interview/freeze.json`, PreToolUse hook path pinned).
   - B (implementation, concurrent parallel session bitkyc08-arch):
     L8 interview state (`4c6fe9a`, `cf7db59`, `d544096`),
     L9 5-Mind dispatcher (`cee7ef8`) + A-gate blocker fix `e762a3c` (exact `correlationId`

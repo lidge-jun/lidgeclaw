@@ -19,8 +19,8 @@ the metric lever from 020 has nothing telling it what to do when it fires.
 
 ## Ground Truth (read before edit)
 
-- `cxc-loop` skill: `plugins/codexclaw/skills/loop/SKILL.md` (the loop doctrine to extend).
-- `pabcd` skill: `plugins/codexclaw/skills/pabcd/SKILL.md` (phase semantics).
+- `cxc-loop` skill: `plugins/cursorclaw/skills/loop/SKILL.md` (the loop doctrine to extend).
+- `pabcd` skill: `plugins/cursorclaw/skills/pabcd/SKILL.md` (phase semantics).
 - Honesty rule: `50_emergence_gap.md` — skill text must match shipped Stop behavior (no over-claim).
 - 020's diverge directive is the goal-mode automatic trigger this doctrine reacts to. HITL PABCD
   may also enter divergence manually from I/P when the objective shape warrants it.
@@ -37,7 +37,7 @@ the metric lever from 020 has nothing telling it what to do when it fires.
      N=1 after the uncertainty/plateau is resolved. Keep N small (2-3) — each candidate can become
      a full build.
    - label honestly: E7 doctrine + the E2 lever lives in 020, not here.
-2. 030.2 — a `.codexclaw/divergence/` divergence-mode flag + candidate-archive shape so a fresh
+2. 030.2 — a `.cursorclaw/divergence/` divergence-mode flag + candidate-archive shape so a fresh
    pass knows it is mid-divergence and which candidates exist (survives compaction). Shipped as
    `cxc divergence mode ...` and `cxc divergence candidate ...`.
 3. 030.3 — drift check: skill text matches shipped Stop behavior (the `50_emergence_gap.md` rule).
@@ -47,7 +47,7 @@ the metric lever from 020 has nothing telling it what to do when it fires.
 - No over-claim: the skill states E2 lives in 020; this decade is doctrine + persisted state.
 - divergence is OFF by default (N=1); it is a deliberate HITL exploration response or a goal-mode
   stagnation response, not a standing posture.
-- Project-local mode flag under `.codexclaw/`; no goal-DB write.
+- Project-local mode flag under `.cursorclaw/`; no goal-DB write.
 - Mode/archive files are durable evidence, not an automatic control source; stale mode cannot
   move phases, spawn worktrees, or build candidates by itself.
 
@@ -76,7 +76,7 @@ the metric lever from 020 has nothing telling it what to do when it fires.
 
 ## Closed decision
 
-Use one shared `.codexclaw/divergence/` archive for mode + candidates. It is the common evidence
+Use one shared `.cursorclaw/divergence/` archive for mode + candidates. It is the common evidence
 surface for 030, 040, and 050; no separate fan-out archive.
 
 ## Depends on / feeds

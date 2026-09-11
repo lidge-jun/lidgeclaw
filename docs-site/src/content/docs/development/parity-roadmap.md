@@ -13,11 +13,11 @@ means intentionally postponed. The docs never describe a planned feature as if i
 | Area | Status |
 |---|---|
 | FSM legal-transition table + attest gate | <span class="cxc-badge cxc-badge--current">current</span> |
-| `$cxc-orchestrate` chat grammar + hook wiring | <span class="cxc-badge cxc-badge--current">current</span> |
+| `$crc-orchestrate` chat grammar + hook wiring | <span class="cxc-badge cxc-badge--current">current</span> |
 | `cxc orchestrate` CLI over the same file state | <span class="cxc-badge cxc-badge--current">current</span> |
 | `status` / `reset` / `D` affordances + phase footer | <span class="cxc-badge cxc-badge--current">current</span> |
 | Stop-continuation loop with termination guards | <span class="cxc-badge cxc-badge--current">current</span> |
-| `$cxc-goalplan` / `$cxc-loop` skill contracts | <span class="cxc-badge cxc-badge--current">current</span> |
+| `$crc-goalplan` / `$crc-loop` skill contracts | <span class="cxc-badge cxc-badge--current">current</span> |
 | Interview scan-evidence ledger + `I → P` soft-gate | <span class="cxc-badge cxc-badge--current">current</span> |
 | Subagent role config + MCP tools | <span class="cxc-badge cxc-badge--current">current</span> |
 | opencodex detect-only bridge | <span class="cxc-badge cxc-badge--current">current</span> |

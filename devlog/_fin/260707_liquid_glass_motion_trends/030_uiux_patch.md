@@ -2,7 +2,7 @@
 
 Executed per `010_plan.md` + WP3 reviewer notes (extend-don't-duplicate,
 pointer-only implementation, personality format, STYLE_SAMPLE). Paths
-relative to `plugins/codexclaw/skills/dev-uiux-design/`.
+relative to `plugins/cursorclaw/skills/dev-uiux-design/`.
 
 ### references/design-isms.md — new ism 1.12
 - **Changes**: added "1.12 Liquid Glass (Apple, 2025-2026)" after 1.11:

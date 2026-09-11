@@ -54,14 +54,14 @@ unnecessary; the resolver finds that binary itself.
 # 031 - a defect found while verifying, not filed
 
 `resolveProjectRoot` in `gui/src/server/middleware.ts` treats any ancestor with a
-`.codexclaw/` directory as the project root. `~/.codexclaw` is codexclaw's own GLOBAL
+`.cursorclaw/` directory as the project root. `~/.cursorclaw` is codexclaw's own GLOBAL
 store (recall index, skill cache), so on any real installation a start dir outside a
 repository walks up and resolves the user's ENTIRE HOME DIRECTORY as the project root.
-The dashboard would then read and write `~/.codexclaw/subagents.json`.
+The dashboard would then read and write `~/.cursorclaw/subagents.json`.
 
 The test "no marker anywhere -> falls back to the start dir" catches it, but only on a
-machine that actually has `~/.codexclaw` - which CI runners do not. It was green in CI
+machine that actually has `~/.cursorclaw` - which CI runners do not. It was green in CI
 and red locally.
 
-Fix: exclude `homedir()` from the `.codexclaw` marker check, plus a regression test
+Fix: exclude `homedir()` from the `.cursorclaw` marker check, plus a regression test
 that asserts the resolution is not the home directory.

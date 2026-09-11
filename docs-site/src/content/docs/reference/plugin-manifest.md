@@ -1,9 +1,9 @@
 ---
 title: Plugin Manifest
-description: The codexclaw .codex-plugin/plugin.json manifest — skills, hooks, MCP, and interface metadata.
+description: The codexclaw .cursor-plugin/plugin.json manifest — skills, hooks, MCP, and interface metadata.
 ---
 
-codexclaw is declared by a single manifest at `plugins/codexclaw/.codex-plugin/plugin.json`. It
+codexclaw is declared by a single manifest at `plugins/cursorclaw/.cursor-plugin/plugin.json`. It
 tells Codex which skills, hooks, and MCP servers to load.
 
 ## Top-level fields
@@ -51,7 +51,7 @@ tells Codex which skills, hooks, and MCP servers to load.
 
 The plugin currently contains eight component packages under `components/` (including
 `skill-search`) and 28 skill directories under `skills/`. The GUI is a separate workspace
-package under `plugins/codexclaw/gui/`.
+package under `plugins/cursorclaw/gui/`.
 
 ## Interface metadata
 
@@ -68,5 +68,5 @@ The manifest's `interface` block drives how codexclaw appears in Codex:
 ## Namespacing
 
 Because the plugin is named `codexclaw`, plugin-native skill mentions take the form
-`$codexclaw:cxc-dev`. The `$cxc-*` shorthand is the project's preferred name; how each form
+`$codexclaw:cxc-dev`. The `$crc-*` shorthand is the project's preferred name; how each form
 resolves is covered in the [Skills guide](/codexclaw/guides/skills/).

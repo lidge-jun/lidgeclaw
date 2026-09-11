@@ -1,7 +1,7 @@
 ---
 created: 2026-08-18
 status: research
-tags: [codexclaw, audit, hooks, silent-drop, agent-type, gates]
+tags: [cursorclaw, audit, hooks, silent-drop, agent-type, gates]
 ---
 
 # 000 — 침묵 드롭 전수 검사 (v0.2.4 직후)
@@ -32,7 +32,7 @@ matcher를 `.*`로 넓히는 것으로는 안 된다. 핸들러도 독립적으�
 온다. `default` 전체를 게이팅하면 읽기 전용 탐색까지 영수증을 요구받는다.
 수정은 matcher 한 줄이 아니라 역할 식별 방법의 재설계다.
 
-정황 증거: `/Users/jun/Developer/new/700_projects/*/.codexclaw/evidence-attempts/`의
+정황 증거: `/Users/jun/Developer/new/700_projects/*/.cursorclaw/evidence-attempts/`의
 마지막 기록이 **2026-07-20**이다. 그 뒤로 쓰기 서브에이전트를 계속 썼는데
 게이트가 한 번도 걸리지 않았다.
 

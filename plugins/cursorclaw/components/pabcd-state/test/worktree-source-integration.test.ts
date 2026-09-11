@@ -32,7 +32,7 @@ function fixture(t: TestContext) {
   const db = new DatabaseSync(join(home, "state_5.sqlite"));
   db.exec("CREATE TABLE threads (id TEXT, cwd TEXT, archived INTEGER, source TEXT)");
   db.prepare("INSERT INTO threads VALUES (?, ?, 0, 'cli')").run(id, cwd); db.close();
-  const env = { CODEX_THREAD_ID: id, CODEX_HOME: home };
+  const env = { CODEX_THREAD_ID: id, CURSOR_HOME: home };
   writeState(cwd, { ...defaultState(id), phase: "A" });
   return { cwd, source, env };
 }
@@ -260,9 +260,9 @@ test("deleting a binding during Check cannot certify the native tree", t => {
 
 test("shipped CLI binds and checks a worktree without relocating native state", t => {
   const f = fixture(t);
-  const cli = fileURLToPath(new URL("../../../bin/cxc.mjs", import.meta.url));
+  const cli = fileURLToPath(new URL("../../../bin/cursorclaw.mjs", import.meta.url));
   const run = (...args: string[]) => execFileSync(process.execPath, [cli, ...args], {
-    cwd: f.cwd, env: { ...process.env, ...f.env, CODEX_SQLITE_HOME: f.env.CODEX_HOME }, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"],
+    cwd: f.cwd, env: { ...process.env, ...f.env, CODEX_SQLITE_HOME: f.env.CURSOR_HOME }, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"],
   }).trim();
   const bound = JSON.parse(run("session", "source", f.source, "--json"));
   assert.equal(bound.cwd, f.cwd); assert.equal(bound.sourceCwd, f.source);

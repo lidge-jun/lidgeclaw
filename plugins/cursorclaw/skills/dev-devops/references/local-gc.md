@@ -1,7 +1,7 @@
 # Local GC — Worktree and Branch Garbage Collection Conventions
 
 Last reviewed: 2026-09-09
-Applies to: git 2.x linked worktrees; GitHub-backed repositories; Codex-app managed worktrees under `~/.codex/worktrees`
+Applies to: git 2.x linked worktrees; GitHub-backed repositories; Codex-app managed worktrees under `~/.cursor/worktrees`
 When to read: Local worktree or branch cleanup; a scheduled local cleanup; specifying or using a GC command
 Canonical owner: dev-devops §2.9 (`DEVOPS-LOCAL-GC-01`)
 
@@ -47,7 +47,7 @@ Order: snapshot → dirty audit → worktrees → remote branches → local bran
 | Never remove | Source |
 |---|---|
 | The active session's worktree, its slot directory, or any ancestor of `cwd` | `worktree-guardian` WG-NEVER-01 |
-| Any `~/.codex/worktrees/<slot>` the user did not name — another live thread may be bound to it | WG-NEVER-01 |
+| Any `~/.cursor/worktrees/<slot>` the user did not name — another live thread may be bound to it | WG-NEVER-01 |
 | A **locked** worktree (`locked` line in `git worktree list --porcelain`); `git worktree prune` skips them and so does GC | git-worktree manual: lock "prevents its administrative files from being pruned automatically … also prevents it from being moved or deleted" |
 | A **dirty** worktree: `git status --porcelain --untracked-files=no` non-empty | `DEVOPS-WORKTREE-DIRTY-01` |
 | A detached-HEAD worktree whose commit is reachable from no branch and is ahead of the integration line | `branch-lifecycle.md` §4 step 3 |
@@ -80,7 +80,7 @@ A scheduled local job produces a **dry-run report** and deletes nothing. Deletio
 separate human-approved invocation. On macOS use a LaunchAgent; wrap the command in
 `perl -e 'alarm shift; exec @ARGV' <seconds>` and `shlock` where `timeout` and
 `flock` are absent (the case on a stock macOS install; check with `command -v`). The report, written to
-`~/.codexclaw/worktree-gc/<YYYY-MM-DD>.md` (latest also at `.../latest.md`), contains: one
+`~/.cursorclaw/worktree-gc/<YYYY-MM-DD>.md` (latest also at `.../latest.md`), contains: one
 §2 table per repository, the dirty list, the reboot-fragile list, disk usage per root,
 and the snapshot path it would use.
 
@@ -94,7 +94,7 @@ provides it today.
 | `cxc worktree list [--repo <path>]` | Classify every worktree and local branch per §2/§3; no changes; exit 0, or 1 on error |
 | `cxc worktree gc [--repo <path>]...` | Same as `--dry-run`: scan the named repositories (default: the current repository); write the §5 report; exit 2 if candidates exist, 0 if none |
 | `cxc worktree gc --apply --repo <path> [--namespace <prefix>]...` | Delete only §2 "yes" rows whose name starts with a named namespace; when no `--namespace` is given, the §2 disposable set (`codex/`, `agent/`, `ingw/`, `claude/`, `copilot/`) is the scope and is printed before any deletion; remote first, then local |
-| `cxc worktree gc --apply --worktrees --repo <path>` | Remove only worktrees that are clean, unlocked, not under `~/.codex/worktrees`, not the cwd or its ancestor, and whose branch is a §2 "yes" row; `git worktree remove` without `--force`, so a tree with untracked files is refused by git and reported as exit 4, never forced |
+| `cxc worktree gc --apply --worktrees --repo <path>` | Remove only worktrees that are clean, unlocked, not under `~/.cursor/worktrees`, not the cwd or its ancestor, and whose branch is a §2 "yes" row; `git worktree remove` without `--force`, so a tree with untracked files is refused by git and reported as exit 4, never forced |
 
 Preconditions for `--apply`: the `for-each-ref` and `worktree list --porcelain`
 snapshot is written and its path printed (`DEVOPS-BRANCH-SNAPSHOT-01`); `gh auth
@@ -112,7 +112,7 @@ scheduled job is a violation of §5.
 | `git branch --merged` as the only merge proof | Squash and rebase merges are invisible to it | §1 PR-state join |
 | `rm -rf <worktree>` | Leaves `.git/worktrees` admin state; skips the dirty check | `git worktree remove`, then `prune -n` |
 | `git worktree unlock` inside GC | The lock is a human statement of intent | Report locked trees; never unlock |
-| Deleting a managed `~/.codex/worktrees` slot | Another thread may be bound to it | WG-NEVER-01 |
+| Deleting a managed `~/.cursor/worktrees` slot | Another thread may be bound to it | WG-NEVER-01 |
 | `--apply` from a scheduled job | Unattended deletion | §5 dry-run only |
 | `fetch.pruneTags` by reflex | Deletes local tags | §4 |
 | Treating `/private/tmp` worktrees as disposable | Dirty ones hold unrecovered work | §3 recovery first |

@@ -76,9 +76,9 @@ test("native cache absent -> unavailable, no fabricated models", () => {
 });
 
 test("readNativeCacheDefault: allowlists cache ids, ignores unknowns; missing path -> null", () => {
-  // missing cache: point CODEX_HOME at an empty dir (a bare {} env now resolves
-  // to the real ~/.codex/models_cache.json by design — never touch it in tests)
-  assert.equal(readNativeCacheDefault({ CODEX_HOME: mkdtempSync(join(tmpdir(), "cxc-nohome-")) } as NodeJS.ProcessEnv), null);
+  // missing cache: point CURSOR_HOME at an empty dir (a bare {} env now resolves
+  // to the real ~/.cursor/models_cache.json by design — never touch it in tests)
+  assert.equal(readNativeCacheDefault({ CURSOR_HOME: mkdtempSync(join(tmpdir(), "cxc-nohome-")) } as NodeJS.ProcessEnv), null);
   // cache file with a mix of allowed + unknown ids
   const dir = mkdtempSync(join(tmpdir(), "cxc-cat-"));
   const p = join(dir, "models.json");
@@ -145,23 +145,23 @@ test("L9.2: routed provider/model ocx slugs are selectable + deduped, native fir
   assert.equal(cat.entries[1].source, "ocx");
 });
 
-test("WP30: CODEX_HOME resolution — cache at $CODEX_HOME/models_cache.json loads without CODEX_MODELS_CACHE_PATH", () => {
+test("WP30: CURSOR_HOME resolution — cache at $CURSOR_HOME/models_cache.json loads without CODEX_MODELS_CACHE_PATH", () => {
   const home = mkdtempSync(join(tmpdir(), "cxc-home-"));
   writeFileSync(
     join(home, "models_cache.json"),
     JSON.stringify({ models: [{ slug: "gpt-5.5" }, { slug: "anthropic/claude-sonnet-5" }, { slug: "rogue" }] }),
   );
-  const ids = readNativeCacheDefault({ CODEX_HOME: home } as NodeJS.ProcessEnv);
+  const ids = readNativeCacheDefault({ CURSOR_HOME: home } as NodeJS.ProcessEnv);
   assert.deepEqual(ids, ["gpt-5.5", "anthropic/claude-sonnet-5", "rogue"]);
 });
 
-test("WP30: explicit CODEX_MODELS_CACHE_PATH still wins over CODEX_HOME", () => {
+test("WP30: explicit CODEX_MODELS_CACHE_PATH still wins over CURSOR_HOME", () => {
   const home = mkdtempSync(join(tmpdir(), "cxc-home2-"));
   writeFileSync(join(home, "models_cache.json"), JSON.stringify({ models: [{ slug: "gpt-5.4" }] }));
   const dir = mkdtempSync(join(tmpdir(), "cxc-explicit-"));
   const p = join(dir, "explicit.json");
   writeFileSync(p, JSON.stringify({ models: [{ slug: "gpt-5.5" }] }));
-  const ids = readNativeCacheDefault({ CODEX_HOME: home, CODEX_MODELS_CACHE_PATH: p } as NodeJS.ProcessEnv);
+  const ids = readNativeCacheDefault({ CURSOR_HOME: home, CODEX_MODELS_CACHE_PATH: p } as NodeJS.ProcessEnv);
   assert.deepEqual(ids, ["gpt-5.5"]);
 });
 

@@ -65,7 +65,7 @@ N5와 N8이 겹치면 이 사용자 환경에서 특히 나쁘다. 워크트리�
 
 **C1 — 훅이 곧 구조적 리콜 신호다.** 다른 하네스는 "메모리를 검색하라"를 프롬프트 문장으로 지시한다. Codex 네이티브도 그렇고(`read_path.md`의 "Use it whenever it is likely to help"), 그래서 안 쓰인다. codexclaw는 SessionStart/PostCompact/UserPromptSubmit 훅을 이미 갖고 있고, 여기서 **에이전트의 판단을 기다리지 않고 컨텍스트를 직접 밀어넣는다**(`components/recall/src/hook.ts:203-243`). 프롬프트가 아니라 실행 경로로 푸는 자리다.
 
-**C2 — 사이드카 인덱스가 이미 22GB 공백을 메웠다.** `~/.codexclaw/recall/index.sqlite`에 12,735 파일 / 1,213,941 메시지가 적재돼 있고(실측 `cxc chat index --status`, last ingest 2026-09-08T16:59:57Z), 전체 이력 질의가 1.4초, 인덱스 히트는 밀리초 단위다(실측 `cxc memory search` 70ms/285파일). Codex 네이티브는 이 코퍼스에 도달할 경로 자체가 없다.
+**C2 — 사이드카 인덱스가 이미 22GB 공백을 메웠다.** `~/.cursorclaw/recall/index.sqlite`에 12,735 파일 / 1,213,941 메시지가 적재돼 있고(실측 `cxc chat index --status`, last ingest 2026-09-08T16:59:57Z), 전체 이력 질의가 1.4초, 인덱스 히트는 밀리초 단위다(실측 `cxc memory search` 70ms/285파일). Codex 네이티브는 이 코퍼스에 도달할 경로 자체가 없다.
 
 **C3 — per-project 스코핑을 훅 레이어에서 이미 하고 있다.** `buildCwdContext`(`hook.ts:151-208`)가 CWD로 필터링하고, 인덱스 SQL은 구분자 인지 prefix 매칭까지 한다(`index-search.ts:74-80`, `/repo`가 `/repo2`를 매치하지 않게). Codex가 구조적으로 못 하는 N5를 플러그인이 하고 있다.
 
@@ -83,7 +83,7 @@ codexclaw 가치관에서 도출한다. `docs/native-thin-harness.md`의 소유�
 
 `native-thin-harness.md`: "A feature is not automatically desirable because another harness ships it." 그리고 확장 승인 계약이 `native_gap`과 `sunset_when`을 요구한다.
 
-`memories.search`는 176줄짜리 실동작 재귀 검색이고 매칭 모드·커서 페이징·심링크 거부까지 있다(05 노트 §4-1). 이걸 재구현하는 건 확장 승인 계약 위반이다. codexclaw가 할 일은 **그 툴을 켜는 경로를 제공하고, 그 툴이 못 하는 것만 보태는 것**이다. 반대로 `ext/memories/src/local/search.rs`의 backend root가 `~/.codex/memories`로 한정되어 있어서 `sessions/`를 못 본다 — 이건 진짜 native gap이고, 사이드카가 정당하다.
+`memories.search`는 176줄짜리 실동작 재귀 검색이고 매칭 모드·커서 페이징·심링크 거부까지 있다(05 노트 §4-1). 이걸 재구현하는 건 확장 승인 계약 위반이다. codexclaw가 할 일은 **그 툴을 켜는 경로를 제공하고, 그 툴이 못 하는 것만 보태는 것**이다. 반대로 `ext/memories/src/local/search.rs`의 backend root가 `~/.cursor/memories`로 한정되어 있어서 `sessions/`를 못 본다 — 이건 진짜 native gap이고, 사이드카가 정당하다.
 
 ### P2. 증거 — 회수된 것은 출처와 시각을 달고 온다
 
@@ -99,11 +99,11 @@ codexclaw에 적용하면 두 가지다. 첫째, 회수된 과거 텍스트는 �
 
 ### P4. 되돌릴 수 있음 — 파생 캐시는 언제든 지울 수 있어야 한다
 
-`index-db.ts:4-6`이 이미 이 원칙을 선언한다: "The index is a rebuildable DERIVED CACHE owned by codexclaw. It lives outside ~/.codex (source of truth, never written)... Deleting it costs only a rebuild." 스키마 버전이 다르면 마이그레이션 없이 drop-and-rebuild한다(`index-db.ts:84-91`).
+`index-db.ts:4-6`이 이미 이 원칙을 선언한다: "The index is a rebuildable DERIVED CACHE owned by codexclaw. It lives outside ~/.cursor (source of truth, never written)... Deleting it costs only a rebuild." 스키마 버전이 다르면 마이그레이션 없이 drop-and-rebuild한다(`index-db.ts:84-91`).
 
 cli-jaw도 같다 — `reindexAll`이 인덱스를 통째로 재생성하므로 마크다운만 있으면 완전 복구된다(01 노트 §6-1). 반대 사례가 Aside다. `moss-minilm`은 바이너리 안에 있고 `modelArtifactVersion`이 바뀌면 5,048개 벡터를 전부 다시 만들어야 한다(06 노트 §6-g). 벤더 락인이다.
 
-원칙: 새로 만드는 모든 상태는 (i) `~/.codexclaw` 아래, (ii) 삭제해도 재생성 가능, (iii) `~/.codex`는 읽기 전용. config.toml 쓰기는 `config-set.ts` 매니페스트 경로로만.
+원칙: 새로 만드는 모든 상태는 (i) `~/.cursorclaw` 아래, (ii) 삭제해도 재생성 가능, (iii) `~/.cursor`는 읽기 전용. config.toml 쓰기는 `config-set.ts` 매니페스트 경로로만.
 
 ### P5. 구조적 활성화 — 프롬프트로 부탁하지 말고 실행 경로에 심는다
 
@@ -118,7 +118,7 @@ cli-jaw도 같다 — `reindexAll`이 인덱스를 통째로 재생성하므로 
 ### 3.0 전체 구조
 
 ```
-                     ~/.codex  (읽기 전용, 원본)
+                     ~/.cursor  (읽기 전용, 원본)
                      ├── sessions/**/rollout-*.jsonl   22GB / 12,469
                      ├── memories/                     7.2MB
                      │   ├── memory_summary.md   9.5KB → 2,500토큰 주입 (네이티브)
@@ -134,7 +134,7 @@ cli-jaw도 같다 — `reindexAll`이 인덱스를 통째로 재생성하므로 
     │   memory_summary.md 주입 + memories.{list,read,search}  │
     │   ← dedicated_tools 를 켜면 여기가 살아난다             │
     ├─────────────────────────────────────────────────────────┤
-    │  L1  사이드카 인덱스  ~/.codexclaw/recall/index.sqlite   │
+    │  L1  사이드카 인덱스  ~/.cursorclaw/recall/index.sqlite   │
     │   files / msgs / msgs_fts(unicode61) / msgs_tri(trigram)│
     │   12,735 파일 · 1,213,941 메시지 · 증분 ingest           │
     ├─────────────────────────────────────────────────────────┤
@@ -233,7 +233,7 @@ Aside: dreaming 변경 1,235건 중 축소가 39건(3.2%)이고 **삭제 상태�
 
 근거는 두 가지다.
 
-첫째, **삭제할 것이 없다.** codexclaw가 소유한 유일한 저장소는 재생성 가능한 파생 캐시다(`index-db.ts:4-6`). `~/.codex`는 읽기 전용이고, 거기의 망각은 네이티브 `max_unused_days=30` prune이 이미 한다(그게 N8 악순환을 만드는 게 문제이지 망각이 없는 게 문제가 아니다). 인덱스가 커지는 건 rollout이 커지기 때문이고, 그건 Codex가 쓰는 것이다.
+첫째, **삭제할 것이 없다.** codexclaw가 소유한 유일한 저장소는 재생성 가능한 파생 캐시다(`index-db.ts:4-6`). `~/.cursor`는 읽기 전용이고, 거기의 망각은 네이티브 `max_unused_days=30` prune이 이미 한다(그게 N8 악순환을 만드는 게 문제이지 망각이 없는 게 문제가 아니다). 인덱스가 커지는 건 rollout이 커지기 때문이고, 그건 Codex가 쓰는 것이다.
 
 둘째, **랭킹 감쇠는 이미 있다.** `memory-search.ts`의 `recencyBoost`가 kind별 반감기로 지수 감쇠하고, rollout/stage1이 반감기 2배(14일)를 넘으면 최대 -2.0 벌점을 준다(`memory-search.ts:108-117`). cli-jaw에서 **실제로 동작하는 유일한 decay**를 이식한 것이다.
 

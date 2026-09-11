@@ -39,7 +39,7 @@ Work-phases (as shipped):
    ignored (dev-server only) and `rescan-coordinator.js` untracked (not runtime-reached). Kept
    `.gitignore dist/` + explicit `git add -f` (the existing convention; lower surprise than a
    negation that would auto-track non-runtime dist).
-2. L19.2 — Packaging test (`plugins/codexclaw/test/packaging.test.mjs`): roots at the **6** runtime
+2. L19.2 — Packaging test (`plugins/cursorclaw/test/packaging.test.mjs`): roots at the **6** runtime
    entrypoints (5 component `dist/cli.js` + `subagent-config/dist/mcp.js`), resolves the relative
    import graph with a whole-file (multi-line-safe) regex, and asserts every reached file is present
    and git-tracked via `git ls-files --error-unmatch`. Fails if any runtime dist file would not ship.

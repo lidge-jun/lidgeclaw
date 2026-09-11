@@ -8,7 +8,7 @@ Status: DONE (shipped + tested) · 2026-07-01 · emergence_harness_impl WP 010 �
 
 ## Why
 
-`State` (`plugins/codexclaw/components/pabcd-state/src/state.ts:17-33`) persists `phase`,
+`State` (`plugins/cursorclaw/components/pabcd-state/src/state.ts:17-33`) persists `phase`,
 `flags`, `stopBlock{Phase,Count}` only — never a metric. The ledger stores transitions +
 evidence strings, never a value. So the loop literally cannot know it plateaued: there is no
 number to compare against a prior number. This is the structural reason PABCD only converges.
@@ -19,14 +19,14 @@ number to compare against a prior number. This is the structural reason PABCD on
 - `LedgerEntry`: `state.ts:35+` (the append-only transition record shape).
 - Persistence helpers: `state.ts` `writeState` / `readState` (atomic `renameSync` pattern) and
   `appendLedger`. Reuse, do not reinvent IO.
-- `.codexclaw/` layout convention: session state + `ledger.jsonl`. A new `metrics.jsonl` sits
+- `.cursorclaw/` layout convention: session state + `ledger.jsonl`. A new `metrics.jsonl` sits
   alongside, project-local under `cwd`.
-- CLI dispatcher to extend with a new verb: `plugins/codexclaw/components/pabcd-state/src/cli.ts`.
+- CLI dispatcher to extend with a new verb: `plugins/cursorclaw/components/pabcd-state/src/cli.ts`.
 
 ## Design (diff-level)
 
 1. 010.1 — add an objective-metric record. Chosen shape:
-   - a sibling `.codexclaw/metrics.jsonl` append-only log:
+   - a sibling `.cursorclaw/metrics.jsonl` append-only log:
      `{ ts, sessionId, workPhaseId, metric_name, value, baseline, best, source }`.
    `source` ∈ `{ "operator-entered", "evaluate.sh" }` (remote judge -> operator-entered, the
    honest limit from the diagnosis). Metric history is independent of transition cadence and
@@ -40,7 +40,7 @@ number to compare against a prior number. This is the structural reason PABCD on
 ## Invariants
 
 - Append-only; never mutate a past metric row (audit trail).
-- All state project-local under `.codexclaw/`; no goal-DB access.
+- All state project-local under `.cursorclaw/`; no goal-DB access.
 - Atomic writes (reuse `state.ts` `renameSync` pattern); partial-write safe.
 - Persisted state is NOT itself E2 — this decade is the E2-READY substrate; the lever is 020.
 
@@ -50,7 +50,7 @@ number to compare against a prior number. This is the structural reason PABCD on
 |-------|----------|
 | Metric round-trips | record then read returns the same `{name,value,source}` |
 | baseline/best math | first value seeds baseline; a higher value advances best |
-| Survives compaction | a fresh process reconstructs metric history from `.codexclaw/` |
+| Survives compaction | a fresh process reconstructs metric history from `.cursorclaw/` |
 | Source tagged | operator-entered vs evaluate.sh distinguishable on every row |
 | No goal-DB touch | no read/write of `goals_1.sqlite` in this path |
 
@@ -71,7 +71,7 @@ number to compare against a prior number. This is the structural reason PABCD on
 
 ## Closed decision
 
-Use separate `.codexclaw/metrics.jsonl`, not a field on the transition ledger. Reason: metric
+Use separate `.cursorclaw/metrics.jsonl`, not a field on the transition ledger. Reason: metric
 history has its own cadence and must be reconstructable independently from phase transitions.
 
 ## Depends on / feeds

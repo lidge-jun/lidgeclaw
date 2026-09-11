@@ -74,7 +74,7 @@ no parser can recover it and the defect is upstream of this module.
 ## Live capture (in progress)
 
 A `tee` wrapper was installed on the hook command in both the plugin cache
-(`~/.codex/plugins/cache/codexclaw/codexclaw/0.1.1/hooks/`) and the worktree, for
+(`~/.cursor/plugins/cache/codexclaw/codexclaw/0.1.1/hooks/`) and the worktree, for
 `post-tool-use-capturing-interview-answers.json` and
 `post-tool-use-tracking-render-observations.json`, writing raw stdin to
 `/tmp/cxc_wire/`.

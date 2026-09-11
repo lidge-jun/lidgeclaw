@@ -7,7 +7,7 @@
 "영수증이 비어있지 않다"는 검사는 stale 증거를 막지 못한다. 테스트를 돌린 뒤 코드를
 고치거나, 리뷰를 받은 뒤 코드를 고쳐도 영수증은 그대로 유효해 보인다. 현행 리뷰어 계약은
 이미 base/head anchor를 요구하는데
-(`plugins/codexclaw/skills/dev-code-reviewer/SKILL.md:401-406` — WP9 P 실측으로 정정,
+(`plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md:401-406` — WP9 P 실측으로 정정,
 초안이 적은 `:381-388`은 `REVIEW-COVERAGE-01` 블록으로 밀려 있었다),
 런타임 영수증에는 그에 대응하는 값이 없다.
 
@@ -18,8 +18,8 @@
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/components/pabcd-state/src/source-identity.ts` | 신규 |
-| `plugins/codexclaw/components/pabcd-state/test/source-identity.test.ts` | 신규 |
+| `plugins/cursorclaw/components/pabcd-state/src/source-identity.ts` | 신규 |
+| `plugins/cursorclaw/components/pabcd-state/test/source-identity.test.ts` | 신규 |
 
 ## before → after
 
@@ -207,8 +207,8 @@ ignore되지 않은 devlog 문서를 새로 쓰면 정체성이 바뀐다. 후�
   ```
   npx tsc --noEmit --allowImportingTsExtensions --module nodenext --target es2022 \
     --moduleResolution nodenext --strict \
-    plugins/codexclaw/components/pabcd-state/src/source-identity.ts \
-    plugins/codexclaw/components/pabcd-state/test/source-identity.test.ts
+    plugins/cursorclaw/components/pabcd-state/src/source-identity.ts \
+    plugins/cursorclaw/components/pabcd-state/test/source-identity.test.ts
   ```
 
   두 파일 다 신규이므로 baseline 오류가 없다 — 수용 조건은 **exit 0**이다.

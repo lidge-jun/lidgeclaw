@@ -51,7 +51,7 @@ If additional authority is needed, report it rather than silently weakening gate
 NEW this numbered plan and B delivery-preparation record; no other source change
 is planned. B record contains real independent verdict, scoped preflight results,
 and the exact publish command/target. After publication, remote observations and
-merge receipts live in ignored .codexclaw/evidence to avoid moving the checked head.
+merge receipts live in ignored .cursorclaw/evidence to avoid moving the checked head.
 No hidden state JSON edits mark completion; CLI task/criteria/D actions do that.
 
 Initial nine dirty tracked files are protected by the existing SHA-256 snapshot;

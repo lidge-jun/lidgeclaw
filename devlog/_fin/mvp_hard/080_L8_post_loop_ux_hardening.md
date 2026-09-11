@@ -31,9 +31,9 @@ rough UX edge in the Stop-continuation message.
 - MODIFY `devlog/_plan/mvp_hard/070_L7_goalplan_loop_skills.md`
 - MODIFY `README.md`
 - MODIFY `structure/INDEX.md`
-- MODIFY `plugins/codexclaw/components/pabcd-state/src/hook.ts`
-- MODIFY `plugins/codexclaw/components/pabcd-state/src/cli.ts`
-- MODIFY `plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts`
+- MODIFY `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
+- MODIFY `plugins/cursorclaw/components/pabcd-state/src/cli.ts`
+- MODIFY `plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts`
 
 ## Phase Command Map
 
@@ -54,7 +54,7 @@ tests proving no `<next>` placeholder remains, and update stale passive Stop com
 
 ## Verification
 
-- `node --test plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts`
+- `node --test plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts`
   - PASS: 17/17, including `L8: Stop continuation prints concrete next commands, never <next>`.
 
 Full suite/build verification is recorded at the L8 C gate.

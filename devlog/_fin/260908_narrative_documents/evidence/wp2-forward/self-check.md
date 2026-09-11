@@ -1,6 +1,6 @@
 # Self-check for status-report.md
 
-This records which READER-DOC rules were applied to [status-report.md](status-report.md), where the reader contract lives, and how each factual claim resolves to an appendix anchor. Source of rules: `plugins/codexclaw/skills/dev/references/reader-documents.md`.
+This records which READER-DOC rules were applied to [status-report.md](status-report.md), where the reader contract lives, and how each factual claim resolves to an appendix anchor. Source of rules: `plugins/cursorclaw/skills/dev/references/reader-documents.md`.
 
 ## Reader contract location
 

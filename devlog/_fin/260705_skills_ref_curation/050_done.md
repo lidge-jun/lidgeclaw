@@ -35,7 +35,7 @@
 - 신규 `components/skill-search` (zero-dep): search/show 2 커맨드, 4 소스
   (jaw raw registry 1차, hermes raw catalog, clawhub tree API 1콜, gh 명시시)
 - 키워드 스코어러 (superseded/claude-specific x0.5 강등, 숨김 없음),
-  1h TTL 캐시 + stale fallback (CODEXCLAW_HOME 규약), 어댑터 프리앰블
+  1h TTL 캐시 + stale fallback (CURSORCLAW_HOME 규약), 어댑터 프리앰블
   (claude→codex exec 치환, cxc-dev 우선)
 - 라이브 스모크: telegram/tdd/hermes notes 검색, show 프리앰블 부착 확인
 

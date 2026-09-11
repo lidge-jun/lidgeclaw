@@ -41,7 +41,7 @@ Tier-2 proven findings driving the design:
 
 ## Diff-level plan
 
-1. NEW `plugins/codexclaw/skills/qa/references/visual-qa.md` (~120L):
+1. NEW `plugins/cursorclaw/skills/qa/references/visual-qa.md` (~120L):
    - **Companion-skill mandate (QA-VISUAL-COMPANION-01)**: a visual verdict
      grounded in `cxc-dev-frontend` (rendered implementation / anti-slop /
      visual-verification.md checklist) — plus `cxc-dev-uiux-design` ONLY for
@@ -70,7 +70,7 @@ Tier-2 proven findings driving the design:
      rendered GIF/PNG) or teatest golden files when the repo already uses
      them.
    - Sources section with the Tier-2 URLs.
-2. `plugins/codexclaw/skills/dev-testing/SKILL.md` §4.6 — upgrade the existing
+2. `plugins/cursorclaw/skills/dev-testing/SKILL.md` §4.6 — upgrade the existing
    tool table into the canonical **QA-TOOL-LADDER-01** (audit blocker 1 fix):
    ordered hierarchy for BUILT-surface QA — (1) in-app browser default,
    (2) chrome real-profile CDP, (3) computer-use GUI last resort, all
@@ -78,7 +78,7 @@ Tier-2 proven findings driving the design:
    QA-legal only for public-URL response-shape checks. Explicit inversion
    note vs SEARCH-BROWSE-01 (agbrowse-first is for public-web proof; QA of
    surfaces the agent serves starts at the in-app browser).
-3. `plugins/codexclaw/skills/qa/SKILL.md` — body stays router-sized:
+3. `plugins/cursorclaw/skills/qa/SKILL.md` — body stays router-sized:
    - Modular References table (new, 2 rows: visual-qa.md; "when: any visual
      surface verdict").
    - §2 web/TUI rows point to the reference.

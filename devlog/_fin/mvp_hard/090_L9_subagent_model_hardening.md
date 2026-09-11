@@ -5,19 +5,19 @@ Status: DONE (parity plan + runtime shipped via 091/092/093) · 2026-06-30 · mv
 ## Goal
 
 L9 turns the subagent/model parity findings into an executable implementation plan. The
-current repo already ships role TOMLs, `.codexclaw/subagents.json` persistence, MCP/GUI
+current repo already ships role TOMLs, `.cursorclaw/subagents.json` persistence, MCP/GUI
 roundtrip, and `resolveSpawnConfig()` resolver tests. The remaining gap is that no production
 spawn wrapper consumes that resolver when calling Codex `spawn_agent`, and the operator CLI /
 catalog parity is still incomplete.
 
 ## Shipped Ground Truth
 
-- Role prompt sources exist in `plugins/codexclaw/agents/{explorer,reviewer,executor}.toml`.
+- Role prompt sources exist in `plugins/cursorclaw/agents/{explorer,reviewer,executor}.toml`.
 - Per-role config persistence exists in
-  `plugins/codexclaw/components/subagent-config/src/store.ts`.
+  `plugins/cursorclaw/components/subagent-config/src/store.ts`.
 - `resolveSpawnConfig(cwd, role)` returns the selected model/prompt override, but current tests
   prove resolver behavior only; they do not prove a real `spawn_agent` call consumes it.
-- GUI/MCP roundtrip the same `.codexclaw/subagents.json` role config.
+- GUI/MCP roundtrip the same `.cursorclaw/subagents.json` role config.
 - `buildCatalog()` merges native models plus ocx-provided model ids when those ids are handed to
   it, but the GUI provider bridge currently exposes status/port, not an ocx model list.
 - Root `bin/codexclaw.mjs` still prints placeholder text for `cxc subagents` and `cxc provider`.
@@ -36,7 +36,7 @@ catalog parity is still incomplete.
      a real catalog surface; keep provider bridge detect-only.
 3. **Operator surfaces**:
    - Replace root `cxc subagents` placeholder with a real get/set CLI over
-     `.codexclaw/subagents.json`, or explicitly mark it non-shipped in help.
+     `.cursorclaw/subagents.json`, or explicitly mark it non-shipped in help.
    - Replace root `cxc provider` placeholder with read-only provider/catalog status, not an
      `ocx ensure`/config mutator.
 4. **OMO role variants**:
@@ -58,12 +58,12 @@ catalog parity is still incomplete.
 - No runtime spawn wrapper is implemented in this `090` pass.
 - No new first-class Codex agent roles are registered.
 - No `ocx ensure`, `ocx sync`, or global Codex config mutation is introduced.
-- No `plugins/codexclaw/bin` path is referenced; the CLI entry is root `bin/codexclaw.mjs`.
+- No `plugins/cursorclaw/bin` path is referenced; the CLI entry is root `bin/codexclaw.mjs`.
 
 ## Verification For This Pass
 
 - `test -f devlog/_plan/mvp_hard/090_L9_subagent_model_hardening.md`
-- `rg -n "resolveSpawnConfig|spawn wrapper|bin/codexclaw.mjs|docs-created|runtime deferred" devlog/_plan/mvp_hard/090_L9_subagent_model_hardening.md plugins/codexclaw/agents/README.md`
+- `rg -n "resolveSpawnConfig|spawn wrapper|bin/codexclaw.mjs|docs-created|runtime deferred" devlog/_plan/mvp_hard/090_L9_subagent_model_hardening.md plugins/cursorclaw/agents/README.md`
 - `git diff --check`
 - `npm test`
 

@@ -7,7 +7,7 @@
 // so every manifest hook is now exercised, not just resolved.
 //
 // Determinism (per the WP7 A-gate): the interview-in-goal guard reads codex's goals
-// DB, so we point CODEX_HOME/CODEX_SQLITE_HOME at an empty temp dir (no goals_1.sqlite
+// DB, so we point CURSOR_HOME/CODEX_SQLITE_HOME at an empty temp dir (no goals_1.sqlite
 // => status "inactive" => allow). The provider session-start path shells out to find
 // ocx; it ALWAYS exits 0 and emits a status line regardless, so we assert only the
 // stable contract (exit 0 + a parseable provider status line), not a specific mode.
@@ -121,7 +121,7 @@ function runHookAsync(distAbs, hookEvent, payload, extraEnv = {}) {
 
 function emptyCodexHome() {
   const dir = mkdtempSync(join(tmpdir(), "ccx-home-"));
-  return { dir, env: { CODEX_HOME: dir, CODEXCLAW_HOME: join(dir, "cxc"), CODEX_SQLITE_HOME: dir } };
+  return { dir, env: { CURSOR_HOME: dir, CURSORCLAW_HOME: join(dir, "cxc"), CODEX_SQLITE_HOME: dir } };
 }
 
 test("WP7/G19: every manifest hook command resolves to an existing dist entrypoint", () => {
@@ -706,7 +706,7 @@ test("agbrowse: user-prompt-submit hook e2e - natural language agbrowse request 
     assert.equal(res.status, 0, res.stderr);
     const out = JSON.parse(res.stdout);
     const ctx = out.hookSpecificOutput.additionalContext;
-    assert.match(ctx, /\[codexclaw: SEARCH/);
+    assert.match(ctx, /\[cursorclaw: SEARCH/);
     assert.match(ctx, /cxc-search/);
     assert.match(ctx, /agbrowse fetch/);
     assert.match(ctx, /Never use plain `agbrowse search/);
@@ -791,7 +791,7 @@ test("260710: spawn hook e2e - native collaboration name drives the V2 path", ()
     const res = runHook(ep, hookEvent, {
       hook_event_name: "PreToolUse", session_id: "s1", cwd,
       tool_name: "collaborationspawn_agent",
-      tool_input: { task_name: "t", fork_turns: "none", message: "use $cxc-dev" },
+      tool_input: { task_name: "t", fork_turns: "none", message: "use $crc-dev" },
     }, { CXC_SKILLS_DIR: join(pluginRoot, "skills") });
     assert.equal(res.status, 0, res.stderr);
     const ui = JSON.parse(res.stdout).hookSpecificOutput.updatedInput;
@@ -837,14 +837,14 @@ test("260713: spawn hook e2e - snapshot override composes mention repair with th
     const v1Normalized = runHook(ep, hookEvent, {
       hook_event_name: "PreToolUse", session_id: "s1", cwd: isolatedCwd,
       tool_name: "spawn_agent",
-      tool_input: { message: "$cxc-dev review the frontend diff", agent_type: "explorer", trace_id: "v1" },
+      tool_input: { message: "$crc-dev review the frontend diff", agent_type: "explorer", trace_id: "v1" },
     }, skillsEnv);
     assert.equal(v1Normalized.status, 0, v1Normalized.stderr);
     const v1NormalizedUi = JSON.parse(v1Normalized.stdout).hookSpecificOutput.updatedInput;
     assert.equal(v1NormalizedUi.trace_id, "v1");
     // Separator-tolerant: the runtime emits native path separators inside the
     // link target (skill://D:\a\...\skills\dev\SKILL.md on Windows).
-    assert.match(v1NormalizedUi.message, /\[\$cxc-dev\]\(skill:\/\/.*[\\/]skills[\\/]dev[\\/]SKILL\.md\)/);
+    assert.match(v1NormalizedUi.message, /\[\$crc-dev\]\(skill:\/\/.*[\\/]skills[\\/]dev[\\/]SKILL\.md\)/);
     // 260713 WP2 surface-split: v1 payloads (no task_name) get the compact V1
     // scope block; only v2 payloads receive the leaf guard.
     assert.ok(v1NormalizedUi.message.startsWith("[CXC-SUBAGENT-SCOPE]"), "260713 surface-split: v1 spawn gets the scope block");
@@ -857,12 +857,12 @@ test("260713: spawn hook e2e - snapshot override composes mention repair with th
     const v1Model = runHook(ep, hookEvent, {
       hook_event_name: "PreToolUse", session_id: "s1", cwd: configuredCwd,
       tool_name: "spawn_agent",
-      tool_input: { message: "$cxc-dev map the codebase", agent_type: "explorer" },
+      tool_input: { message: "$crc-dev map the codebase", agent_type: "explorer" },
     }, skillsEnv);
     assert.equal(v1Model.status, 0, v1Model.stderr);
     const v1Ui = JSON.parse(v1Model.stdout).hookSpecificOutput.updatedInput;
     assert.equal(v1Ui.model, "model-explorer");
-    assert.match(v1Ui.message, /\[\$cxc-dev\]\(skill:\/\//);
+    assert.match(v1Ui.message, /\[\$crc-dev\]\(skill:\/\//);
     assert.ok(v1Ui.message.startsWith("[CXC-SUBAGENT-SCOPE]"), "260713 surface-split: v1 spawn gets the scope block");
     assert.ok(!("reasoning_effort" in v1Ui), "no configured effort -> none injected");
 
@@ -871,32 +871,32 @@ test("260713: spawn hook e2e - snapshot override composes mention repair with th
       tool_name: "spawn_agent",
       // 090 line-based contract: the bracketed marker line is protected, so the
       // repairable mention sits on its own line.
-      tool_input: { task_name: "normalized", fork_turns: "none", message: "[CXC-LEAF-GUARD] guarded\n$cxc-dev" },
+      tool_input: { task_name: "normalized", fork_turns: "none", message: "[CXC-LEAF-GUARD] guarded\n$crc-dev" },
     }, skillsEnv);
     assert.equal(v2Normalized.status, 0, v2Normalized.stderr);
     const v2NormalizedUi = JSON.parse(v2Normalized.stdout).hookSpecificOutput.updatedInput;
     // A bare marker is untrusted input and cannot suppress the real full guard.
     assert.equal((v2NormalizedUi.message.match(/\[CXC-LEAF-GUARD\]/g) ?? []).length, 2);
     assert.ok(v2NormalizedUi.message.startsWith("[CXC-LEAF-GUARD] You are a LEAF agent"));
-    assert.match(v2NormalizedUi.message, /\[\$cxc-dev\]\(skill:\/\//);
+    assert.match(v2NormalizedUi.message, /\[\$crc-dev\]\(skill:\/\//);
     assert.match(v2NormalizedUi.message, /<skill name="cxc-dev">/, "v2 inlines the SKILL.md body");
 
     const v2Guard = runHook(ep, hookEvent, {
       hook_event_name: "PreToolUse", session_id: "s1", cwd: configuredCwd,
       tool_name: "spawn_agent",
-      tool_input: { task_name: "child_task", fork_turns: "none", message: "$cxc-dev map the codebase" },
+      tool_input: { task_name: "child_task", fork_turns: "none", message: "$crc-dev map the codebase" },
     }, skillsEnv);
     assert.equal(v2Guard.status, 0, v2Guard.stderr);
     const v2Ui = JSON.parse(v2Guard.stdout).hookSpecificOutput.updatedInput;
     assert.ok(v2Ui.message.startsWith("[CXC-LEAF-GUARD]"));
-    assert.match(v2Ui.message, /\[\$cxc-dev\]\(skill:\/\//);
+    assert.match(v2Ui.message, /\[\$crc-dev\]\(skill:\/\//);
     assert.equal(v2Ui.model, "model-explorer", "260713 surface-split: v2 non-full fork gets configured model");
     assert.match(v2Ui.message, /<skill name="cxc-dev">/);
 
     const denied = runHook(ep, hookEvent, {
       hook_event_name: "PreToolUse", session_id: "s1", cwd: isolatedCwd,
       tool_name: "spawn_agent", agent_id: "child-1", agent_type: "explorer",
-      tool_input: { task_name: "recursive", fork_turns: "none", message: "$cxc-dev spawn a helper" },
+      tool_input: { task_name: "recursive", fork_turns: "none", message: "$crc-dev spawn a helper" },
     }, skillsEnv);
     assert.equal(denied.status, 0, denied.stderr);
     const deniedOut = JSON.parse(denied.stdout).hookSpecificOutput;
@@ -925,7 +925,7 @@ test("260713: spawn hook e2e - cache-shaped fixture uses script-relative skills"
     const res = runHook(join(cacheDist, basename(distAbs)), hookEvent, {
       hook_event_name: "PreToolUse", session_id: "s1", cwd,
       tool_name: "spawn_agent",
-      tool_input: { message: "$cxc-dev inspect the cache", agent_type: "explorer" },
+      tool_input: { message: "$crc-dev inspect the cache", agent_type: "explorer" },
     }, { CXC_SKILLS_DIR: undefined });
     assert.equal(res.status, 0, res.stderr);
     const ui = JSON.parse(res.stdout).hookSpecificOutput.updatedInput;
@@ -937,7 +937,7 @@ test("260713: spawn hook e2e - cache-shaped fixture uses script-relative skills"
     // Node realpaths the main module, so the script-relative skillsDir and this
     // explicit realpathSync agree on both POSIX and Windows temp roots.
     assert.ok(
-      ui.message.includes(`[$cxc-dev](skill://${realpathSync(cacheSkill)}) inspect the cache`),
+      ui.message.includes(`[$crc-dev](skill://${realpathSync(cacheSkill)}) inspect the cache`),
       "normalized mention link resolves against the script-relative skills dir",
     );
     // 260818: v1 now carries the SKILL.md BODY as well as the link, so the
@@ -998,7 +998,7 @@ test("L050: post-compact hook e2e - active cycle resets cursor, idle is a no-op"
 // line; allows clean patches and any error. Drives the real dist entrypoint via the
 // manifest command (event arg pre-tool-use-edit after the 050 consolidation).
 // Hermeticity (050 audit Low #3): the advisory leg reads session state + goal DB, so
-// empty-stdout assertions pin an empty CODEX_HOME and a tmp cwd.
+// empty-stdout assertions pin an empty CURSOR_HOME and a tmp cwd.
 test("L060: edit-path hook e2e - forbidden pattern denies, clean patch allows", () => {
   const { event, hookEvent, distAbs } = readHookCommand("./hooks/pre-tool-use-linting-apply-patch.json");
   assert.equal(event, "PreToolUse");
@@ -1101,7 +1101,7 @@ test("subagent-guard: pre-tool-use interview gate denies root, skips subagent pa
     db.exec("CREATE TABLE thread_goals (thread_id TEXT PRIMARY KEY NOT NULL, goal_id TEXT NOT NULL, objective TEXT NOT NULL, status TEXT NOT NULL);");
     db.prepare("INSERT INTO thread_goals (thread_id, goal_id, objective, status) VALUES (?,?,?,?)").run("s1", "g1", "obj", "active");
     db.close();
-    const env = { CODEX_HOME: home, CODEXCLAW_HOME: join(home, "cxc"), CODEX_SQLITE_HOME: home };
+    const env = { CURSOR_HOME: home, CURSORCLAW_HOME: join(home, "cxc"), CODEX_SQLITE_HOME: home };
     const payload = {
       hook_event_name: "PreToolUse", session_id: "s1", cwd: tmp,
       tool_name: "request_user_input", tool_input: { questions: [] },

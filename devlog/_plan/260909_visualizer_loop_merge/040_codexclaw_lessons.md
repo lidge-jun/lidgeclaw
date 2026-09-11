@@ -11,7 +11,7 @@
 | patina의 한국어 AI 신호와 "숫자·극성·인과 보존" 검증 | `kwrite/references/ai-tell-taxonomy.md` | CAT-11 추가(과도한 중요성 부여, ~적 접미사 남용, 연결사 머리, 완화 표현, em dash), 수정 원칙에 fidelity 항목(숫자·방향·인과가 바뀐 윤문은 되돌림; patina `droppedNumbers` 발상) |
 | 인쇄·PDF 문서에도 UI와 같은 LLM 기본값 목록이 필요하다 | `dev-uiux-design/SKILL.md` "Do not default to" 문장 | 문서·보고서용 반사 부품 한 줄과 REPORT-DESIGN-01 포인터 |
 | fresh-reader는 HTML이 아니라 렌더링된 페이지를 읽어야 조판·시각 슬롭을 잡는다 | `pabcd/references/phase-check.md` C-READER-01 | "렌더링된 산출물(PDF 페이지 이미지)을 읽고, AI 템플릿처럼 보이는 시각 요소를 묻는다" 한 문장 |
-| Aside 기본 모델 무료 쿼터 소진(402)으로 레인이 즉사 | `~/.codex/skills/aside-jun/SKILL.md` (개인 스킬, 레포 밖) | "When something goes wrong"에 402 free_quota_exhausted → `-m opencodex/<provider>/<model>` 항목 |
+| Aside 기본 모델 무료 쿼터 소진(402)으로 레인이 즉사 | `~/.cursor/skills/aside-jun/SKILL.md` (개인 스킬, 레포 밖) | "When something goes wrong"에 402 free_quota_exhausted → `-m opencodex/<provider>/<model>` 항목 |
 
 ## 검증
 

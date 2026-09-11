@@ -13,7 +13,7 @@ Archetype: satisfy-spec A repair, C3 documentation with C4 scrutiny of control/e
 
 ## 2. Observed feasibility and its limits
 
-Private remote prefix **R** = /Users/junny/codexclaw-probes/01a0702d-c493-7510-801f-7d8772a2689c on macmini-cf. Local operator prefix **E** = .codexclaw/evidence/01a0702d-c493-7510-801f-7d8772a2689c/operator in this checkout. These are existing owned artifacts, not authority over other homes. Local scripts and missing remote raw RPC artifacts were read without product execution.
+Private remote prefix **R** = /Users/junny/codexclaw-probes/01a0702d-c493-7510-801f-7d8772a2689c on macmini-cf. Local operator prefix **E** = .cursorclaw/evidence/01a0702d-c493-7510-801f-7d8772a2689c/operator in this checkout. These are existing owned artifacts, not authority over other homes. Local scripts and missing remote raw RPC artifacts were read without product execution.
 
 | Original / observation | What it proves and does not prove |
 | --- | --- |
@@ -47,7 +47,7 @@ Native source root: /Users/jun/Developer/codex/121_openai-codex. Read with git s
 | app-server-protocol/src/protocol/v2/turn.rs:72–224; app-server/src/request_processors/turn_processor.rs:568–620 | turn/start submits user input, returns inProgress ID, **not an execution barrier**. steer requires expectedTurnId; interrupt requires threadId/turnId. Neither is a callback answer. |
 | app-server-protocol/src/protocol/v2/item.rs:1605–1653; protocol/common.rs:1513–1515; v2/notification.rs:53–56; v2/hook.rs:142–155 | Real question includes T/U/item/questions/autoResolutionMs; response maps qids to answer arrays. Resolved links thread/request ID. Hooks include T, nullable U and run information. |
 | ext/goal/src/tool.rs:183–265; ext/goal/src/spec.rs:66–80 | Model create rejects unfinished predecessor; model update allows only complete/blocked. User/system owns pause/activate; ≥3 actual goal turns of genuine impasse precede blocked. API enum includes other statuses, but **this protocol permits user set only active/paused**, never operator blocked/complete. |
-| plugins/codexclaw/components/pabcd-state/src/goalplan-cli.ts:595–636 (this worktree) | loop init creates/binds local plan, not native goal; this branch has no active-goal prerequisite. Paused registration is source-supported, still needs actual successful trace. |
+| plugins/cursorclaw/components/pabcd-state/src/goalplan-cli.ts:595–636 (this worktree) | loop init creates/binds local plan, not native goal; this branch has no active-goal prerequisite. Paused registration is source-supported, still needs actual successful trace. |
 
 ## 4. Existing private passthrough and bounded operator recipe
 
@@ -59,7 +59,7 @@ import { spawn, execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync, appendFileSync, realpathSync } from 'node:fs';
 import { join } from 'node:path';
 import assert from 'node:assert/strict';
-import { probeEnv, payloadDigest, fileDigest } from '/Users/junny/codexclaw-probes/01a0702d-c493-7510-801f-7d8772a2689c/wp1-source/plugins/codexclaw/scripts/probe-recorder.mjs';
+import { probeEnv, payloadDigest, fileDigest } from '/Users/junny/codexclaw-probes/01a0702d-c493-7510-801f-7d8772a2689c/wp1-source/plugins/cursorclaw/scripts/probe-recorder.mjs';
 
 // Private bounded native-transport observation. No automatic RPC/approval responses.
 const root = process.argv[2];
@@ -74,13 +74,13 @@ const launchDir = join(home, 'native-api-bin'), codex = realpathSync(spec.codexB
 const quote = s => "'" + s.replaceAll("'", "'\\''") + "'";
 mkdirSync(out, {mode: 0o700}); mkdirSync(launchDir, {mode: 0o700});
 const env = probeEnv(home, launchDir, pluginRoot);
-writeFileSync(join(launchDir, 'cxc'), '#!/bin/sh\nexec ' + env.CODEXCLAW_CXC + ' "$@"\n', {flag: 'wx', mode: 0o700});
+writeFileSync(join(launchDir, 'cxc'), '#!/bin/sh\nexec ' + env.CURSORCLAW_CRC + ' "$@"\n', {flag: 'wx', mode: 0o700});
 writeFileSync(join(launchDir, 'codex'), '#!/bin/sh\nexec ' + quote(codex) + ' "$@"\n', {flag: 'wx', mode: 0o700});
 const snapshot = () => ({config: fileDigest(join(home, '.codex/config.toml')), payload: payloadDigest(pluginRoot),
   entrypoint: fileDigest(codex), cxcLauncher: fileDigest(join(launchDir, 'cxc')), codexLauncher: fileDigest(join(launchDir, 'codex'))});
 const before = snapshot();
 const doctor = label => {
-  const text = execFileSync(process.execPath, [join(pluginRoot, 'bin/cxc.mjs'), 'doctor', '--json'], {cwd, env, encoding: 'utf8', timeout: 30000});
+  const text = execFileSync(process.execPath, [join(pluginRoot, 'bin/cursorclaw.mjs'), 'doctor', '--json'], {cwd, env, encoding: 'utf8', timeout: 30000});
   writeFileSync(join(out, 'doctor-' + label + '.json'), text, {flag: 'wx'});
   for (const name of ['manifest', 'hooks', 'hook-trust', 'install-root']) assert.equal(JSON.parse(text).checks.find(c => c.name === name)?.severity, 'PASS');
 };

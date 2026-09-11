@@ -15,9 +15,9 @@ does). The agent fell back to `reset → IDLE → P`, losing the I→P audit tra
 ## Loop-spec
 
 - Loop archetype: spec-satisfaction (verifier = tests pass + I→P works)
-- Write scope: `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts`,
-  `plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts`,
-  `plugins/codexclaw/skills/interview/SKILL.md`
+- Write scope: `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts`,
+  `plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts`,
+  `plugins/cursorclaw/skills/interview/SKILL.md`
 - Out-of-scope: `fsm.ts`, `interview.ts`, `state.ts`, `orchestrate-apply.ts`
 - Budget: single work-phase, C2
 

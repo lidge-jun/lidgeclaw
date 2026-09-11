@@ -8,7 +8,7 @@
 
 - Mind 디스패치는 이미 codex 네이티브 `spawn_agent`를 탄다 (MIND_DISPATCH_DIRECTIVE가
   메인 세션에 지시, minds.ts:61). 모든 스폰은 spawn-attach 훅을 통과.
-- 훅은 **이미 모든 스폰에** `.codexclaw/subagents.json`의 model/effort를 주입한다
+- 훅은 **이미 모든 스폰에** `.cursorclaw/subagents.json`의 model/effort를 주입한다
   — 단 (a) 호출자가 해당 필드를 생략했고 (b) full-history fork가 아닐 때
   (spawn-attach-hook.ts 헤더 주석, `isFullHistoryFork` :371).
 - 역할 판별은 `inferRole(agentType, message)` (:351): worker→executor,

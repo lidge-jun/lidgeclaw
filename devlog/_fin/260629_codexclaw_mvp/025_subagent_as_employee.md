@@ -47,7 +47,7 @@ developer_instructions = """ ... role system prompt ... """
 - Each role's INLINE spawn instructions (B-opt2) name the dev-* router(s) for its surface, so all 13
   dev skills act as the shared discipline routers behind the roles.
 
-(codexclaw already has stub `plugins/codexclaw/agents/*.toml` — migrate to this richer shape.)
+(codexclaw already has stub `plugins/cursorclaw/agents/*.toml` — migrate to this richer shape.)
 
 ## Injection path to confirm
 - How codex exposes these agents to `multi_agent_v1.spawn_agent` (omo uses it).

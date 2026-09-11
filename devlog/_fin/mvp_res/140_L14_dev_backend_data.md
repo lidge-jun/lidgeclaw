@@ -19,23 +19,23 @@ rules for strict typing, boundary validation, and parse-don't-validate.
 
 ## Scope (decision-complete)
 Files to add/edit:
-- `plugins/codexclaw/skills/dev-backend/SKILL.md`
-- `plugins/codexclaw/skills/dev-backend/agents/openai.yaml`
-- `plugins/codexclaw/skills/dev-backend/scripts/README.md`
-- `plugins/codexclaw/skills/dev-backend/scripts/scaffold-audit.sh`
-- `plugins/codexclaw/skills/dev-data/SKILL.md`
-- `plugins/codexclaw/skills/dev-data/agents/openai.yaml`
-- `plugins/codexclaw/skills/dev-data/references/governance.md`
-- `plugins/codexclaw/skills/dev-data/references/ml-pipeline.md`
-- `plugins/codexclaw/skills/dev-data/references/streaming.md`
-- `plugins/codexclaw/skills/dev-data/references/tools.md`
+- `plugins/cursorclaw/skills/dev-backend/SKILL.md`
+- `plugins/cursorclaw/skills/dev-backend/agents/openai.yaml`
+- `plugins/cursorclaw/skills/dev-backend/scripts/README.md`
+- `plugins/cursorclaw/skills/dev-backend/scripts/scaffold-audit.sh`
+- `plugins/cursorclaw/skills/dev-data/SKILL.md`
+- `plugins/cursorclaw/skills/dev-data/agents/openai.yaml`
+- `plugins/cursorclaw/skills/dev-data/references/governance.md`
+- `plugins/cursorclaw/skills/dev-data/references/ml-pipeline.md`
+- `plugins/cursorclaw/skills/dev-data/references/streaming.md`
+- `plugins/cursorclaw/skills/dev-data/references/tools.md`
 
 Concrete source -> target map:
-- `/Users/jun/.cli-jaw-3459/skills/dev-backend/SKILL.md` -> `plugins/codexclaw/skills/dev-backend/SKILL.md`
-- `/Users/jun/.cli-jaw-3459/skills/dev-backend/scripts/*` -> `plugins/codexclaw/skills/dev-backend/scripts/`
-- `/Users/jun/.cli-jaw-3459/skills/dev-data/SKILL.md` -> `plugins/codexclaw/skills/dev-data/SKILL.md`
-- `/Users/jun/.cli-jaw-3459/skills/dev-data/references/*` -> `plugins/codexclaw/skills/dev-data/references/`
-- `devlog/.lazycodex/plugins/omo/skills/programming/SKILL.md` -> `plugins/codexclaw/skills/dev-backend/SKILL.md` and `plugins/codexclaw/skills/dev-data/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-backend/SKILL.md` -> `plugins/cursorclaw/skills/dev-backend/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-backend/scripts/*` -> `plugins/cursorclaw/skills/dev-backend/scripts/`
+- `/Users/jun/.cli-jaw-3459/skills/dev-data/SKILL.md` -> `plugins/cursorclaw/skills/dev-data/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-data/references/*` -> `plugins/cursorclaw/skills/dev-data/references/`
+- `devlog/.lazycodex/plugins/omo/skills/programming/SKILL.md` -> `plugins/cursorclaw/skills/dev-backend/SKILL.md` and `plugins/cursorclaw/skills/dev-data/SKILL.md`
 - `devlog/.lazycodex/plugins/omo/skills/programming/references/code-smells.md` -> backend/data review notes only when language-level smells affect API or pipeline boundaries
 
 Exact behavior:

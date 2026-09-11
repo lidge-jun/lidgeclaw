@@ -2,7 +2,7 @@
 created: 2026-08-15
 status: evidence
 workPhase: wp5
-tags: [codexclaw, release, evidence]
+tags: [cursorclaw, release, evidence]
 ---
 
 # 081 — v0.2.1 릴리스 기록

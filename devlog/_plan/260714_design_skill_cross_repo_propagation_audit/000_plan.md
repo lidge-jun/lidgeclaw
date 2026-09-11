@@ -88,8 +88,8 @@ Critical/High/Medium none (one Low navigation-clarity note on shorthand
   content-based (rg), not git-diff-based.
 - Validators: `quick_validate.py` -> `Skill is valid!` on all 8 skill dirs.
 
-Evidence receipts: `.codexclaw/evidence/260714-cli-jaw-design-award-leaf-attempt-2.md`,
-`.codexclaw/evidence/subagent-stop-9-attempt-3-design-award-additive-port.md`,
-`.codexclaw/evidence/subagent-stop-9-ima2-design-award-mapping.md`,
-`.codexclaw/evidence/260714-four-repo-repair-review.md` (final review).
+Evidence receipts: `.cursorclaw/evidence/260714-cli-jaw-design-award-leaf-attempt-2.md`,
+`.cursorclaw/evidence/subagent-stop-9-attempt-3-design-award-additive-port.md`,
+`.cursorclaw/evidence/subagent-stop-9-ima2-design-award-mapping.md`,
+`.cursorclaw/evidence/260714-four-repo-repair-review.md` (final review).
 All target-repo changes remain uncommitted for user review; no git commits were made.

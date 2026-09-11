@@ -6,10 +6,10 @@ hypothesis REBUTTED by reviewer evidence.
 ## B1 (High, ACCEPT) — no safe token grammar for normalization
 RCA: plan hand-waved "rewrite every bare token except link targets"; context-free
 regex can nest links, corrupt code fences/URLs, or rewrite the prefix of
-`$cxc-dev_extra` (codex-rs mention chars include `_`/`:`, injection.rs:298).
+`$crc-dev_extra` (codex-rs mention chars include `_`/`:`, injection.rs:298).
 Fold-back: single-pass span-aware scanner with protected spans (fenced code,
 inline code, complete markdown link spans), longest-match `$codexclaw:cxc-<f>`
-before `$cxc-<f>`, trailing-boundary = next char is not a mention char
+before `$crc-<f>`, trailing-boundary = next char is not a mention char
 ([A-Za-z0-9_:-]), folder charset [a-z0-9-] lowercase-only, unknown folder =>
 untouched. Link-unsafe skillsDir (space/paren) => rewrite to `$codexclaw:cxc-<f>`
 (PROBE-D-proven) instead of the link form. Adversarial unit tests per case.
@@ -55,5 +55,5 @@ the missing marker is expected behavior, not a matcher failure. The
   registry.rs:114); keep D1 deny before normalization.
 - `dist/../../../skills` correct in dev tree AND plugin cache (PLUGIN_ROOT layout).
 - Prefix derives from plugin manifest `name` (plugin_namespace.rs:27) ->
-  hardcoded `codexclaw:` OK; pin with a test reading .codex-plugin/plugin.json.
+  hardcoded `codexclaw:` OK; pin with a test reading .cursor-plugin/plugin.json.
 - spawn-wrapper.test.ts:242 bare-fallback assertion must flip with the impl.

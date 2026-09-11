@@ -3,7 +3,7 @@ created: 2026-08-15
 status: superseded
 supersededBy: 023_final_design.md
 warning: 폐기됨 — 시간 임계값 설계는 정상 감사를 거부한다. 감사 이력으로만 보존.
-tags: [codexclaw, pabcd, state, phase-tracking]
+tags: [cursorclaw, pabcd, state, phase-tracking]
 unit: 260815_pabcd_phase_collapse
 ---
 

@@ -1,5 +1,5 @@
 /**
- * fixtures.ts — build a synthetic CODEX_HOME for recall tests: date-structured
+ * fixtures.ts — build a synthetic CURSOR_HOME for recall tests: date-structured
  * rollout JSONL files (main + subagent + stale), a threads state db, and a
  * memories tree with a stage1_outputs db. All content is deterministic; dates
  * derive from Date.now() so --days pruning is testable.

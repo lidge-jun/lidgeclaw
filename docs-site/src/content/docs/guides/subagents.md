@@ -4,7 +4,7 @@ description: Configure per-role subagent models and prompts through codexclaw's 
 ---
 
 codexclaw lets you assign a model and prompt override to each subagent role, persisted in
-`.codexclaw/subagents.json` and exposed over MCP.
+`.cursorclaw/subagents.json` and exposed over MCP.
 
 ## Roles
 
@@ -53,12 +53,12 @@ editors so you can set roles without hand-editing JSON.
 
 The `pre-tool-use-attaching-skills` hook wires into live `spawn_agent` calls on both
 surfaces, but it does not choose skills. Dispatchers explicitly name each required
-skill with preferred `[$cxc-<name>](skill://<abs SKILL.md>)` links or the plugin-native
+skill with preferred `[$crc-<name>](skill://<abs SKILL.md>)` links or the plugin-native
 `$codexclaw:cxc-<name>` fallback. When the spawn message is plaintext, the hook normalizes
 known broken/bare mentions and inlines recognized SKILL.md bodies on V2-shaped spawns.
 Native ChatGPT-backend V2 gives the hook ciphertext, so both operations are no-ops there;
 when no body can be inlined, it appends a plaintext `[CXC-SKILL-AFFORDANCE]` block telling
-the child to self-load any `$cxc-<folder>` / `$codexclaw:cxc-<folder>` mention from
+the child to self-load any `$crc-<folder>` / `$codexclaw:cxc-<folder>` mention from
 `<skillsDir>/<folder>/SKILL.md`; fork inheritance remains a secondary channel. Its other
 reliable native V2 channels are the leaf guard and omitted configured
 `model`/`reasoning_effort` injection for non-full-history spawns. It never invents role
@@ -99,7 +99,7 @@ Settings alone do not establish that a native host delivered every failure code.
 Claim the returned attempt with `action:claim` and `attemptId`. Only `action:spawn`
 authorizes one call; include its marker at the start of the native task message.
 Report creation/completion or failure, and inspect `action:status` after a lost
-response. Records live under `.codexclaw/dispatches/<session>/<dispatch>.json`.
+response. Records live under `.cursorclaw/dispatches/<session>/<dispatch>.json`.
 
 Quota/model availability failures can select the fallback. Policy, permission,
 authentication and cancellation failures stop. Ambiguous creation or ongoing work

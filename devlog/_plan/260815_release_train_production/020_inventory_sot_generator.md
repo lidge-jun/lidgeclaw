@@ -9,18 +9,18 @@ Status: PLANNED — work-phase wp2 (issue #25). Amended at the A gate; see `004_
 - Goal: inventory facts are derived from the payload and injected into every
   publication surface, with a gate that fails on set mismatch
 - Non-goals: release manifest/receipts (030), CI topology (040)
-- Verifier: `node plugins/codexclaw/scripts/inventory.mjs --check` (new),
+- Verifier: `node plugins/cursorclaw/scripts/inventory.mjs --check` (new),
   `npm test` (new unit tests), `gate.mjs`
 - Stop condition: `--check` exits 0 on a clean tree and non-zero on each injected
   drift fixture
-- Memory artifact: `plugins/codexclaw/inventory.json` + this doc
+- Memory artifact: `plugins/cursorclaw/inventory.json` + this doc
 - Terminal outcomes: DONE on all activation observations captured
 - Escalation: if a docs-site page cannot host a marker block without breaking the
   Astro build, record it and restrict that page to check-only coverage
 
 ## Design
 
-### Artifact: `plugins/codexclaw/inventory.json`
+### Artifact: `plugins/cursorclaw/inventory.json`
 
 Stores **identities only — never standalone counts, never a commit SHA**. Every
 count in generated prose is `array.length` at generation time, so a number cannot
@@ -73,7 +73,7 @@ HTML-comment markers, identical in Markdown and MDX:
 | `components` | `structure/INDEX.md` component map, `.../development/build-test.md` |
 | `install-hooks` | `docs-site/.../getting-started/installation.md` |
 | `skill-lanes` | `docs-site/.../guides/native-tools.md` |
-| `skills-readme` | `plugins/codexclaw/skills/README.md` |
+| `skills-readme` | `plugins/cursorclaw/skills/README.md` |
 
 Target list extended at the A gate (004 #8) — the first three ids left four
 surfaces from 002 unprotected. `docs/*.md` carries no inventory today, but the
@@ -99,11 +99,11 @@ their own violation class.
 
 | Path | Change |
 | --- | --- |
-| `plugins/codexclaw/scripts/inventory.mjs` | NEW — `collectInventory`, `renderBlock`, `applyBlocks`, `checkSets`, `readPublished`; CLI `--check` / `--write` / `--hash` / `--published` |
-| `plugins/codexclaw/inventory.json` | NEW — generated artifact, committed |
-| `plugins/codexclaw/scripts/gate.mjs` | add `checkInventory()` to `runGate()` |
-| `plugins/codexclaw/scripts/sync-readme-badges.mjs` | delegate to `inventory.mjs`; keep the entrypoint |
-| `plugins/codexclaw/test/inventory.test.mjs` | NEW — set-drift fixtures |
+| `plugins/cursorclaw/scripts/inventory.mjs` | NEW — `collectInventory`, `renderBlock`, `applyBlocks`, `checkSets`, `readPublished`; CLI `--check` / `--write` / `--hash` / `--published` |
+| `plugins/cursorclaw/inventory.json` | NEW — generated artifact, committed |
+| `plugins/cursorclaw/scripts/gate.mjs` | add `checkInventory()` to `runGate()` |
+| `plugins/cursorclaw/scripts/sync-readme-badges.mjs` | delegate to `inventory.mjs`; keep the entrypoint |
+| `plugins/cursorclaw/test/inventory.test.mjs` | NEW — set-drift fixtures |
 | README x3, `structure/INDEX.md`, `skills/README.md`, 8 docs-site pages | wrap 010's corrected content in marker blocks |
 | `.github/workflows/ci.yml` | add `inventory.mjs --check` (full wiring in 040) |
 

@@ -757,7 +757,7 @@ Support matrix line for the cloud agent:
 
 ---
 
-### 2.2 OpenAI Codex cloud
+### 2.2 Cursor cloud
 
 **URL change:** every `developers.openai.com/codex/*` URL now 301-redirects to `learn.chatgpt.com/docs/*`, and the doc set was reorganized:
 
@@ -827,7 +827,7 @@ An official screenshot on `learn.chatgpt.com/docs/cloud/internet-access` shows a
 
 > Codex builds an instruction chain when it starts (once per run; in the TUI this usually means once per launched session). Discovery follows this precedence order:
 >
-> Global scope: In your Codex home directory (defaults to ~/.codex, unless you set CODEX_HOME), Codex reads AGENTS.override.md if it exists. Otherwise, Codex reads AGENTS.md. Codex uses only the first non-empty file at this level.
+> Global scope: In your Codex home directory (defaults to ~/.cursor, unless you set CURSOR_HOME), Codex reads AGENTS.override.md if it exists. Otherwise, Codex reads AGENTS.md. Codex uses only the first non-empty file at this level.
 >
 > Project scope: Starting at the project root (typically the Git root), Codex walks down to your current working directory. If Codex cannot find a project root, it only checks the current directory. In each directory along the path, it checks for AGENTS.override.md, then AGENTS.md, then any fallback names in project_doc_fallback_filenames. Codex includes at most one file per directory.
 >

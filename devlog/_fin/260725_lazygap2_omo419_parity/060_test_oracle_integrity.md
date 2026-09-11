@@ -4,8 +4,8 @@
 
 ## 문제
 
-`plugins/codexclaw/skills/dev-testing/SKILL.md:384-408`과
-`plugins/codexclaw/skills/dev-testing/references/edge-first-testing.md:42`는 테스트 품질을
+`plugins/cursorclaw/skills/dev-testing/SKILL.md:384-408`과
+`plugins/cursorclaw/skills/dev-testing/references/edge-first-testing.md:42`는 테스트 품질을
 다루지만 세 가지 구체적 false-green 패턴을 명시하지 않는다. upstream이 이를 좁게 규정했다
 (`devlog/.lazycodex/plugins/omo/skills/programming/SKILL.md:107-131`).
 
@@ -16,23 +16,23 @@
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/skills/dev-testing/SKILL.md` | `## Patch Integrity Gate` heading **앞**에 규칙 3개 + 구조 판정 기준 삽입 (현재 그 heading은 `:405`) |
-| `plugins/codexclaw/components/cxc-ops/test/ast-grep.test.ts` | `:61` 산문 단정 **삭제** (비교할 두 번째 소스가 없음 → human review 이전). `:51`/`:56`은 유지 |
-| `plugins/codexclaw/components/subagent-config/test/catalog.test.ts` | `:9-13` 산문 정규식 단정을 상수/manifest 검사로 교체 |
-| `plugins/codexclaw/test/manifest-policy.test.mjs` | `:153-169` 산문 단정 삭제 → `skill-catalog.md` **경로를 추출해 파일 존재를 확인**하는 비교로 교체. `:113-149` **전부 삭제** → `130` 이월 |
+| `plugins/cursorclaw/skills/dev-testing/SKILL.md` | `## Patch Integrity Gate` heading **앞**에 규칙 3개 + 구조 판정 기준 삽입 (현재 그 heading은 `:405`) |
+| `plugins/cursorclaw/components/cxc-ops/test/ast-grep.test.ts` | `:61` 산문 단정 **삭제** (비교할 두 번째 소스가 없음 → human review 이전). `:51`/`:56`은 유지 |
+| `plugins/cursorclaw/components/subagent-config/test/catalog.test.ts` | `:9-13` 산문 정규식 단정을 상수/manifest 검사로 교체 |
+| `plugins/cursorclaw/test/manifest-policy.test.mjs` | `:153-169` 산문 단정 삭제 → `skill-catalog.md` **경로를 추출해 파일 존재를 확인**하는 비교로 교체. `:113-149` **전부 삭제** → `130` 이월 |
 
 ## 사전 조사 결과 (재감사 6 반영 — 범위 확정)
 
 초기 초안은 "위반이 발견되면 고친다"고 열어 두었다. 그 열린 범위를 닫기 위해 P 단계에서
-실제로 훑었다 (`rg -n "SKILL\.md" plugins/codexclaw/components/*/test/*.ts`).
+실제로 훑었다 (`rg -n "SKILL\.md" plugins/cursorclaw/components/*/test/*.ts`).
 
 발견된 위반 **2건**:
 
-- `plugins/codexclaw/components/cxc-ops/test/ast-grep.test.ts:61` —
+- `plugins/cursorclaw/components/cxc-ops/test/ast-grep.test.ts:61` —
   `assert.match(readFileSync(.../SKILL.md), /rg first|do not use ast-grep for ordinary grep/i)`.
   SKILL.md 산문의 특정 문구를 검사한다. 문구를 다듬으면 무관하게 깨지고, 실제 라우팅
   동작은 아무것도 증명하지 않는다 — `TEST-PROMPT-SEAM-01` 위반이다.
-- `plugins/codexclaw/components/subagent-config/test/catalog.test.ts:9-13` —
+- `plugins/cursorclaw/components/subagent-config/test/catalog.test.ts:9-13` —
   `lunasearch/SKILL.md` 원문을 읽어 `assert.match(lunaSkill, /model: "gpt-5\.6-luna"/)`와
   `assert.doesNotMatch(lunaSkill, /gpt-5\.3-codex-luna/)`를 단정한다. 의도는 스킬이 선언한
   모델과 코드 상수 `NATIVE_OPENAI_MODELS`의 일치인데, 검사 방식이 산문 정규식이라
@@ -43,7 +43,7 @@
 
 위반 아님으로 판정한 것들 (참고):
 
-- 같은 파일 `plugins/codexclaw/components/cxc-ops/test/ast-grep.test.ts:51`, `:56` — 파일 존재와 frontmatter 파싱. 기계 소비 이음새이므로 정상.
+- 같은 파일 `plugins/cursorclaw/components/cxc-ops/test/ast-grep.test.ts:51`, `:56` — 파일 존재와 frontmatter 파싱. 기계 소비 이음새이므로 정상.
 - `cxc-ops.test.ts:28,37` — fixture 생성(단정 아님).
 - `recall/test/ranking.test.ts:28` — 경로 분류 로직 검사.
 - `subagent-config/test/spawn-wrapper.test.ts:201` — SKILL.md 존재 여부 기반 동작 검사.
@@ -56,12 +56,12 @@
 
 ## WP2 P 재조사 (`.mjs` 트리 누락 정정)
 
-위 조사는 `components/*/test/*.ts`만 훑어 `plugins/codexclaw/test/*.mjs` 트리를 통째로
+위 조사는 `components/*/test/*.ts`만 훑어 `plugins/cursorclaw/test/*.mjs` 트리를 통째로
 빠뜨렸다 (Mind "Linnaeus" 지적). WP2 P에서 두 트리를 모두 다시 훑었다:
 
 ```
-rg -n 'SKILL\.md' plugins/codexclaw/components/*/test/*.ts
-rg -n 'readFileSync.*SKILL\.md|assert\.(match|doesNotMatch)' plugins/codexclaw/test/*.mjs
+rg -n 'SKILL\.md' plugins/cursorclaw/components/*/test/*.ts
+rg -n 'readFileSync.*SKILL\.md|assert\.(match|doesNotMatch)' plugins/cursorclaw/test/*.mjs
 ```
 
 ### 판정 기준 (A 감사 2라운드에서 재작성)
@@ -94,14 +94,14 @@ rg -n 'readFileSync.*SKILL\.md|assert\.(match|doesNotMatch)' plugins/codexclaw/t
 
 | 파일 | 판정 | 처리 |
 | --- | --- | --- |
-| `plugins/codexclaw/components/cxc-ops/test/ast-grep.test.ts:61` | 위반 | frontmatter `description` 파싱으로 교체 (아래 근거) |
-| `plugins/codexclaw/components/subagent-config/test/catalog.test.ts:9-13` | 위반 | frontmatter 파싱 + 상수 비교로 **강화** (아래 근거) |
-| `plugins/codexclaw/test/manifest-policy.test.mjs:153-169` | 위반 | 산문 단정 제거, 경로 참조만 유지 |
-| `plugins/codexclaw/test/manifest-policy.test.mjs:113-149` | **위반 (2라운드 신규)** | Tier heading 개수·금지어 부정문·섹션 순서·한국어 트리거 존재 — 전부 산문 결합. 아래 처리 |
-| `plugins/codexclaw/test/loop-activation-doc-sync.test.mjs` (10) | **위반 (2라운드 신규)** | **이 슬라이스에서 고치지 않는다** — 아래 이월 근거 |
-| `plugins/codexclaw/test/emergence-doc-sync.test.mjs` (25 호출, 루프 전개 시 36회) | **위반 (2라운드 신규)** | 동일 — 이월 |
-| `plugins/codexclaw/test/repo-map-packaging.test.mjs:30-40,133-135` | 대상 아님 | 버전 핀·라이선스명 = 값 검사 |
-| `plugins/codexclaw/components/pabcd-state/test/plan-cli.test.ts:33` | 대상 아님 | CLI 생성물 계약 |
+| `plugins/cursorclaw/components/cxc-ops/test/ast-grep.test.ts:61` | 위반 | frontmatter `description` 파싱으로 교체 (아래 근거) |
+| `plugins/cursorclaw/components/subagent-config/test/catalog.test.ts:9-13` | 위반 | frontmatter 파싱 + 상수 비교로 **강화** (아래 근거) |
+| `plugins/cursorclaw/test/manifest-policy.test.mjs:153-169` | 위반 | 산문 단정 제거, 경로 참조만 유지 |
+| `plugins/cursorclaw/test/manifest-policy.test.mjs:113-149` | **위반 (2라운드 신규)** | Tier heading 개수·금지어 부정문·섹션 순서·한국어 트리거 존재 — 전부 산문 결합. 아래 처리 |
+| `plugins/cursorclaw/test/loop-activation-doc-sync.test.mjs` (10) | **위반 (2라운드 신규)** | **이 슬라이스에서 고치지 않는다** — 아래 이월 근거 |
+| `plugins/cursorclaw/test/emergence-doc-sync.test.mjs` (25 호출, 루프 전개 시 36회) | **위반 (2라운드 신규)** | 동일 — 이월 |
+| `plugins/cursorclaw/test/repo-map-packaging.test.mjs:30-40,133-135` | 대상 아님 | 버전 핀·라이선스명 = 값 검사 |
+| `plugins/cursorclaw/components/pabcd-state/test/plan-cli.test.ts:33` | 대상 아님 | CLI 생성물 계약 |
 | `hook-e2e.test.mjs`, `cli-usage.test.mjs` | 대상 아님 | 런타임 출력 |
 
 ### 두 doc-sync 테스트를 이월하는 근거 (범위 결정)
@@ -132,12 +132,12 @@ rg -n 'readFileSync.*SKILL\.md|assert\.(match|doesNotMatch)' plugins/codexclaw/t
 #### 1. `catalog.test.ts` — 강화 (기준 통과)
 
 두 소스에서 값을 추출해 비교한다:
-소스 A `plugins/codexclaw/skills/lunasearch/SKILL.md:3`의 frontmatter `description`에서
-모델 토큰을 파싱, 소스 B `plugins/codexclaw/components/subagent-config/src/catalog.ts`의
+소스 A `plugins/cursorclaw/skills/lunasearch/SKILL.md:3`의 frontmatter `description`에서
+모델 토큰을 파싱, 소스 B `plugins/cursorclaw/components/subagent-config/src/catalog.ts`의
 `NATIVE_OPENAI_MODELS` 상수. `assert.ok(NATIVE_OPENAI_MODELS.includes(parsedModel))`.
 
 **런타임이 실제로 이 필드를 읽는다**는 것도 확인했다 —
-`plugins/codexclaw/components/subagent-config/src/spawn-attach-hook.ts:519-524`의
+`plugins/cursorclaw/components/subagent-config/src/spawn-attach-hook.ts:519-524`의
 `buildLeafSkillCatalog`가 SKILL.md 앞 1024바이트에서 `^description:\s*"?(...)"?$`를 파싱해
 leaf 카탈로그를 만든다. 즉 이 필드는 산문이 아니라 런타임 입력이다.
 
@@ -176,7 +176,7 @@ leaf 카탈로그를 만든다. 즉 이 필드는 산문이 아니라 런타임 
 
 ### 삽입할 규칙 본문 (before → after, 복사 실행 가능)
 
-`plugins/codexclaw/skills/dev-testing/SKILL.md`의 `## Patch Integrity Gate` 절
+`plugins/cursorclaw/skills/dev-testing/SKILL.md`의 `## Patch Integrity Gate` 절
 **앞**에 아래를 그대로 넣는다 (WP1 삽입 후 현재 그 heading은 `:405`).
 
 > ## Test Oracle Integrity (TEST-PROMPT-SEAM-01 / TEST-ORACLE-INDEPENDENCE-01 / TEST-PRECEDENCE-FIXTURE-01, DEFAULT)
@@ -197,8 +197,8 @@ leaf 카탈로그를 만든다. 즉 이 필드는 산문이 아니라 런타임 
 > - Also allowed (out of scope for this rule): asserting on non-prose values — version
 >   pins, license names, runtime output, CLI stdout, hook payloads, file existence.
 >
-> **Known violations remain.** `plugins/codexclaw/test/loop-activation-doc-sync.test.mjs`
-> and `plugins/codexclaw/test/emergence-doc-sync.test.mjs` still assert phrase existence
+> **Known violations remain.** `plugins/cursorclaw/test/loop-activation-doc-sync.test.mjs`
+> and `plugins/cursorclaw/test/emergence-doc-sync.test.mjs` still assert phrase existence
 > per source; fixing them needs structured contract fields in the skills and is tracked
 > as its own slice. Do not cite them as precedent.
 >
@@ -223,7 +223,7 @@ leaf 카탈로그를 만든다. 즉 이 필드는 산문이 아니라 런타임 
 ### PLAN-BYPASS-NAMED-01 기록 (다섯 필드)
 
 이 슬라이스는 규칙 3개를 추가하므로 강제 기록 의무가 있다
-(`plugins/codexclaw/skills/pabcd/SKILL.md:131`).
+(`plugins/cursorclaw/skills/pabcd/SKILL.md:131`).
 
 | 필드 | 값 |
 | --- | --- |
@@ -245,10 +245,10 @@ leaf 카탈로그를 만든다. 즉 이 필드는 산문이 아니라 런타임 
 
 | 항목 | 기대 | 검증 유형 |
 | --- | --- | --- |
-| `catalog.test.ts` 교체 후 | frontmatter `description`에서 모델 토큰 파싱 → `NATIVE_OPENAI_MODELS`와 비교. 본문 code fence 단정 없음 | **자동** — `node --test plugins/codexclaw/components/subagent-config/test/catalog.test.ts` |
+| `catalog.test.ts` 교체 후 | frontmatter `description`에서 모델 토큰 파싱 → `NATIVE_OPENAI_MODELS`와 비교. 본문 code fence 단정 없음 | **자동** — `node --test plugins/cursorclaw/components/subagent-config/test/catalog.test.ts` |
 | `catalog` mutation | `NATIVE_OPENAI_MODELS`에서 `gpt-5.6-luna`를 빼면 RED, 복원하면 GREEN | **자동 (mutation)** |
-| `ast-grep.test.ts:61` 삭제 | 그 단정이 사라지고 `:51`/`:56`은 남는다 | **자동** — `node --test plugins/codexclaw/components/cxc-ops/test/ast-grep.test.ts` |
-| `manifest-policy.test.mjs:153-169` 교체 | `dev/SKILL.md`에서 `skill-catalog.md` **경로를 추출**해 `existsSync`로 확인하는 비교. 단순 문구 매치 아님 | **자동** — `node --test plugins/codexclaw/test/manifest-policy.test.mjs` |
+| `ast-grep.test.ts:61` 삭제 | 그 단정이 사라지고 `:51`/`:56`은 남는다 | **자동** — `node --test plugins/cursorclaw/components/cxc-ops/test/ast-grep.test.ts` |
+| `manifest-policy.test.mjs:153-169` 교체 | `dev/SKILL.md`에서 `skill-catalog.md` **경로를 추출**해 `existsSync`로 확인하는 비교. 단순 문구 매치 아님 | **자동** — `node --test plugins/cursorclaw/test/manifest-policy.test.mjs` |
 | `manifest-policy.test.mjs:113-149` 삭제 | 그 블록 전체가 사라진다 (`130` 이월) | **자동** — 같은 명령 |
 | 전체 스위트 | 실패 0. 단정 삭제로 개수는 1,224보다 줄어든다 | **자동** — `npm test` |
 | 게이트 | exit 0 유지 | **자동** — `npm run gate` |
@@ -264,8 +264,8 @@ leaf 카탈로그를 만든다. 즉 이 필드는 산문이 아니라 런타임 
 ### 검증 명령 (PLAN-VERIFIER-REAL-01 적용)
 
 - `npm test` — **실행 확인됨** (2026-07-26): exit 0, 1,224 pass / 0 fail.
-  관측 근거: `package.json:24`의 glob이 `plugins/codexclaw/components/*/test/*.ts`와
-  `plugins/codexclaw/test/*.test.mjs`를 포함하므로 교체 대상 4건 전부를 실행한다.
+  관측 근거: `package.json:24`의 glob이 `plugins/cursorclaw/components/*/test/*.ts`와
+  `plugins/cursorclaw/test/*.test.mjs`를 포함하므로 교체 대상 4건 전부를 실행한다.
 - `npm run gate` — **실행 확인됨**: exit 0 + WARN 7건. 관측 범위는 status-sync,
   false-enforcement 문구 3패턴, hook 카운트, verifier-claim WARN뿐이다.
   **이 슬라이스의 규칙 3개를 관측하지 않는다** — 회귀 확인용으로만 분류한다.

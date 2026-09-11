@@ -11,7 +11,7 @@ function fixture(t: { after: (fn: () => void) => void }) {
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const cwd = join(root, 'project');
   mkdirSync(cwd);
-  return { cwd, env: { ...process.env, CODEX_HOME: join(root, 'codex'), CODEXCLAW_HOME: join(root, 'cxc') }, root };
+  return { cwd, env: { ...process.env, CURSOR_HOME: join(root, 'codex'), CURSORCLAW_HOME: join(root, 'cxc') }, root };
 }
 
 test('role precedence, explicit null, reset, sparse writes, and project independence', t => {

@@ -16,13 +16,13 @@ web surface for subagent model and prompt configuration.
 
 ## Scope (decision-complete)
 - Files to add/edit:
-  - `plugins/codexclaw/gui/package.json`
-  - `plugins/codexclaw/gui/index.html`
-  - `plugins/codexclaw/gui/src/main.tsx`
-  - `plugins/codexclaw/gui/src/App.tsx`
-  - `plugins/codexclaw/gui/src/api.ts`
-  - `plugins/codexclaw/gui/src/styles.css`
-  - `plugins/codexclaw/gui/README.md`
+  - `plugins/cursorclaw/gui/package.json`
+  - `plugins/cursorclaw/gui/index.html`
+  - `plugins/cursorclaw/gui/src/main.tsx`
+  - `plugins/cursorclaw/gui/src/App.tsx`
+  - `plugins/cursorclaw/gui/src/api.ts`
+  - `plugins/cursorclaw/gui/src/styles.css`
+  - `plugins/cursorclaw/gui/README.md`
   - `cli/package.json` and CLI launcher wiring for `cxc gui`
 - Exact behavior:
   - Use Vite + React, matching the opencodex stack for contributor familiarity.
@@ -31,7 +31,7 @@ web surface for subagent model and prompt configuration.
   - `cxc gui` starts the local dashboard and prints the URL.
   - GUI reads/writes only through codexclaw APIs; it does not shell out to ocx.
   - The app shell loads without requiring ocx and without requiring an existing
-    `.codexclaw/subagents.json`.
+    `.cursorclaw/subagents.json`.
   - Full `codexclaw gui` may be documented once; examples use `cxc gui`.
 - Must-NOT-Have:
   - No vendored opencodex source.
@@ -56,12 +56,12 @@ web surface for subagent model and prompt configuration.
 
 ## Acceptance (1-3 testable criteria)
 1. `cxc gui` starts the codexclaw dashboard and prints a local URL.
-2. GUI build completes successfully from `plugins/codexclaw/gui`.
+2. GUI build completes successfully from `plugins/cursorclaw/gui`.
 3. The app shell loads in ocx-absent state without console errors.
 
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
 - CLI stdout: `cxc gui` startup URL and clean shutdown.
-- GUI build output from `plugins/codexclaw/gui`.
+- GUI build output from `plugins/cursorclaw/gui`.
 - Browser/console smoke check for the app shell.
 
 ## Commit unit (one atomic conventional commit)
@@ -82,5 +82,5 @@ that no opencodex GUI files are copied.
 - 260629_codexclaw_mvp/034_gui_scaffold.md
 - 260629_codexclaw_mvp/030_phase2_overview.md (Q-P2-1)
 - 260629_codexclaw_mvp/000_research.md (opencodex gui/ is Vite + React; codexclaw ships own GUI)
-- plugins/codexclaw/gui/README.md
+- plugins/cursorclaw/gui/README.md
 - cli/package.json

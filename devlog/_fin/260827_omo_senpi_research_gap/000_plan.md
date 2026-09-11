@@ -10,7 +10,7 @@ Class: C5 research → 이 사이클에서는 구현하지 않고 C2-C4 후보�
 - Archetype: open-ended comparative research, evidence-backed collapse
 - Trigger: OMO beta와 Senpi의 능동 조사·파싱·병렬 파견 메커니즘을 뜯어 CodexClaw의 현재 격차를 찾는다.
 - Goal: 현재 원본 SHA에 고정된 소스 인용으로 ADOPT / ADAPT / REJECT / DEFER 판정과 의존 순서가 있는 업그레이드 후보를 남긴다.
-- Non-goals: `plugins/codexclaw/` 프로덕션 수정, npm 설치, 전역 설정 변경, push, release, OMO/Senpi 코드의 직접 복사.
+- Non-goals: `plugins/cursorclaw/` 프로덕션 수정, npm 설치, 전역 설정 변경, push, release, OMO/Senpi 코드의 직접 복사.
 - Verifier: 아래 C 명령이 참조 클론 SHA, 문서 인용, 판정표, 프로덕션 무변경을 직접 읽는다.
 - Stop condition: 두 원본과 CodexClaw의 대응 표면이 모두 인용되고, 격차마다 판정·위험·검증법·선행조건이 붙으면 종료한다.
 - Memory artifact: 이 유닛의 `000-009` 문서와 `devlog/.omo`, `devlog/.senpi` 로컬 참조 클론.
@@ -112,7 +112,7 @@ OMO의 최신 `dev`와 npm beta는 다르다. 이 유닛은 설치 대상인 bet
 5. 격차 행렬의 모든 행은 ADOPT / ADAPT / REJECT / DEFER 중 하나, 우선순위, 의존성, 위험, 활성화 검증을 갖는다.
 6. 기존 4.19.1 parity와 겹치는 행은 `prior document + prior row`, `4.19 disposition`, `5.0 evidence`, `concrete delta`, `new disposition`, `reason`을 모두 쓴다. 선례가 없으면 `NEW`로 표시한다.
 7. 미검증 추정은 `UNVERIFIED`로 분리한다.
-8. `plugins/codexclaw/`, `structure/`, tracked config에는 이 사이클의 변경이 없다.
+8. `plugins/cursorclaw/`, `structure/`, tracked config에는 이 사이클의 변경이 없다.
 9. `009_closeout.md`에 실제 spawn agent id, attached skill paths, lane disposition, wave-1 빈칸, wave-2 follow-up 또는 stop reason을 남긴다. 이는 child가 skill을 실제 사용했다는 증명은 아니며 payload/return receipt로만 표기한다.
 
 ## C verifier 사전 점검
@@ -123,7 +123,7 @@ SHA 명령만 P에서 exit 0과 target-read를 확인했다. 아직 없는 문�
 test "$(git -C devlog/.omo rev-parse HEAD)" = 84f98d8bd1b5c70c46e6f8a5613ffb3c787079db
 test "$(git -C devlog/.senpi rev-parse HEAD)" = 703d9d7676b3419273765a4566dd02c1abe75d70
 rg -n "ADOPT|ADAPT|REJECT|DEFER|UNVERIFIED" devlog/_fin/260827_omo_senpi_research_gap/006_gap_matrix.md
-rg -n "devlog/\.(omo|senpi)/.+:[0-9]+|plugins/codexclaw/.+:[0-9]+|structure/.+:[0-9]+" devlog/_fin/260827_omo_senpi_research_gap/*.md
+rg -n "devlog/\.(omo|senpi)/.+:[0-9]+|plugins/cursorclaw/.+:[0-9]+|structure/.+:[0-9]+" devlog/_fin/260827_omo_senpi_research_gap/*.md
 unit_add_commit="$(git log -1 --format=%H --grep='^docs: analyze OMO beta and Senpi research gaps$' -- devlog/_fin/260827_omo_senpi_research_gap)"
 unit_base="$(git rev-parse "$unit_add_commit^")"
 final_commit="$(git rev-parse HEAD)" # C close 시 literal SHA를 checkOutput에 남긴다.
@@ -132,9 +132,9 @@ test "$(git ls-tree -r --name-only "$final_commit" -- devlog/_fin/260827_omo_sen
 test -z "$(git diff --name-only "$unit_base..$final_commit" | rg -v '^devlog/_fin/260827_omo_senpi_research_gap/' || true)"
 git diff --check "$unit_base..$final_commit" -- devlog/_fin/260827_omo_senpi_research_gap
 git log --oneline "$unit_base..$final_commit" -- devlog/_fin/260827_omo_senpi_research_gap
-git status --short -- plugins/codexclaw structure
+git status --short -- plugins/cursorclaw structure
 ```
 
 `rg`는 존재성/count 보조 증거일 뿐 row 완전성이나 인용 진실성을 인증하지 않는다.
 
-P 시작 baseline에서 `git status --short -- plugins/codexclaw structure`는 빈 출력이었다. 전체 worktree에는 기존 `scripts/dev-symlink.sh` 수정과 다른 untracked devlog/mktemp 항목이 있었으므로 전체 clean을 주장하지 않는다.
+P 시작 baseline에서 `git status --short -- plugins/cursorclaw structure`는 빈 출력이었다. 전체 worktree에는 기존 `scripts/dev-symlink.sh` 수정과 다른 untracked devlog/mktemp 항목이 있었으므로 전체 clean을 주장하지 않는다.

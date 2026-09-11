@@ -6,7 +6,7 @@
 
 ## 문제
 
-`plugins/codexclaw/test/manifest-policy.test.mjs:122-133`은 `search/SKILL.md`의 각 줄을 훑어
+`plugins/cursorclaw/test/manifest-policy.test.mjs:122-133`은 `search/SKILL.md`의 각 줄을 훑어
 제거된 백엔드 이름(`progrok`, `web-AI`, `Grok Expert`, `GPT Pro`, `Exa`, `Tavily`,
 `Perplexity`, `Brave`)이 나오면 그 줄에 `do **not**|reintroduce|removed|non-goal|carry over`
 같은 부정 표현이 함께 있는지 확인한다.
@@ -29,7 +29,7 @@
 
 독립 소스가 실재하는지 찾아봤다. 없다:
 
-- `plugins/codexclaw/skills/search/SKILL.md:43-123`의 ladder는 백엔드를 **산문으로만**
+- `plugins/cursorclaw/skills/search/SKILL.md:43-123`의 ladder는 백엔드를 **산문으로만**
   서술한다 (Tier 1 hosted `web_search`, Tier 2 browser, Tier 3 explorer swarm).
 - 코드에 사용 가능 백엔드를 열거한 registry/상수가 없다. `web_search`는 호스트 제공
   도구이고 codexclaw이 목록을 소유하지 않는다.
@@ -41,7 +41,7 @@
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/skills/dev-code-reviewer/SKILL.md` | 리뷰 체크리스트에 항목 1개 추가 |
+| `plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md` | 리뷰 체크리스트에 항목 1개 추가 |
 
 추가할 문장:
 

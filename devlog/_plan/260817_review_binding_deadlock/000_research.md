@@ -1,7 +1,7 @@
 ---
 created: 2026-08-17
 status: research
-tags: [codexclaw, review-binding, deadlock, observer]
+tags: [cursorclaw, review-binding, deadlock, observer]
 session: 01a005f6-9189-74f1-bf5d-03608a638a01
 ---
 

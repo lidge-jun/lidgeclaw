@@ -48,13 +48,13 @@ this is a genuine "no protection configured" answer, not a permissions artifact.
 The install is a git-marketplace clone, not an artifact download:
 
 ```
-codex plugin marketplace add https://github.com/lidge-jun/codexclaw
+Cursor plugin install add https://github.com/lidge-jun/codexclaw
 codex plugin add codexclaw@codexclaw
 ```
 
 `.agents/plugins/marketplace.json` points at the in-repo payload
-(`"source": {"source":"local","path":"./plugins/codexclaw"}`), so the **committed
-tree is the artifact** — `plugins/codexclaw/test/packaging.test.mjs` states this
+(`"source": {"source":"local","path":"./plugins/cursorclaw"}`), so the **committed
+tree is the artifact** — `plugins/cursorclaw/test/packaging.test.mjs` states this
 outright ("the committed repo IS the install artifact"), and `package.json` is
 `private: true`.
 

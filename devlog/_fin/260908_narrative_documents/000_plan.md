@@ -9,7 +9,7 @@ produces a cited report through a defined loop. Non-goals: runtime rewrites, new
 account changes, third-party messages, unrelated PR cleanup. Verifier: per work-phase
 (skill-catalog test, link/frontmatter check, independent forward-use trials, component tests,
 CI/release/deploy receipts). Stop: all five goalplan criteria met and D closes. Memory
-artifact: this unit plus .codexclaw/evidence/<session>/. Outcomes: DONE with observed proof;
+artifact: this unit plus .cursorclaw/evidence/<session>/. Outcomes: DONE with observed proof;
 capability or host gaps reported as limitations; external authority gaps NEEDS_HUMAN.
 Escalation: main reclaims a slice after two distinct leaf failures; new worker scope is
 amended here before dispatch. Resource bounds: no user cap; bounded processes; Opus-5 and
@@ -40,7 +40,7 @@ trigger list lacks 딥리서치/심층 조사.
   dev-diagram-viewer/SKILL.md (134 lines), dev-diagram-viewer/reference/document-pdf.md
   (169), pabcd/references/plan-output.md (31), phase-check.md, dev-scaffolding/references/
   implementation-log.md (77), kwrite/SKILL.md (74), search/SKILL.md (268).
-- Tests observing skills: plugins/codexclaw/test/skill-catalog.test.mjs (catalog/badges);
+- Tests observing skills: plugins/cursorclaw/test/skill-catalog.test.mjs (catalog/badges);
   quick_validate.py via /usr/local/bin/python3 (frontmatter). Neither reads prose.
 - PR #84 (thisisjun786, fix/worktree-source-binding) is CONFLICTING against dev; it adds
   `cxc session source <worktree>` and touches pabcd-state src/dist, hooks, qa, docs.
@@ -115,7 +115,7 @@ run1/run2), the Windows CI on PR #84 exposed an 8.3 short-name path bug, and an
 independent review found two Git-environment leaks in the contributor's binding
 code; all were fixed with red/green tests before merge. The Windows deployment
 script's first regex edit corrupted config.toml and was restored from the preimage.
-Follow-ups not done here: parent-directory TOCTOU on `.codexclaw/sources` (accepted
+Follow-ups not done here: parent-directory TOCTOU on `.cursorclaw/sources` (accepted
 under the documented same-user exclusion), `session-binding.ts` JS realpath
 normalization, and the desktop-c795oh4 environment WARNs (Python store alias, codex
 features under non-interactive SSH), which predate this release.

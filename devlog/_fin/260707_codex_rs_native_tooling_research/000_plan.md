@@ -20,7 +20,7 @@ In scope:
 
 - Read-only inspection of `/Users/jun/Developer/codex/120_codex-cli/codex-rs`.
 - Read-only inspection of `/Users/jun/Developer/codex/171_oh-my-codex/docs`.
-- Read-only inspection of Codexclaw source-of-truth docs under `structure/` and `plugins/codexclaw/`.
+- Read-only inspection of Codexclaw source-of-truth docs under `structure/` and `plugins/cursorclaw/`.
 - Current-source web research for Fable, Claude Code, Cursor, Goose, and OpenHands.
 - New markdown files under this folder only.
 
@@ -37,8 +37,8 @@ Local repo mapping:
 
 - `cxc map .` highlighted Codexclaw owners such as `components/pabcd-state`, `components/subagent-config`, and `components/messenger-bridge`.
 - `cxc map /Users/jun/Developer/codex/120_codex-cli/codex-rs` highlighted `exec-server/src/server/session_registry.rs`, `core/src/exec.rs`, `mcp-server`, hooks, app server protocol, state, and agent-job tests.
-- `cxc map plugins/codexclaw/components/pabcd-state` identified FSM, orchestration, Stop, divergence, metrics, and subagent evidence owners.
-- `cxc map plugins/codexclaw/components/subagent-config` identified spawn payload, spawn attach hook, role config, catalog, and MCP ownership.
+- `cxc map plugins/cursorclaw/components/pabcd-state` identified FSM, orchestration, Stop, divergence, metrics, and subagent evidence owners.
+- `cxc map plugins/cursorclaw/components/subagent-config` identified spawn payload, spawn attach hook, role config, catalog, and MCP ownership.
 
 Key local paths:
 

@@ -50,7 +50,7 @@ function cxcInvocation(moduleUrl: string): string {
 
 /**
  * The `cxc` prefix for COMMAND lines this hook emits. Resolved at emit time (not
- * import time) so the CODEXCLAW_CXC test seam and per-machine PATH state apply
+ * import time) so the CURSORCLAW_CRC test seam and per-machine PATH state apply
  * per envelope. Recall injections emit BARE (un-backticked) command-block lines,
  * so only lines built through this helper are rewritten — prose mentions of the
  * word `cxc` (e.g. "$crc-recall") keep the literal (H1, 260724 fresh-install).
@@ -112,7 +112,7 @@ function buildDirective(): string {
   return [
     "[cxc-recall] The prompt references past work. Before asking the user to re-explain,",
     "search prior sessions (read-only):",
-    `  ${cxc} chat search "<distinctive terms>" --days 0   # full-history FTS over ~/.codex`,
+    `  ${cxc} chat search "<distinctive terms>" --days 0   # full-history FTS over ~/.cursor`,
     `  ${cxc} memory search "<topic>"                      # durable per-thread summaries`,
     "Add --context 2 to read around a hit, --cwd <repo> to scope. Details: $crc-recall.",
   ].join("\n");

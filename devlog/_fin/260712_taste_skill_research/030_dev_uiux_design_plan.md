@@ -1,6 +1,6 @@
 ---
 created: 2026-07-12
-tags: [codexclaw, dev-uiux-design, improvement-plan]
+tags: [cursorclaw, dev-uiux-design, improvement-plan]
 ---
 
 # dev-uiux-design Improvement Plan

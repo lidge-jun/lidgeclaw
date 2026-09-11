@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, dispatch-economy, meta-audit, plan]
+tags: [cursorclaw, dispatch-economy, meta-audit, plan]
 ---
 
 # Loop 1 — meta-consistency audit of the dispatch-economy patch (plan)
@@ -59,16 +59,16 @@ and settle nothing; main triages.
 - `structure/20_pabcd_dispatch_doctrine.md` §3 (ECONOMY/RETIRE/TASK/ACTOR/
   DISCOVER/SPECULATE + REVIEW-DECORRELATE).
 - `structure/10_subagent_skill_routing.md`, `structure/60_native_capabilities.md`.
-- `plugins/codexclaw/skills/pabcd/SKILL.md` (Delegation Model, P-phase
+- `plugins/cursorclaw/skills/pabcd/SKILL.md` (Delegation Model, P-phase
   loop-spec escalation, A-gate rules).
-- `plugins/codexclaw/skills/loop/SKILL.md` (ORCH-MANDATE, contract,
+- `plugins/cursorclaw/skills/loop/SKILL.md` (ORCH-MANDATE, contract,
   GOAL-COMPLETE-GATE, WAIT-VISIBILITY, SPECULATE, goalplan, Stop-continuation).
-- `plugins/codexclaw/skills/qa/SKILL.md`,
-  `plugins/codexclaw/skills/pabcd/references/loop-engineering.md` (delegation/
+- `plugins/cursorclaw/skills/qa/SKILL.md`,
+  `plugins/cursorclaw/skills/pabcd/references/loop-engineering.md` (delegation/
   enforcement-adjacent rule text).
-- `plugins/codexclaw/.codex-plugin/plugin.json` + `plugins/codexclaw/hooks/*.json`
+- `plugins/cursorclaw/.cursor-plugin/plugin.json` + `plugins/cursorclaw/hooks/*.json`
   (what is actually wired).
-- Runtime ground truth for lane R (rev 2): `plugins/codexclaw/components/
+- Runtime ground truth for lane R (rev 2): `plugins/cursorclaw/components/
   pabcd-state/dist/{hook,goal-gate,orchestrate-cli,goalplan,state}.js` — dist
   is what hooks/package.json execute; spot-check src/dist parity and flag any
   divergence as a finding in itself.

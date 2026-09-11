@@ -58,7 +58,7 @@ All items are verbatim observations from [raw-evidence-dump.md](raw-evidence-dum
 |---|---|---|
 | A1 | probe | `ssh macmini-cf 'node -v'` → v22.22.0 (exit 0) |
 | A2 | probe | `ssh suji 'codex --version'` → 0.147.0 |
-| A3 | test run | `node --test plugins/codexclaw/test/skill-catalog.test.mjs` → 4 pass, 0 fail |
+| A3 | test run | `node --test plugins/cursorclaw/test/skill-catalog.test.mjs` → 4 pass, 0 fail |
 | A4 | test run | `quick_validate.py` on search skill → "Skill is valid!", exit 0 |
 | A5 | probe | `curl http://127.0.0.1:10100/v1/models` → 28 models, includes `anthropic/claude-opus-5` |
 | A6 | observation | PR #84 CONFLICTING against `dev`; trial merge shows only `CHANGELOG.md` conflicts |

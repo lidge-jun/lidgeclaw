@@ -43,7 +43,7 @@ tags: [memory-pipeline, harness-comparison, codex, corpus-synthesis]
 
 | 하네스 | 저장 | 쓰기 트리거 | 읽기 경로 | 검색 | 망각/정리 |
 | --- | --- | --- | --- | --- | --- |
-| **co** Codex | SQLite state DB(`stage1_outputs`/`jobs`/`threads`) + `~/.codex/memories/` 마크다운 + `memories/.git` baseline | 세션 시작 시 백그라운드 2-phase(추출→통합). rollout이 10일 이내·6시간 idle·미처리일 때만. 시작당 2건 | `memory_summary.md`를 developer instructions에 2,500토큰 주입 → `MEMORY.md` → `rollout_summaries/` → `skills/` 점진 공개 | **인덱스 없음**. `memories/search` 도구는 substring 매칭(옵션 도구, 기본 off) + shell grep | `max_unused_days` 30일 초과 stage-1 prune(배치 200), `rollout_summaries` 유지분 외 삭제, extension resources 7일 |
+| **co** Codex | SQLite state DB(`stage1_outputs`/`jobs`/`threads`) + `~/.cursor/memories/` 마크다운 + `memories/.git` baseline | 세션 시작 시 백그라운드 2-phase(추출→통합). rollout이 10일 이내·6시간 idle·미처리일 때만. 시작당 2건 | `memory_summary.md`를 developer instructions에 2,500토큰 주입 → `MEMORY.md` → `rollout_summaries/` → `skills/` 점진 공개 | **인덱스 없음**. `memories/search` 도구는 substring 매칭(옵션 도구, 기본 off) + shell grep | `max_unused_days` 30일 초과 stage-1 prune(배치 200), `rollout_summaries` 유지분 외 삭제, extension resources 7일 |
 | **cc** Claude Code | `CLAUDE.md` 4계층 + `{base}/projects/{git-root}/memory/`(MEMORY.md+토픽) + `agent-memory/` 3스코프 + JSONL transcript | 메인 에이전트 직접 쓰기(항상 지시) 또는 extract 모드 백그라운드 추출. autoDream 24h/5세션 | `MEMORY.md` 인덱스 200줄/25KB 로드 → 토픽 파일 | (unknown — 인덱스 링크 순회 + 파일 읽기. 전용 검색엔진 언급 없음) | autoDream Phase 4 Prune이 인덱스 정리, staleness 경고(>1일), 팀 sync는 삭제 미전파 |
 | **ge** Gemini CLI | `GEMINI.md` 3-tier + JIT 서브디렉토리 + 세션 JSON. (2026-05 이후) `memoryService.ts` + `.inbox/{private,global}/*.patch` | `/memory add`. 최신판은 백그라운드 `memoryService`가 3시간+ idle·10+ user 메시지 세션을 스캔해 패치 후보 생성 | 계층 병합 후 `<global_context>`/`<extension_context>`/`<project_context>` XML로 시스템 프롬프트 주입 | (없음 — 계층 파일 전량 로드 방식) | 압축 시 도구출력 50K 예산 초과분 파일 백업 후 절삭, GC/Distillation 트리거 |
 | **gr** Grok Build | `~/.grok/memory/` 마크다운(global+workspace)이 canonical + `index.sqlite`(재생성 가능 캐시) | 4경로: 세션종료 메타데이터(LLM 없음), `/flush`(LLM 요약), `/remember`, `/dream` 통합 | first-turn 주입 + post-compaction recovery + `memory_search`/`memory_get` 도구 — 셋이 동일 `MemoryBackendParams` 공유 | **FTS5 BM25 + 선택적 sqlite-vec 벡터 하이브리드**(0.7/0.3), min_score 0.35, MMR 옵션 | 세션 소스만 시간 감쇠(반감기 7일), workspace/global은 감쇠 없음. watcher가 삭제 파일 stale chunk 제거 |
@@ -58,7 +58,7 @@ tags: [memory-pipeline, harness-comparison, codex, corpus-synthesis]
 | **ay** Antigravity CLI | trajectory proto+SQLite, `conversations/*.pb` (미해독) | (unknown) | `--continue`/`--conversation` | `GetUserMemories`/`KnowledgeBaseSearch` RPC명만 확인 | `Trajectory has exceeded max length, clearing %d steps` 문자열 |
 | **cr** Cursor Agent | `~/.cursor/chats/` + ACP SQLite `acp-sessions/store.db` + 클라우드 transcript | `onSummarize` 아카이브 | `--resume`/`--continue`/`ls` | (없음 — 학습 메모리 **미확인**) | (unknown) |
 | **ki** Kiro CLI | `~/.kiro/sessions/cli/` json+jsonl+history+lock | 세션 진행 중 append | `--resume`/`--resume-id`/`--resume-picker` | `KnowledgeBase` 심볼 존재하나 레이아웃 (unknown). 학습 메모리 **미확인** | `CompactStrategy`(제외 메시지쌍/컨텍스트 %/대형 메시지 절삭) |
-| **lc** LazyCodex | `~/.codex/codex-rules/sessions/*.json`(중복주입 방지 캐시) + `.omo/ultragoal/` 원장 | 룰 주입 키 기록, ultragoal 원장 append | 훅이 `additional_context`로 주입 | **부재**(코퍼스가 명시적으로 Absent 판정) | PostCompact가 캐시 리셋 후 재주입 대기 표시 |
+| **lc** LazyCodex | `~/.cursor/codex-rules/sessions/*.json`(중복주입 방지 캐시) + `.omo/ultragoal/` 원장 | 룰 주입 키 기록, ultragoal 원장 append | 훅이 `additional_context`로 주입 | **부재**(코퍼스가 명시적으로 Absent 판정) | PostCompact가 캐시 리셋 후 재주입 대기 표시 |
 | **sp** Superpowers | `skills/*/SKILL.md` git 버전관리 + 호스트 transcript | 스킬 작성이 곧 쓰기. 호스트 `save_memory`/`store_memory`에 위임 | SessionStart가 `using-superpowers` 전문 주입, compact 후 재부트스트랩 | (없음 — 호스트 스킬 로더) | git 이력이 곧 버전 관리 |
 
 ---
@@ -184,7 +184,7 @@ rollout이 **6시간 idle이어야** 추출 후보가 되고, 시작당 **2건**
 
 ### 4.4 스코프가 전역 단일 root — 프로젝트 격리가 없다
 
-메모리 root는 `~/.codex/memories/` 하나다(`memories/write/src/control.rs`가 `memories`/`memories_extensions` 두 경로만 다룸). stage-1 출력에 `cwd`/`git_branch` 필드가 있지만(`state/src/model/memories.rs`의 `Stage1Output`), 이는 메타데이터일 뿐 읽기 시 프로젝트별 분기가 아니다. `memory_summary.md` 하나가 모든 프로젝트에 동일하게 주입된다.
+메모리 root는 `~/.cursor/memories/` 하나다(`memories/write/src/control.rs`가 `memories`/`memories_extensions` 두 경로만 다룸). stage-1 출력에 `cwd`/`git_branch` 필드가 있지만(`state/src/model/memories.rs`의 `Stage1Output`), 이는 메타데이터일 뿐 읽기 시 프로젝트별 분기가 아니다. `memory_summary.md` 하나가 모든 프로젝트에 동일하게 주입된다.
 
 `gr`은 워크스페이스별 디렉토리를 git origin 기준으로 나누고, `cc`는 `projects/{git-root}/memory/`로 나누며, `ge`는 project `GEMINI.md`가 별도 계층이다. 여러 프로젝트를 오가는 작업에서 Codex는 무관한 기억을 계속 읽게 된다.
 

@@ -19,7 +19,7 @@ stand alone).
 
 ## File change map
 
-### MODIFY `plugins/codexclaw/skills/dev-devops/references/branch-lifecycle.md`
+### MODIFY `plugins/cursorclaw/skills/dev-devops/references/branch-lifecycle.md`
 
 Line numbers are from the file at 6e97e73d (193 lines).
 
@@ -141,7 +141,7 @@ Rules 8-10 were reconciled against the live planner on 2026-09-09
 `59d9bc95f`); this document had lagged the code by one commit since 2026-08-27.
 ```
 
-### MODIFY `plugins/codexclaw/skills/dev-devops/SKILL.md`
+### MODIFY `plugins/cursorclaw/skills/dev-devops/SKILL.md`
 
 **Frontmatter line 3 — append triggers before the closing quote:**
 ```diff
@@ -184,7 +184,7 @@ IN: the two files above. OUT: the three new references and their router rows
 | A2 | `59d9bc95f` cited with date and title; js block matches cjs 207-224 shape | grep + reviewer |
 | A3 | "Merge truth" subsection quotes git docs and names PR state as truth | reviewer |
 | A4 | SKILL.md §2.9 has 8 rule rows; Modular References still 13 rows | grep count |
-| A5 | `node plugins/codexclaw/scripts/gate.mjs` exit 0; `node --test plugins/codexclaw/test/skill-catalog.test.mjs plugins/codexclaw/test/manifest-policy.test.mjs` exit 0 (10 pass) at L1 tip | receipt |
+| A5 | `node plugins/cursorclaw/scripts/gate.mjs` exit 0; `node --test plugins/cursorclaw/test/skill-catalog.test.mjs plugins/cursorclaw/test/manifest-policy.test.mjs` exit 0 (10 pass) at L1 tip | receipt |
 | A6 | Opus-5 audit at A: no blocker on rule wording drift from the planner | attest |
 
 ## Conditional paths (C-ACTIVATION-GROUNDING-01)

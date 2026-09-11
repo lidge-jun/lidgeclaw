@@ -18,7 +18,7 @@ Implementation and C verification are complete; closure evidence is in `011_veri
 ## Residence and shape
 
 ```text
-plugins/codexclaw/
+plugins/cursorclaw/
   components/cxc-ops/{src,dist}/map-affordance.{ts,js}
   components/cxc-ops/test/map-affordance.test.ts
   skills/dev/{SKILL.md,references/stacked-prs.md}
@@ -48,9 +48,9 @@ manual-chain fallback. This changes guidance in this PR, not authority over Open
 
 ## Verifier preflight (2026-09-05)
 
-- `node --test plugins/codexclaw/components/cxc-ops/test/map-affordance.test.ts plugins/codexclaw/test/manifest-policy.test.mjs`: exit 0, 17/17. Direct arguments cover the changed runtime via imports, emitted CLI envelope and implicit policy; does not validate semantic prose.
-- `node plugins/codexclaw/scripts/build.mjs`: exit 0, 156 files, layout validated. `COMPONENTS` includes `cxc-ops`; `compileComponent` reads its `src/**/*.ts`. This strips types, NOT a TypeScript typecheck; no component tsconfig exists.
-- `node plugins/codexclaw/scripts/gate.mjs`: exit 0. Reads all SKILL.md and `structure/*.md` for false-enforcement claims and inventory. It does not certify stack guidance meaning; independent review owns that.
+- `node --test plugins/cursorclaw/components/cxc-ops/test/map-affordance.test.ts plugins/cursorclaw/test/manifest-policy.test.mjs`: exit 0, 17/17. Direct arguments cover the changed runtime via imports, emitted CLI envelope and implicit policy; does not validate semantic prose.
+- `node plugins/cursorclaw/scripts/build.mjs`: exit 0, 156 files, layout validated. `COMPONENTS` includes `cxc-ops`; `compileComponent` reads its `src/**/*.ts`. This strips types, NOT a TypeScript typecheck; no component tsconfig exists.
+- `node plugins/cursorclaw/scripts/gate.mjs`: exit 0. Reads all SKILL.md and `structure/*.md` for false-enforcement claims and inventory. It does not certify stack guidance meaning; independent review owns that.
 - Red/green will extend existing hook tests to require the new output on both lifecycle surfaces; current tests are preserved, not skipped or weakened.
 - No repository-wide local test suite. Cross-platform full coverage stays on PR CI; current CI has a published test-count gate, so extending existing cases keeps the count unchanged.
 - Skill-creator `quick_validate.py` preflight could not start: local Python lacks `yaml` (`ModuleNotFoundError`). No dependency installed; repository manifest-policy tests cover skill frontmatter/implicit policy, and independent review covers meaning. This missing optional validator is not represented as a pass.

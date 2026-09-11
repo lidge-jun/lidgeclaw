@@ -160,10 +160,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node plugins/codexclaw/scripts/gate.mjs
-          node plugins/codexclaw/scripts/inventory.mjs --check
-          echo "hash=$(node plugins/codexclaw/scripts/inventory.mjs --hash)" >> "$GITHUB_OUTPUT"
-          published="$(node plugins/codexclaw/scripts/inventory.mjs --published)"
+          node plugins/cursorclaw/scripts/gate.mjs
+          node plugins/cursorclaw/scripts/inventory.mjs --check
+          echo "hash=$(node plugins/cursorclaw/scripts/inventory.mjs --hash)" >> "$GITHUB_OUTPUT"
+          published="$(node plugins/cursorclaw/scripts/inventory.mjs --published)"
           echo "tests=$(node -p "JSON.parse(process.argv[1]).tests" "$published")" >> "$GITHUB_OUTPUT"
           echo "skills=$(node -p "JSON.parse(process.argv[1]).skills" "$published")" >> "$GITHUB_OUTPUT"
           echo "hooks=$(node -p "JSON.parse(process.argv[1]).hooks" "$published")" >> "$GITHUB_OUTPUT"
@@ -175,14 +175,14 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ steps.resolve.outputs.version }}
-        run: node plugins/codexclaw/scripts/check-versions.mjs "$VERSION"
+        run: node plugins/cursorclaw/scripts/check-versions.mjs "$VERSION"
 
       - name: Build and archive the payload
         shell: bash
         run: |
           set -euo pipefail
-          node plugins/codexclaw/scripts/build.mjs
-          git diff --exit-code plugins/codexclaw/components
+          node plugins/cursorclaw/scripts/build.mjs
+          git diff --exit-code plugins/cursorclaw/components
           mkdir -p dist-artifacts
           tar -czf "dist-artifacts/codexclaw-payload-${{ steps.resolve.outputs.version }}.tar.gz" \
             -C plugins codexclaw
@@ -263,7 +263,7 @@ jobs:
           [ "$kind" = prerelease ] && flags="--allow-deferred"
           node bin/codexclaw.mjs release verify --version "$VERSION" \
             --actual-inventory-hash "${{ steps.inventory.outputs.hash }}" $flags
-          cp ".codexclaw/release/candidate-${VERSION}.json" dist-artifacts/
+          cp ".cursorclaw/release/candidate-${VERSION}.json" dist-artifacts/
 
       # npm publishers get Sigstore provenance from Trusted Publishing; this
       # artifact is a tarball, so the equivalent is an explicit attestation

@@ -3,7 +3,7 @@
  * devlog/_plan/260804_worktree_identity_guardian/010 rev2).
  *
  * Problem: the Codex desktop app creates per-thread worktrees under
- * $CODEX_HOME/worktrees/<slot>/<repo> (detached HEAD, hash slots). Asked to
+ * $CURSOR_HOME/worktrees/<slot>/<repo> (detached HEAD, hash slots). Asked to
  * "name the worktree", agents repeatedly delete-and-recreate the ACTIVE
  * worktree, destroying uncommitted work and the app binding.
  *
@@ -33,7 +33,7 @@ export interface WorktreeIdentity {
 }
 
 export function resolveCodexHome(env: NodeJS.ProcessEnv): string {
-  const home = env.CODEX_HOME?.trim();
+  const home = env.CURSOR_HOME?.trim();
   return home ? home : join(homedir(), ".codex");
 }
 

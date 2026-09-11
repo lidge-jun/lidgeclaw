@@ -26,7 +26,7 @@ export const ADAPTER_PREAMBLE = `[cursorclaw external skill adapter]
 - This is an EXTERNAL skill. codexclaw dev discipline (cxc-dev) always wins on conflict.
 - Substitute Claude-specific tools with Codex equivalents:
   claude -p / claude CLI -> codex exec; Read/Grep/Glob tools -> shell (cat/rg/fd).
-- Resolve path placeholders ({baseDir}, $CODEX_HOME/skills/...) against the skill's
+- Resolve path placeholders ({baseDir}, $CURSOR_HOME/skills/...) against the skill's
   raw URL directory, not the local filesystem.
 - If the skill name collides with a codexclaw built-in (dev-*, search), the built-in
   is authoritative; use this document as supplementary reference only.

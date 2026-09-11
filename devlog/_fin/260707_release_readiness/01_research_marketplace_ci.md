@@ -1,13 +1,13 @@
 # 260707 release readiness — research capture (Tier-2 proven, 2026-07-07 KST)
 
-Two gpt-5.5(xhigh) explorers with `$cxc-search` attached. All claims below were
+Two gpt-5.5(xhigh) explorers with `$crc-search` attached. All claims below were
 source-opened (Tier 2) by the explorers unless marked unverified.
 
 ## A. Codex plugin marketplace / distribution (explorer "Boyle")
 
 Verified claims (URL = opened source):
 
-- Plugins are packaged capabilities; `.codex-plugin/plugin.json` is required and
+- Plugins are packaged capabilities; `.cursor-plugin/plugin.json` is required and
   may bundle skills, MCP servers, apps, hooks, commands, assets.
   https://developers.openai.com/codex/plugins/build , openai/plugins README.
 - Distribution today = in-app Plugin Directory, workspace sharing, default local
@@ -16,7 +16,7 @@ Verified claims (URL = opened source):
   https://developers.openai.com/codex/plugins ,
   https://help.openai.com/en/articles/20001256-plugins-in-codex
 - Git marketplace install flow (the real public distribution path for us):
-  `codex plugin marketplace add <owner/repo|https-git-url>` then
+  `Cursor plugin install add <owner/repo|https-git-url>` then
   `codex plugin add <plugin>@<marketplace>`. Verified against docs and local
   `codex-cli 0.142.5` help.
 - `marketplace.json` shape: `name`, optional `interface.displayName`, ordered
@@ -51,7 +51,7 @@ with OpenAI).
    chars each.
 5. Optional polish: `composerIcon`/`logo`/`logoDark`/screenshots under
    `./assets/`.
-6. Post-publish smoke: `codex plugin marketplace add
+6. Post-publish smoke: `Cursor plugin install add
    https://github.com/lidge-jun/codexclaw.git`, `codex plugin list
    --marketplace codexclaw --available --json`, `codex plugin add
    codexclaw@codexclaw`.
@@ -82,9 +82,9 @@ Verified claims (all opened 2026-07-07):
 ## Local evidence (main session, fresh 2026-07-07)
 
 - `gitleaks git .` — 346 commits, **no leaks** (report:
-  `.codexclaw/evidence/release_readiness/gitleaks_history.json`).
-- `gitleaks dir .` — 1045 findings, all in gitignored paths (1037 `.codexclaw/`
-  state, 5 reference clones under devlog, 3 `plugins/codexclaw/.codexclaw/`);
+  `.cursorclaw/evidence/release_readiness/gitleaks_history.json`).
+- `gitleaks dir .` — 1045 findings, all in gitignored paths (1037 `.cursorclaw/`
+  state, 5 reference clones under devlog, 3 `plugins/cursorclaw/.cursorclaw/`);
   `git check-ignore -v` + `git ls-files` confirm zero tracked hits.
 - `npm test` — 798 pass / 0 fail. `gate.mjs` — OK.
 - `(cd docs-site && npm run build)` — 25 pages, exit 0.

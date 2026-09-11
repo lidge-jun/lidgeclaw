@@ -4,7 +4,7 @@
 - Full `TMPDIR=/var/tmp/cxc-executor-01a07d17 npm test`: 2681 total, 2611 passed, 0 failed, 70 existing conditional skips.
 - `npm run build`: 161 files compiled, layout validated. `npm run gate`: OK. `npm run smoke`: platform smoke OK on linux.
 - New registration CLI/module strict tsc: exit 0. Broader touched import graph: 10 diagnostics, all reproduced unchanged on untouched 6d70ef4; no typecheck-clean claim for the whole repository.
-- Registration tests cover native command invocation in a temporary CODEX_HOME, concurrent publication, idempotence, user file/config preservation, malformed arguments, conflicting directory/file, symlink rejection (host capability gated).
+- Registration tests cover native command invocation in a temporary CURSOR_HOME, concurrent publication, idempotence, user file/config preservation, malformed arguments, conflicting directory/file, symlink rejection (host capability gated).
 - Shipped SubagentStop entrypoint: executor and legacy worker without receipt block; a valid receipt releases. This is an invoked-entrypoint test, not native hook delivery proof.
 
 ## Local application

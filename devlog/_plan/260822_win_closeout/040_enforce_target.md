@@ -67,7 +67,7 @@ retry, and the comment says restoration failed.
 
 ### How it was verified
 
-`.codexclaw/wf-sim.mjs` extracts the embedded script body, wraps it in an async
+`.cursorclaw/wf-sim.mjs` extracts the embedded script body, wraps it in an async
 function, and runs it against mocked GitHub REST/GraphQL APIs. Six scenarios, 18
 assertions, all passing:
 

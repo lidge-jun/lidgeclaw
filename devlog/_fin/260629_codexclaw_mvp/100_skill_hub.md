@@ -46,7 +46,7 @@ jun의 요구 — "자동 감지는 안 되다가 grep해서 이름으로 파악
 ### 3. plugin.json skills 연결
 - Codex plugin manifest의 `skills` 필드는 plugin root 기준 `./`로 시작하는 상대 경로여야 한다. 해당 경로는 absolute path로 resolve된다. 근거: `/Users/jun/Developer/codex/121_openai-codex/codex-rs/core-plugins/src/manifest.rs:235`, `/Users/jun/Developer/codex/121_openai-codex/codex-rs/core-plugins/src/manifest.rs:397`.
 - 기본 `skills/`와 custom skill path가 함께 skill roots로 들어갈 수 있다. 테스트상 `"skills": "./custom-skills/"`이면 `custom-skills`와 기본 `skills`가 모두 root에 잡힌다. 근거: `/Users/jun/Developer/codex/121_openai-codex/codex-rs/core-plugins/src/manager_tests.rs:641`.
-- OMO 실례는 `.codex-plugin/plugin.json`에서 `"skills": "./skills/"`를 선언하고, 각 `skills/<name>/SKILL.md`가 trigger-heavy `description`을 제공한다. 근거: `/Users/jun/Developer/new/700_projects/codexclaw/devlog/.lazycodex/plugins/omo/.codex-plugin/plugin.json:21`, `/Users/jun/Developer/new/700_projects/codexclaw/devlog/.lazycodex/plugins/omo/skills/programming/SKILL.md:1`, `/Users/jun/Developer/new/700_projects/codexclaw/devlog/.lazycodex/plugins/omo/skills/frontend/SKILL.md:1`.
+- OMO 실례는 `.cursor-plugin/plugin.json`에서 `"skills": "./skills/"`를 선언하고, 각 `skills/<name>/SKILL.md`가 trigger-heavy `description`을 제공한다. 근거: `/Users/jun/Developer/new/700_projects/codexclaw/devlog/.lazycodex/plugins/omo/.cursor-plugin/plugin.json:21`, `/Users/jun/Developer/new/700_projects/codexclaw/devlog/.lazycodex/plugins/omo/skills/programming/SKILL.md:1`, `/Users/jun/Developer/new/700_projects/codexclaw/devlog/.lazycodex/plugins/omo/skills/frontend/SKILL.md:1`.
 
 ### 4. OpenClaw/ClawHub류 hub 패턴
 - OpenClaw 공식 문서는 skill을 `SKILL.md` frontmatter + markdown body로 정의하고, root 아래 어디든 `SKILL.md`가 있으면 발견한다고 설명한다. 설치형 registry인 ClawHub는 `SKILL.md`와 supporting files를 버전 관리하는 public registry다. 근거: `https://docs.openclaw.ai/tools/skills.md`, `https://docs.openclaw.ai/clawhub.md`.
@@ -57,8 +57,8 @@ jun의 요구 — "자동 감지는 안 되다가 grep해서 이름으로 파악
 
 #### 디렉토리 구조
 ```text
-plugins/codexclaw/
-  .codex-plugin/plugin.json
+plugins/cursorclaw/
+  .cursor-plugin/plugin.json
   skills/
     dev/SKILL.md
     dev/agents/openai.yaml
@@ -85,7 +85,7 @@ plugins/codexclaw/
 {
   "name": "codexclaw",
   "version": "0.1.0",
-  "description": "cli-jaw-style development discipline and multi-model subagents for OpenAI Codex.",
+  "description": "cli-jaw-style development discipline and multi-model subagents for Cursor.",
   "skills": "./skills/",
   "hooks": [
     "./hooks/session-start.json",
@@ -184,7 +184,7 @@ J2의 codex-rs 소스 판독을 OpenAI 공식 문서로 교차검증했고 1:1 �
 - 판정: "기본 트리거 = dev만 활성"은 런타임 hub 엔진 없이 (1) dev 계열 `allow_implicit_invocation: true`, (2) 나머지 on-demand `false` + `skill-hub` 라우터, (3) optional `skills.config` override 조합으로 100% 달성 가능. 웹·소스 양쪽 확인 완료.
 
 ### 구현 체크리스트
-- `plugins/codexclaw/.codex-plugin/plugin.json`에 `"skills": "./skills/"` 유지.
+- `plugins/cursorclaw/.cursor-plugin/plugin.json`에 `"skills": "./skills/"` 유지.
 - dev 계열과 `skill-hub`에는 `agents/openai.yaml policy.allow_implicit_invocation: true`.
 - on-demand 계열에는 `policy.allow_implicit_invocation: false`.
 - `skill-hub/references/catalog.md`를 생성해 on-demand skill의 trigger, path, load policy, native gap을 중앙 등록.

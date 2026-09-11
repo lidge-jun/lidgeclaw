@@ -17,7 +17,7 @@ cxc gui
 ```
 
 `gui` starts the Vite dev server (it prints the local URL). If dependencies are not installed,
-run `npm install` in `plugins/codexclaw/gui` first.
+run `npm install` in `plugins/cursorclaw/gui` first.
 
 For the messenger bridge runtime, use:
 

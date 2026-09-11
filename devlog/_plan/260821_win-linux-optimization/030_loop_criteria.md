@@ -18,11 +18,11 @@ The failure chain, from 002 section A:
    `buildGoalplan` never sets - so even init-time criteria fail v2 validation.
 
 So the plan is frozen at birth and the hook (`hook.ts:1128`) tells the agent to
-hand-edit `.codexclaw/goalplans/<slug>/goalplan.json` because no CLI verb exists.
+hand-edit `.cursorclaw/goalplans/<slug>/goalplan.json` because no CLI verb exists.
 
 ## MODIFY / NEW / DELETE map
 
-### 1. MODIFY plugins/codexclaw/components/pabcd-state/src/steering.ts
+### 1. MODIFY plugins/cursorclaw/components/pabcd-state/src/steering.ts
 
 #### 1a. SUPPORTED_OPS gains the two mutating kinds
 
@@ -202,7 +202,7 @@ The steering refusal rule is satisfied by construction: both ops only append, so
 `remainingWorkPhases` and `unmetCriteria` can only grow. Nothing here can mark a phase
 `done`, mark a criterion `met`, or set `supersededBy`.
 
-### 2. MODIFY plugins/codexclaw/components/pabcd-state/src/goalplan-cli.ts
+### 2. MODIFY plugins/cursorclaw/components/pabcd-state/src/goalplan-cli.ts
 
 #### 2a. New verbs
 
@@ -331,7 +331,7 @@ function runAddOp(args: GoalplanCliArgs): GoalplanCliResult {
 
 `createHash` is imported from `node:crypto` at the top of the file.
 
-### 3. MODIFY plugins/codexclaw/components/pabcd-state/src/goalplan.ts
+### 3. MODIFY plugins/cursorclaw/components/pabcd-state/src/goalplan.ts
 
 #### 3a. buildGoalplan accepts a surface
 
@@ -526,9 +526,9 @@ AFTER
 The same substitution applies at `runSteer` (:129-132) and `runAddOp`, so a malformed
 plan never again reports as an unbound session.
 
-### 4. MODIFY plugins/codexclaw/components/pabcd-state/src/hook.ts
+### 4. MODIFY plugins/cursorclaw/components/pabcd-state/src/hook.ts
 
-`hook.ts:1128` tells the agent to hand-edit `.codexclaw/goalplans/<slug>/goalplan.json`.
+`hook.ts:1128` tells the agent to hand-edit `.cursorclaw/goalplans/<slug>/goalplan.json`.
 Replace that pointer with the now-real verbs:
 
 ```ts
@@ -546,7 +546,7 @@ Replace that pointer with the now-real verbs:
 
 ## TESTS
 
-MODIFY `plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts`
+MODIFY `plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts`
 
 1. "buildGoalplan defaults every criterion surface to logic" - and an explicit
    `surface: "web"` survives.
@@ -561,7 +561,7 @@ MODIFY `plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts`
 5. "the finalGate reason names a runnable command" - force a v2 plan with no
    `finalGate` and assert the reason does NOT match `/final-gate open/`.
 
-NEW `plugins/codexclaw/components/pabcd-state/test/steering-ops.test.ts`
+NEW `plugins/cursorclaw/components/pabcd-state/test/steering-ops.test.ts`
 
 6. "add-criterion appends with a dense id and the given surface" - apply a batch to a
    plan with `c-1` and assert the new one is `c-2` with `surface: "web"`.
@@ -594,11 +594,11 @@ already lives)
 Run from the repo root; each command must exit 0.
 
 ```powershell
-node --test --test-concurrency=1 "plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts" "plugins/codexclaw/components/pabcd-state/test/steering-ops.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/pabcd-state/test/goal-gate.test.ts" "plugins/codexclaw/components/pabcd-state/test/goal-active.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/pabcd-state/test/final-gate.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts" "plugins/cursorclaw/components/pabcd-state/test/steering-ops.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/pabcd-state/test/goal-gate.test.ts" "plugins/cursorclaw/components/pabcd-state/test/goal-active.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/pabcd-state/test/final-gate.test.ts"
 npm test
-node plugins/codexclaw/scripts/gate.mjs
+node plugins/cursorclaw/scripts/gate.mjs
 ```
 
 `final-gate.test.ts` is listed because 3b edits a string that suite asserts on.
@@ -617,7 +617,7 @@ node bin/codexclaw.mjs loop validate --slug win-linux-optimization-campaign
 Malformed-plan diagnostic acceptance, expected exit 1 naming the field:
 
 ```powershell
-'{ "objective": 1 }' | Set-Content -Encoding utf8 .codexclaw/goalplans/win-linux-optimization-campaign/goalplan.json
+'{ "objective": 1 }' | Set-Content -Encoding utf8 .cursorclaw/goalplans/win-linux-optimization-campaign/goalplan.json
 node bin/codexclaw.mjs loop show --slug win-linux-optimization-campaign
 ```
 
@@ -627,7 +627,7 @@ Expected: a message containing `structurally invalid` and `field 'objective'`, N
 WSL parity (mkdir-based locking behaves differently across drvfs), expected exit 0:
 
 ```bash
-wsl -d Ubuntu -- bash -lc "cd ~/codexclaw-wsl-checkout && node --test 'plugins/codexclaw/components/pabcd-state/test/steering-ops.test.ts'"
+wsl -d Ubuntu -- bash -lc "cd ~/codexclaw-wsl-checkout && node --test 'plugins/cursorclaw/components/pabcd-state/test/steering-ops.test.ts'"
 ```
 
 Run the WSL lane from a Linux-native checkout, not `/mnt/c`: the lock is a `mkdirSync`

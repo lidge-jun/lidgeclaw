@@ -2,13 +2,13 @@
 
 ## Scope
 
-IN: `~/.codex/config.toml`, `plugins/codexclaw/components/config-guard/src/features.ts`,
+IN: `~/.cursor/config.toml`, `plugins/cursorclaw/components/config-guard/src/features.ts`,
 `config-guard/test/features.test.ts`, `config-guard/test/activate.test.ts`.
 OUT: any other config key; backup config files.
 
 ## Diffs
 
-### MODIFY ~/.codex/config.toml
+### MODIFY ~/.cursor/config.toml
 
 Before (current, around lines 317-324):
 
@@ -82,7 +82,7 @@ config/edit.rs:884, :573). Two-layer defense:
    preserved `max_concurrent_threads_per_session` survives.
 
 Activation scenario: the new test IS the trigger (fake runner emulates edit.rs
-clobber); on the live machine, `rg max_concurrent ~/.codex/config.toml` after WP1
+clobber); on the live machine, `rg max_concurrent ~/.cursor/config.toml` after WP1
 proves the key survived.
 
 ### MODIFY config-guard tests

@@ -14,7 +14,7 @@ Make codexclaw installable as one plugin via the marketplace path.
   layout. No component-dist→root copy step is needed (unlike omo's monorepo).
 - Build is reproducible + idempotent (byte-identical across runs, asserted by `test/build.test.mjs`).
 - Install:
-  - `codex plugin marketplace add https://github.com/lidge-jun/codexclaw`
+  - `Cursor plugin install add https://github.com/lidge-jun/codexclaw`
   - `codex plugin add codexclaw@personal`
   (documented for Phase 1; a real network `codex plugin add` is out of the offline gate scope.)
 

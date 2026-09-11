@@ -1,14 +1,14 @@
 # Source evidence and settled requirements
 
 - Handoff: /home/jun/tmp/cxc-architect-handoff.nnzEDx/task.md; explicit local implementation/commits, no install/publication.
-- `plugins/codexclaw/components/subagent-config/src/store.ts:20`: ROLES canonical enum; :56 defaults; :140 readSettings merges roles; :209 setRole preserves raw sibling fields; :224 resetRole removes only selected override. Reads do not migrate.
-- `plugins/codexclaw/components/subagent-config/src/dispatch-contract.ts:38`: duplicate role union and :82 runtime parser need fourth role.
-- `plugins/codexclaw/components/subagent-config/src/spawn-wrapper.ts:25`: role-to-built-in mapping; :81 role baseline skills; role TOML is prompt source, not native registration.
-- `plugins/codexclaw/components/subagent-config/src/spawn-attach-hook.ts:440`: worker special case then keyword reviewer inference currently loses explicit custom roles.
-- `plugins/codexclaw/gui/src/api.ts:25`: wire union and :327 scoped response validation; settings page :10 and Dashboard :28 enumerate roles.
+- `plugins/cursorclaw/components/subagent-config/src/store.ts:20`: ROLES canonical enum; :56 defaults; :140 readSettings merges roles; :209 setRole preserves raw sibling fields; :224 resetRole removes only selected override. Reads do not migrate.
+- `plugins/cursorclaw/components/subagent-config/src/dispatch-contract.ts:38`: duplicate role union and :82 runtime parser need fourth role.
+- `plugins/cursorclaw/components/subagent-config/src/spawn-wrapper.ts:25`: role-to-built-in mapping; :81 role baseline skills; role TOML is prompt source, not native registration.
+- `plugins/cursorclaw/components/subagent-config/src/spawn-attach-hook.ts:440`: worker special case then keyword reviewer inference currently loses explicit custom roles.
+- `plugins/cursorclaw/gui/src/api.ts:25`: wire union and :327 scoped response validation; settings page :10 and Dashboard :28 enumerate roles.
 - `structure/00_philosophy.md`: append/deny only, no runtime fork/server/provider mutation, main owns goals, prompts differ from registered agents. Preserve this file.
 - `structure/20_pabcd_dispatch_doctrine.md`: explicit phases, independent audit, main ownership, reuse within context and failure retirement; extend existing operating doctrine only.
-- `package.json`: test runner owns isolated CODEXCLAW_HOME. Baseline store+dispatch tests executed: 34 passed, zero failed; /home/jun/tmp/cxc-architect-handoff.nnzEDx/baseline-tests.log. Direct test arguments observe both target modules. Full build/gate/UI verification not run yet; must run before implementation completion. No dependencies in this worktree initially.
+- `package.json`: test runner owns isolated CURSORCLAW_HOME. Baseline store+dispatch tests executed: 34 passed, zero failed; /home/jun/tmp/cxc-architect-handoff.nnzEDx/baseline-tests.log. Direct test arguments observe both target modules. Full build/gate/UI verification not run yet; must run before implementation completion. No dependencies in this worktree initially.
 - Source map helper unavailable from installed entry (repo-checkout-only error); used scoped rg for ROLES, RoleName, inferRole, existing role values and direct consumers instead.
 
 ## Requirements

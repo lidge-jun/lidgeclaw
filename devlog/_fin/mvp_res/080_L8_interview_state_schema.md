@@ -22,10 +22,10 @@ goal-mode hard-deny tests a clear "no interview state mutation" invariant.
 
 ## Scope (decision-complete)
 - Files to add/edit:
-  - `plugins/codexclaw/components/pabcd-state/src/state.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/fsm.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/state.test.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/fsm.test.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/state.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/fsm.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/state.test.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/fsm.test.ts`
 - Add `Dimension`, `DimensionScore`, `Contradiction`, `Assumption`, and
   `InterviewTracker` types.
 - Add `interview: InterviewTracker | null` by extending the live `State`
@@ -81,8 +81,8 @@ goal-mode hard-deny tests a clear "no interview state mutation" invariant.
    blocks and true passes.
 
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
-- `node --test plugins/codexclaw/components/pabcd-state/test/state.test.ts`
-- `node --test plugins/codexclaw/components/pabcd-state/test/fsm.test.ts`
+- `node --test plugins/cursorclaw/components/pabcd-state/test/state.test.ts`
+- `node --test plugins/cursorclaw/components/pabcd-state/test/fsm.test.ts`
 - Optional CLI stdout: `cxc status` should not show a ready interview for a
   malformed or partial tracker.
 
@@ -98,5 +98,5 @@ product decisions.
 - `devlog/_plan/260629_codexclaw_mvp/080.1_interview_contradiction_register.md`
 - `devlog/_plan/260629_codexclaw_mvp/022.2_ipabcd_and_feature_flags.md`
 - `devlog/_plan/260629_codexclaw_mvp/022.3_interview_goalmode_rules.md`
-- `plugins/codexclaw/components/pabcd-state/src/state.ts`
-- `plugins/codexclaw/components/pabcd-state/src/fsm.ts`
+- `plugins/cursorclaw/components/pabcd-state/src/state.ts`
+- `plugins/cursorclaw/components/pabcd-state/src/fsm.ts`

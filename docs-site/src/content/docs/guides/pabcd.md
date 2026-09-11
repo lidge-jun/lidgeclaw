@@ -23,7 +23,7 @@ stateDiagram-v2
 
 1. **Natural-language trigger** — describe planning/auditing/building work and the
    `UserPromptSubmit` hook injects the matching phase directive.
-2. **Chat orchestrate grammar** — type `orchestrate <phase>` (or `$cxc-orchestrate`) in chat. A
+2. **Chat orchestrate grammar** — type `orchestrate <phase>` (or `$crc-orchestrate`) in chat. A
    human chat command is a free-pass source.
 3. **`cxc orchestrate` CLI** — the agent/CLI path is attest-gated.
 

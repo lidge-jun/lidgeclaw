@@ -20,7 +20,7 @@ function readJson(p: string): unknown {
 }
 
 test("fixture: plugin manifest has the required shape", () => {
-  const m = readJson(join(pluginRoot, ".codex-plugin", "plugin.json")) as Record<string, unknown>;
+  const m = readJson(join(pluginRoot, ".cursor-plugin", "plugin.json")) as Record<string, unknown>;
   assert.equal(typeof m.name, "string");
   assert.equal(typeof m.version, "string");
   assert.ok(Array.isArray(m.hooks), "hooks must be an array");
@@ -28,7 +28,7 @@ test("fixture: plugin manifest has the required shape", () => {
 });
 
 test("fixture: every manifest hook json parses and declares a hook event", () => {
-  const m = readJson(join(pluginRoot, ".codex-plugin", "plugin.json")) as { hooks: string[] };
+  const m = readJson(join(pluginRoot, ".cursor-plugin", "plugin.json")) as { hooks: string[] };
   for (const ref of m.hooks) {
     const p = join(pluginRoot, ref);
     assert.ok(existsSync(p), `hook file missing: ${ref}`);
@@ -40,7 +40,7 @@ test("fixture: every manifest hook json parses and declares a hook event", () =>
 });
 
 test("fixture: .mcp.json parses and each server has a command", () => {
-  const m = readJson(join(pluginRoot, ".codex-plugin", "plugin.json")) as { mcpServers?: string };
+  const m = readJson(join(pluginRoot, ".cursor-plugin", "plugin.json")) as { mcpServers?: string };
   assert.equal(typeof m.mcpServers, "string", "manifest must reference an mcp config file");
   const mcpPath = join(pluginRoot, m.mcpServers as string);
   assert.ok(existsSync(mcpPath), "mcp config file must exist");

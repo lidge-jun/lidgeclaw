@@ -25,7 +25,7 @@ never issued. A concurrently /fork-ed Codex session grabbed OUR FSM.
 3. **The hole is OUR CLI fallback, not the hooks**: hook-driven writes key on
    the hook payload's `session_id` (fork = new id = new file; safe). But
    `orchestrate-cli.ts:86-90` resolves a missing `--session` to the
-   **most-recently-modified** `.codexclaw/sessions/*.json`. The forked
+   **most-recently-modified** `.cursorclaw/sessions/*.json`. The forked
    session's agent ran `cxc orchestrate reset` / `P` WITHOUT `--session`;
    most-recent = our file -> foreign reset + foreign P into our FSM. G2 only
    guards *unknown explicit* ids, not the implicit fallback.
@@ -108,7 +108,7 @@ owner provenance (separate design); shipped E7+context hardening instead:
   Stop hook keys enrichment + D-close goalplan advance on that slug
   (hook.ts:607-620, 496-520) — a fork replaying the parent's id can corrupt
   the parent's goalplan binding. `freeze` (non-dry-run) writes a
-  project-global `.codexclaw/interview/freeze.json` manifest under a
+  project-global `.cursorclaw/interview/freeze.json` manifest under a
   `default` session key (freeze-cli.ts:54-57, 93-95). Both are covered by
   SESSION-IDENTITY-01 (E7) rather than an E2 gate; E2 closure for all of
   these needs owner provenance in state files (same separate design).

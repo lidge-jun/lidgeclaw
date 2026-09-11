@@ -16,27 +16,27 @@
 
 - `GoalplanTask`는 wp2가 이미 `dependsOn?`과 `outcome?`을 넣었다. wp6은 그 필드를 소비만 한다.
   wp5 구현으로 행 번호가 전부 밀렸으므로 이 문서의 앵커는 심볼 이름으로 읽는다.
-- `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:192`의 원장 event union에는
+- `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:192`의 원장 event union에는
   `dependency_registered`가 없다.
-- `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:615`의 `writeGoalplan()`과
+- `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:615`의 `writeGoalplan()`과
   `:639`의 `appendGoalplanLedger()`는 별도 호출이다. outcome은 원장에만 두지 않는다.
-- `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:708`의 `nextOpenTask()`는 현재 선언
+- `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:708`의 `nextOpenTask()`는 현재 선언
   순서대로 pending task를 고른다. wp4가 의존 판정을 넣은 뒤 공개 조회가 같은 helper를 쓴다.
-- `plugins/codexclaw/components/pabcd-state/src/goalplan-cli.ts:74`는 parser,
+- `plugins/cursorclaw/components/pabcd-state/src/goalplan-cli.ts:74`는 parser,
   `:215`는 `runAddOp()`, `:298`은 help, `:324`는 실행 분기다.
-- `plugins/codexclaw/components/pabcd-state/src/steering.ts:34`의 `SteerOp`, `:130`의 batch parser,
+- `plugins/cursorclaw/components/pabcd-state/src/steering.ts:34`의 `SteerOp`, `:130`의 batch parser,
   `:210`의 `applyOps()`, `:259`의 `applySteeringBatch()`가 phase 등록의 단일 입구다.
 - 현재 `applyOps()`는 지역 배열을 루프에서 갱신하고 최종 `return`을 루프 밖에 둔다
   (`steering.ts:210-245`). wp6은 각 mutation op 뒤
   `goalplanDefinitionIntegrityReasons(next)`를 호출하되 이 fold 구조를 보존한다. 검증 성공 뒤 지역
   `criteria`와 `workPhases`를 갱신하고 다음 op로 넘어간다. 뒤 op가 아직 없는 참조는 그 자리에서
   dangling으로 거부되며, batch 전체를 먼저 만든 뒤 cycle을 검사하지 않는다.
-- `plugins/codexclaw/components/pabcd-state/src/hook.ts:1081`의 `StopWorkContext`는 현재 다음 task 한 건을
+- `plugins/cursorclaw/components/pabcd-state/src/hook.ts:1081`의 `StopWorkContext`는 현재 다음 task 한 건을
   담고, `:1165`의 `readStopWorkContext()`는 `nextOpenTask()` 한 건만 읽는다.
-- `plugins/codexclaw/skills/loop/SKILL.md:245-268`은 task를 `{id,title,status}`로만 설명하고
+- `plugins/cursorclaw/skills/loop/SKILL.md:245-268`은 task를 `{id,title,status}`로만 설명하고
   ready/lifecycle CLI, `dependsOn`, `outcome`, `dependency_registered`를 안내하지 않는다.
-- D-close pending 거부는 `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts:633`과
-  `plugins/codexclaw/components/pabcd-state/src/hook.ts:840`에 있다.
+- D-close pending 거부는 `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts:633`과
+  `plugins/cursorclaw/components/pabcd-state/src/hook.ts:840`에 있다.
 
 ## 선행 API 계약
 
@@ -136,20 +136,20 @@ work phase <id> has duplicate task id '<id>', so task dependency references are 
 
 | 표기 | 파일 | 변경 |
 | --- | --- | --- |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/goalplan.ts` | ready API, lifecycle 순수 함수, 원장 event |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/steering.ts` | 의존 입력·검사·성공 event |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/goalplan-cli.ts` | parser, ready, lock 안 lifecycle, help |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/src/hook.ts` | Stop에 ready phase/task와 대기 사유 소비 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/goalplan.js` | `src/goalplan.ts` build 산출물 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/steering.js` | `src/steering.ts` build 산출물 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/goalplan-cli.js` | `src/goalplan-cli.ts` build 산출물 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/dist/hook.js` | `src/hook.ts` build 산출물 |
-| MODIFY | `plugins/codexclaw/skills/loop/SKILL.md` | shipped 스키마, CLI, event, phase-local task 의존 정본 동기화 |
-| NEW | `plugins/codexclaw/components/pabcd-state/test/goalplan-public-surface.test.ts` | 공개 계약 회귀 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts` | `loop show` 락 경로·나이 출력 회귀 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/help-verbs.test.ts` | 기존 loop help 계약에 새 동사·필수 증거 인자 추가 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/steering.test.ts` | 의존 등록·거부 회귀 |
-| MODIFY | `plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts` | Stop 출력의 ready/대기 목록 회귀 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts` | ready API, lifecycle 순수 함수, 원장 event |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/steering.ts` | 의존 입력·검사·성공 event |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/goalplan-cli.ts` | parser, ready, lock 안 lifecycle, help |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/src/hook.ts` | Stop에 ready phase/task와 대기 사유 소비 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/goalplan.js` | `src/goalplan.ts` build 산출물 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/steering.js` | `src/steering.ts` build 산출물 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/goalplan-cli.js` | `src/goalplan-cli.ts` build 산출물 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/dist/hook.js` | `src/hook.ts` build 산출물 |
+| MODIFY | `plugins/cursorclaw/skills/loop/SKILL.md` | shipped 스키마, CLI, event, phase-local task 의존 정본 동기화 |
+| NEW | `plugins/cursorclaw/components/pabcd-state/test/goalplan-public-surface.test.ts` | 공개 계약 회귀 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts` | `loop show` 락 경로·나이 출력 회귀 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/help-verbs.test.ts` | 기존 loop help 계약에 새 동사·필수 증거 인자 추가 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/steering.test.ts` | 의존 등록·거부 회귀 |
+| MODIFY | `plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts` | Stop 출력의 ready/대기 목록 회귀 |
 
 DELETE는 없다.
 
@@ -163,11 +163,11 @@ set -euo pipefail
 cd /Users/jun/Developer/new/700_projects/codexclaw
 rg -n -C 3 \
   'nextTaskTitle|dependencyBlockedReason|Remaining work|Waiting on' \
-  plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts \
-  plugins/codexclaw/components/pabcd-state/test/hook.test.ts
-rg -n --glob '*.test.ts' 'Remaining work:|Ready work phases:|Ready tasks:|Waiting on:|Required evidence:|Record progress in:' plugins/codexclaw/components/pabcd-state/test
-rg -n --glob '*.test.ts' '\[codexclaw loop:|objective:|workPhases:|criteria:|complete:|loop show|show\.output' plugins/codexclaw/components/pabcd-state/test
-rg -n --glob '*.test.ts' 'Usage:|--session <id>|--batch-json|idempotencyKey|ready .*--json|complete-task|meet-criterion' plugins/codexclaw/components/pabcd-state/test
+  plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts \
+  plugins/cursorclaw/components/pabcd-state/test/hook.test.ts
+rg -n --glob '*.test.ts' 'Remaining work:|Ready work phases:|Ready tasks:|Waiting on:|Required evidence:|Record progress in:' plugins/cursorclaw/components/pabcd-state/test
+rg -n --glob '*.test.ts' '\[cursorclaw loop:|objective:|workPhases:|criteria:|complete:|loop show|show\.output' plugins/cursorclaw/components/pabcd-state/test
+rg -n --glob '*.test.ts' 'Usage:|--session <id>|--batch-json|idempotencyKey|ready .*--json|complete-task|meet-criterion' plugins/cursorclaw/components/pabcd-state/test
 rg -n --glob '*.test.ts' -F \
   -e 'add-work-phase --session <id> --slug <slug>' \
   -e 'add-criterion --session <id> --slug <slug>' \
@@ -175,7 +175,7 @@ rg -n --glob '*.test.ts' -F \
   -e 'add-criterion --session <id> --criterion' \
   -e 'goalplan state was committed, but ledger append failed' \
   -e 'ledger append' \
-  plugins/codexclaw/components/pabcd-state/test
+  plugins/cursorclaw/components/pabcd-state/test
 ```
 
 | wp6 출력 변경 | `rg`로 찾은 기존 대기 테스트 | 기존 단언 갱신의 유일한 소유자 | 이 문서의 갱신 |
@@ -236,7 +236,7 @@ Ready work phases: wp-live (Live)
 Ready tasks: wp-live/ready (Ready task); wp-live/later (Later task)
 Waiting on: task wp-live/blocked waits for task wp-live/later (pending); work-phase wp-blocked waits for work-phase wp-live (in_progress)
 Required evidence: node --test green
-Record progress in: .codexclaw/goalplans/expose-dependency-aware-stop-guidance/ledger.jsonl
+Record progress in: .cursorclaw/goalplans/expose-dependency-aware-stop-guidance/ledger.jsonl
 ```
 
 전역 교착에서는 `dependencyDeadlock(plan).reasons`가 blocked 자체의 사유까지 보존한다. 그 분기는
@@ -245,7 +245,7 @@ Record progress in: .codexclaw/goalplans/expose-dependency-aware-stop-guidance/l
 
 ## Diff-level 구현 명세
 
-### MODIFY — `plugins/codexclaw/components/pabcd-state/src/goalplan.ts`
+### MODIFY — `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts`
 
 before (`GoalplanLedgerEvent`, 현재 `goalplan.ts:192`, wp5 적용 후 상태):
 
@@ -489,7 +489,7 @@ export function meetGoalplanCriterion(
 export function unmetCriteria(plan: Goalplan): GoalplanCriterion[] {
 ```
 
-### MODIFY — `plugins/codexclaw/components/pabcd-state/src/steering.ts`
+### MODIFY — `plugins/cursorclaw/components/pabcd-state/src/steering.ts`
 
 before (`steering.ts`의 `goalplan.ts` import, wp5 적용 후 상태):
 
@@ -697,7 +697,7 @@ for (const op of batch.ops) {
 
 거부 경로에는 append 호출이 없다.
 
-### MODIFY — `plugins/codexclaw/components/pabcd-state/src/goalplan-cli.ts`
+### MODIFY — `plugins/cursorclaw/components/pabcd-state/src/goalplan-cli.ts`
 
 `goalplan.ts` import의 전체 After는 아래와 같다. `goalplanWriteLockStatus`는 wp5가 만든 read-only
 진단 helper며, `commitLifecycle()`이 호출하는 write·ledger·lock 함수도 같은 블록에 남긴다.
@@ -817,7 +817,7 @@ function renderPlan(plan: Goalplan): string {
 
 function renderPlanLines(plan: Goalplan): string {
   const lines = [
-    `[codexclaw loop: ${plan.slug}]`,
+    `[cursorclaw loop: ${plan.slug}]`,
     `objective: ${plan.objective}`,
     `host: armed=${plan.host.armed} source=${plan.host.source}`,
     `workPhases: ${plan.workPhases.length} (remaining ${remainingWorkPhases(plan).length})`,
@@ -843,7 +843,7 @@ function renderPlan(plan: Goalplan, lock: GoalplanWriteLockStatus | null = null)
 
 function renderPlanLines(plan: Goalplan, lock: GoalplanWriteLockStatus | null = null): string {
   const lines = [
-    `[codexclaw loop: ${plan.slug}]`,
+    `[cursorclaw loop: ${plan.slug}]`,
     `objective: ${plan.objective}`,
     `host: armed=${plan.host.armed} source=${plan.host.source}`,
   ];
@@ -1000,7 +1000,7 @@ function runReady(args: GoalplanCliArgs): GoalplanCliResult {
     }) };
   }
   return { code: 0, output: [
-    `[codexclaw loop ready: ${slug}]`,
+    `[cursorclaw loop ready: ${slug}]`,
     `workPhases: ${phases.length}`,
     ...phases.map((wp) => `  - ${wp.id} [${wp.status}] ${wp.title}`),
     `tasks: ${tasks.length}`,
@@ -1144,7 +1144,7 @@ export function renderGoalplanHelp(): string {
     "",
     "Notes:",
     "  Mutating verbs require --session <id>; show, validate, and ready are read-only.",
-    "  The goalplan lives at <cwd>/.codexclaw/goalplans/<slug>/goalplan.json, so --cwd",
+    "  The goalplan lives at <cwd>/.cursorclaw/goalplans/<slug>/goalplan.json, so --cwd",
     "  matters when the process cwd is not the workspace you are planning in.",
     "  Repeat --depends-on once per prerequisite; add-task accepts only existing task ids",
     "  from the same work phase; comma-separated values are one id.",
@@ -1160,7 +1160,7 @@ export function renderGoalplanHelp(): string {
 }
 ```
 
-### MODIFY — `plugins/codexclaw/components/pabcd-state/src/hook.ts`
+### MODIFY — `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
 
 before (`hook.ts:46`, wp5가 락과 D-close를 적용한 뒤):
 
@@ -1285,7 +1285,7 @@ export function readStopWorkContext(cwd: string, state: State): StopWorkContext 
     dependencyBlockedReason: deadlock
       ? `Dependency deadlock: no executable work remains while unfinished items exist: ${deadlock.reasons.join("; ")}`
       : null,
-    ledgerPath: `.codexclaw/goalplans/${slug}/ledger.jsonl`,
+    ledgerPath: `.cursorclaw/goalplans/${slug}/ledger.jsonl`,
   };
 }
 ```
@@ -1338,7 +1338,7 @@ export function readStopWorkContext(cwd: string, state: State): StopWorkContext 
       readyTasks: [],
       waitingOn: [`the goalplan is invalid: ${invalidReasons.join("; ")}`],
       expectedEvidence: null,
-      ledgerPath: `.codexclaw/goalplans/${slug}/ledger.jsonl`,
+      ledgerPath: `.cursorclaw/goalplans/${slug}/ledger.jsonl`,
     };
   }
 
@@ -1355,7 +1355,7 @@ export function readStopWorkContext(cwd: string, state: State): StopWorkContext 
     readyTasks: tasks.map(({ workPhaseId, task }) => ({ workPhaseId, id: task.id, title: task.title })),
     waitingOn,
     expectedEvidence: unmet[0]?.expectedEvidence ?? null,
-    ledgerPath: `.codexclaw/goalplans/${slug}/ledger.jsonl`,
+    ledgerPath: `.cursorclaw/goalplans/${slug}/ledger.jsonl`,
   };
 }
 ```
@@ -1387,13 +1387,13 @@ if (work) {
 이 변경은 Stop이 만든 현재 턴의 안내만 풍부하게 한다. 큐를 돌리거나 새 턴을 만들지 않으며,
 ready 목록의 실제 병렬도는 호스트가 정한다.
 
-### MODIFY — `plugins/codexclaw/skills/loop/SKILL.md`
+### MODIFY — `plugins/cursorclaw/skills/loop/SKILL.md`
 
 before (`SKILL.md:241-268`):
 
 ```md
 <!-- wp5 적용 후 상태 -->
-This is the on-disk shape under `.codexclaw/goalplans/<slug>/goalplan.json`
+This is the on-disk shape under `.cursorclaw/goalplans/<slug>/goalplan.json`
 (+ `ledger.jsonl`). Fill these fields; do not invent parallel ones:
 
 - `objective`, `slug`, `createdAt`, `updatedAt`.
@@ -1426,7 +1426,7 @@ Ledger events are `created`, `workphase_started`, `workphase_done`,
 after:
 
 ```md
-This is the on-disk shape under `.codexclaw/goalplans/<slug>/goalplan.json`
+This is the on-disk shape under `.cursorclaw/goalplans/<slug>/goalplan.json`
 (+ `ledger.jsonl`). Fill these fields; do not invent parallel ones:
 
 - `objective`, `slug`, `createdAt`, `updatedAt`.
@@ -1468,7 +1468,7 @@ Ledger events are `created`, `workphase_started`, `workphase_done`, `task_done`,
 `dependency_registered`, and `host_armed`. `dependency_registered` records only accepted definitions.
 ```
 
-### NEW — `plugins/codexclaw/components/pabcd-state/test/goalplan-public-surface.test.ts`
+### NEW — `plugins/cursorclaw/components/pabcd-state/test/goalplan-public-surface.test.ts`
 
 아래 파일을 그대로 만든다.
 
@@ -1887,7 +1887,7 @@ test("help lists repeated dependency syntax and required outcome", () => {
 });
 ```
 
-### MODIFY — `plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts`
+### MODIFY — `plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts`
 
 020~050 적용 뒤 import 전체를 출발점으로 삼아 `goalplanWriteLockDir`를 추가한다. 020의
 `readGoalplanDetailed`·`effectiveSchemaVersion`, 040의 `dependencyDeadlock`을 지우지 않는다. 030과
@@ -1951,7 +1951,7 @@ assert.ok(lockedShow.output.includes(`writeLock: present path=${lockPath}`));
 assert.match(lockedShow.output, /ageMs=\d+/);
 ```
 
-### MODIFY — `plugins/codexclaw/components/pabcd-state/test/help-verbs.test.ts`
+### MODIFY — `plugins/cursorclaw/components/pabcd-state/test/help-verbs.test.ts`
 
 기존 `loop ${token} prints usage and exits 0` case의 세 assertion 뒤에 아래를 추가한다. 정확한 help
 문법을 기존 help 회귀가 직접 기다리게 한다.
@@ -1970,7 +1970,7 @@ assert.match(r.output, /meet-criterion .*--evidence <text>/);
 assert.match(r.output, /Repeat --depends-on once per prerequisite/);
 ```
 
-### MODIFY — `plugins/codexclaw/components/pabcd-state/test/steering.test.ts`
+### MODIFY — `plugins/cursorclaw/components/pabcd-state/test/steering.test.ts`
 
 기존 `steering.test.ts:130-150`의 의존 없는 case는 그대로 둔다. 특히 `:136`의
 `{ kind: "add-work-phase", id: "wp99-new", title: "Newly scoped work" }` fixture를 지우거나
@@ -2053,7 +2053,7 @@ test("duplicate dependencies are rejected before write", () => {
 dangling으로 끝난다. 공개 mutation 경로에서 cycle을 기대하지 않는다. cycle 검출 본문은
 `030_wp3_integrity.md`의 순수 `goalplanDefinitionIntegrityReasons()` 테스트가 소유한다.
 
-### MODIFY — `plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts`
+### MODIFY — `plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts`
 
 040은 §35에 따라 `dependencyDeadlock(plan).reasons`와 `dependencyWaitReasons(plan)` 순수 helper
 golden만 남긴다. `readStopWorkContext()` 필드와 Stop 출력 단언은 모두 060이 소유한다. 아래 diff는
@@ -2073,7 +2073,7 @@ assert.doesNotMatch(reason, /cxc loop init/, "bound session must not be told to 
 assert.match(reason, /continue PABCD/);
 assert.match(reason, /Remaining work: Backend → add endpoint/);
 assert.match(reason, /Required evidence: npm test green/);
-assert.match(reason, new RegExp(`Record progress in: \\.codexclaw/goalplans/${plan.slug}/ledger\\.jsonl`));
+assert.match(reason, new RegExp(`Record progress in: \\.cursorclaw/goalplans/${plan.slug}/ledger\\.jsonl`));
 assert.match(reason, /cxc orchestrate C --session [-\w]+ --attest/);
 assert.match(reason, /D is not a resting state/);
 ```
@@ -2090,7 +2090,7 @@ assert.match(reason, /continue PABCD/);
 assert.match(reason, /Ready work phases: wp-1 \(Backend\)/);
 assert.match(reason, /Ready tasks: wp-1\/t-1 \(add endpoint\)/);
 assert.match(reason, /Required evidence: npm test green/);
-assert.match(reason, new RegExp(`Record progress in: \\.codexclaw/goalplans/${plan.slug}/ledger\\.jsonl`));
+assert.match(reason, new RegExp(`Record progress in: \\.cursorclaw/goalplans/${plan.slug}/ledger\\.jsonl`));
 assert.match(reason, /cxc orchestrate C --session [-\w]+ --attest/);
 assert.match(reason, /D is not a resting state/);
 ```
@@ -2188,7 +2188,7 @@ test("wp6: legacy plan Stop context uses the ready arrays shape", () => {
       readyTasks: [{ workPhaseId: "legacy", id: "t-1", title: "first task" }],
       waitingOn: [],
       expectedEvidence: "node --test green",
-      ledgerPath: `.codexclaw/goalplans/${plan.slug}/ledger.jsonl`,
+      ledgerPath: `.cursorclaw/goalplans/${plan.slug}/ledger.jsonl`,
     });
   } finally {
     rmSync(cwd, { recursive: true, force: true });
@@ -2341,12 +2341,12 @@ test("comma dependency is rejected while repeated flags persist dependencies", (
 
 ## 변경하지 않는 파일
 
-- `plugins/codexclaw/components/pabcd-state/src/cli.ts`: 기존 loop argv 위임을 쓴다.
-- `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts`: `tasks_pending` 거부를 유지한다.
-- `plugins/codexclaw/components/pabcd-state/src/goal-gate.ts`: wp3 검증 연결을 쓴다.
-- `plugins/codexclaw/components/pabcd-state/src/atomic-write.ts`: wp5 락과 rename 구현을 쓴다.
-- `plugins/codexclaw/components/pabcd-state/src/review-round-cli.ts`: 변경 없음.
-- `plugins/codexclaw/components/pabcd-state/src/review-observer.ts`: 변경 없음.
+- `plugins/cursorclaw/components/pabcd-state/src/cli.ts`: 기존 loop argv 위임을 쓴다.
+- `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts`: `tasks_pending` 거부를 유지한다.
+- `plugins/cursorclaw/components/pabcd-state/src/goal-gate.ts`: wp3 검증 연결을 쓴다.
+- `plugins/cursorclaw/components/pabcd-state/src/atomic-write.ts`: wp5 락과 rename 구현을 쓴다.
+- `plugins/cursorclaw/components/pabcd-state/src/review-round-cli.ts`: 변경 없음.
+- `plugins/cursorclaw/components/pabcd-state/src/review-observer.ts`: 변경 없음.
 
 ### import 적층 감사
 
@@ -2371,12 +2371,12 @@ test("comma dependency is rejected while repeated flags persist dependencies", (
 #!/usr/bin/env bash
 set -euo pipefail
 cd /Users/jun/Developer/new/700_projects/codexclaw
-node --experimental-strip-types --test plugins/codexclaw/components/pabcd-state/test/goalplan-public-surface.test.ts
-node --experimental-strip-types --test plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts
-node --experimental-strip-types --test plugins/codexclaw/components/pabcd-state/test/help-verbs.test.ts
-node --experimental-strip-types --test plugins/codexclaw/components/pabcd-state/test/steering.test.ts
-node --experimental-strip-types --test plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts
-node --experimental-strip-types --test plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts
+node --experimental-strip-types --test plugins/cursorclaw/components/pabcd-state/test/goalplan-public-surface.test.ts
+node --experimental-strip-types --test plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts
+node --experimental-strip-types --test plugins/cursorclaw/components/pabcd-state/test/help-verbs.test.ts
+node --experimental-strip-types --test plugins/cursorclaw/components/pabcd-state/test/steering.test.ts
+node --experimental-strip-types --test plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts
+node --experimental-strip-types --test plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts
 ```
 
 각 focused test 기대값은 exit 0, fail 0이다. import와 공개 경로의 실행 자립성 게이트는
@@ -2408,16 +2408,16 @@ cd /Users/jun/Developer/new/700_projects/codexclaw
 fixture_cwd="$(mktemp -d)"
 trap 'rm -rf "$fixture_cwd"' EXIT
 
-node --experimental-strip-types plugins/codexclaw/components/pabcd-state/src/cli.ts loop init --objective "wp6 executable fixture" --session sess-ready --criterion "public surface verified" --cwd "$fixture_cwd"
-node --experimental-strip-types plugins/codexclaw/components/pabcd-state/src/cli.ts loop add-work-phase --session sess-ready --id wp2 --title "public surface" --cwd "$fixture_cwd"
-node --experimental-strip-types plugins/codexclaw/components/pabcd-state/src/cli.ts loop add-task --session sess-ready --work-phase wp2 --id t-1 --title "first task" --cwd "$fixture_cwd"
-node --experimental-strip-types plugins/codexclaw/components/pabcd-state/src/cli.ts loop complete-task --session sess-ready --work-phase wp2 --id t-1 --outcome "first task passed" --cwd "$fixture_cwd"
-node --experimental-strip-types plugins/codexclaw/components/pabcd-state/src/cli.ts loop add-task --session sess-ready --work-phase wp2 --id t-2 --title "second task" --depends-on t-1 --cwd "$fixture_cwd"
-node --experimental-strip-types plugins/codexclaw/components/pabcd-state/src/cli.ts loop ready --session sess-ready --json --cwd "$fixture_cwd"
-node --experimental-strip-types plugins/codexclaw/components/pabcd-state/src/cli.ts loop complete-task --session sess-ready --work-phase wp2 --id t-2 --outcome "node --test: 24 pass" --cwd "$fixture_cwd"
-node --experimental-strip-types plugins/codexclaw/components/pabcd-state/src/cli.ts loop meet-criterion --session sess-ready --id c-1 --evidence "node --test: 24 pass" --cwd "$fixture_cwd"
-node --experimental-strip-types plugins/codexclaw/components/pabcd-state/src/cli.ts loop show --session sess-ready --cwd "$fixture_cwd"
-node --experimental-strip-types plugins/codexclaw/components/pabcd-state/src/cli.ts loop --help
+node --experimental-strip-types plugins/cursorclaw/components/pabcd-state/src/cli.ts loop init --objective "wp6 executable fixture" --session sess-ready --criterion "public surface verified" --cwd "$fixture_cwd"
+node --experimental-strip-types plugins/cursorclaw/components/pabcd-state/src/cli.ts loop add-work-phase --session sess-ready --id wp2 --title "public surface" --cwd "$fixture_cwd"
+node --experimental-strip-types plugins/cursorclaw/components/pabcd-state/src/cli.ts loop add-task --session sess-ready --work-phase wp2 --id t-1 --title "first task" --cwd "$fixture_cwd"
+node --experimental-strip-types plugins/cursorclaw/components/pabcd-state/src/cli.ts loop complete-task --session sess-ready --work-phase wp2 --id t-1 --outcome "first task passed" --cwd "$fixture_cwd"
+node --experimental-strip-types plugins/cursorclaw/components/pabcd-state/src/cli.ts loop add-task --session sess-ready --work-phase wp2 --id t-2 --title "second task" --depends-on t-1 --cwd "$fixture_cwd"
+node --experimental-strip-types plugins/cursorclaw/components/pabcd-state/src/cli.ts loop ready --session sess-ready --json --cwd "$fixture_cwd"
+node --experimental-strip-types plugins/cursorclaw/components/pabcd-state/src/cli.ts loop complete-task --session sess-ready --work-phase wp2 --id t-2 --outcome "node --test: 24 pass" --cwd "$fixture_cwd"
+node --experimental-strip-types plugins/cursorclaw/components/pabcd-state/src/cli.ts loop meet-criterion --session sess-ready --id c-1 --evidence "node --test: 24 pass" --cwd "$fixture_cwd"
+node --experimental-strip-types plugins/cursorclaw/components/pabcd-state/src/cli.ts loop show --session sess-ready --cwd "$fixture_cwd"
+node --experimental-strip-types plugins/cursorclaw/components/pabcd-state/src/cli.ts loop --help
 
 node --input-type=module - "$fixture_cwd" <<'NODE'
 import assert from "node:assert/strict";
@@ -2425,8 +2425,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const cwd = process.argv[2];
-const planPath = join(cwd, ".codexclaw", "goalplans", "wp6-executable-fixture", "goalplan.json");
-const ledgerPath = join(cwd, ".codexclaw", "goalplans", "wp6-executable-fixture", "ledger.jsonl");
+const planPath = join(cwd, ".cursorclaw", "goalplans", "wp6-executable-fixture", "goalplan.json");
+const ledgerPath = join(cwd, ".cursorclaw", "goalplans", "wp6-executable-fixture", "ledger.jsonl");
 const plan = JSON.parse(readFileSync(planPath, "utf8"));
 const task = plan.workPhases.find((phase) => phase.id === "wp2").tasks.find((item) => item.id === "t-2");
 const criterion = plan.criteria.find((item) => item.id === "c-1");
@@ -2494,8 +2494,8 @@ tracked `dist/*.js`를 먼저 갱신한다. 그 다음 `npm test`가 dist byte e
 `--test-concurrency=1`을 빼고 돌린 탓이다. `npm test`는 그 플래그를 쓴다.
 
 ```text
-node --test --test-concurrency=1 plugins/codexclaw/test/*.test.mjs   tests 163  pass 163  fail 0
-node --test                      plugins/codexclaw/test/*.test.mjs   tests 156  pass 147  fail 9
+node --test --test-concurrency=1 plugins/cursorclaw/test/*.test.mjs   tests 163  pass 163  fail 0
+node --test                      plugins/cursorclaw/test/*.test.mjs   tests 156  pass 147  fail 9
 ```
 
 라운드 4 확정: 두 감사관이 정반대 관측을 냈고(한쪽은 직렬도 흔들린다, 다른 쪽은 단독 직렬은
@@ -2519,11 +2519,11 @@ node --test                      plugins/codexclaw/test/*.test.mjs   tests 156  
 이 저장소가 이미 `C10`이라는 이름으로 문서화한 경쟁이다.
 
 ```text
-plugins/codexclaw/test/hook-e2e.test.mjs:29
+plugins/cursorclaw/test/hook-e2e.test.mjs:29
 // To stay immune to the C10 build/test contention (build.test.mjs and
 // packaging.test.mjs rebuild dist in parallel workers and would clobber a cli.js mid-read)
 
-plugins/codexclaw/scripts/build.mjs:74
+plugins/cursorclaw/scripts/build.mjs:74
 if (existsSync(distDir)) rmSync(distDir, { recursive: true, force: true });
 ```
 
@@ -2571,7 +2571,7 @@ wp5가 `050_wp5_write_serialization.md` §10.7에 만든 게이트를 그대로 
 #!/usr/bin/env bash
 set -euo pipefail
 cd /Users/jun/Developer/new/700_projects/codexclaw
-pab=plugins/codexclaw/components/pabcd-state
+pab=plugins/cursorclaw/components/pabcd-state
 test -f "$pab/test/fixtures/tsc-diagnostic-baseline.txt"
 gate_tmp="$(mktemp -d)"
 trap 'rm -rf "$gate_tmp"' EXIT
@@ -2642,7 +2642,7 @@ git diff --check -- "$doc"
 - `cxc loop show`는 락 디렉터리 절대 경로와 존재 시 나이를 표시한다. wp5의 락 상태 helper는
   네 번째 `stat` seam을 보존하고 `existsSync()`와 `stat(path)` 사이 ENOENT를 absent로 정규화한다.
 - help 전체 After는 `steer`, `add-work-phase`, `add-criterion`에서 `--slug <slug>`를 지운다. 세 verb는 세션 바인딩 slug만 읽으므로 그 인자가 실행되지 않는 문법이었다. `show`·`validate`·`ready`는 `resolveSlug()`로 실제 인자를 쓰므로 그대로 둔다.
-- `plugins/codexclaw/skills/loop/SKILL.md`가 스키마, CLI 동사, event, phase-local task 의존을 안내한다.
+- `plugins/cursorclaw/skills/loop/SKILL.md`가 스키마, CLI 동사, event, phase-local task 의존을 안내한다.
 - 공개 lifecycle 뒤에도 pending task D-close 거부가 유지된다.
 
 DONE: 060_wp6_public_surface.md — W1 hook import 적층, W5 dist manifest·검증 순서, no-index 종료 코드 정규화

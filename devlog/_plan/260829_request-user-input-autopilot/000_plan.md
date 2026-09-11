@@ -34,7 +34,7 @@ cxc가 인터뷰를 하겠다고 마음먹는 것과, codex 런타임이 질문�
 
 게이트 1은 손댈 필요가 없다. 키가 없으면 이미 true다. 게이트 2는 이미
 `DECLARED_FEATURES`(`config-guard/src/features.ts:17`)에 있고 `activate()`가
-`codex features enable`을 돌린다(`activate.ts:188`). 실측: 임시 `CODEX_HOME`에서
+`codex features enable`을 돌린다(`activate.ts:188`). 실측: 임시 `CURSOR_HOME`에서
 `codex features enable default_mode_request_user_input` → exit 0, 파일에 기록됨,
 under-development 경고만 stderr.
 
@@ -68,10 +68,10 @@ under-development 경고만 stderr.
 - Loop archetype: verifier-defined. `npm test` + `cxc doctor`가 done을 정의한다.
 - Trigger: 사용자 요청 — "다른 컴퓨터에서도 깔 때 자동으로 켜지게".
 - Goal: 새 머신에서 codexclaw를 설치한 뒤 첫 세션에서 Default 모드 `request_user_input`이 사용 가능하고, 켜지지 못했다면 사용자가 그 사실을 안다.
-- Non-goals: goal 활성 중 노출(`goal-gate.ts:59,125` fail-closed 보존), 게이트 1 명시 기록, 실제 `~/.codex/config.toml` 이번 사이클 쓰기, `~/.codex/memories` 접근.
+- Non-goals: goal 활성 중 노출(`goal-gate.ts:59,125` fail-closed 보존), 게이트 1 명시 기록, 실제 `~/.cursor/config.toml` 이번 사이클 쓰기, `~/.cursor/memories` 접근.
 - Verifier: `npm test` 전체, `cxc doctor` overall PASS.
 - Stop condition: c1~c5 전부 met.
-- Write scope: `plugins/codexclaw/components/config-guard/{src,test}`, `plugins/codexclaw/components/cxc-ops/{src,test}`, `plugins/codexclaw/hooks/`, `plugins/codexclaw/.codex-plugin/plugin.json`, `docs-site/src/content/docs/`, 이 플랜 디렉터리.
+- Write scope: `plugins/cursorclaw/components/config-guard/{src,test}`, `plugins/cursorclaw/components/cxc-ops/{src,test}`, `plugins/cursorclaw/hooks/`, `plugins/cursorclaw/.cursor-plugin/plugin.json`, `docs-site/src/content/docs/`, 이 플랜 디렉터리.
 - Out-of-scope: `devlog/_plan/260829_goalplan-dependency-execution/`(다른 세션 소유), `devlog/_plan/260829_config-autopilot/`(닫힌 선행 유닛, 참조만), dirty 상태인 ast-grep/dev-diagram-viewer/dev-symlink.sh(다른 작업 소유).
 
 ## Work-phase map (one phase = one full PABCD cycle)
@@ -90,9 +90,9 @@ under-development 경고만 stderr.
 
 - c1 — 이 유닛에 000/010/020/030이 diff-level로 존재한다.
 - c2 — 게이트 2 enable이 실패하면 `cxc enable`이 눈에 띄게 보고한다. 활성화 시나리오: 페이크 러너가 그 키에만 exit 1을 반환하고, stdout/stderr에 명시적 경고와 복구 방법이 나오는지 대조한다.
-- c3 — SessionStart에서 게이트 2가 꺼져 있으면 codexclaw가 스스로 켠다(1회, 멱등). 활성화 시나리오: 임시 `CODEX_HOME`에 플래그 없는 config.toml을 두고 훅을 돌린 뒤 파일과 재실행 무변화를 확인한다.
+- c3 — SessionStart에서 게이트 2가 꺼져 있으면 codexclaw가 스스로 켠다(1회, 멱등). 활성화 시나리오: 임시 `CURSOR_HOME`에 플래그 없는 config.toml을 두고 훅을 돌린 뒤 파일과 재실행 무변화를 확인한다.
 - c4 — self-heal은 절대 세션을 실패시키지 않고 goal 억제를 건드리지 않는다. 활성화 시나리오: 러너가 throw하도록 주입해도 exit 0이고, `goal-gate` 테스트가 그대로 초록이다.
-- c5 — `npm test` 전체 통과 + `cxc doctor` PASS + `~/.codex/memories` md5 불변.
+- c5 — `npm test` 전체 통과 + `cxc doctor` PASS + `~/.cursor/memories` md5 불변.
 
 ## 위험과 완화
 

@@ -21,17 +21,17 @@
 
 ## Scope boundary
 
-IN: plugins/codexclaw/components/subagent-config/{src,test,dist},
-  plugins/codexclaw/components/pabcd-state/{src,test,dist} (directive 문자열만),
-  plugins/codexclaw/components/config-guard/{src,test,dist} (untracked
+IN: plugins/cursorclaw/components/subagent-config/{src,test,dist},
+  plugins/cursorclaw/components/pabcd-state/{src,test,dist} (directive 문자열만),
+  plugins/cursorclaw/components/config-guard/{src,test,dist} (untracked
   multi-agent-v2.ts 정직화 + dist 동기화, A-r2),
-  plugins/codexclaw/gui/{src/api.ts,src/server,src/pages/Dashboard.tsx,test}
+  plugins/cursorclaw/gui/{src/api.ts,src/server,src/pages/Dashboard.tsx,test}
   (정직 필드 계약 + 토글 카피 + handler 테스트, A-r2),
-  plugins/codexclaw/hooks/*.json (매처),
-  plugins/codexclaw/skills/{dev,pabcd,search,lunasearch,loop}/SKILL.md,
-  plugins/codexclaw/agents/README.md, structure/{10,20,40,60,INDEX}.md,
+  plugins/cursorclaw/hooks/*.json (매처),
+  plugins/cursorclaw/skills/{dev,pabcd,search,lunasearch,loop}/SKILL.md,
+  plugins/cursorclaw/agents/README.md, structure/{10,20,40,60,INDEX}.md,
   docs-site guides (native-tools, subagents, skills), 이 devlog 유닛.
-OUT: codex-rs, opencodex, ~/.codex/config.toml, goal-gate/goalplan 로직,
+OUT: codex-rs, opencodex, ~/.cursor/config.toml, goal-gate/goalplan 로직,
   interview 캡처 경로(별도 버그 — hook-continuation 테스트 1건 선행 실패 포함).
 
 ## Accept criteria
@@ -125,7 +125,7 @@ OUT: codex-rs, opencodex, ~/.codex/config.toml, goal-gate/goalplan 로직,
 
 - 전 컴포넌트 테스트 + tsc + dist 리빌드 + rg 잔재 스캔.
 - 라이브 프로브: sol/medium 자식(V2 표면)에 SUBSPAWN 토큰 부여 → 손자 spawn
-  메시지에 $cxc-search 멘션 → 손자가 스킬 본문 수신했는지 자기 보고. 훅 발화
+  메시지에 $crc-search 멘션 → 손자가 스킬 본문 수신했는지 자기 보고. 훅 발화
   여부는 메시지 내 LEAF/인라인 마커로 판정. **관찰 강화 + 블라인드(A-r1 F5,
   A-r2)**: 손자에게 기대 답을 알려주지 않는다 — "수신한 <skill> 블록의 첫 번째
   H2 헤딩과 마지막 H2 헤딩을 그대로 인용하라" 같은 비공개 구조 사실 추출을

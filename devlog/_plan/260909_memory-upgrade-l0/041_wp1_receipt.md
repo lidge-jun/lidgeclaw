@@ -33,5 +33,5 @@ matcher 는 `memoriesadd_ad_hoc_note` 와 구두점 변형을 모두 받는다. 
 
 ## 검증
 
-로컬 영수증 `.codexclaw/evidence/01a08397-.../test-receipt.json` — 2,013 tests / 2,012 pass / 0 fail. gui 는 이 워크트리에 `node_modules` 가 없어 제외했고 CI 3플랫폼에서 실행된다.
+로컬 영수증 `.cursorclaw/evidence/01a08397-.../test-receipt.json` — 2,013 tests / 2,012 pass / 0 fail. gui 는 이 워크트리에 `node_modules` 가 없어 제외했고 CI 3플랫폼에서 실행된다.
 

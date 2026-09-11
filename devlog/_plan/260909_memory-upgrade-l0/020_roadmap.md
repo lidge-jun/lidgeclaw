@@ -15,15 +15,15 @@
 ### 0.1 테스트
 
 러너는 `node:test` + `node:assert/strict`다. `components/recall/package.json:9`가 `"test": "node --test"`이고,
-루트 `package.json:24`의 `test` 스크립트가 `plugins/codexclaw/scripts/test.mjs`에 glob을 넘긴다.
-`test.mjs:9-11`이 `--test-concurrency=1`로 직렬 실행하며 `CODEXCLAW_HOME`을 임시 디렉터리로 덮는다
+루트 `package.json:24`의 `test` 스크립트가 `plugins/cursorclaw/scripts/test.mjs`에 glob을 넘긴다.
+`test.mjs:9-11`이 `--test-concurrency=1`로 직렬 실행하며 `CURSORCLAW_HOME`을 임시 디렉터리로 덮는다
 — 운영자 설정 오염 방지 장치이므로 우회하지 않는다.
 
 **써드파티 import 금지.** 빌드는 `scripts/build.mjs`가 `stripTypeScriptTypes`로 `src/*.ts → dist/*.js`를
 만드는 것이고 번들러가 없다. RRF도 BM25도 순수 SQL + JS로만 짠다.
 
 소스는 확장자를 포함해 `../src/x.ts`로 import 한다(Node 타입 스트리핑). 픽스처는
-`components/recall/test/fixtures.ts`의 `buildCodexHome(home)`이 합성 CODEX_HOME을 만들고 날짜가
+`components/recall/test/fixtures.ts`의 `buildCodexHome(home)`이 합성 CURSOR_HOME을 만들고 날짜가
 `Date.now()` 상대다(`fixtures.ts:16-22`). 랭킹 테스트는 공유 픽스처 home의 mtime을 절대 건드리지
 않는다 — `test/ranking.test.ts:1-5` 헤더가 명시한 규율이고, 격리 temp home + `utimesSync`를 쓴다.
 결정론은 `MemorySearchOptions.nowMs`(`memory-search.ts:29`)가 시계 주입 seam이다.
@@ -41,7 +41,7 @@ src 커밋과 dist 커밋을 쪼개면 중간 커밋에서 CI가 깨진다.
 
 ```
 npm run build
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/test/dist-freshness.test.mjs"
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/test/dist-freshness.test.mjs"
 ```
 
 ### 0.3 훅 개수 결합 6표면
@@ -50,9 +50,9 @@ wp1-A만 해당한다. 훅을 하나 추가하면 23→24이고, 아래가 **한
 
 | 표면 | 좌표 | 갱신 방법 |
 |---|---|---|
-| e2e 상수 | `plugins/codexclaw/test/hook-e2e.test.mjs:132` | `=== 23` → `=== 24` 수동 |
+| e2e 상수 | `plugins/cursorclaw/test/hook-e2e.test.mjs:132` | `=== 23` → `=== 24` 수동 |
 | README 배지 ×3 | `README.md:18`, `README.ko.md:18`, `README.zh.md:18` | `scripts/sync-readme-badges.mjs --write` |
-| inventory | `plugins/codexclaw/inventory.json` | `scripts/inventory.mjs --write` |
+| inventory | `plugins/cursorclaw/inventory.json` | `scripts/inventory.mjs --write` |
 | docs-site | `docs-site/src/content/docs/reference/hooks.md:3,6` + 훅 표 | 수동 ("23 hook files with 24 event handlers" → 24/25) |
 
 배지는 수동 편집하지 않는다. `inventory.mjs:250-266`의 `replaceBadges`가 `badge/hooks-N-`과
@@ -63,9 +63,9 @@ wp1-A만 해당한다. 훅을 하나 추가하면 23→24이고, 아래가 **한
 검증:
 
 ```
-node plugins/codexclaw/scripts/inventory.mjs --check
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/test/hook-e2e.test.mjs" \
-  "plugins/codexclaw/test/inventory.test.mjs" "plugins/codexclaw/test/skill-catalog.test.mjs"
+node plugins/cursorclaw/scripts/inventory.mjs --check
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/test/hook-e2e.test.mjs" \
+  "plugins/cursorclaw/test/inventory.test.mjs" "plugins/cursorclaw/test/skill-catalog.test.mjs"
 npm run gate
 ```
 
@@ -105,7 +105,7 @@ drop-and-rebuild를 하고, 그건 실측 12GB / 1,214,276메시지 전량 재�
 
 `managed-keys.ts:20-24`가 선언한 판별식은 두 개의 곱이다 — (i) 효과가 codexclaw 안에서 끝나는가,
 (ii) 되돌리기를 매니페스트가 보장하는가. `dedicated_tools`가 CONFIG_MANAGED_KEYS에 있는 이유는 (i)의
-위반, 구체적으로는 `add_ad_hoc_note`가 `~/.codex/memories/extensions/ad_hoc/notes/`에 파일을 만들고
+위반, 구체적으로는 `add_ad_hoc_note`가 `~/.cursor/memories/extensions/ad_hoc/notes/`에 파일을 만들고
 그게 codexclaw를 지워도 남기 때문이다(`ext/memories/src/local/ad_hoc_note.rs:12, 28-38`).
 
 A가 정확히 그 쓰기 성분을 닫는다. 그리고 `caution` 문구 자체가 이 조건을 선행 요구로 적어놨다
@@ -126,9 +126,9 @@ A가 정확히 그 쓰기 성분을 닫는다. 그리고 `caution` 문구 자체
 | A-3 | 프롬프트 의도 감지 | `components/pabcd-state/src/hook.ts` | 10~15 |
 | A-4 | event-slug 분기 | `components/pabcd-state/src/cli.ts` | 4~6 |
 | A-5 | 훅 JSON | `hooks/pre-tool-use-guarding-memory-write.json` (신규) | 16 |
-| A-6 | 매니페스트 등록 | `.codex-plugin/plugin.json` | 1 |
+| A-6 | 매니페스트 등록 | `.cursor-plugin/plugin.json` | 1 |
 | A-7 | 테스트 | `components/pabcd-state/test/memory-write-gate.test.ts` (신규) | 120~180 |
-| A-8 | matcher 고정 | `plugins/codexclaw/test/manifest-policy.test.mjs` | 10~12 |
+| A-8 | matcher 고정 | `plugins/cursorclaw/test/manifest-policy.test.mjs` | 10~12 |
 | A-9 | 개수 6표면 | §0.3 | 각 1~5 |
 | A-10 | dist | `components/pabcd-state/dist/*.js` | — |
 
@@ -188,7 +188,7 @@ matcher 판정 규칙은 `hooks/src/events/common.rs:137-173`이다 — 영숫�
 
 | 표면 | tool_input | 검사 대상 |
 |---|---|---|
-| `apply_patch` | `{ command: "<패치 전문>" }` (`handlers/apply_patch.rs:458-463`) | 패치 헤더의 목적지 경로가 `~/.codex/memories/` 아래인가 |
+| `apply_patch` | `{ command: "<패치 전문>" }` (`handlers/apply_patch.rs:458-463`) | 패치 헤더의 목적지 경로가 `~/.cursor/memories/` 아래인가 |
 | `Bash` | `{ command: ... }` (`registry.rs:159-163`, `worktree-guard.ts:575-580` 실사용) | 리다이렉션/`sed -i`/`tee`가 그 경로를 향하는가 |
 | 메모리 툴 | 함수 인자 JSON (`registry.rs:129-139`) | `tool_input.filename` / `tool_input.note` |
 
@@ -267,14 +267,14 @@ boolean에만 도달한다(`features.ts:6-9`, `toml-edit.ts:5-8`). `memories.ded
 ### 1.6 wp1 검증
 
 ```
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/components/pabcd-state/test/*.test.ts"
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/components/config-guard/test/*.test.ts"
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/test/hook-e2e.test.mjs" \
-  "plugins/codexclaw/test/manifest-policy.test.mjs" "plugins/codexclaw/test/inventory.test.mjs" \
-  "plugins/codexclaw/test/skill-catalog.test.mjs"
-node plugins/codexclaw/scripts/inventory.mjs --check
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/components/pabcd-state/test/*.test.ts"
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/components/config-guard/test/*.test.ts"
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/test/hook-e2e.test.mjs" \
+  "plugins/cursorclaw/test/manifest-policy.test.mjs" "plugins/cursorclaw/test/inventory.test.mjs" \
+  "plugins/cursorclaw/test/skill-catalog.test.mjs"
+node plugins/cursorclaw/scripts/inventory.mjs --check
 npm run gate
-npm run build && node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/test/dist-freshness.test.mjs"
+npm run build && node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/test/dist-freshness.test.mjs"
 ```
 
 명제별 검증 대응:
@@ -321,7 +321,7 @@ substring 매칭의 오매칭률은 추측이 아니다. memories 코퍼스 285�
 | 2-4 | 어미 절단 + 절단 후 재조회 | `components/recall/src/synonyms.ts` | +50~70 |
 | 2-5 | 플래그/usage | `components/recall/src/cli.ts` | +10~20 |
 | 2-6 | 테스트 | `test/query-words.test.ts` (신규), `test/synonyms.test.ts`, `test/memory-search.test.ts` | +150~220 |
-| 2-7 | 스킬 문서 | `plugins/codexclaw/skills/recall/SKILL.md` | +10~20 |
+| 2-7 | 스킬 문서 | `plugins/cursorclaw/skills/recall/SKILL.md` | +10~20 |
 | 2-8 | dist | `components/recall/dist/*.js` | — |
 
 ### 2.3 2-1 심볼 판정 규칙
@@ -404,12 +404,12 @@ opt-out은 `--no-synonyms`가 이미 있다(`cli.ts:44`).
 ### 2.6 검증
 
 ```
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/components/recall/test/*.test.ts"
-node plugins/codexclaw/components/recall/dist/cli.js memory search "LSP" --limit 5
-node plugins/codexclaw/components/recall/dist/cli.js memory search "3956" --limit 3
-node plugins/codexclaw/components/recall/dist/cli.js memory search "opencodex 릴리즈" --limit 5
-node plugins/codexclaw/components/recall/dist/cli.js memory search "왜 그렇게 결정했지" --limit 5
-npm run build && node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/test/dist-freshness.test.mjs"
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/components/recall/test/*.test.ts"
+node plugins/cursorclaw/components/recall/dist/cli.js memory search "LSP" --limit 5
+node plugins/cursorclaw/components/recall/dist/cli.js memory search "3956" --limit 3
+node plugins/cursorclaw/components/recall/dist/cli.js memory search "opencodex 릴리즈" --limit 5
+node plugins/cursorclaw/components/recall/dist/cli.js memory search "왜 그렇게 결정했지" --limit 5
+npm run build && node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/test/dist-freshness.test.mjs"
 ```
 
 c-4는 `LSP` 질의가 `NaiControlsPanel` 류를 반환하지 않는 것, `3956` 질의가 thread id
@@ -504,11 +504,11 @@ exhaustive를 유지한다 — `Record<MemoryKind, number>`이므로 타입이 �
 ### 3.6 검증
 
 ```
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/components/recall/test/*.test.ts"
-node plugins/codexclaw/components/recall/dist/cli.js memory search "배포" --cwd "$PWD" --limit 5
-node plugins/codexclaw/components/recall/dist/cli.js memory search "배포" --cwd-only "$PWD" --limit 5
-node plugins/codexclaw/components/recall/dist/cli.js memory search "zzzz-없는말" --limit 5
-npm run build && node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/test/dist-freshness.test.mjs"
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/components/recall/test/*.test.ts"
+node plugins/cursorclaw/components/recall/dist/cli.js memory search "배포" --cwd "$PWD" --limit 5
+node plugins/cursorclaw/components/recall/dist/cli.js memory search "배포" --cwd-only "$PWD" --limit 5
+node plugins/cursorclaw/components/recall/dist/cli.js memory search "zzzz-없는말" --limit 5
+npm run build && node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/test/dist-freshness.test.mjs"
 ```
 
 두 번째와 세 번째의 차이가 부스트 대 하드 필터다. 네 번째가 chat 보완 발동을 본다.
@@ -680,16 +680,16 @@ c-9의 후반("히트 0이면 여전히 빈 문자열")이 이것이다. 세 겹
 ### 4.7 검증
 
 ```
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/components/recall/test/*.test.ts"
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/components/recall/test/*.test.ts"
 
 printf '%s' '{"hook_event_name":"SessionStart","source":"startup","cwd":"'"$PWD"'"}' \
-  | node plugins/codexclaw/components/recall/dist/cli.js hook session-start | wc -c
+  | node plugins/cursorclaw/components/recall/dist/cli.js hook session-start | wc -c
 printf '%s' '{"hook_event_name":"SessionStart","source":"compact","cwd":"'"$PWD"'"}' \
-  | node plugins/codexclaw/components/recall/dist/cli.js hook session-start | wc -c
+  | node plugins/cursorclaw/components/recall/dist/cli.js hook session-start | wc -c
 printf '%s' '{"hook_event_name":"PostCompact","cwd":"'"$PWD"'"}' \
-  | node plugins/codexclaw/components/recall/dist/cli.js hook post-compact | wc -c
+  | node plugins/cursorclaw/components/recall/dist/cli.js hook post-compact | wc -c
 
-npm run build && node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/test/dist-freshness.test.mjs"
+npm run build && node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/test/dist-freshness.test.mjs"
 ```
 
 compact < startup이 c-8이고, PostCompact 0바이트가 T1 수정 확인이다. 이 워크트리(`1fa9`)에서
@@ -776,7 +776,7 @@ CREATE TABLE IF NOT EXISTS recall_hit_counts (
 
 `SCHEMA` 상수에 이 문장만 넣는다. `INDEX_SCHEMA_VERSION`(`index-db.ts:18`)은 `"2"` 그대로다. §0.4.
 
-위치는 `~/.codexclaw/recall/index.sqlite` 안이 맞다 — `index-db.ts:3-11`의 파생 캐시 계약 때문이고,
+위치는 `~/.cursorclaw/recall/index.sqlite` 안이 맞다 — `index-db.ts:3-11`의 파생 캐시 계약 때문이고,
 별도 파일을 만들면 정리 대상이 하나 늘고 "지우면 중립으로 복귀"가 두 곳으로 흩어진다.
 
 `openIndexReadOnly`(`:103-106`)는 스키마를 안 만드므로 읽기 경로가 테이블 부재를 견뎌야 한다.
@@ -807,15 +807,15 @@ memory-search 점수 스케일에서 커버리지 1그룹이 +2이므로, 0.5 �
 ### 5.6 검증
 
 ```
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/components/recall/test/*.test.ts"
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/components/recall/test/*.test.ts"
 
-git diff origin/dev -- plugins/codexclaw/components/recall/src/index-db.ts | rg 'INDEX_SCHEMA_VERSION'
-rg -n 'msgs_fts' plugins/codexclaw/components/recall/src/index-search.ts
+git diff origin/dev -- plugins/cursorclaw/components/recall/src/index-db.ts | rg 'INDEX_SCHEMA_VERSION'
+rg -n 'msgs_fts' plugins/cursorclaw/components/recall/src/index-search.ts
 
-node plugins/codexclaw/components/recall/dist/cli.js chat search "opencodex release" --limit 5 --no-refresh
-node plugins/codexclaw/components/recall/dist/cli.js chat search "ci" --limit 5 --no-refresh
+node plugins/cursorclaw/components/recall/dist/cli.js chat search "opencodex release" --limit 5 --no-refresh
+node plugins/cursorclaw/components/recall/dist/cli.js chat search "ci" --limit 5 --no-refresh
 
-npm run build && node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/test/dist-freshness.test.mjs"
+npm run build && node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/test/dist-freshness.test.mjs"
 ```
 
 두 번째 줄이 **비어야 한다** — 스키마 버전이 diff에 등장하면 12GB 재빌드다. 세 번째 줄이 c-11의

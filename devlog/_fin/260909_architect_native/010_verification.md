@@ -7,7 +7,7 @@ Implementation: afcbb2f, branch codex/architect-role, worktree /home/jun/code-wo
 ## Evidence
 
 Logs: /var/tmp/cxc-architect-native-01a0829e.
-Native evidence: /home/jun/code/codexclaw/.codexclaw/evidence/01a0829e-d196-7b31-bed9-9551e9ea3c18.
+Native evidence: /home/jun/code/codexclaw/.cursorclaw/evidence/01a0829e-d196-7b31-bed9-9551e9ea3c18.
 
 - Red: wrapper assertions failed on explorer versus architect (red.log). After correction wrapper/hook tests114 pass; native type with absent/conflicting marker or review words selects architect fixture model/effort/prompt. Explicit caller overrides and full-fork field omission preserved.
 - Integrated affected role suite: 259 tests, 259 pass, 0 fail (affected.log).

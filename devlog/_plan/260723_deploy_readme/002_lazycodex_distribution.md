@@ -12,31 +12,31 @@ Verdict: COMPLETE.
 2. Real payload = `oh-my-openagent` / plugin `omo`. The wrapper npm package ships
    only `bin`, `README.md`, `LICENSE`.
 3. npx install builds/copies the plugin into
-   `~/.codex/plugins/cache/sisyphuslabs/omo/<version>/`, writes a cached marketplace
+   `~/.cursor/plugins/cache/sisyphuslabs/omo/<version>/`, writes a cached marketplace
    manifest, stamps `lazycodex-install.json` (provenance: npx-local flow), links
    executables + agent TOMLs, installs pinned ast-grep/MCP runtimes.
-4. The installer DOES write `~/.codex/config.toml`: `[marketplaces.sisyphuslabs]`,
+4. The installer DOES write `~/.cursor/config.toml`: `[marketplaces.sisyphuslabs]`,
    `[plugins."omo@sisyphuslabs"]`, MCP enablement, hook trust hashes, `[agents.*]`.
 5. Autonomous permissions are an explicit opt-in flag
    (`install --no-tui --codex-autonomous`); default install never touches permission
    policy.
 6. Alternative path (documented experimental): native marketplace —
-   `codex plugin marketplace add https://github.com/code-yeongyu/lazycodex` then
+   `Cursor plugin install add https://github.com/code-yeongyu/lazycodex` then
    `codex plugin add omo@sisyphuslabs`; a SessionStart bootstrap hook then provisions
    the non-static pieces.
 7. Hooks are inert until Codex approval; after upgrades they show `Modified` and
    need re-approval (trusted content hashes change).
 8. Runtime state is project-local/file-backed (`.omo/...`) via lifecycle hooks —
-   same architecture family as codexclaw's `.codexclaw/`.
+   same architecture family as codexclaw's `.cursorclaw/`.
 9. Uninstall via wrapper removes owned caches/config sections only, with a
    timestamped `config.toml` backup.
 
 ## Manifest format
 
 - Marketplace manifest lives at repo-root `.agents/plugins/marketplace.json`
-  (NOT `.codex-plugin/`): `{ name: "sisyphuslabs", interface.displayName, plugins:
+  (NOT `.cursor-plugin/`): `{ name: "sisyphuslabs", interface.displayName, plugins:
   [{ name: "omo", source: "./plugins/omo", category, policy }] }`.
-- Plugin manifest `plugins/omo/.codex-plugin/plugin.json`: identity + `skills`,
+- Plugin manifest `plugins/omo/.cursor-plugin/plugin.json`: identity + `skills`,
   `hooks` (23 files across 7 lifecycle families at v4.19.1), `mcpServers`, and a
   rich `interface` block — same shape codexclaw already uses.
 
@@ -50,7 +50,7 @@ Verdict: COMPLETE.
 - npx-local updates: SessionStart hook checks `npm view lazycodex-ai version`
   (24h throttle), re-runs installer, replaces versioned cache atomically.
 - Marketplace installs: self-updater detects marketplace provenance (absence of
-  `lazycodex-install.json`) and defers to `codex plugin marketplace upgrade`.
+  `lazycodex-install.json`) and defers to `Cursor plugin install upgrade`.
 
 ## Takeaways for codexclaw (adopt / avoid)
 

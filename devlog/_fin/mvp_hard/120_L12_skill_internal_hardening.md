@@ -13,7 +13,7 @@ The user selected these defaults during the Interview phase:
 - Goal model: persistent contradiction loop.
 - Control surface: main-session-owned Interview loop, assisted by hooks.
 - Canonical runtime evidence: session-scoped append-only interview ledger at
-  `.codexclaw/interviews/<sessionId>.jsonl`.
+  `.cursorclaw/interviews/<sessionId>.jsonl`.
 - Human-readable evidence: append each round to this devlog plan.
 - Answer capture: `PostToolUse` auto-capture for `request_user_input`.
 - Stop guard: block only when I phase has a pending question or high contradiction.
@@ -39,10 +39,10 @@ Parallel read-only explorers found the same core gaps:
    currently captures the question/options/answer.
 3. `minds.ts` and `triage.ts` provide contradiction primitives, but no continuous
    main-session loop wires dispatch -> triage -> question -> record -> rescan.
-4. `pabcd/SKILL.md` previously had stale `.codexclaw/state.json` and "no external
+4. `pabcd/SKILL.md` previously had stale `.cursorclaw/state.json` and "no external
    phase commands" wording; live state is session-scoped, chat orchestrate wiring
    exists after L3, and terminal `cxc orchestrate` exists after L4.
-5. `$cxc-interview`, `$cxc-orchestrate`, `$cxc-loop`, and `$cxc-goalplan` now exist
+5. `$crc-interview`, `$crc-orchestrate`, `$crc-loop`, and `$crc-goalplan` now exist
    as discoverable, on-demand Codex skill surfaces with `agents/openai.yaml` metadata.
 
 ## Scope
@@ -50,10 +50,10 @@ Parallel read-only explorers found the same core gaps:
 ### Completed In L12
 
 - Validate and reconcile four existing on-demand skill surfaces:
-  - `plugins/codexclaw/skills/interview/`
-  - `plugins/codexclaw/skills/orchestrate/`
-  - `plugins/codexclaw/skills/loop/`
-  - `plugins/codexclaw/skills/goalplan/`
+  - `plugins/cursorclaw/skills/interview/`
+  - `plugins/cursorclaw/skills/orchestrate/`
+  - `plugins/cursorclaw/skills/loop/`
+  - `plugins/cursorclaw/skills/goalplan/`
 - Confirm skill catalog, skill README, and `structure/INDEX.md` already expose the
   current on-demand surfaces after L11 reconciliation.
 - Confirm `pabcd/SKILL.md` and `cxc-orchestrate` describe live chat + terminal
@@ -66,7 +66,7 @@ Parallel read-only explorers found the same core gaps:
 ### Out Of L12
 
 - No `PostToolUse` hook implementation.
-- No `.codexclaw/interviews/<sessionId>.jsonl` writer implementation.
+- No `.cursorclaw/interviews/<sessionId>.jsonl` writer implementation.
 - No narrow I-phase Stop guard for pending/high Interview work.
 - No new `cxc orchestrate` CLI implementation; the existing L4 CLI is live and
   only documented/reconciled here.
@@ -82,7 +82,7 @@ Parallel read-only explorers found the same core gaps:
 Add a small interview runtime module under `pabcd-state`:
 
 - `interview-ledger.ts`
-  - session-scoped JSONL path: `.codexclaw/interviews/<sessionId>.jsonl`;
+  - session-scoped JSONL path: `.cursorclaw/interviews/<sessionId>.jsonl`;
   - event ids derived from `(sessionId, roundId, questionId, eventKind)`;
   - event kinds: `question_asked`, `answer_recorded`,
     `contradiction_added`, `contradiction_resolved`,
@@ -127,7 +127,7 @@ questions and records, while subagents only return contradiction candidates.
 
 ### `cxc-orchestrate`
 
-Discoverable help surface for chat-side `$cxc-orchestrate` and the live
+Discoverable help surface for chat-side `$crc-orchestrate` and the live
 agent-gated `cxc orchestrate` terminal path. It must keep the human chat
 free-pass and agent/CLI attest-gated paths distinct.
 
@@ -147,7 +147,7 @@ L12 verification:
 
 - `test -f` for the four skill `SKILL.md` files and their `agents/openai.yaml`
   metadata;
-- `node --test plugins/codexclaw/test/manifest-policy.test.mjs`
+- `node --test plugins/cursorclaw/test/manifest-policy.test.mjs`
 - `npm test`
 - `git diff --check`
 
@@ -169,7 +169,7 @@ Questions answered:
 - Runtime split: L12 validates existing skill surfaces, later loops implement
   recorder/guard.
 - Question model: main session asks; subagents report candidates.
-- Ledger model: `.codexclaw/interviews/<sessionId>.jsonl` is canonical runtime
+- Ledger model: `.cursorclaw/interviews/<sessionId>.jsonl` is canonical runtime
   evidence; devlog is human-readable appendix.
 
 Remaining assumptions:
@@ -193,7 +193,7 @@ L12 closes only the skill-surface reconciliation slice. The following are curren
 The following remain deferred to L13+:
 
 - `PostToolUse` answer capture for `request_user_input`;
-- `.codexclaw/interviews/<sessionId>.jsonl` append-only interview event writer;
+- `.cursorclaw/interviews/<sessionId>.jsonl` append-only interview event writer;
 - narrow I-phase Stop guard for pending/high Interview work;
 - contradiction-rescan coordinator runtime.
 
@@ -207,7 +207,7 @@ Fresh checks run before closing the L12 PABCD cycle:
   markers.
 - Skill existence check: `interview`, `orchestrate`, `loop`, and `goalplan` each
   have `SKILL.md` plus `agents/openai.yaml`.
-- `node --test plugins/codexclaw/test/manifest-policy.test.mjs`: 6 pass, 0 fail.
+- `node --test plugins/cursorclaw/test/manifest-policy.test.mjs`: 6 pass, 0 fail.
 - `npm run build`: build OK, 30 files compiled.
 - `npm test`: 283 pass, 0 fail.
 - `node bin/codexclaw.mjs doctor`: overall PASS.

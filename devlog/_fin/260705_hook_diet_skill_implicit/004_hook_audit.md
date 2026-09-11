@@ -64,7 +64,7 @@
 ### 7. post-tool-use-capturing-interview-answers.json
 - Event: PostToolUse (matcher: request_user_input)
 - Component: pabcd-state
-- 기능: 인터뷰 Q/A를 .codexclaw/interviews/<session>.jsonl에 기록
+- 기능: 인터뷰 Q/A를 .cursorclaw/interviews/<session>.jsonl에 기록
 - KEEP 이유: 기계적 캡처. 에이전트가 "기록해라"는 규칙을 받아도 포맷/경로를
   정확히 맞추기 어렵고, 까먹을 확률 높음. 데이터 무결성 필수.
 
@@ -92,7 +92,7 @@
 - 기능: 이전 friction 기반으로 "이거 주의해"라는 조언 주입
 - REMOVE 이유: 순수 advisory. 에이전트가 friction.log를 읽고 스스로 판단 가능.
   hook이 하는 건 "friction.log 읽어서 경고 메시지 생성"뿐.
-- 흡수: `dev` §3에 "재시도 전 .codexclaw/friction.log 확인" 규칙
+- 흡수: `dev` §3에 "재시도 전 .cursorclaw/friction.log 확인" 규칙
 
 ### 3. post-tool-use-detecting-edit-shapes.json
 - Event: PostToolUse (matcher: apply_patch)
@@ -114,7 +114,7 @@
 - Event: SessionStart
 - 기능: AGENTS.md / .codex/ rules를 세션 시작 시 주입
 - REMOVE 이유: **Codex 플랫폼이 이미 AGENTS.md를 네이티브로 주입함**.
-  중복. 다만 codexclaw-specific rules (.codexclaw/ 안의 것)가 있다면 확인 필요.
+  중복. 다만 codexclaw-specific rules (.cursorclaw/ 안의 것)가 있다면 확인 필요.
 - 확인 사항: hook이 AGENTS.md 외에 추가로 주입하는 게 있는지 코드 확인 후 제거
 
 ### 6. session-start-advertising-recall.json

@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, subagent, evidence-gate, plan]
+tags: [cursorclaw, subagent, evidence-gate, plan]
 ---
 
 # Plan — SubagentStop Evidence-Gate Fix (DISPATCH-AGENT-TYPE-01)
@@ -32,21 +32,21 @@ tags: [codexclaw, subagent, evidence-gate, plan]
    - `agent_type:"worker"` for tasks that write files and need evidence verification
    - Place after DISPATCH-ECONOMY-01 in section 3
 
-2. `plugins/codexclaw/skills/pabcd/SKILL.md` — update Delegation Model section:
+2. `plugins/cursorclaw/skills/pabcd/SKILL.md` — update Delegation Model section:
    - Add cross-reference to DISPATCH-AGENT-TYPE-01
    - Clarify in DISPATCH-TASK-01 that agent_type selection is mandatory
 
-3. `plugins/codexclaw/components/pabcd-state/src/subagent-evidence.ts` — add
+3. `plugins/cursorclaw/components/pabcd-state/src/subagent-evidence.ts` — add
    clarifying comment on GATED_AGENT_TYPES documenting the invariant:
    "Only worker agents are gated; explorer agents bypass the evidence gate.
    Dispatch convention DISPATCH-AGENT-TYPE-01: use explorer for read-only/chat-only
    deliverables."
 
-4. `plugins/codexclaw/components/pabcd-state/test/subagent-evidence.test.ts` — add
+4. `plugins/cursorclaw/components/pabcd-state/test/subagent-evidence.test.ts` — add
    test case: "DISPATCH-AGENT-TYPE-01: explorer dispatches bypass evidence gate
    regardless of last_assistant_message content" (covers the invariant explicitly)
 
-5. `plugins/codexclaw/skills/loop/SKILL.md` — add note in dispatch-related section
+5. `plugins/cursorclaw/skills/loop/SKILL.md` — add note in dispatch-related section
    referencing DISPATCH-AGENT-TYPE-01
 
 ### OUT of scope

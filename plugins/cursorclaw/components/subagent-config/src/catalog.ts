@@ -58,7 +58,7 @@ function isRoutedSlug(key: string): boolean {
 /** Root-level TOML path only: never read a similarly named key inside a table. */
 export function nativeCatalogPath(env: NodeJS.ProcessEnv = process.env): string | null {
   if (env.CODEX_MODELS_CACHE_PATH?.trim()) return env.CODEX_MODELS_CACHE_PATH;
-  const home = env.CODEX_HOME?.trim() || join(homedir(), ".codex");
+  const home = env.CURSOR_HOME?.trim() || join(homedir(), ".codex");
   try {
     const lines = readFileSync(join(home, "config.toml"), "utf8").split(/\r?\n/);
     for (const line of lines) {

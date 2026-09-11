@@ -9,13 +9,13 @@ B는 이 스펙을 그대로 실행한다. 근거 소스는 유닛 내 영속 �
 |---|------|------|-----------|
 | 1 | 검토 범위와 방법 | 대상 경로, 파견 에이전트(모델/역할/왕복), 검증 명령 | 본 유닛 000/001/002 |
 | 2 | CLI 표면 맵 | `bin/codexclaw.mjs` 명령별 디스패치 표(위임 컴포넌트 포함) | `001_research_cli.md` §1 |
-| 3 | 활성 hook 레지스트리 | `plugins/codexclaw/hooks/*.json` 전수 vs `plugins/codexclaw/.codex-plugin/plugin.json` hooks 배열 — 활성 13/전체 20 표 | manifest 실측(B에서 `ls`+`python3 json` 재실측) |
+| 3 | 활성 hook 레지스트리 | `plugins/cursorclaw/hooks/*.json` 전수 vs `plugins/cursorclaw/.cursor-plugin/plugin.json` hooks 배열 — 활성 13/전체 20 표 | manifest 실측(B에서 `ls`+`python3 json` 재실측) |
 | 4 | hook 이벤트 맵 | 5개 이벤트 핸들러 위치·책임 | `002_research_hooks.md` §1 |
 | 5 | Stop-continuation 구현 | GOAL-IDLE-CONTINUE-01, MAX_STOP_BLOCKS=3, context-pressure, plateau | `002_research_hooks.md` §2 |
 | 6 | guard/gate 구현 | LEAF-TOPOLOGY-01, GOAL-COMPLETE-GATE-01 | `002_research_hooks.md` §3 |
 | 7 | 발견 사항 | High/Med/Low 번호 목록, `path:line`+인용, 001§3+002§4 통합(스팟체크 통과분만) | 001/002 |
-| 8 | 테스트 존재 표 | `plugins/codexclaw/components/*/test` 존재 여부(내용 감사 제외 사유) | B에서 `ls` 실측 |
-| 9 | 리뷰어 verdict | A게이트 라운드 이력(1~N)과 최종 verdict | 리뷰어 반환문 + `.codexclaw/evidence/` |
+| 8 | 테스트 존재 표 | `plugins/cursorclaw/components/*/test` 존재 여부(내용 감사 제외 사유) | B에서 `ls` 실측 |
+| 9 | 리뷰어 verdict | A게이트 라운드 이력(1~N)과 최종 verdict | 리뷰어 반환문 + `.cursorclaw/evidence/` |
 
 ## 수용 기준
 

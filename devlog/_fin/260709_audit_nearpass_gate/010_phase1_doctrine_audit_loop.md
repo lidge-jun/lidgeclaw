@@ -1,8 +1,8 @@
 # 010 — Phase 1: doctrine contract (AUDIT-LOOP-01 + verdict line)
 
-Write scope (disjoint): `plugins/codexclaw/skills/pabcd/SKILL.md`,
-`plugins/codexclaw/skills/dev-code-reviewer/SKILL.md`,
-`plugins/codexclaw/skills/loop/SKILL.md`,
+Write scope (disjoint): `plugins/cursorclaw/skills/pabcd/SKILL.md`,
+`plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md`,
+`plugins/cursorclaw/skills/loop/SKILL.md`,
 `structure/20_pabcd_dispatch_doctrine.md` (surgical A->B bullet only — audit
 round 1 B2). Nothing else.
 
@@ -28,8 +28,8 @@ the judge, not a string parser). A FAIL round never exits: apply
 REVIEW-SYNTHESIS-01 (§11.3), amend the plan, and re-audit with the SAME
 reviewer (`send_input`/`resume_agent`, DISPATCH-ACTOR-01); LOOP-REPAIR-01
 bounds the loop — after 3 failed rounds return to P with a changed plan (HITL
-may return to Interview). The dispatch packet attaches `$cxc-dev-code-reviewer`
-AND `$cxc-search` (reference/version/external-claim verification rides the
+may return to Interview). The dispatch packet attaches `$crc-dev-code-reviewer`
+AND `$crc-search` (reference/version/external-claim verification rides the
 search ladder) and instructs the reviewer to end with a normalized final line
 `VERDICT: PASS | GO-WITH-FIXES (blockers=N) | FAIL` plus numbered blockers.
 No code changes.
@@ -140,9 +140,9 @@ with:
 
 ## Verification (phase-local)
 
-- `rg -n "AUDIT-LOOP-01" plugins/codexclaw/skills/pabcd/SKILL.md` -> >= 2 hits
+- `rg -n "AUDIT-LOOP-01" plugins/cursorclaw/skills/pabcd/SKILL.md` -> >= 2 hits
   (§A + artifact obligation).
-- `rg -n "VERDICT: PASS" plugins/codexclaw/skills/{pabcd,dev-code-reviewer}/SKILL.md`
+- `rg -n "VERDICT: PASS" plugins/cursorclaw/skills/{pabcd,dev-code-reviewer}/SKILL.md`
   -> 1 hit each.
-- `rg -n "AUDIT-LOOP-01" plugins/codexclaw/skills/loop/SKILL.md` -> 1 hit.
+- `rg -n "AUDIT-LOOP-01" plugins/cursorclaw/skills/loop/SKILL.md` -> 1 hit.
 - `rg -n "auditVerdict" structure/20_pabcd_dispatch_doctrine.md` -> 1 hit.

@@ -2,7 +2,7 @@
  * index-rank.test.ts — WP5 chat-search ranking: BM25 lane + trigram lane fused
  * with RRF, plus a bounded recency term.
  *
- * Builds an ISOLATED temp CODEX_HOME (never the shared fixture home) so the
+ * Builds an ISOLATED temp CURSOR_HOME (never the shared fixture home) so the
  * corpus can be shaped for ranking, and injects `nowMs` for determinism.
  */
 import test from "node:test";

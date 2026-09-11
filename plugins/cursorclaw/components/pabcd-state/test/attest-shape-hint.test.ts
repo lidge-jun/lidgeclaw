@@ -213,7 +213,7 @@ const REPO = resolvePath(dirname(fileURLToPath(import.meta.url)), "..", "..", ".
 
 /** The attest table rows out of pabcd/references/phase-control.md, keyed by edge. */
 function attestTableRows(): Map<string, string> {
-  const md = readFileSync(resolvePath(REPO, "plugins/codexclaw/skills/pabcd/references/phase-control.md"), "utf8");
+  const md = readFileSync(resolvePath(REPO, "plugins/cursorclaw/skills/pabcd/references/phase-control.md"), "utf8");
   const rows = new Map<string, string>();
   for (const line of md.split("\n")) {
     const m = /^\|\s*(IDLE->P|I->P|P->A|A->B|B->C|C->D)\s*\|([^|]*)\|/.exec(line.trim());
@@ -243,7 +243,7 @@ test("the pabcd attest table names every key its edge's gate requires", () => {
     }
   }
   // The bound-session keys are stated once beneath the table rather than per row.
-  const md = readFileSync(resolvePath(REPO, "plugins/codexclaw/skills/pabcd/references/phase-control.md"), "utf8");
+  const md = readFileSync(resolvePath(REPO, "plugins/cursorclaw/skills/pabcd/references/phase-control.md"), "utf8");
   assert.match(md, /workPhaseId/);
   assert.match(md, /testReceiptPath/);
   assert.match(md, /ATTEST-SHAPE-01/);

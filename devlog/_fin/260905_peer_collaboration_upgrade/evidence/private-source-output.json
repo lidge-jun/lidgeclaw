@@ -20,8 +20,8 @@
     "All actions are proposals; no messages, writes, or external calls were performed."
   ],
   "loadedGuidance": [
-    "plugins/codexclaw/skills/search/SKILL.md: Source-Proof Invariant and peer-collaboration routing",
-    "plugins/codexclaw/skills/dev/references/peer-collaboration.md: scope, sharing authority, selective contact, and evidence boundaries",
+    "plugins/cursorclaw/skills/search/SKILL.md: Source-Proof Invariant and peer-collaboration routing",
+    "plugins/cursorclaw/skills/dev/references/peer-collaboration.md: scope, sharing authority, selective contact, and evidence boundaries",
     "User-attached codexclaw:cxc-dev-code-reviewer: independent evidence posture"
   ]
 }

@@ -45,7 +45,7 @@ Date: 2026-07-07. Work-phase wp3 of goalplan
   explorers cannot author candidate docs per dispatch doctrine
   20_pabcd_dispatch_doctrine.md:94-100, 00_philosophy.md:153). ACCEPTED; fix:
   explorers return findings only, candidate DOC written by MAIN session or a
-  scoped WORKER (write scope = devlog unit / .codexclaw/divergence/). Round 2:
+  scoped WORKER (write scope = devlog unit / .cursorclaw/divergence/). Round 2:
   RESOLVED against doctrine lines, VERDICT OKAY.
 
 Cross-repo note: codexclaw keeps the STRICTER cxc-search-only provenance rule

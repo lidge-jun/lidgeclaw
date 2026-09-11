@@ -51,7 +51,7 @@ skills/hooks/MCP 등록까지 날아간다. 부수 피해가 이득보다 크다
 ```diff
  export interface FlagRecord {
    priorEnabled: boolean;
-   enabledByCodexclaw: boolean;
+   enabledByCursorclaw: boolean;
    enableFailed: boolean;
 +  /** 실패 시 exit code + stderr 앞부분. 성공/미시도면 부재. */
 +  failure?: { exitCode: number; message: string };
@@ -104,7 +104,7 @@ exit code는 0을 유지한다. 활성화는 성공했고, 이건 경고다.
 | 테스트 | 검증 |
 |---|---|
 | `soft failure records exitCode and stderr in the manifest` | 페이크 러너가 그 키에만 `{exitCode:2, stderr:"unknown feature"}` → 매니페스트 `flags[key].failure`가 채워지고 다른 플래그는 정상 |
-| `soft failure does not throw and other flags still enable` | 같은 조건에서 `activate()`가 반환하고 `multi_agent`/`goals`/`hooks`가 `enabledByCodexclaw:true` |
+| `soft failure does not throw and other flags still enable` | 같은 조건에서 `activate()`가 반환하고 `multi_agent`/`goals`/`hooks`가 `enabledByCursorclaw:true` |
 | `hard failure still throws` | 회귀 방지 — `goals`에 exit 1을 주면 throw |
 | `SOFT_FEATURE_IMPACT covers every soft flag` | `SOFT_FEATURES`의 모든 원소가 impact 문장을 갖는다(집합이 커질 때 침묵 재발 방지) |
 
@@ -124,7 +124,7 @@ c2. `npm test` 초록. 매니페스트 v2 파싱 회귀 없음(`deactivate-drift
 ```ts
 flags[key] = {
   priorEnabled: rec.priorEnabled === true,
-  enabledByCodexclaw: rec.enabledByCodexclaw === true,
+  enabledByCursorclaw: rec.enabledByCursorclaw === true,
   enableFailed: rec.enableFailed === true,
 };
 ```
@@ -174,5 +174,5 @@ wp2 리뷰어(Copernicus)가 3회 대기에 무응답이라 DISPATCH-RETIRE-01�
 
 ### A2 — `enableFailed`가 그대로 남는지 확인
 
-`deactivate.ts`가 `enabledByCodexclaw`만 보고 되끄는지 재확인했다(:165). `failure`는
+`deactivate.ts`가 `enabledByCursorclaw`만 보고 되끄는지 재확인했다(:165). `failure`는
 읽지 않으므로 해제 경로 무영향이 맞다. 010 본문의 주장 유지.

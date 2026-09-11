@@ -41,7 +41,7 @@
   필수(기존 store 불변식 그대로) — 즉 "부모 모델 + 고정 effort"도 유효한 gjc식
   구성이다.
 - **D3 — 컴포넌트 결합 회피: 훅은 store 파일을 직접 읽는다.** pabcd-state가
-  subagent-config 패키지를 import하지 않고, `.codexclaw/subagents.json`을
+  subagent-config 패키지를 import하지 않고, `.cursorclaw/subagents.json`을
   **파일 포맷 계약**으로 소비하는 최소 리더(활성화 술어 판정만)를 갖는다.
   strict-reconstruct 원칙 동일(깨진 JSON → 불활성, never throw).
   (대안: 패키지 import — audit에서 기존 크로스 import 전례가 발견되면 뒤집기.)
@@ -92,7 +92,7 @@
 
 - **IN**: 위 파일 지도 전부, 각 WP의 테스트, SoT 문서 2건(README/SKILL.md).
 - **OUT**: Mind 프롬프트 내용, `normalizeMindOutput` 검증 로직, 골/Stop/HITL 계약,
-  V1/V2 페이로드 빌더 로직, 프로파일 티어, 글로벌 config, `.codexclaw/interviews/`
+  V1/V2 페이로드 빌더 로직, 프로파일 티어, 글로벌 config, `.cursorclaw/interviews/`
   캡처 포맷.
 
 ## 수용 기준 (활성화 시나리오 포함, C-ACTIVATION-GROUNDING-01)
@@ -123,7 +123,7 @@
   후속 유닛. (근거: 000 §gjc 레퍼런스)
 - **A2**: "지정해야하도록"의 필수 대상은 **effort**. 모델은 mode="model"일 때만
   필수. 모델까지 무조건 필수면 D2 술어에 `mode==="model"` 조건 추가 — 1줄 변경.
-- **A3**: 옵트인 단위는 프로젝트(`.codexclaw/subagents.json`), 세션/글로벌 아님.
+- **A3**: 옵트인 단위는 프로젝트(`.cursorclaw/subagents.json`), 세션/글로벌 아님.
 - **A4**: Mind 5종 공유 역할 1개(D1). Mind별 차등 강도가 필요해지면 후속.
 - **A5**: `../jawcode/devlog/gjc` 경로 자체(클론 코드)를 인터뷰 대상으로 삼는
   기능 요구는 아님 — 레퍼런스 지시로 해석.

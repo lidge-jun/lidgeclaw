@@ -2,7 +2,7 @@
 
 ## Symptom
 
-`plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts` tests 4 and 5 fail on a
+`plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts` tests 4 and 5 fail on a
 stock Windows checkout:
 
 ```

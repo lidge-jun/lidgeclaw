@@ -25,7 +25,7 @@ cxc skill show <id> [--source jaw|clawhub|hermes]   # raw SKILL.md 본문 출력
 - `src/cli.ts` — argv 파싱, 커맨드 라우팅
 - `src/sources.ts` — 소스 어댑터 (fetch URL 구성 + 응답 정규화)
 - `src/scoring.ts` — 순수 키워드 스코어러
-- `src/cache.ts` — `$CODEXCLAW_HOME ?? ~/.codexclaw` 아래 `skill-cache/` TTL 캐시
+- `src/cache.ts` — `$CURSORCLAW_HOME ?? ~/.cursorclaw` 아래 `skill-cache/` TTL 캐시
   (recall index-db.ts와 동일 규약; 삭제 가능한 derived cache로 문서화)
 - `test/*.test.ts` — node:test, 네트워크는 fixture 주입 (fetch 함수 주입식)
 - 배선 (audit 확정): `scripts/build.mjs` COMPONENTS 배열에 `skill-search` 추가;
@@ -55,7 +55,7 @@ cxc skill show <id> [--source jaw|clawhub|hermes]   # raw SKILL.md 본문 출력
 
 ## 캐시
 
-- `~/.codexclaw/skill-cache/<source>.json`, TTL 1h (mtime 비교).
+- `~/.cursorclaw/skill-cache/<source>.json`, TTL 1h (mtime 비교).
 - `--refresh` 플래그로 강제 갱신. 네트워크 실패 시 stale 캐시 fallback +
   경고 한 줄 (fail-open).
 
@@ -64,11 +64,11 @@ cxc skill show <id> [--source jaw|clawhub|hermes]   # raw SKILL.md 본문 출력
 `show` 출력 머리에 고정 프리앰블:
 
 ```
-[codexclaw external skill adapter]
+[cursorclaw external skill adapter]
 - This is an EXTERNAL skill. codexclaw dev discipline (cxc-dev) always wins on conflict.
 - Substitute Claude-specific tools with Codex equivalents:
   claude -p / claude CLI -> codex exec; Read/Grep/Glob tools -> shell (cat/rg/fd).
-- Resolve path placeholders ({baseDir}, $CODEX_HOME/skills/...) against the skill's
+- Resolve path placeholders ({baseDir}, $CURSOR_HOME/skills/...) against the skill's
   raw URL directory, not the local filesystem.
 - If the skill name collides with a codexclaw built-in (dev-*, search), the built-in
   is authoritative; use this document as supplementary reference only.

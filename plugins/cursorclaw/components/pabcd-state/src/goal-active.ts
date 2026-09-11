@@ -2,7 +2,7 @@
  * goal-active.ts — read-only native goal-mode detection (L11.1 / 111).
  *
  * Q-GM-1-f RESOLVED: codexclaw does NOT own a goal marker. Goal-active state is
- * read from codex's native goal DB: `$CODEX_HOME/goals_1.sqlite` (override with
+ * read from codex's native goal DB: `$CURSOR_HOME/goals_1.sqlite` (override with
  * $CODEX_SQLITE_HOME), table `thread_goals` keyed by `thread_id` (= the hook
  * payload `session_id`). Ground truth:
  *  - codex-rs/state/src/lib.rs:82  GOALS_DB_FILENAME = "goals_1.sqlite"
@@ -30,9 +30,9 @@ export type GoalActiveStatus = "active" | "inactive" | "unreadable";
 
 export const GOALS_DB_FILENAME = "goals_1.sqlite";
 
-/** Resolve the codex goals DB dir: $CODEX_SQLITE_HOME, else $CODEX_HOME, else ~/.codex. */
+/** Resolve the codex goals DB dir: $CODEX_SQLITE_HOME, else $CURSOR_HOME, else ~/.cursor. */
 export function resolveGoalsDbPath(env: NodeJS.ProcessEnv = process.env): string {
-  const home = env.CODEX_SQLITE_HOME || env.CODEX_HOME || join(homedir(), ".codex");
+  const home = env.CODEX_SQLITE_HOME || env.CURSOR_HOME || join(homedir(), ".codex");
   return join(home, GOALS_DB_FILENAME);
 }
 

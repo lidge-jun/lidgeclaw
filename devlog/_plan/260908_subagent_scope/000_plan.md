@@ -2,7 +2,7 @@
 
 ## Outcome and compatibility
 Fix cxc serve dropping effort. Add role-level project > global > session inheritance.
-Global file: $CODEX_HOME/codexclaw/subagents.json (default ~/.codex/codexclaw/subagents.json).
+Global file: $CURSOR_HOME/codexclaw/subagents.json (default ~/.cursor/codexclaw/subagents.json).
 A present project role keeps its existing entire configuration, including null effort meaning parent-session effort. Removing a role via inherit:true returns it to the next scope. No migration or changes to real user settings.
 
 ## Diff contract
@@ -16,8 +16,8 @@ A present project role keeps its existing entire configuration, including null e
 Main owns store, shared API, bridge/Vite handlers and persistence/trust tests. Worker owns GUI page/client and UI tests. CLI/MCP follow core store contract. Reviewer audits plan and final diff independently. No overlapping write sets.
 
 ## Verification
-First demonstrate existing effort failure (red.log). Child-process HTTP tests cover all efforts, omitted field, null, bad values rejecting atomically, persisted reads after process restart and preserved models. Add global fallback, project precedence, reset, global independence, invalid scope, and tracked-project trust coverage using isolated CODEX_HOME. GUI build/typecheck and behavior tests, existing component suites, build and repository gate. Runtime spawn resolution tested without paid inference. Actual Lina settings untouched. No deployment or process takeover.
+First demonstrate existing effort failure (red.log). Child-process HTTP tests cover all efforts, omitted field, null, bad values rejecting atomically, persisted reads after process restart and preserved models. Add global fallback, project precedence, reset, global independence, invalid scope, and tracked-project trust coverage using isolated CURSOR_HOME. GUI build/typecheck and behavior tests, existing component suites, build and repository gate. Runtime spawn resolution tested without paid inference. Actual Lina settings untouched. No deployment or process takeover.
 
 ## Audit disposition
 Reviewer PASS conditional on sparse compatibility tests, common trust resolution, and one global path helper. Accepted: legacy three-default-role shadowing test, sparse-role fallback test, shared effective readSettings/spawn resolver with trustWarning and source metadata, hook payload regression. Add `overrides` booleans so the UI can remove a present but untrusted project role. Edits merge the saved scoped role when present, preserving its model even if runtime ignores it.
-Rebuttal: rejecting nonexistent CODEX_HOME is unnecessary and prevents first-use setup. The host-controlled global root is created on explicit global write, matching current project-store behavior; browser input cannot choose arbitrary paths. Test automatic creation inside an isolated environment. HTTP global mutation uses existing loopback/Host/JSON/local-header checks (C4 boundary care within C3 feature).
+Rebuttal: rejecting nonexistent CURSOR_HOME is unnecessary and prevents first-use setup. The host-controlled global root is created on explicit global write, matching current project-store behavior; browser input cannot choose arbitrary paths. Test automatic creation inside an isolated environment. HTTP global mutation uses existing loopback/Host/JSON/local-header checks (C4 boundary care within C3 feature).

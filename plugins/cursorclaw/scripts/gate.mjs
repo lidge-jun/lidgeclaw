@@ -360,15 +360,15 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   // Warnings print on BOTH paths and never change the exit code (WP1/100).
   const printWarnings = () => {
     if (!result.warnings?.length) return;
-    console.error(`[codexclaw gate] WARN — ${result.warnings.length} verifier-claim issue(s):`);
+    console.error(`[cursorclaw gate] WARN — ${result.warnings.length} verifier-claim issue(s):`);
     for (const w of result.warnings) console.error(`  - ${w}`);
   };
   if (result.ok) {
-    console.log("[codexclaw gate] OK — no status drift, false-enforcement prose, count mismatch, or inventory drift.");
+    console.log("[cursorclaw gate] OK — no status drift, false-enforcement prose, count mismatch, or inventory drift.");
     printWarnings();
     process.exit(0);
   }
-  console.error("[codexclaw gate] FAIL — drift detected:");
+  console.error("[cursorclaw gate] FAIL — drift detected:");
   for (const v of result.violations) console.error(`  - ${v}`);
   printWarnings();
   process.exit(1);

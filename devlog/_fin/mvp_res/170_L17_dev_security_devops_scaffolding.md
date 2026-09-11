@@ -22,31 +22,31 @@ git-master owners.
 
 ## Scope (decision-complete)
 Files to add/edit:
-- `plugins/codexclaw/skills/dev-security/SKILL.md`
-- `plugins/codexclaw/skills/dev-security/agents/openai.yaml`
-- `plugins/codexclaw/skills/dev-security/references/*.md`
-- `plugins/codexclaw/skills/dev-devops/SKILL.md`
-- `plugins/codexclaw/skills/dev-devops/agents/openai.yaml`
-- `plugins/codexclaw/skills/dev-devops/references/*.md`
-- `plugins/codexclaw/skills/dev-scaffolding/SKILL.md`
-- `plugins/codexclaw/skills/dev-scaffolding/agents/openai.yaml`
-- `plugins/codexclaw/skills/dev-scaffolding/references/api-docs.md`
-- `plugins/codexclaw/skills/dev-scaffolding/references/monorepo-tooling.md`
-- `plugins/codexclaw/skills/dev-scaffolding/assets/str_func_template.md`
-- `plugins/codexclaw/skills/dev-scaffolding/scripts/scaffold-audit.sh`
+- `plugins/cursorclaw/skills/dev-security/SKILL.md`
+- `plugins/cursorclaw/skills/dev-security/agents/openai.yaml`
+- `plugins/cursorclaw/skills/dev-security/references/*.md`
+- `plugins/cursorclaw/skills/dev-devops/SKILL.md`
+- `plugins/cursorclaw/skills/dev-devops/agents/openai.yaml`
+- `plugins/cursorclaw/skills/dev-devops/references/*.md`
+- `plugins/cursorclaw/skills/dev-scaffolding/SKILL.md`
+- `plugins/cursorclaw/skills/dev-scaffolding/agents/openai.yaml`
+- `plugins/cursorclaw/skills/dev-scaffolding/references/api-docs.md`
+- `plugins/cursorclaw/skills/dev-scaffolding/references/monorepo-tooling.md`
+- `plugins/cursorclaw/skills/dev-scaffolding/assets/str_func_template.md`
+- `plugins/cursorclaw/skills/dev-scaffolding/scripts/scaffold-audit.sh`
 
 Concrete source -> target map:
-- `/Users/jun/.cli-jaw-3459/skills/dev-security/SKILL.md` -> `plugins/codexclaw/skills/dev-security/SKILL.md`
-- `/Users/jun/.cli-jaw-3459/skills/dev-security/references/*` -> `plugins/codexclaw/skills/dev-security/references/`
-- `/Users/jun/.cli-jaw-3459/skills/dev-devops/SKILL.md` -> `plugins/codexclaw/skills/dev-devops/SKILL.md`
-- `/Users/jun/.cli-jaw-3459/skills/dev-devops/references/*` -> `plugins/codexclaw/skills/dev-devops/references/`
-- `/Users/jun/.cli-jaw-3459/skills/dev-scaffolding/SKILL.md` -> `plugins/codexclaw/skills/dev-scaffolding/SKILL.md`
-- `/Users/jun/.cli-jaw-3459/skills/dev-scaffolding/references/*` -> `plugins/codexclaw/skills/dev-scaffolding/references/`
-- `/Users/jun/.cli-jaw-3459/skills/dev-scaffolding/assets/*` -> `plugins/codexclaw/skills/dev-scaffolding/assets/`
-- `/Users/jun/.cli-jaw-3459/skills/dev-scaffolding/scripts/*` -> `plugins/codexclaw/skills/dev-scaffolding/scripts/`
-- `devlog/.lazycodex/plugins/omo/skills/review-work/SKILL.md` -> `plugins/codexclaw/skills/dev-security/SKILL.md` security review lane
+- `/Users/jun/.cli-jaw-3459/skills/dev-security/SKILL.md` -> `plugins/cursorclaw/skills/dev-security/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-security/references/*` -> `plugins/cursorclaw/skills/dev-security/references/`
+- `/Users/jun/.cli-jaw-3459/skills/dev-devops/SKILL.md` -> `plugins/cursorclaw/skills/dev-devops/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-devops/references/*` -> `plugins/cursorclaw/skills/dev-devops/references/`
+- `/Users/jun/.cli-jaw-3459/skills/dev-scaffolding/SKILL.md` -> `plugins/cursorclaw/skills/dev-scaffolding/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-scaffolding/references/*` -> `plugins/cursorclaw/skills/dev-scaffolding/references/`
+- `/Users/jun/.cli-jaw-3459/skills/dev-scaffolding/assets/*` -> `plugins/cursorclaw/skills/dev-scaffolding/assets/`
+- `/Users/jun/.cli-jaw-3459/skills/dev-scaffolding/scripts/*` -> `plugins/cursorclaw/skills/dev-scaffolding/scripts/`
+- `devlog/.lazycodex/plugins/omo/skills/review-work/SKILL.md` -> `plugins/cursorclaw/skills/dev-security/SKILL.md` security review lane
 - `devlog/.lazycodex/plugins/omo/skills/refactor/SKILL.md` -> canonical owners `dev-architecture`, `dev-testing`, and `dev-code-reviewer`; `dev-scaffolding` only cross-links for scaffold restructuring boundaries
-- `devlog/.lazycodex/plugins/omo/skills/init-deep/SKILL.md` -> `plugins/codexclaw/skills/dev-scaffolding/SKILL.md`
+- `devlog/.lazycodex/plugins/omo/skills/init-deep/SKILL.md` -> `plugins/cursorclaw/skills/dev-scaffolding/SKILL.md`
 - `devlog/.lazycodex/plugins/omo/skills/git-master/SKILL.md` -> canonical local git discipline in `dev` + `dev-code-reviewer`; `dev-devops` only cross-links release/delivery notes and remote GitHub remains default `github` skill
 
 Exact behavior:

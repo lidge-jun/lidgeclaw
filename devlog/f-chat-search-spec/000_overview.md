@@ -43,15 +43,15 @@ codexclaw에도 `cxc chat search` / `cxc memory search`가 이미 존재하지�
 ## codexclaw 기존 검색 아키텍처 (cxc-recall)
 
 ### Chat Search (`components/recall/src/chat-search.ts`)
-- Codex rollout JSONL (`~/.codex/sessions/`) 스캔 or 사이드카 FTS index
-- 인덱스: `~/.codexclaw/recall/index.sqlite`
+- Codex rollout JSONL (`~/.cursor/sessions/`) 스캔 or 사이드카 FTS index
+- 인덱스: `~/.cursorclaw/recall/index.sqlite`
   - `msgs_fts` (unicode61) + `msgs_tri` (trigram) — external-content FTS5
   - auto-refresh on query (ingest changed files)
 - `--days N` (default 7, 0=all), `--cwd PATH`, `--source main|subagent|all`
 - `--context N` 주변 메시지 포함
 
 ### Memory Search (`components/recall/src/memory-search.ts`)
-- `~/.codex/memories/` 아래 markdown 파일 paragraph-chunk scan
+- `~/.cursor/memories/` 아래 markdown 파일 paragraph-chunk scan
 - stage1_outputs (memories_N.sqlite) 도 검색
 - synonym expansion (ko/en curated)
 - kind priority + recency boost (half-life decay) 방식 — cli-jaw와 유사

@@ -7,7 +7,7 @@ spot checks. No fixes here; this doc is the evidence base for `000_plan.md`.
 
 ### RC1: no frontal "loop until pass/near-pass" rule (severity High, confidence High)
 
-- `plugins/codexclaw/skills/pabcd/SKILL.md:131` — the A-phase body ends with
+- `plugins/cursorclaw/skills/pabcd/SKILL.md:131` — the A-phase body ends with
   "Fold fixes back into the plan and record the verdict. No code changes." That
   wording invites the single-round reading: one review -> fold -> record -> B.
 - Re-dispatch is only IMPLIED downstream of a FAIL:
@@ -30,14 +30,14 @@ spot checks. No fixes here; this doc is the evidence base for `000_plan.md`.
   `did:"independent audit PASS; blockers folded into plan"` — example prose
   only, unverified by the gate.
 
-## Problem 2 — audit dispatches miss $cxc-search
+## Problem 2 — audit dispatches miss $crc-search
 
 ### RC1: A-phase dispatch instruction never names it (severity High, confidence High)
 
 - `pabcd/SKILL.md:131` requires the reviewer to "verify references" but the
   dispatch-packet guidance names no search skill.
 - `components/pabcd-state/src/hook.ts:165-168` A directive example lists only
-  `$cxc-dev-code-reviewer plus the matching $cxc-dev-* surface skill`.
+  `$crc-dev-code-reviewer plus the matching $crc-dev-* surface skill`.
 
 ### RC2: SEARCH-ATTACH-01 scope is "search subagents" only (severity Med-High, confidence High)
 

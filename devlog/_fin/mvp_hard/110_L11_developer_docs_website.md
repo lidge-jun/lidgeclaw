@@ -31,7 +31,7 @@ Recommended shape:
 | cli-jaw docs model | Which cli-jaw docs patterns transfer? | Quickstart, architecture SOT, PABCD concepts, command tables, dashboard guides transfer as IA patterns only. |
 | opencodex docs/site | Which opencodex docs/site patterns transfer? | Starlight IA, manual sidebar, concise README, structure docs, mature console visual language. |
 | jawcode UX reference | What should not be copied from jawcode? | jawcode is an explicit harness with slash commands, receipts, and `.jwc/goal`; codexclaw must document hook/skill/file-state equivalents. |
-| skills/catalog | How should `$cxc-*` skills be explained? | `cxc-dev` is implicit; the rest are on-demand. Explain shorthand, namespaced plugin mentions, and file-path fallback. |
+| skills/catalog | How should `$crc-*` skills be explained? | `cxc-dev` is implicit; the rest are on-demand. Explain shorthand, namespaced plugin mentions, and file-path fallback. |
 | developer API | What API/reference pages are needed? | CLI, hooks, state schema, MCP tools, subagent config, provider bridge, GUI endpoints. |
 | install/release | What install docs are missing? | Marketplace install, local dogfood symlink, activation, hook trust, build/dist, future npm/npx packaging. |
 | visual direction | What should the site feel like? | Dense developer-control surface: quiet, precise, table/diagram heavy, no marketing spectacle. |
@@ -96,7 +96,7 @@ Live control surfaces:
 - chat `orchestrate status`, `orchestrate reset`, and `orchestrate D`
 - IPABCD footer/status affordance
 - Stop continuation under an active native goal plus an in-flight PABCD cycle
-- `$cxc-goalplan` / `$cxc-loop` skill contracts
+- `$crc-goalplan` / `$crc-loop` skill contracts
 
 Placeholder or planned areas:
 - L11 developer docs website (the docs site itself is not built; impl PLANNED)
@@ -114,9 +114,9 @@ areas.
 
 Docs must explain four names for the same skill surface:
 - directory shorthand: `dev-testing`, `search`, `ast-grep`;
-- skill name: `$cxc-dev-testing`, `$cxc-search`, `$cxc-ast-grep`;
+- skill name: `$crc-dev-testing`, `$crc-search`, `$crc-ast-grep`;
 - plugin-native mention form where Codex exposes it: `$codexclaw:cxc-dev-testing`;
-- fallback source path: `plugins/codexclaw/skills/<dir>/SKILL.md`.
+- fallback source path: `plugins/cursorclaw/skills/<dir>/SKILL.md`.
 
 Only `cxc-dev` is implicit/default. Other skills are on-demand and should not be
 described as auto-loaded by a runtime hub.
@@ -124,13 +124,13 @@ described as auto-loaded by a runtime hub.
 ### Current state reality
 
 State docs must use:
-- `.codexclaw/sessions/<sessionId>.json`
-- `.codexclaw/ledger.jsonl`
-- `.codexclaw/subagents.json`
-- `.codexclaw/interview/freeze.json` (interview-plan freeze manifest; shipped 121/122)
-- `.codexclaw/interviews/<sessionId>.jsonl` (Interview Q/A capture + scan-evidence ledger; shipped 121/122)
+- `.cursorclaw/sessions/<sessionId>.json`
+- `.cursorclaw/ledger.jsonl`
+- `.cursorclaw/subagents.json`
+- `.cursorclaw/interview/freeze.json` (interview-plan freeze manifest; shipped 121/122)
+- `.cursorclaw/interviews/<sessionId>.jsonl` (Interview Q/A capture + scan-evidence ledger; shipped 121/122)
 
-Avoid stale `.codexclaw/state.json` language.
+Avoid stale `.cursorclaw/state.json` language.
 
 ## Website Information Architecture
 
@@ -212,9 +212,9 @@ flowchart LR
   B --> D["Hooks"]
   B --> E["MCP server"]
   B --> F["cxc CLI"]
-  D --> G[".codexclaw/sessions/<id>.json"]
-  D --> H[".codexclaw/ledger.jsonl"]
-  E --> I[".codexclaw/subagents.json"]
+  D --> G[".cursorclaw/sessions/<id>.json"]
+  D --> H[".cursorclaw/ledger.jsonl"]
+  E --> I[".cursorclaw/subagents.json"]
   J["optional opencodex"] --> K["detect-only provider status"]
   K --> D
 ```
@@ -223,7 +223,7 @@ flowchart LR
 
 Must separate:
 - natural-language trigger;
-- strict `$cxc-orchestrate` / `orchestrate <phase>` chat command;
+- strict `$crc-orchestrate` / `orchestrate <phase>` chat command;
 - live agent-gated `cxc orchestrate` CLI;
 - human chat free-pass vs agent/CLI attest-gated path;
 - `D` as a closing action, not a resting badge.
@@ -257,7 +257,7 @@ Say:
 
 Reference pages must be generated or mechanically checked against source where possible:
 - CLI switch cases from `bin/codexclaw.mjs`;
-- hook manifests from `plugins/codexclaw/hooks/*.json`;
+- hook manifests from `plugins/cursorclaw/hooks/*.json`;
 - state schema from `pabcd-state/src/state.ts`;
 - legal transitions from `pabcd-state/src/fsm.ts`;
 - attestation from `pabcd-state/src/attest.ts`;
@@ -307,7 +307,7 @@ Visual rules:
 Required before public launch:
 - logo/favicons: simple codexclaw mark, SVG plus PNG sizes;
 - OG image: 1200x630 with product name and architecture motif;
-- architecture diagram: Codex runtime -> plugin -> skills/hooks/MCP/CLI -> `.codexclaw`;
+- architecture diagram: Codex runtime -> plugin -> skills/hooks/MCP/CLI -> `.cursorclaw`;
 - GUI screenshots: Subagents, Prompts, and provider link bar states;
 - terminal transcript screenshots or rendered blocks for `cxc doctor`, `cxc status`,
   `cxc gui`, and live `cxc orchestrate`;
@@ -347,7 +347,7 @@ Suggested stale-doc tests:
 - parse `bin/codexclaw.mjs` command cases and compare to `reference/commands.md`;
 - parse plugin manifest hook paths and compare to `reference/hooks.md`;
 - parse `skills/*/agents/openai.yaml` implicit flags and compare to `guides/skills.md`;
-- assert public docs never mention `.codexclaw/state.json`;
+- assert public docs never mention `.cursorclaw/state.json`;
 - assert provider bridge docs do not claim unannounced `ocx ensure`.
 
 ## Stale Docs Queue
@@ -358,13 +358,13 @@ Resolved in this L11 reconciliation pass:
   `orchestrate` delegations and keeps `subagents` / `provider` as placeholders.
   (Superseded since: `chat-search` was later RETIRED in L13/WP1, and `subagents`/`provider`/`freeze`
   shipped as live cases in L9.3/093 — the current bin header reflects that, not this snapshot.)
-- `plugins/codexclaw/hooks/session-start-ensuring-provider-bridge.json` status text now
+- `plugins/cursorclaw/hooks/session-start-ensuring-provider-bridge.json` status text now
   says detecting, not ensuring.
-- `plugins/codexclaw/components/subagent-config/src/mcp.ts` header now matches the
+- `plugins/cursorclaw/components/subagent-config/src/mcp.ts` header now matches the
   advertised `subagents_get`, `subagents_set`, and `catalog_list` tools.
-- `plugins/codexclaw/components/provider-bridge/package.json` now describes detect-only
+- `plugins/cursorclaw/components/provider-bridge/package.json` now describes detect-only
   status probing.
-- `structure/INDEX.md`, `plugins/codexclaw/skills/README.md`, and skill-hub metadata now
+- `structure/INDEX.md`, `plugins/cursorclaw/skills/README.md`, and skill-hub metadata now
   describe on-demand skills without calling them hidden.
 
 Still valid for future docs implementation:
@@ -385,15 +385,15 @@ Still valid for future docs implementation:
 - architecture hub: `structure/INDEX.md`
 - shipped MVP ledger: `devlog/_plan/mvp_res/000_INDEX.md`
 - hardening ledger: `devlog/_plan/mvp_hard/000_INDEX.md`
-- plugin manifest: `plugins/codexclaw/.codex-plugin/plugin.json`
+- plugin manifest: `plugins/cursorclaw/.cursor-plugin/plugin.json`
 - CLI switch: `bin/codexclaw.mjs`
-- PABCD state: `plugins/codexclaw/components/pabcd-state/src/state.ts`
-- PABCD FSM: `plugins/codexclaw/components/pabcd-state/src/fsm.ts`
-- chat grammar: `plugins/codexclaw/components/pabcd-state/src/orchestrate-grammar.ts`
-- chat apply: `plugins/codexclaw/components/pabcd-state/src/orchestrate-apply.ts`
-- MCP tools: `plugins/codexclaw/components/subagent-config/src/mcp.ts`
-- provider detection: `plugins/codexclaw/components/provider-bridge/src/detect.ts`
-- skill catalog: `plugins/codexclaw/skills/skill-hub/references/catalog.md`
+- PABCD state: `plugins/cursorclaw/components/pabcd-state/src/state.ts`
+- PABCD FSM: `plugins/cursorclaw/components/pabcd-state/src/fsm.ts`
+- chat grammar: `plugins/cursorclaw/components/pabcd-state/src/orchestrate-grammar.ts`
+- chat apply: `plugins/cursorclaw/components/pabcd-state/src/orchestrate-apply.ts`
+- MCP tools: `plugins/cursorclaw/components/subagent-config/src/mcp.ts`
+- provider detection: `plugins/cursorclaw/components/provider-bridge/src/detect.ts`
+- skill catalog: `plugins/cursorclaw/skills/skill-hub/references/catalog.md`
 - opencodex docs-site pattern: `../opencodex/docs-site/astro.config.mjs`
 - cli-jaw developer docs pattern: `../cli-jaw/docs/dev/`
 - jawcode harness contrast: `../jawcode/README.md`

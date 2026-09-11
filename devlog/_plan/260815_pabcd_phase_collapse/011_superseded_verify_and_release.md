@@ -3,7 +3,7 @@ created: 2026-08-15
 status: superseded
 supersededBy: 080_verify_and_release.md
 warning: 폐기됨 — 구 010/020 설계를 전제한다. 감사 이력으로만 보존.
-tags: [codexclaw, release, deploy]
+tags: [cursorclaw, release, deploy]
 unit: 260815_pabcd_phase_collapse
 ---
 
@@ -11,7 +11,7 @@ unit: 260815_pabcd_phase_collapse
 
 ## 검증 순서
 
-1. `cd plugins/codexclaw/components/pabcd-state && node --test` — 전체 통과.
+1. `cd plugins/cursorclaw/components/pabcd-state && node --test` — 전체 통과.
    010/020의 신규 테스트가 포함되고, 기존 40개 테스트 파일에 회귀가 없어야 한다.
 2. **dist 동기화** — 이 컴포넌트는 `dist/*.js`를 저장소에 커밋한다. 훅이
    `dist/cli.js`를 직접 실행하므로, src만 고치고 dist를 안 맞추면
@@ -25,9 +25,9 @@ unit: 260815_pabcd_phase_collapse
 000 제약대로 사용자의 미커밋 작업은 건드리지 않는다. 커밋 대상은:
 
 - `devlog/_plan/260815_pabcd_phase_collapse/` (이 유닛)
-- `plugins/codexclaw/components/pabcd-state/src/` 변경분
-- `plugins/codexclaw/components/pabcd-state/dist/` 대응 빌드
-- `plugins/codexclaw/components/pabcd-state/test/` 신규 테스트
+- `plugins/cursorclaw/components/pabcd-state/src/` 변경분
+- `plugins/cursorclaw/components/pabcd-state/dist/` 대응 빌드
+- `plugins/cursorclaw/components/pabcd-state/test/` 신규 테스트
 
 건드리지 않을 것 (사용자 소유, untracked):
 

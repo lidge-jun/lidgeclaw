@@ -81,7 +81,7 @@ function hybridMerge(opts: { ftsHits, vecHits, limit, k? }): HybridHit[]
 
 ## codexclaw 적용 가능성
 
-Codex는 single-home (`~/.codex`) 런타임이라 multi-instance federation은 불필요.
+Codex는 single-home (`~/.cursor`) 런타임이라 multi-instance federation은 불필요.
 하지만 federation 패턴 자체는 "chat search + memory search를 통합 ranking" 하는 데
 재사용 가능:
 - chat hits (from recall index) + memory hits (from memories/) → RRF merge

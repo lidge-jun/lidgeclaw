@@ -212,7 +212,7 @@ const MAX_CTX = 32_000;
 /**
  * 260724 WP1 (fresh-install RCA): rewrite backtick-anchored `crc ` command
  * prefixes in a directive to the invocation that actually resolves on this
- * machine (PATH `cxc`, or the payload dispatcher `node "<payload>/bin/cxc.mjs"`).
+ * machine (PATH `cxc`, or the payload dispatcher `node "<payload>/bin/cursorclaw.mjs"`).
  * EMIT-TIME ONLY — exported directive constants are never mutated, so
  * constants-only tests stay byte-stable and the PATH check happens per-machine.
  *

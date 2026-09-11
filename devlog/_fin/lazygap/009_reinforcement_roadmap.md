@@ -12,7 +12,7 @@ Status: PLANNED (decision input; no code this pass) · evidence: 001-008
 | Rank | Gap (doc) | Tier | New surface? | Why this rank |
 | --- | --- | --- | --- | --- |
 | 1 | Subagent evidence gate (`002`) | E1 (SubagentStop block, VERIFIED `010`) | YES — SubagentStop (real) | biggest hole; makes every dispatch trustworthy; unblocks `008` |
-| 2 | Skill-attached dispatch (`008`) | E3 on v1 + E5 on v2 (VERIFIED `010`) | YES — `^spawn_agent$` fires on v1 | the user's core ask; turns the rich `$cxc-*` family into real routing |
+| 2 | Skill-attached dispatch (`008`) | E3 on v1 + E5 on v2 (VERIFIED `010`) | YES — `^spawn_agent$` fires on v1 | the user's core ask; turns the rich `$crc-*` family into real routing |
 | 3 | Loop/goalplan state (`001`) | E2 + E8 | no (file) | substrate for work-aware Stop + quality gate |
 | 4 | Stop continuation depth (`003`) | E2 | no | makes the loop actually know what's left; needs `001` |
 | 5 | Compaction recovery (`006`) | E4 | YES — PostCompact | cheap, high-value resilience |
@@ -27,7 +27,7 @@ Status: PLANNED (decision input; no code this pass) · evidence: 001-008
 | L15 | 150 | `008` | `SpawnPayload.items` + role/intent->skill map + builder routing |
 | (within L15) | | `002` | SubagentStop evidence-receipt gate (the trust half of dispatch) |
 | L17 | 170 | `003` honesty | loop/interview prose downgraded to match the hook |
-| L21 | 210 | `001` | durable `.codexclaw/goalplan.json` + criterion evidence + quality-gate validate |
+| L21 | 210 | `001` | durable `.cursorclaw/goalplan.json` + criterion evidence + quality-gate validate |
 | L22 | 220 | `003` | work-aware Stop continuation on goalplan remaining tasks |
 | L23 | 230 | `006` | PostCompact recovery hook |
 | L24 | 240 | `004` | rule-injector + comment-lint PostToolUse |
@@ -58,7 +58,7 @@ Status: PLANNED (decision input; no code this pass) · evidence: 001-008
 - No LSP daemon / codegraph MCP / search server (`005`).
 - No SessionStart auto-update / telemetry / provisioning (`006`).
 - No new subagent roles — skill attachment instead (`008`).
-- No goal-DB writes — goalplan state is project-local `.codexclaw/` (`001`).
+- No goal-DB writes — goalplan state is project-local `.cursorclaw/` (`001`).
 
 ## Open questions — RESOLVED (codex-rs verified 2026-07-01, see `010`)
 
@@ -69,7 +69,7 @@ Status: PLANNED (decision input; no code this pass) · evidence: 001-008
 2. `SubagentStop` fires for plugin-spawned children? **YES** — real event, fires on the child
    turn, stdin carries `last_assistant_message` + `agent_type`, `block`+`reason` forces
    continuation. `002` is confirmed **E1**, not doctrine. (`010` Q1.)
-3. Evidence-receipt convention: **codexclaw's `--evidence`/`.codexclaw/evidence/`**, using omo's
+3. Evidence-receipt convention: **codexclaw's `--evidence`/`.cursorclaw/evidence/`**, using omo's
    last-line `EVIDENCE_RECORDED: <path>` marker contract + realpath/symlink/non-empty guard.
 
 > Bonus surface found: `SubagentStart` also exists (`010`), a future entry point to inject the
@@ -105,7 +105,7 @@ config enable, freeze handoff).
 | `reset` | **`cxc` (SHIPPED)** | `cxc reset` (`cxc-ops`) |
 | `goal [set/plan/status/update/done]` | **HOST-NATIVE.** Codex owns goal mode + the goal DB; codexclaw only *reads* `thread_goals` read-only and never writes it | `goal-active.ts` (reads `goals_1.sqlite`). A `cxc goal` command would duplicate the host and break the no-own-goal-DB rule |
 | `project [set/list]` | **HOST-NATIVE.** Codex runs on `cwd`, so project-root is given by the runtime; no registry needed | the only residual is the subagent-dispatch path-hint/symlink nuance in `001` addendum, not a project-root registry |
-| `skill` | **HOST-NATIVE.** Codex discovers skills from `plugin.json` + the skills dir and renders them; codexclaw's skills are already Codex-native `$cxc-*` entries | no `cxc skill` needed; `skill-hub` is just a routing skill, not a CLI |
+| `skill` | **HOST-NATIVE.** Codex discovers skills from `plugin.json` + the skills dir and renders them; codexclaw's skills are already Codex-native `$crc-*` entries | no `cxc skill` needed; `skill-hub` is just a routing skill, not a CLI |
 | `init` | **Folded into `cxc enable`.** config-guard enable is the scaffold path | `config-guard/src/cli.ts:42` enable flow |
 | `hooks` | **HOST-NATIVE.** Codex loads/dispatches hooks from `plugin.json`; codexclaw doesn't manage a hook registry | hooks fire via `plugin.json` registration; no `cxc hooks` CLI needed |
 

@@ -29,7 +29,7 @@ The presentation uses a dark slate theme with a modern sky-blue accent, using Tr
 
 ```mermaid
 graph TD
-    A[codexclaw Project Root] --> B[devlog/_plan/260703_meetup_presentation/00_plan.md]
+    A[cursorclaw Project Root] --> B[devlog/_plan/260703_meetup_presentation/00_plan.md]
     A --> C[devlog/_plan/260703_meetup_presentation/generate_deck.py]
     D[Developer Directory] --> E[/Users/jun/Developer/codexmeetup/workflow_show_and_tell.pptx]
     C -->|Generates| E

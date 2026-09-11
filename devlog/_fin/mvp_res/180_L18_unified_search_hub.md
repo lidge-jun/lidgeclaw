@@ -22,11 +22,11 @@ the Korean "검색" intent guard ported in. web exploration uses Codex Browser U
 
 ## Scope (decision-complete)
 Files to add/edit:
-- `plugins/codexclaw/skills/search/SKILL.md` (new; trigger-rich description)
-- `plugins/codexclaw/skills/search/agents/openai.yaml` (allow_implicit_invocation: FALSE — on-demand, trigger-routed)
-- `plugins/codexclaw/skills/search/references/blocked-url-reader.md` (absorbed
+- `plugins/cursorclaw/skills/search/SKILL.md` (new; trigger-rich description)
+- `plugins/cursorclaw/skills/search/agents/openai.yaml` (allow_implicit_invocation: FALSE — on-demand, trigger-routed)
+- `plugins/cursorclaw/skills/search/references/blocked-url-reader.md` (absorbed
   from omo ultimate-browsing reader ladder; helper, not a new tier)
-- `plugins/codexclaw/skills/search/references/query-rewrite.md` (rewriteQueries
+- `plugins/cursorclaw/skills/search/references/query-rewrite.md` (rewriteQueries
   template; replaces agbrowse research plan as a soft dependency)
 
 Exact behavior -- codex-only ladder (J-10, dead tiers removed):

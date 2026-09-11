@@ -149,7 +149,7 @@ export function applyManagedKey(
         key: entry.key,
         priorValue: existing ? existing.priorValue : priorValue,
         appliedValue,
-        setByCodexclaw: existing ? existing.setByCodexclaw || res.changed : res.changed,
+        setByCursorclaw: existing ? existing.setByCursorclaw || res.changed : res.changed,
       },
     },
     postActivateHash: hashOrNull(configPath),

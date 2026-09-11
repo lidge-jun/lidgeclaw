@@ -20,7 +20,7 @@ export const INSTALL_MANIFEST = ".cursorclaw-install.json";
 export interface FlagRecord {
   priorEnabled: boolean;
   // true when codexclaw turned this flag on (so deactivate should turn it back off).
-  enabledByCodexclaw: boolean;
+  enabledByCursorclaw: boolean;
   // true when the enable command failed (e.g. soft under-dev flag unavailable).
   enableFailed: boolean;
   /**
@@ -45,7 +45,7 @@ export interface TableKeyRecord {
   priorValue: string | null;
   appliedValue: string;
   /** False when the key already held the target value, so we changed nothing. */
-  setByCodexclaw: boolean;
+  setByCursorclaw: boolean;
 }
 
 export interface InstallManifest {
@@ -84,7 +84,7 @@ export function parseInstallManifest(text: string): InstallManifest | null {
     const rec = value as Record<string, unknown>;
     flags[key] = {
       priorEnabled: rec.priorEnabled === true,
-      enabledByCodexclaw: rec.enabledByCodexclaw === true,
+      enabledByCursorclaw: rec.enabledByCursorclaw === true,
       enableFailed: rec.enableFailed === true,
     };
     // Lenient on purpose: a malformed `failure` drops that one field instead of
@@ -117,7 +117,7 @@ export function parseInstallManifest(text: string): InstallManifest | null {
         key: rec.key,
         priorValue: rec.priorValue as string | null,
         appliedValue: rec.appliedValue,
-        setByCodexclaw: rec.setByCodexclaw === true,
+        setByCursorclaw: rec.setByCursorclaw === true,
       };
     }
   }
@@ -225,7 +225,7 @@ export function activate(deps: ActivateDeps): InstallManifest {
   for (const key of DECLARED_FEATURES) {
     flags[key] = {
       priorEnabled: priorState.get(key) === true,
-      enabledByCodexclaw: false,
+      enabledByCursorclaw: false,
       enableFailed: false,
     };
   }
@@ -233,7 +233,7 @@ export function activate(deps: ActivateDeps): InstallManifest {
   for (const key of pending) {
     const res = run(["features", "enable", key]);
     if (res.exitCode === 0) {
-      flags[key].enabledByCodexclaw = true;
+      flags[key].enabledByCursorclaw = true;
     } else {
       flags[key].enableFailed = true;
       flags[key].failure = {
@@ -282,8 +282,8 @@ export function activate(deps: ActivateDeps): InstallManifest {
       priorValue: carried ? carried.priorValue : priorValue,
       appliedValue: "true",
       // False when the key already read true: we changed nothing, so we own nothing and
-      // deactivate must not revert it (decideKeyRestore skips !setByCodexclaw).
-      setByCodexclaw: carried ? carried.setByCodexclaw || res.changed : res.changed,
+      // deactivate must not revert it (decideKeyRestore skips !setByCursorclaw).
+      setByCursorclaw: carried ? carried.setByCursorclaw || res.changed : res.changed,
     };
   }
 

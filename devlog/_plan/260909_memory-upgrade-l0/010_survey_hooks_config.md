@@ -16,7 +16,7 @@ PreToolUse payload 스키마, 그리고 managed-keys.ts가 선언한 분리 기�
 
 훅은 세 단계로 등록된다.
 
-**(a) 훅 JSON 파일.** `plugins/codexclaw/hooks/<event>-<gerund>-<object>.json` 한 파일이 한 훅이다.
+**(a) 훅 JSON 파일.** `plugins/cursorclaw/hooks/<event>-<gerund>-<object>.json` 한 파일이 한 훅이다.
 구조는 `{ "hooks": { "<EventName>": [ { "hooks": [ {type, command, timeout, statusMessage} ], "matcher": "<regex>" } ] } }`.
 실제 예(`hooks/pre-tool-use-linting-apply-patch.json:1-16`):
 
@@ -30,7 +30,7 @@ PreToolUse payload 스키마, 그리고 managed-keys.ts가 선언한 분리 기�
             "type": "command",
             "command": "node \"${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js\" hook pre-tool-use-edit",
             "timeout": 10,
-            "statusMessage": "(codexclaw) Checking structured edit"
+            "statusMessage": "(cursorclaw) Checking structured edit"
           }
         ],
         "matcher": "^(apply_patch|Write|Edit)$"
@@ -40,7 +40,7 @@ PreToolUse payload 스키마, 그리고 managed-keys.ts가 선언한 분리 기�
 }
 ```
 
-**(b) plugin.json의 `hooks` 배열.** `.codex-plugin/plugin.json:29-53`이 23개 파일을 상대경로로 나열한다.
+**(b) plugin.json의 `hooks` 배열.** `.cursor-plugin/plugin.json:29-53`이 23개 파일을 상대경로로 나열한다.
 배열에 없는 JSON 파일은 로드되지 않는다(`hooks/_deprecated/`가 그 증거).
 
 **(c) matcher 해석.** 코드는 codex-rs `hooks/src/events/common.rs:137-173`.
@@ -216,7 +216,7 @@ struct AddAdHocNoteArgs {
 **인자 문자열이 통째로 JSON string이 되어** 들어온다(`registry.rs:815-816`) —
 객체가 아닐 수 있다는 뜻이고, `isRecord` 검사가 필요하다.
 
-참고로 파일 쓰기 위치는 `~/.codex/memories/extensions/ad_hoc/notes/<filename>`이고
+참고로 파일 쓰기 위치는 `~/.cursor/memories/extensions/ad_hoc/notes/<filename>`이고
 `create_new(true)`라 덮어쓰기는 불가능하다(`ext/memories/src/local/ad_hoc_note.rs:12, 28-38`).
 즉 W2가 막아야 할 위험은 "기존 노트 훼손"이 아니라 **원치 않는 새 노트 생성**이다.
 
@@ -231,8 +231,8 @@ W2는 config-guard가 아니라 **pabcd-state**에 넣는 게 패턴에 맞다.
 
 1. `components/pabcd-state/src/memory-write-gate.ts` (신규) — 순수 판정 + 봉투 생성.
 2. `components/pabcd-state/src/cli.ts` — 새 event-slug 분기 한 줄.
-3. `plugins/codexclaw/hooks/pre-tool-use-guarding-memory-write.json` (신규).
-4. `plugins/codexclaw/.codex-plugin/plugin.json` — `hooks` 배열에 한 줄.
+3. `plugins/cursorclaw/hooks/pre-tool-use-guarding-memory-write.json` (신규).
+4. `plugins/cursorclaw/.cursor-plugin/plugin.json` — `hooks` 배열에 한 줄.
 
 **cli.ts 분기 위치가 설계 결정이다.** `pre-tool-use`(fail-closed) 안에 합칠지,
 새 slug로 뺄지. 새 slug 권장 — `pre-tool-use`는 `handlePreToolUseFailClosed`가
@@ -276,7 +276,7 @@ codexclaw는 이미 프롬프트에서 의도를 읽어 상태로 남기는 코�
   한국어/영어 관용구를 정규식으로 잡는 실동작 예다.
 - `worktree-guard.ts:552-559` rename 의도 감지 + 세션당 1회 마커.
 
-상태 파일은 `.codixclaw`가 아니라 `<cwd>/.codexclaw/sessions/<sessionId>.json`이고
+상태 파일은 `.codixclaw`가 아니라 `<cwd>/.cursorclaw/sessions/<sessionId>.json`이고
 (`state.ts:220, 300-306`), 키는 `sanitizeKey`로 정규화된다(`state.ts:226`).
 `State`에 boolean 하나를 더하는 비용은 `loopArmSeen` 선례와 같다(`state.ts:141, 288, 540`).
 
@@ -301,7 +301,7 @@ PreToolUse 핫패스에 넣을 비용이 아니다. **A의 보조로만 쓸 것.
 
 **신호 C — 환경변수. 이 레포에서는 테스트 seam 용도로만 쓴다.**
 
-`CODEXCLAW_CXC`(`goal-gate.test.ts:10`), `CODEXCLAW_WORKTREE_ROOTS`(`worktree-guard.ts:42`).
+`CURSORCLAW_CRC`(`goal-gate.test.ts:10`), `CODEXCLAW_WORKTREE_ROOTS`(`worktree-guard.ts:42`).
 사용자 의도 신호로 쓴 전례는 없다. 세션 단위로 켜고 끄기 어렵고 되돌리기 보장도 없다.
 **부적합.**
 
@@ -361,7 +361,7 @@ SessionStart self-heal도 소프트 플래그를 켜기 때문이다.
 **"효과가 밖까지 미친다"를 두 성분으로 나눠야 정확하다.**
 
 *쓰기 성분.* `dedicated_tools`가 켜지면 열리는 네 도구 중 `add_ad_hoc_note`만이
-`~/.codex/memories/extensions/ad_hoc/notes/`에 파일을 만든다(`ad_hoc_note.rs:12, 28-38`).
+`~/.cursor/memories/extensions/ad_hoc/notes/`에 파일을 만든다(`ad_hoc_note.rs:12, 28-38`).
 그 파일은 codexclaw를 지워도 남고, Codex의 memory phase2 통합 대상이 되어
 이후 모든 세션의 `memory_summary.md`에 영향을 줄 수 있다. 이게 주석이 말한
 "사용자가 계속 안고 가는 결과"의 실체다.
@@ -380,7 +380,7 @@ W2는 그 조건의 충족이지 무력화가 아니다.
 (`ext/memories/src/tools/mod.rs:35-52`), 켜졌다가 꺼지면 흔적이 없다.
 또한 이 도구들은 `memories` feature와 `use_memories`가 모두 참일 때만 의미가 있고
 (`ext/memories/src/extension.rs:45-47`), 그 둘은 이 환경에서 이미 켜져 있다
-(`~/.codex/config.toml:78` `memories = true`, `:590` `use_memories = true`; 실측).
+(`~/.cursor/config.toml:78` `memories = true`, `:590` `use_memories = true`; 실측).
 `dedicated_tools`는 **이미 켜져 있는 파이프라인을 모델에게 노출하느냐**의 스위치이지
 파이프라인을 새로 켜는 스위치가 아니다.
 
@@ -433,7 +433,7 @@ autoEnable:false". 여기를 바꾼다.
    (`activate.ts:241`), 자동 활성화는 그 다음이다.
 4. 원복은 **수정이 필요 없다**. `deactivate`가 `manifest.tableKeys`를 순회하므로
    (`deactivate.ts:130-157`) 매니페스트에 들어가는 순간 자동으로 커버된다.
-   `setByCodexclaw`가 참이고 현재 값이 우리 값이면 복원, 아니면 스킵.
+   `setByCursorclaw`가 참이고 현재 값이 우리 값이면 복원, 아니면 스킵.
 
 **설계 B — DECLARED_FEATURES로 옮긴다. 이건 불가능하다.**
 `codex features enable`은 `[features]` 안의 boolean에만 도달한다
@@ -518,7 +518,7 @@ spawn해 봉투를 검사한다(`:91-102`).
 ### 5.4 인벤토리와 배지
 
 `inventory.mjs:58-68`이 훅 파일을 읽어 event/component/matcher를 추출하고
-`plugins/codexclaw/inventory.json`에 기록한다.
+`plugins/cursorclaw/inventory.json`에 기록한다.
 README 3종의 배지가 `hooks-23`으로 하드코딩돼 있고(`README.md:18`, `README.ko.md:18`,
 `README.zh.md:18`), `inventory.test.mjs:149-154`가 이 값을 검사한다.
 `inventory.mjs:250-255`에 재작성 함수가 있으므로 수동 편집 대신 그 경로를 쓴다.
@@ -539,7 +539,7 @@ README 3종의 배지가 `hooks-23`으로 하드코딩돼 있고(`README.md:18`,
 | `components/pabcd-state/src/hook.ts` | 수정 | 10~15줄 | 기억 요청 감지 함수 + turn 가드 **바깥** 기록(`:675-679` 위치) |
 | `components/pabcd-state/src/cli.ts` | 수정 | 4~6줄 | 새 event-slug 분기 |
 | `hooks/pre-tool-use-guarding-memory-write.json` | 신규 | 16줄 | matcher `^memories[._]?add_ad_hoc_note$` |
-| `.codex-plugin/plugin.json` | 수정 | 1줄 | hooks 배열 |
+| `.cursor-plugin/plugin.json` | 수정 | 1줄 | hooks 배열 |
 | `components/pabcd-state/test/memory-write-gate.test.ts` | 신규 | 100~150줄 | 통과/차단/오염입력/fail-open |
 | `test/hook-e2e.test.mjs` | 수정 | 1줄 | 23 → 24 |
 | `test/manifest-policy.test.mjs` | 수정 | 10~12줄 | matcher 고정 |

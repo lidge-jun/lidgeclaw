@@ -12,22 +12,22 @@
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/components/pabcd-state/src/steering-ops.ts` | 신규 — op별 검증 |
-| `plugins/codexclaw/components/pabcd-state/src/steering.ts` | op 등록 확장 |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts` | `WorkPhaseStatus`에 `blocked`/`superseded` 추가 (`plugins/codexclaw/components/pabcd-state/src/goalplan.ts:32`) + reviver/기본값 처리 |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts` | `validateGoalplan` 잔여작업 판정: `blocked`는 미완, `superseded`는 잔여에서 제외 |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts` | `nextOpenTask`(`:241-248`) — 현재 `status === "done"`만 건너뛴다. `superseded`도 건너뛰게, `blocked`는 task를 반환하지 않게 수정 |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts` | `effectiveActiveWorkPhaseId`(`:341-349`) — 현재 `done`이 아니면 active로 인정하므로 `blocked`/`superseded`가 active가 된다. 두 상태를 커서 대상에서 제외 |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts` | `advanceWorkPhase`(`:705-733`) — 별도 거부 분기는 넣지 않는다. `effectiveActiveWorkPhaseId`가 두 상태를 건너뛰므로 그 phase가 `done`이 될 경로가 없다 (WP15 정정) |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts` | criterion 수정 시 `surface`(`040`) 보존 |
-| `plugins/codexclaw/components/pabcd-state/src/hook.ts` | `buildGoalIdleBlock` 잔여 열거에서 `superseded` 제외, `blocked`는 이유와 함께 표시 |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan-cli.ts` | `loop show` 출력에 새 상태 표기 |
-| `plugins/codexclaw/components/pabcd-state/test/steering-ops.test.ts` | 신규 |
-| `plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts` | 새 상태의 잔여작업/완료 판정 케이스 |
-| `plugins/codexclaw/skills/loop/SKILL.md` | steering 절을 shipped 동작에 맞춤 |
+| `plugins/cursorclaw/components/pabcd-state/src/steering-ops.ts` | 신규 — op별 검증 |
+| `plugins/cursorclaw/components/pabcd-state/src/steering.ts` | op 등록 확장 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts` | `WorkPhaseStatus`에 `blocked`/`superseded` 추가 (`plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:32`) + reviver/기본값 처리 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts` | `validateGoalplan` 잔여작업 판정: `blocked`는 미완, `superseded`는 잔여에서 제외 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts` | `nextOpenTask`(`:241-248`) — 현재 `status === "done"`만 건너뛴다. `superseded`도 건너뛰게, `blocked`는 task를 반환하지 않게 수정 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts` | `effectiveActiveWorkPhaseId`(`:341-349`) — 현재 `done`이 아니면 active로 인정하므로 `blocked`/`superseded`가 active가 된다. 두 상태를 커서 대상에서 제외 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts` | `advanceWorkPhase`(`:705-733`) — 별도 거부 분기는 넣지 않는다. `effectiveActiveWorkPhaseId`가 두 상태를 건너뛰므로 그 phase가 `done`이 될 경로가 없다 (WP15 정정) |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts` | criterion 수정 시 `surface`(`040`) 보존 |
+| `plugins/cursorclaw/components/pabcd-state/src/hook.ts` | `buildGoalIdleBlock` 잔여 열거에서 `superseded` 제외, `blocked`는 이유와 함께 표시 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan-cli.ts` | `loop show` 출력에 새 상태 표기 |
+| `plugins/cursorclaw/components/pabcd-state/test/steering-ops.test.ts` | 신규 |
+| `plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts` | 새 상태의 잔여작업/완료 판정 케이스 |
+| `plugins/cursorclaw/skills/loop/SKILL.md` | steering 절을 shipped 동작에 맞춤 |
 
 **스키마 확장 (재감사 7):** 현행 `WorkPhaseStatus`는 `pending | in_progress | done`뿐이다
-(`plugins/codexclaw/components/pabcd-state/src/goalplan.ts:32`). `blockWorkPhase`와
+(`plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:32`). `blockWorkPhase`와
 `supersedeWorkPhase`는 새 상태를 도입하므로 **타입·역직렬화·잔여작업 판정·완료 검증·
 Stop 문구·`loop show` 출력 전부**를 함께 바꿔야 한다. 소비자를 빠뜨리면 새 상태가
 "미완 작업"으로도 "완료"로도 집계되지 않는 유령 상태가 된다.
@@ -104,7 +104,7 @@ effective가 `null`이고 `advanceWorkPhase`는 기존대로 `null`을 반환한
 
 ### `loop/SKILL.md` 정정
 
-현재 `plugins/codexclaw/skills/loop/SKILL.md:196-208`은 shipped되지 않은 steering을 약속한다. 이 슬라이스가 기능을 넣으므로
+현재 `plugins/cursorclaw/skills/loop/SKILL.md:196-208`은 shipped되지 않은 steering을 약속한다. 이 슬라이스가 기능을 넣으므로
 문구를 **실제 동작과 일치**시킨다: 지원 op 목록, `cxc loop steer` 명령형, 그리고
 "의미적 약화는 게이트가 아니라 감사로 잡는다"는 한계 명시.
 
@@ -182,8 +182,8 @@ effective가 `null`이고 `advanceWorkPhase`는 기존대로 `null`을 반환한
   ```
   npx tsc --noEmit --allowImportingTsExtensions --module nodenext --target es2022 \
     --moduleResolution nodenext \
-    plugins/codexclaw/components/pabcd-state/src/goalplan.ts \
-    plugins/codexclaw/components/pabcd-state/src/fsm.ts
+    plugins/cursorclaw/components/pabcd-state/src/goalplan.ts \
+    plugins/cursorclaw/components/pabcd-state/src/fsm.ts
   ```
 
   수용 조건은 **전체 `error TS`가 정확히 4건이고 전부 `interview.ts`**인 것이다.

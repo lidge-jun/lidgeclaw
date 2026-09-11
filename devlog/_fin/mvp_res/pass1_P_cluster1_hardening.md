@@ -22,10 +22,10 @@ G5. L9/L9.1/L9.2/L9.4 — Mind prompt text is summarized not exact; routing thre
     order, mark exact-prompt authoring as the L9.1 deliverable with a concrete contract.
 G6. L10/L10.2/L10.3 — auto-mode counter/max-round/reset undefined; freeze manifest path/name/schema
     and goal-start integration unnamed; `ledger_only` closure has no ledger owner/path. → pin freeze
-    manifest at `.codexclaw/interview/freeze.json`, define auto-mode caps, resolve ledger scope.
+    manifest at `.cursorclaw/interview/freeze.json`, define auto-mode caps, resolve ledger scope.
 G7. L11/L11.2 — PreToolUse matcher path is a placeholder; existing matcher is
-    `plugins/codexclaw/hooks/pre-tool-use-guarding-goal-budget.json` (registered from
-    `.codex-plugin/plugin.json`). → pin the exact path + add-second-hook strategy + fail-closed rule.
+    `plugins/cursorclaw/hooks/pre-tool-use-guarding-goal-budget.json` (registered from
+    `.cursor-plugin/plugin.json`). → pin the exact path + add-second-hook strategy + fail-closed rule.
 
 ## Plan (diff-level, surgical)
 1. Create `000_BUILD_LOG.md` (subagent authoring provenance) → resolves G1.
@@ -35,11 +35,11 @@ G7. L11/L11.2 — PreToolUse matcher path is a placeholder; existing matcher is
    (`roundId`, `contradictionId`, `planEditId`, `freezeId`).
 4. L9 set: name `correlationId` field; fix nested-session detection to single source + fallback
    order; state that exact Mind prompt text is L9.1's shipped artifact (not summary).
-5. L10 set: pin freeze manifest `.codexclaw/interview/freeze.json` + schema + slug rule; pin
+5. L10 set: pin freeze manifest `.cursorclaw/interview/freeze.json` + schema + slug rule; pin
    auto-mode `MAX_AUTO_ROUNDS` + counter persistence/reset; resolve `ledger_only` (defer ledger →
    replace with `assumptions_only` closure, no hidden ledger).
 6. L11 set: pin PreToolUse matcher to a NEW dedicated hook file
-   `plugins/codexclaw/hooks/pre-tool-use-guarding-interview-in-goal.json` (separate from goal-budget
+   `plugins/cursorclaw/hooks/pre-tool-use-guarding-interview-in-goal.json` (separate from goal-budget
    to keep safety-critical deny isolated); fail-closed rule explicit.
 7. One atomic docs commit.
 

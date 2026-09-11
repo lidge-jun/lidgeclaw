@@ -1,6 +1,6 @@
 # 010 — WP1: cxc-loop + cxc-pabcd 코어 패치 (diff-level)
 
-Scope: `plugins/codexclaw/skills/loop/SKILL.md` (MODIFY), `plugins/codexclaw/skills/pabcd/SKILL.md` (MODIFY). 그 외 파일 OUT.
+Scope: `plugins/cursorclaw/skills/loop/SKILL.md` (MODIFY), `plugins/cursorclaw/skills/pabcd/SKILL.md` (MODIFY). 그 외 파일 OUT.
 
 ## Edit 1 — loop/SKILL.md: LOOP-DOCS-FIRST-01 섹션 신설 (NEW section)
 
@@ -112,7 +112,7 @@ cycle's D locks the goalplan work-phase map before any implementation cycle star
 
 ## Verification (WP1 C-phase)
 
-- `rg -n "LOOP-DOCS-FIRST-01|LOOP-READS-PABCD-01" plugins/codexclaw/skills/loop/SKILL.md plugins/codexclaw/skills/pabcd/SKILL.md` → 양쪽 히트.
-- 포인터 대상 규칙 실존: `rg -n "DIFFLEVEL-ROADMAP-01|PHASE-SPLIT-01|LEXICO-SPLIT-01|UNIT-RESIDENCE-01" plugins/codexclaw/skills/pabcd/SKILL.md` → 전부 히트.
+- `rg -n "LOOP-DOCS-FIRST-01|LOOP-READS-PABCD-01" plugins/cursorclaw/skills/loop/SKILL.md plugins/cursorclaw/skills/pabcd/SKILL.md` → 양쪽 히트.
+- 포인터 대상 규칙 실존: `rg -n "DIFFLEVEL-ROADMAP-01|PHASE-SPLIT-01|LEXICO-SPLIT-01|UNIT-RESIDENCE-01" plugins/cursorclaw/skills/pabcd/SKILL.md` → 전부 히트.
 - frontmatter: `uv run --with pyyaml python -c "..."` 파싱 exit 0.
 - `git diff --stat` 에 hooks 경로 없음.

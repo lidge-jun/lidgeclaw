@@ -5,7 +5,7 @@ The serve route and Vite/MCP now share settings-api.ts, including effort validat
 ## Evidence (2026-09-08, Linux / Node 24.20.0)
 
 - Before implementation, subagent-effort.test.ts failed: saving low returned null. The initial log is /home/jun/tmp/cxc-serve-effort-01a07d17/red.log.
-- Final full suite: 2,684 tests; 2,614 passed, 70 existing conditional skips, zero failures. Command: TMPDIR=/var/tmp/cxc-effort-check-01a07d17 CODEX_HOME=/var/tmp/cxc-effort-check-01a07d17/codex-home npm test. The isolated TMPDIR avoids an unrelated /tmp/.git affecting root-discovery fixtures.
+- Final full suite: 2,684 tests; 2,614 passed, 70 existing conditional skips, zero failures. Command: TMPDIR=/var/tmp/cxc-effort-check-01a07d17 CURSOR_HOME=/var/tmp/cxc-effort-check-01a07d17/codex-home npm test. The isolated TMPDIR avoids an unrelated /tmp/.git affecting root-discovery fixtures.
 - Core strict TypeScript and GUI tsc passed; component and GUI builds passed. New dist/settings-api.js is tracked for clone/marketplace parity; packaging/freshness checks passed.
 - HTTP child-process regressions cover low/medium/high/xhigh/null, omitted effort, malformed effort/scope/reset rejection without writes, model preservation, and new server processes reading the same files. Separate fixtures cover global/project/reset precedence and legacy all-default roles.
 - Compiled CLI/MCP roundtrips and actual spawn-hook input/output passed, including global model/effort injection on both payload surfaces and full-history fork exclusions. Vite query and trust metadata match spawn resolution; global CSRF is rejected.

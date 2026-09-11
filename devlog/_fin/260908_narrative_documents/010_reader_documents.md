@@ -1,14 +1,14 @@
 # wp2 — Reader-facing document structure (diff-level)
 
 Depends on 000/001. Class C2 within the C3 unit. Verifiers (run in 002_verifiers.md):
-`node --test plugins/codexclaw/test/skill-catalog.test.mjs` (catalog only; does not read
+`node --test plugins/cursorclaw/test/skill-catalog.test.mjs` (catalog only; does not read
 prose), `quick_validate.py` per touched skill (frontmatter), a link-existence script
 over changed Markdown, and an independent forward-use trial (Opus-5 leaf given a raw
 probe-style evidence dump and asked to produce a report for a newcomer; PASS when the
 output leads with the answer, has a reader ToC, and keeps evidence in a separate
 appendix with anchors).
 
-## NEW plugins/codexclaw/skills/dev/references/reader-documents.md (~120 lines)
+## NEW plugins/cursorclaw/skills/dev/references/reader-documents.md (~120 lines)
 
 Canonical owner of "reader-facing document structure" (rule ids READER-DOC-01..05).
 Contents, in order:
@@ -50,20 +50,20 @@ Contents, in order:
 9. **Sources** — pointer to devlog unit 001_sources.md and the diagram-viewer
    source-patterns ledger; no vendored text.
 
-## MODIFY plugins/codexclaw/skills/dev/references/skill-ownership.md
+## MODIFY plugins/cursorclaw/skills/dev/references/skill-ownership.md
 
 Insert after the "Visual document composition" row:
 
 `| Reader-facing document structure (READER-DOC-*) | \`dev/references/reader-documents.md\` | \`dev-diagram-viewer\`, \`pabcd\` plan-output/phase-check, \`dev-scaffolding\` implementation-log, \`kwrite\`, \`search\` deep-research |`
 
-## MODIFY plugins/codexclaw/skills/dev/SKILL.md
+## MODIFY plugins/cursorclaw/skills/dev/SKILL.md
 
 In §Family Invariants (line ~197 onward) add one invariant bullet:
 "Reader deliverables follow [Reader documents](references/reader-documents.md):
 answer first, evidence separated and anchored. Audit artifacts keep their raw form."
 No trigger/description change.
 
-## MODIFY plugins/codexclaw/skills/dev-diagram-viewer/SKILL.md
+## MODIFY plugins/cursorclaw/skills/dev-diagram-viewer/SKILL.md
 
 - Under "## Compose before styling" (line 55), replace the sentence starting "Use a
   compact design read" so it begins with the reader contract and links
@@ -77,44 +77,44 @@ No trigger/description change.
   table rows "HTML report..." and "PDF, print report or handout" in the "Read when
   selected" column.
 
-## MODIFY plugins/codexclaw/skills/dev-diagram-viewer/reference/document-pdf.md
+## MODIFY plugins/cursorclaw/skills/dev-diagram-viewer/reference/document-pdf.md
 
 "## Build the reading order" (line 39): prepend one line "Structure follows
 [Reader documents](../../dev/references/reader-documents.md); the rest of this
 section is print-specific." Keep existing bullets.
 
-## MODIFY plugins/codexclaw/skills/pabcd/references/plan-output.md
+## MODIFY plugins/cursorclaw/skills/pabcd/references/plan-output.md
 
 After the nine-field table add a short section "Reader summary": a C2+ plan's
 000_plan.md opens with a reader-facing summary per READER-DOC-02 (problem, answer,
 what changes for whom) before the loop-spec table; research/evidence stays in 00x
 docs (LEXICO-SPLIT-01 unchanged).
 
-## MODIFY plugins/codexclaw/skills/pabcd/references/phase-check.md
+## MODIFY plugins/cursorclaw/skills/pabcd/references/phase-check.md
 
 After the SoT-sync paragraph add "C-READER-01 (DEFAULT): when the work-phase
 delivers a document, report or visualization to a person, C includes the
 fresh-reader check from reader-documents.md and records where the reader stumbled."
 
-## MODIFY plugins/codexclaw/skills/pabcd/SKILL.md
+## MODIFY plugins/cursorclaw/skills/pabcd/SKILL.md
 
 D bullet (line 84): append "The D summary is written for a reader who was not in
 the loop: conclusion, what changed, evidence pointers (READER-DOC-02/04)."
 
-## MODIFY plugins/codexclaw/skills/dev-scaffolding/references/implementation-log.md
+## MODIFY plugins/cursorclaw/skills/dev-scaffolding/references/implementation-log.md
 
 Before "## Class-scaled documentation" (line 70) add "## Reader narrative vs evidence":
 000_plan.md carries the reader narrative (answer, why, what changed); evidence,
 receipts and probe logs live under evidence/ or a numbered evidence doc and are
 linked, never inlined into the narrative. Link reader-documents.md.
 
-## MODIFY plugins/codexclaw/skills/kwrite/SKILL.md
+## MODIFY plugins/cursorclaw/skills/kwrite/SKILL.md
 
 Scope guard (line 67): add bullet "Structure is out of scope here; when the draft is
 a report or explainer, run [Reader documents](../dev/references/reader-documents.md)
 first (두괄식 check), then this protocol on the sentences."
 
-## MODIFY plugins/codexclaw/skills/README.md and top-level README.md
+## MODIFY plugins/cursorclaw/skills/README.md and top-level README.md
 
 No new skill folder, so the catalog block is unchanged. Add one line in the skills
 README family description: dev references now own reader-document structure.

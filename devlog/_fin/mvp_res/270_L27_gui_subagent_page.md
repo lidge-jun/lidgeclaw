@@ -16,19 +16,19 @@ override editing, and an opencodex link bar shown only when ocx is detected.
 
 ## Scope (decision-complete)
 - Files to add/edit:
-  - `plugins/codexclaw/gui/src/pages/Subagents.tsx`
-  - `plugins/codexclaw/gui/src/components/ModelSelect.tsx`
-  - `plugins/codexclaw/gui/src/components/PromptOverrideEditor.tsx`
-  - `plugins/codexclaw/gui/src/components/OcxLinkBar.tsx`
-  - `plugins/codexclaw/gui/src/api.ts`
-  - GUI tests or smoke fixtures under `plugins/codexclaw/gui/src/`
+  - `plugins/cursorclaw/gui/src/pages/Subagents.tsx`
+  - `plugins/cursorclaw/gui/src/components/ModelSelect.tsx`
+  - `plugins/cursorclaw/gui/src/components/PromptOverrideEditor.tsx`
+  - `plugins/cursorclaw/gui/src/components/OcxLinkBar.tsx`
+  - `plugins/cursorclaw/gui/src/api.ts`
+  - GUI tests or smoke fixtures under `plugins/cursorclaw/gui/src/`
   - subagent-config API additions only if L24/L25 did not expose enough shape
 - Exact behavior:
   - Show explorer, reviewer, and executor rows/cards.
   - Model selector is populated from L25 catalog.
   - Default/main model remains selectable even when ocx is present.
   - Prompt override editor persists nullable per-role override text.
-  - Save writes to `.codexclaw/subagents.json` through L24 API.
+  - Save writes to `.cursorclaw/subagents.json` through L24 API.
   - Link bar to `http://localhost:10100` is visible only when L23 reports ocx
     detected.
   - When ocx is absent, hide the link bar and keep selector limited to default.
@@ -48,12 +48,12 @@ override editing, and an opencodex link bar shown only when ocx is detected.
 - B: implement components, API calls, optimistic or explicit save state, error
   rendering, and smoke tests.
 - C: run GUI build; run browser smoke for ocx absent and fixture-present states;
-  inspect `.codexclaw/subagents.json` after save.
+  inspect `.cursorclaw/subagents.json` after save.
 - D: done = S9 and S10 pass, and the page demonstrates S7/S8 through the user
   surface.
 
 ## Acceptance (1-3 testable criteria)
-1. Saving a reviewer model selection updates `.codexclaw/subagents.json` and a
+1. Saving a reviewer model selection updates `.cursorclaw/subagents.json` and a
    reload shows the same value.
 2. Saving a prompt override persists and is returned by the spawn-time config
    reader.
@@ -61,9 +61,9 @@ override editing, and an opencodex link bar shown only when ocx is detected.
    ocx is detected.
 
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
-- GUI build output from `plugins/codexclaw/gui`.
+- GUI build output from `plugins/cursorclaw/gui`.
 - Browser smoke check for Subagents page with ocx absent and ocx present fixtures.
-- Data dump: `.codexclaw/subagents.json` after model and prompt edits.
+- Data dump: `.cursorclaw/subagents.json` after model and prompt edits.
 
 ## Commit unit (one atomic conventional commit)
 `feat(gui): add subagent model and prompt settings page`
@@ -76,5 +76,5 @@ behavior is planned and independent of whether the scaffold is fresh or reused.
 - 260629_codexclaw_mvp/035_gui_subagent_page.md
 - 260629_codexclaw_mvp/030_phase2_overview.md (S9, S10)
 - 260629_codexclaw_mvp/000_research.md (10100 link bar; ocx optional and external)
-- plugins/codexclaw/gui/README.md
-- plugins/codexclaw/components/subagent-config/src/mcp.ts
+- plugins/cursorclaw/gui/README.md
+- plugins/cursorclaw/components/subagent-config/src/mcp.ts

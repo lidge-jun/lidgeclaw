@@ -43,7 +43,7 @@ Status: P (design) · class C3 · implementation not started
 First make runner tool events lifecycle-complete. The current union has only
 `{ kind: "tool_call"; name; input }` and `parseExecEvent()` maps both
 `item.started` and `item.completed` to that same shape
-(`plugins/codexclaw/components/messenger-bridge/src/runner.ts:21-29,111-123`).
+(`plugins/cursorclaw/components/messenger-bridge/src/runner.ts:21-29,111-123`).
 Renderer filtering cannot produce four honest modes until events carry phase,
 stable identity, and completion data.
 
@@ -83,7 +83,7 @@ not a tool event and is always rendered when a progress surface exists.
 
 ### Work item 1 — runner event contract (must land first)
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/runner.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/runner.ts`
 
 Functions/types: `RunnerEvent`, `parseExecEvent()`, `firstString()`, and a new
 bounded result-summary helper.
@@ -132,7 +132,7 @@ After:
 **UNVERIFIED local payload shape:** repository fixtures prove event type and
 tool name/arguments, but do not prove the real `codex exec --json` fields for
 item id, completion result/output, or outcome
-(`plugins/codexclaw/components/messenger-bridge/test/runner.test.ts:58-82`).
+(`plugins/cursorclaw/components/messenger-bridge/test/runner.test.ts:58-82`).
 The first B step must capture real payloads (this host has codex-cli 0.144.5
 with MCP servers enabled — verified at WP3 A):
 
@@ -149,7 +149,7 @@ recording the exact server/tool chosen in the fixture header. If NO enabled
 server offers a read-only tool, record that fact in the fixture header and
 proceed with the command-only capture (MCP shape then reuses the same parser
 path as tools, covered by synthetic fixtures). Destination:
-`plugins/codexclaw/components/messenger-bridge/test/fixtures/codex-exec-tool-events.jsonl`.
+`plugins/cursorclaw/components/messenger-bridge/test/fixtures/codex-exec-tool-events.jsonl`.
 Redaction checklist before committing the fixture: no absolute home paths, no
 tokens/env values, no user prompts beyond the canned one, tool outputs
 truncated to the fields the parser reads. Record the exact identity/result
@@ -161,7 +161,7 @@ UNCORRELATED completed events (fresh sequence id, no attempt to attach
 outcome/result to a start) — never guess. It must not fake a stable id inside
 the pure parser. This is a build gate, not an optional follow-up.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/fixtures/fake-codex.mjs`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/fixtures/fake-codex.mjs`
 
 Before: emits tool events without `phase`/`callId` (:59).
 
@@ -172,7 +172,7 @@ fixtures migrate with it: `test/telegram-progress.test.ts:214,241`,
 `test/discord-interaction-progress.test.ts:75,81` (line numbers at WP3 A;
 re-locate by `tool_call` literal if they drift).
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/runner.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/runner.test.ts`
 
 Before: one started MCP fixture expects the old event; no paired completion.
 
@@ -181,7 +181,7 @@ pairs; assert identical `callId`, correct phases, preserved name/input,
 success/error outcome when present, bounded result summary, malformed/missing
 result handling, and duplicate tool names with distinct ids.
 
-### NEW `plugins/codexclaw/components/messenger-bridge/src/tool-progress.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/src/tool-progress.ts`
 
 Own the enum, default, event gate, deduplication keys, and transport-neutral
 line format.
@@ -197,7 +197,7 @@ line format.
 - Enforce the exact mode table above; render terminal success/error separately
   in each progress controller.
 
-### NEW `plugins/codexclaw/components/messenger-bridge/test/tool-progress.test.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/test/tool-progress.test.ts`
 
 Table-test all four modes, duplicate suppression, repeated tool names with
 different ids, completion success/error, MISSING-outcome completion rendering
@@ -208,7 +208,7 @@ rejection.
 
 ### Work item 2 — persistence and public API
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/db.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/db.ts`
 
 Types/functions: `AgentRow`, `AgentPatch`, exported setting enum, migration
 runner, and `BridgeDb.updateAgent()`.
@@ -233,18 +233,18 @@ After:
   version-guarded, not intrinsically idempotent: `ALTER TABLE ... ADD COLUMN`
   has no `IF NOT EXISTS`, matching the repository's current migration model.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/db-migration.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/db-migration.test.ts`
 
 Add v9-to-v10 upgrade coverage, default preservation for existing agents,
 constraint rejection for invalid values, `user_version = 10`, and a reopen
 case proving the version guard prevents a second `ALTER TABLE`.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/db.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/db.test.ts`
 
 Assert new-agent default `new`, update allowlist persistence for all four
 values, and typed row round-trip.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/agent-routes.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/agent-routes.ts`
 
 Functions: `publicAgent()` and `/api/agents/update` handler.
 
@@ -258,14 +258,14 @@ it is one of `AGENT_TOOL_PROGRESS_MODES`; map it to
 row. No adapter reload is needed because renderers resolve the current named
 agent setting at turn start.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/agent-routes.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/agent-routes.test.ts`
 
 Assert list/create/update public shapes, all valid values, invalid 400/no-write,
 and token redaction remains unchanged.
 
 ### Work item 3 — command and picker surfaces
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/gateway-commands.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/gateway-commands.ts`
 
 Functions: `GATEWAY_COMMANDS`, `handleStatus()`, `handleAgent()`, and new
 `handleToolProgress()`.
@@ -285,7 +285,7 @@ After:
   call `updateAgent(agent.id, { tool_progress: target })`, and return mode plus
   agent id. Legacy bindings report that the fixed effective mode is `new`.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-adapter.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-adapter.ts`
 
 Before: `GATEWAY_TEXT_COMMANDS` (:57-60) allowlists textual gateway commands
 and does not include `toolprogress` — the new setter would be unreachable
@@ -294,12 +294,12 @@ from Discord text commands.
 After: add `toolprogress` to the allowlist; text-command tests cover
 query/set/invalid paths.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/gateway-commands.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/gateway-commands.test.ts`
 
 Cover registry/help, `/status`, `/agent`, query/set/invalid/legacy behavior,
 and persistence for every mode.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/telegram-commands.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/telegram-commands.ts`
 
 Functions: `buildCommandDefs()` and new `handleToolProgress()`.
 
@@ -311,7 +311,7 @@ without an argument dispatch query state and return
 `buildToolProgressPicker(current, binding.id)`. This picker fits the existing
 model/effort/mode no-argument pattern, so it is in scope.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/telegram-interactive.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/telegram-interactive.ts`
 
 Functions/types: `CallbackAction`, `CALLBACK_TAGS`, `buildToolProgressPicker()`,
 `handleCallback()`, `callbackBindingId()`, and new
@@ -324,17 +324,17 @@ After: add compact `tool_progress_select` callback encoding, four-button
 picker, binding/agent authorization, canonical enum validation, agent update,
 and callback message edit. Never update a binding-level override.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/telegram-commands.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/telegram-commands.test.ts`
 
 Assert menu registration, argument dispatch, no-argument picker, invalid and
 legacy responses, and `/status` output.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/telegram-interactive.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/telegram-interactive.test.ts`
 
 Assert callback round-trip/64-byte bound, picker labels, authorization,
 all four updates, stale binding, invalid mode, and named-agent requirement.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-commands.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-commands.ts`
 
 Functions: `COMMANDS`, interaction setter helper, and gateway reply wiring.
 
@@ -345,37 +345,37 @@ After: add `/toolprogress` with four static choices. An explicit value uses the
 shared gateway setter. No value shows current state plus a Discord select
 component. Keep command registration result checking.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-components.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-components.ts`
 
 Add `buildToolProgressSelect(modes, current)` following
 `buildEffortSelect()` (`discord-components.ts:139-142`) with custom id
 `tool_progress_select`.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-interactions.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-interactions.ts`
 
 Extend `handleComponentInteraction()` with `tool_progress_select`: validate the
 selected canonical value, resolve the named agent from the binding, update it,
 and checked-edit the deferred response. This is included because the existing
 Discord no-argument command pattern is interactive.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/discord-commands.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/discord-commands.test.ts`
 
 Assert registered choices, query picker, explicit set, invalid/legacy response,
 and `/status` exposure.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/discord-components.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/discord-components.test.ts`
 
 Assert select custom id, four options, selected/current label, and Discord
 component limits.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/discord-interactions.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/discord-interactions.test.ts`
 
 Assert component selection authorization, all four updates, invalid value,
 missing/legacy agent, and checked reply failure.
 
 ### Work item 4 — renderer gating and notification policy
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/telegram-progress.ts` (Phase 1 NEW file)
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/telegram-progress.ts` (Phase 1 NEW file)
 
 Functions: `createTelegramTurnProgress()` and activity renderer.
 
@@ -387,9 +387,9 @@ and preserve typing/final cleanup in `off`. Initial editable status sends remain
 silent. Webhook, long-poll, and Telegram `/retry` call sites resolve the named
 agent's mode once at turn start and pass it to the controller.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/telegram-adapter.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/telegram-adapter.ts`
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/telegram-webhook.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/telegram-webhook.ts`
 
 Functions: ordinary attended-turn and `/retry` controller creation paths
 defined by Phase 1.
@@ -401,7 +401,7 @@ pass it to ordinary and retry controllers. Do not read the DB on every event.
 Final output and approval sends omit `disable_notification`; intermediate
 editable progress explicitly sets it.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-adapter.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-adapter.ts`
 
 Functions: `createProgressWindow()`, `handleMessage()`, and
 `handleGatewayTextCommand()` retry path.
@@ -416,7 +416,7 @@ terminal error needs a user-visible status, send the normal error/final path,
 not a silent orphan. Other modes use one silent progress embed and policy
 lines. Final answers and approvals remain unsuppressed.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-interaction-progress.ts` (Phase 2 NEW file)
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-interaction-progress.ts` (Phase 2 NEW file)
 
 Functions: `createDiscordInteractionProgress()` mode seam.
 
@@ -426,7 +426,7 @@ After: replace the broad predicate at `/ask`, `/review`, and component retry
 call sites with a policy instance. `off` retains generic deferred/handoff state
 but emits no event stage; `new`/`all`/`verbose` follow the exact mode table.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-api.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-api.ts`
 
 Functions: `sendMessage()` and `sendEmbed()`.
 
@@ -438,35 +438,35 @@ true to Discord message `flags: 4096`. Do not default suppression globally.
 Progress windows and the Phase 2 `sendMessage` interaction handoff set it;
 final output and approval cards do not.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/telegram-progress.test.ts` (Phase 1 NEW file)
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/telegram-progress.test.ts` (Phase 1 NEW file)
 
 Test the controller/policy boundary for all four modes, deduplication, `off`
 typing/final cleanup, and silent intermediate payloads.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/telegram-adapter.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/telegram-adapter.test.ts`
 
 Test all modes on ordinary and `/retry` long-poll paths, one mode resolution per
 turn, silent progress, and unsuppressed final/approval delivery.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/telegram-webhook.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/telegram-webhook.test.ts`
 
 Test the same matrix for webhook ordinary and `/retry` turns, including queued
 turns retaining their turn-start policy.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/discord-adapter.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/discord-adapter.test.ts`
 
 Test all modes on gateway ordinary and textual retry paths, `off` typing/final
 only, and `flags: 4096` on progress but not final/approval sends.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/discord-interaction-progress.test.ts` (Phase 2 NEW file)
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/discord-interaction-progress.test.ts` (Phase 2 NEW file)
 
 Test all modes before and after token handoff, policy-state continuity, and
 suppression on the bot-authenticated handoff progress send.
 
 ## Explicitly out of scope
 
-- `plugins/codexclaw/components/messenger-bridge/src/connect-routes.ts`
-- `plugins/codexclaw/components/messenger-bridge/src/cli.ts`
+- `plugins/cursorclaw/components/messenger-bridge/src/connect-routes.ts`
+- `plugins/cursorclaw/components/messenger-bridge/src/cli.ts`
 
 The setting is named-agent state exposed through agent routes and messenger
 commands. Legacy channel connection and CLI setup surfaces are intentionally

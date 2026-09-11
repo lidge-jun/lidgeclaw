@@ -15,7 +15,7 @@ backtick count, optionally longer), per CommonMark; unclosed fence protects to
 end of message. Add inline-delimiter adversarial test.
 
 ## B3 (ACCEPT) — angle-bracket/title destinations
-`[$cxc-dev](</existing/dev/SKILL.md>)` and `[...](path "title")` include
+`[$crc-dev](</existing/dev/SKILL.md>)` and `[...](path "title")` include
 markdown syntax in targetPath -> existsSync fails -> valid caller link
 destroyed. Fix: strip `<...>` wrapper and optional title before the broken-target
 predicate; preserve when the unwrapped path exists and ends in /SKILL.md.

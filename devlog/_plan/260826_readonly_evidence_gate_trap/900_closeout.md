@@ -10,7 +10,7 @@ Outcome: **DONE**. Shipped as 0.2.14 and deployed locally.
 ## What was wrong
 
 A subagent dispatched read-only cannot create a file under the parent's
-`.codexclaw/evidence/`, so `hasValidReceipt()` was false forever. Past `MAX_ATTEMPTS`
+`.cursorclaw/evidence/`, so `hasValidReceipt()` was false forever. Past `MAX_ATTEMPTS`
 the gate returned `decision:"block"` on every subsequent SubagentStop with no exit.
 The transcript that prompted this shows 15+ identical escalation blocks against a child
 that had already done its work correctly.
@@ -46,7 +46,7 @@ must settle". The reviewer accepted this and the scope was re-cut around it.
 
 3 plan-audit rounds (FAIL, FAIL, NEAR-PASS) and 12 implementation-review rounds
 (11× FAIL, then NEAR-PASS with no remaining silent-allow path). Evidence:
-`.codexclaw/evidence/260826_readonly_gate_*.md`.
+`.cursorclaw/evidence/260826_readonly_gate_*.md`.
 
 ## Residuals (recorded, not fixed)
 

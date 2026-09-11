@@ -22,12 +22,12 @@ new production/config authority requires user input.
 ## Existing structure and proposed ownership
 
 ```text
-plugins/codexclaw/skills/
+plugins/cursorclaw/skills/
   dev/SKILL.md                 common owner route
   dev/references/              native policy and worked examples
   loop/SKILL.md                entry route for cxc-loop
   pabcd/SKILL.md               standalone phase-work entry route
-plugins/codexclaw/test/        executable examples and link contract
+plugins/cursorclaw/test/        executable examples and link contract
 structure/60_native_capabilities.md   dated capability SOT
 ```
 

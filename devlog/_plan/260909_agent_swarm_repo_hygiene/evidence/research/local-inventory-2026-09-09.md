@@ -7,7 +7,7 @@ origin/dev|origin/main, gh pr list --state all (joined by headRefName), gh api r
 | Item | opencodex | codexclaw | cli-jaw | ima2-gen |
 |---|---|---|---|---|
 | worktrees | 80 | 8 | 42 | 3 |
-| under ~/.codex/worktrees | 21 | 1 | 27 | 2 |
+| under ~/.cursor/worktrees | 21 | 1 | 27 | 2 |
 | under /private/tmp or /var | 57 | 4 | 9 | 0 |
 | dirty (-uno non-empty) | 5 | 0 | 20 | 0 |
 | detached HEAD | 8 | 1 | 14 | 1 |
@@ -24,7 +24,7 @@ origin/dev|origin/main, gh pr list --state all (joined by headRefName), gh api r
 | open PR / open issue | 72 / 69 | 1 / 0 | 0 / 1 | 1 / 1 |
 | fetch.prune | true | unset | unset | true |
 
-Disk: ~/.codex/worktrees 30G; /private/tmp/{ocx,cj,cxc}-* 15G.
+Disk: ~/.cursor/worktrees 30G; /private/tmp/{ocx,cj,cxc}-* 15G.
 No crontab; 27 LaunchAgents, none for git cleanup; no worktree remove/prune scripts in repos.
 Repo settings that day: opencodex auto-delete on / auto-merge on / rebase off; codexclaw
 auto-delete off / auto-merge off; cli-jaw classic protection only; ima2-gen ruleset with

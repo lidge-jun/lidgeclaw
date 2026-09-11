@@ -11,7 +11,7 @@ The active managed worktree is /Users/jun/.codex/worktrees/974c/codexclaw.
 It was clean on main (15b3d44a); local dev belongs to the original checkout.
 Fetched origin, then adopted this worktree in place on codex/quiet-peer-coordination
 at origin/dev c8366fc2. Do not switch or reset the other checkout.
-Canonical owner: plugins/codexclaw/skills/dev/references/peer-collaboration.md.
+Canonical owner: plugins/cursorclaw/skills/dev/references/peer-collaboration.md.
 Its opening recommended consulting peers for relevant findings/dependencies;
 startup/direction-change discovery and outgoing impacts encouraged needless wakes.
 The same broad trigger appears in dev/search/pabcd and structure 20/60.
@@ -20,8 +20,8 @@ user authority, and transport delivery from actual agreement; preserve these gua
 
 ## Structure and dependency order
 
-- plugins/codexclaw/skills/dev/references/peer-collaboration.md: canonical wording.
-- plugins/codexclaw/skills/{dev,search,pabcd,loop}/: entrypoints and waiting pointer.
+- plugins/cursorclaw/skills/dev/references/peer-collaboration.md: canonical wording.
+- plugins/cursorclaw/skills/{dev,search,pabcd,loop}/: entrypoints and waiting pointer.
 - structure/{20_pabcd_dispatch_doctrine,60_native_capabilities}.md: source-of-truth.
 - .github/workflows/{ci,packed-install,release}.yml: release evidence and builder.
 - devlog/_plan/260906_quiet_peer_coordination/: established numbered unit convention.

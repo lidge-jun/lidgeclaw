@@ -58,7 +58,7 @@ API/UI in this session; **U** unverified — must not appear as fact in a skill 
 | 4.3 | gh-poi (v0.18.4, 2026-08-30, 1,011 stars) decides "merged" via PR API + local head SHA in PR commit list, and deletes worktrees with guards (main worktree, uncommitted, untracked, submodules, locked); git-trim/gdmb/gh-clean-merged only skip worktree branches; gdmb needs `--effort=3` for squash | V | evidence/research/git-cleanup-docs-and-tools.md §2 |
 | 4.4 | Marketplace cleanup actions: `beatlabs/delete-old-branches-action` dry_run default true; `fpicalausa/remove-stale-branches` dry-run default false; `actions/stale` `delete-branch` default false | V | evidence §3 |
 | 4.5 | Local inventory: 133 worktrees across four repos, 70 under `/private/tmp` (15G), 25 dirty, cli-jaw has 4 locked worktrees whose paths are gone; opencodex 314 local branches, 94 upstream-gone, 43 PR-merged branches not ancestors of dev (squash); `fetch.prune` unset in codexclaw and cli-jaw; no cron/LaunchAgent GC | A (dated snapshot, not script-reproduced) | `evidence/research/local-inventory-2026-09-09.md` |
-| 4.6 | Codex managed worktrees: per-thread slots under `~/.codex/worktrees`, auto-deleted on archive, latest N retained | V (already in worktree-guardian §2 with source) | developers.openai.com/codex/environments/git-worktrees |
+| 4.6 | Codex managed worktrees: per-thread slots under `~/.cursor/worktrees`, auto-deleted on archive, latest N retained | V (already in worktree-guardian §2 with source) | developers.openai.com/codex/environments/git-worktrees |
 
 ## Items explicitly NOT to state as fact
 

@@ -4,10 +4,10 @@
 
 ## 문제
 
-`plugins/codexclaw/skills/loop/SKILL.md:196-208`은 steering 결정을 근거와 함께 기록하고
+`plugins/cursorclaw/skills/loop/SKILL.md:196-208`은 steering 결정을 근거와 함께 기록하고
 완료 기준을 약화시키는 steering을 거부한다고 약속한다. 그런데 shipped 상태에는 그 기능이 없다 —
 ledger는 6개 lifecycle 이벤트만 지원하고 steering 상태가 아예 없다
-(`plugins/codexclaw/components/pabcd-state/src/goalplan.ts:156`).
+(`plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:156`).
 
 즉 스킬이 약속한 것과 코드가 하는 것이 다르다. 이는 codexclaw이 스스로 금지한
 false-enforcement 산문에 해당한다.
@@ -30,15 +30,15 @@ false-enforcement 산문에 해당한다.
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/components/pabcd-state/src/steering.ts` | 신규 — 트랜잭션 엔진 |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts` | ledger 이벤트 타입 + `steeringLog` |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan-cli.ts` | `steer` 서브버브 파싱 + 실행 (기존 `loop` CLI 소유자) |
-| `plugins/codexclaw/components/pabcd-state/src/cli.ts` | 없음 — `loop`/`goalplan` 분기(`plugins/codexclaw/components/pabcd-state/src/cli.ts:101-112`)가 이미 `parseGoalplanCliArgs`/`runGoalplanCli`로 위임하므로 배선 변경 불필요 |
-| `plugins/codexclaw/bin/cxc.mjs` | help 텍스트에 `loop steer` 추가 |
-| `plugins/codexclaw/components/pabcd-state/test/steering.test.ts` | 신규 |
+| `plugins/cursorclaw/components/pabcd-state/src/steering.ts` | 신규 — 트랜잭션 엔진 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts` | ledger 이벤트 타입 + `steeringLog` |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan-cli.ts` | `steer` 서브버브 파싱 + 실행 (기존 `loop` CLI 소유자) |
+| `plugins/cursorclaw/components/pabcd-state/src/cli.ts` | 없음 — `loop`/`goalplan` 분기(`plugins/cursorclaw/components/pabcd-state/src/cli.ts:101-112`)가 이미 `parseGoalplanCliArgs`/`runGoalplanCli`로 위임하므로 배선 변경 불필요 |
+| `plugins/cursorclaw/bin/cursorclaw.mjs` | help 텍스트에 `loop steer` 추가 |
+| `plugins/cursorclaw/components/pabcd-state/test/steering.test.ts` | 신규 |
 
 **소유자 정정 (재감사 7):** 초기 초안은 신규 `loop-cli.ts`를 만들려 했으나, 실제
-`loop` 명령은 `plugins/codexclaw/components/pabcd-state/src/cli.ts:101-112`가
+`loop` 명령은 `plugins/cursorclaw/components/pabcd-state/src/cli.ts:101-112`가
 `goalplan-cli.ts`로 위임한다. 새 파일을 만들지 않고 기존 소유자를 확장한다.
 
 ## before → after
@@ -97,7 +97,7 @@ cxc loop steer --session <id> --batch-json <path-or-json>
    무관한 산문만 나온다. 기존 원자성 수단은 `writeGoalplan`의 tmp+rename뿐이다
    (`goalplan.ts:366-380`). 그래서 락도 이 슬라이스가 만들어야 하고, 의미를 못 박는다:
 
-   - `.codexclaw/goalplans/<slug>/.steer.lock` 디렉터리를 `mkdirSync`로 만든다
+   - `.cursorclaw/goalplans/<slug>/.steer.lock` 디렉터리를 `mkdirSync`로 만든다
      (`recursive: false`). 이미 있으면 `EEXIST`가 나므로 그것이 곧 획득 실패다 —
      POSIX·Windows 양쪽에서 원자적이고 의존성이 없다.
    - 그 안에 `owner.json`으로 `{pid, acquiredAt}`을 쓴다. **stale 판정은 하지 않는다** —
@@ -209,8 +209,8 @@ idempotency 판정은 `steeringLog`의 `idempotencyKey` 존재 여부로 한다.
   ```
   npx tsc --noEmit --allowImportingTsExtensions --module nodenext --target es2022 \
     --moduleResolution nodenext \
-    plugins/codexclaw/components/pabcd-state/src/steering.ts \
-    plugins/codexclaw/components/pabcd-state/test/steering.test.ts
+    plugins/cursorclaw/components/pabcd-state/src/steering.ts \
+    plugins/cursorclaw/components/pabcd-state/test/steering.test.ts
   ```
 
   의존 그래프를 타고 기존 `interview.ts`의 `TS2352` 4건이 함께 나온다(WP10 실측).

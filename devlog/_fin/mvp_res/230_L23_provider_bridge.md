@@ -18,9 +18,9 @@ codexclaw usable on the native Codex catalog with no session failure.
 
 ## Scope (decision-complete)
 - Files to add/edit:
-  - `plugins/codexclaw/components/provider-bridge/src/cli.ts`
-  - `plugins/codexclaw/components/provider-bridge/test/cli.test.ts`
-  - `plugins/codexclaw/hooks/session-start-ensuring-provider-bridge.json`
+  - `plugins/cursorclaw/components/provider-bridge/src/cli.ts`
+  - `plugins/cursorclaw/components/provider-bridge/test/cli.test.ts`
+  - `plugins/cursorclaw/hooks/session-start-ensuring-provider-bridge.json`
   - generated `dist/` output for the provider bridge component
 - Exact behavior:
   - Detect `ocx` by PATH first and, if needed, by the known local service
@@ -58,7 +58,7 @@ codexclaw usable on the native Codex catalog with no session failure.
    clearly without silently pretending multi-provider mode is active.
 
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
-- node:test path: `plugins/codexclaw/components/provider-bridge/test/cli.test.ts`
+- node:test path: `plugins/cursorclaw/components/provider-bridge/test/cli.test.ts`
 - CLI stdout: SessionStart command and `cxc doctor` provider section.
 
 ## Commit unit (one atomic conventional commit)
@@ -81,5 +81,5 @@ Codex live catalog cache (`CODEX_MODELS_CACHE_PATH`) through the allowlist.
 - 260629_codexclaw_mvp/031_provider_bridge.md
 - 260629_codexclaw_mvp/030_phase2_overview.md (S6, Q-P2-2)
 - 260629_codexclaw_mvp/000_research.md (ocx optional provider proxy; never vendored)
-- plugins/codexclaw/components/provider-bridge/src/cli.ts
-- plugins/codexclaw/hooks/session-start-ensuring-provider-bridge.json
+- plugins/cursorclaw/components/provider-bridge/src/cli.ts
+- plugins/cursorclaw/hooks/session-start-ensuring-provider-bridge.json

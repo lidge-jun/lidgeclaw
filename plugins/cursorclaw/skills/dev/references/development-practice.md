@@ -109,5 +109,5 @@ environment). Repeated identical failures are friction evidence, not bad luck.
 
 **Repeated-edit-shape rule (DEV-EDIT-SHAPE-01, DEFAULT).** Three same-shaped edits
 in a row (same structural transform on different sites) mean you are hand-running
-a codemod: stop and switch to `$cxc-ast-grep` (or a scripted rewrite) so the
+a codemod: stop and switch to `$crc-ast-grep` (or a scripted rewrite) so the
 remaining sites are transformed deterministically.

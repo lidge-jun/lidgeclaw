@@ -56,7 +56,7 @@ busy, unpaired, disabled, or has auto-send off.
 ## REV 2 — audit fixes (Backend, FAIL/5)
 
 1. Paths are component-relative: everything under
-   `plugins/codexclaw/components/messenger-bridge/`.
+   `plugins/cursorclaw/components/messenger-bridge/`.
 2. handleIncoming gets the FULL IncomingRequest: `{kind: agent.kind, chatId,
    text: prompt, workdir, agentId}`.
 3. Shutdown ordering in cli.ts is explicit: `scheduler.stop()` BEFORE

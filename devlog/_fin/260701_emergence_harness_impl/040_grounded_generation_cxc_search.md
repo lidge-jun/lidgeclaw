@@ -3,7 +3,7 @@
 Status: DONE (shipped + tested) · 2026-07-01 · emergence_harness_impl WP 040 · class C2 (skill doctrine) · E7
 
 > Design source: `../260701_emergence_harness/007` (cxc-search grounding rule). Skill reference:
-> `plugins/codexclaw/skills/search/SKILL.md` (Tier 1 discover, Tier 2 prove ladder).
+> `plugins/cursorclaw/skills/search/SKILL.md` (Tier 1 discover, Tier 2 prove ladder).
 
 ## Why
 
@@ -15,7 +15,7 @@ half-remembered idea. This makes the N>=2 in decade 030 real diversity instead o
 
 ## Ground Truth (read before edit)
 
-- `cxc-search` skill: `plugins/codexclaw/skills/search/SKILL.md` — Tier 1 (discover) / Tier 2
+- `cxc-search` skill: `plugins/cursorclaw/skills/search/SKILL.md` — Tier 1 (discover) / Tier 2
   (prove) / Tier 3 (ultraresearch) ladder; Korean-source guard; source-proof invariant.
 - `cxc-loop` doctrine (extended in 030) + `dev` §0 cross-ref (the grounding habit).
 - Candidate archive shape from decade 030 (where provenance is recorded).

@@ -14,12 +14,12 @@ const targets = [...patchDoc.matchAll(/^\*\*\* (Add|Update) File: (.+)$/gm)]
   .map((m) => ({ kind: m[1], path: resolve(root, m[2].replace(prefix, "")) }));
 assert.ok(targets.length > 0, "no patch targets");
 const intended = [
-  "plugins/codexclaw/skills/dev/references/peer-collaboration.md",
-  "plugins/codexclaw/skills/dev/SKILL.md",
-  "plugins/codexclaw/skills/search/SKILL.md",
-  "plugins/codexclaw/skills/pabcd/SKILL.md",
-  "plugins/codexclaw/skills/loop/SKILL.md",
-  "plugins/codexclaw/skills/dev/references/skill-ownership.md",
+  "plugins/cursorclaw/skills/dev/references/peer-collaboration.md",
+  "plugins/cursorclaw/skills/dev/SKILL.md",
+  "plugins/cursorclaw/skills/search/SKILL.md",
+  "plugins/cursorclaw/skills/pabcd/SKILL.md",
+  "plugins/cursorclaw/skills/loop/SKILL.md",
+  "plugins/cursorclaw/skills/dev/references/skill-ownership.md",
   "structure/20_pabcd_dispatch_doctrine.md",
   "structure/60_native_capabilities.md",
 ].map((p) => resolve(root, p));

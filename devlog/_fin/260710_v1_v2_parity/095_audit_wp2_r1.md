@@ -11,13 +11,13 @@
   스캔(교체 vs 신설 두 경로), 중복 헤더/해시 거부, 무관 바이트·enabled 보존,
   검증 실패 시 자동 롤백, 최종 검증은 doctor 재실행 + `codex features list`
   (호스트 TOML 파서 경유) 성공 확인.
-- B3 (HIGH) 라이브 스모크 복원 프로토콜 — 자동 왕복은 fixture CODEX_HOME
+- B3 (HIGH) 라이브 스모크 복원 프로토콜 — 자동 왕복은 fixture CURSOR_HOME
   전용으로 격리; 실컨피그 최종 스모크는 훅 파일+config 바이트 스냅샷 →
   finally 복원 → 복원 후 doctor PASS 증명까지.
 - F4 (MED) 어포던스가 기존 exact-equal 단언 3곳(401/468/476/567) 무효화 —
   R3 주장 철회, 해당 핀 명시적 갱신 + 제로멘션/기인라인/오버플로/dedupe/순서
   테스트 추가. 제로멘션 평문 V2에 어포던스 부착은 의도된 오버헤드로 기록.
-- F5 (MED) 설치 키 계약 — CODEX_HOME 존중, enabled 플러그인 키 정확히 1개
+- F5 (MED) 설치 키 계약 — CURSOR_HOME 존중, enabled 플러그인 키 정확히 1개
   선택, 모호하면 fail-closed(+ --key 명시 옵션). 루트 tie-break 제거.
   키 형식 확정: `<plugin>@<marketplace>:hooks/<file>:<event>:<g>:<h>` (./ 없음).
 

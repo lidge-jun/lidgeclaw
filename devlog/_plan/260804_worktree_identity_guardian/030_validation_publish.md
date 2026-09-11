@@ -2,12 +2,12 @@
 
 ## Gates (fresh output, exit 0 each)
 
-1. `cd plugins/codexclaw/components/pabcd-state && node --test` — full suite incl.
+1. `cd plugins/cursorclaw/components/pabcd-state && node --test` — full suite incl.
    worktree-guard.test.ts.
-2. `node plugins/codexclaw/scripts/build.mjs` — dist regeneration; re-run tests
+2. `node plugins/cursorclaw/scripts/build.mjs` — dist regeneration; re-run tests
    against dist where the suite does so (dist-freshness test in-repo).
 3. Live-fire (A2/A3 from 010 rev2): pipe crafted JSON payloads into
-   `plugins/codexclaw/components/pabcd-state/dist/cli.js hook worktree-guard`:
+   `plugins/cursorclaw/components/pabcd-state/dist/cli.js hook worktree-guard`:
    (probe slot dir contains a repo subdir with a `.git` file)
    - SessionStart cwd=<probeSlot>/repo → WORKTREE-GUARD-01 naming checkoutRoot
    - UserPromptSubmit "워크트리 이름 바꾸자" same cwd → WORKTREE-GUARD-02 (first

@@ -12,7 +12,7 @@ practitioner record is large and contradictory (ledger 3.5), so the skill presen
 options with their sources rather than picking one — user instruction 2026-09-09:
 "모두 표시해서 옵션으로".
 
-## NEW `plugins/codexclaw/skills/dev-devops/references/agent-pr-intake.md`
+## NEW `plugins/cursorclaw/skills/dev-devops/references/agent-pr-intake.md`
 
 Full body (B copies verbatim):
 
@@ -161,7 +161,7 @@ removal of bait labels (`repo-bootstrap.md` §6).
 - Live opencodex numbers: `devlog/_plan/260909_agent_swarm_repo_hygiene/evidence/research/lidge-jun-repos-settings-audit.md` §5.1
 ````
 
-## MODIFY `plugins/codexclaw/skills/dev-devops/SKILL.md` — Modular References table
+## MODIFY `plugins/cursorclaw/skills/dev-devops/SKILL.md` — Modular References table
 
 After the `references/repo-bootstrap.md` row:
 ```diff

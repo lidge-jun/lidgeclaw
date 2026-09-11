@@ -12,7 +12,7 @@ Appended 2026-07-23 (user request, LOOP-UNIT-CHAIN-01): "사용자가 바로 드
 
 codexclaw mapping — the drop-in path already exists, it is just undersold:
 
-1. **2 lines, zero build:** `codex plugin marketplace add` + `codex plugin add` —
+1. **2 lines, zero build:** `Cursor plugin install add` + `codex plugin add` —
    committed component `dist/` means no npm, no build, no config edits.
 2. **Activate:** restart Codex, approve the 18 hooks once (content-hash trust).
 3. **Use immediately WITHOUT the CLI:** PABCD is drivable from chat — a

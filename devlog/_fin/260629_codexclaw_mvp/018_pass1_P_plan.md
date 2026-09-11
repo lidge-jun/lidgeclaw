@@ -9,12 +9,12 @@ Toolchain: Node v24 native TS (type-strip) + `node:test` (both verified). No tsc
 - OUT: directive hook (Pass 2 reads session_id from payload), goal gate (Pass 3), skills (4), roles (5).
 - KEY DECISION (016): phase state is PER-SESSION, keyed by `sessionId`, NOT per-cwd singleton.
 
-## State layout (per working tree, gitignored under `.codexclaw/`)
-- `<cwd>/.codexclaw/sessions/<sanitize(sessionId)>.json` — one phase-state per codex session.
-- `<cwd>/.codexclaw/ledger.jsonl` — SHARED append-only audit; every entry tagged with `sessionId`.
+## State layout (per working tree, gitignored under `.cursorclaw/`)
+- `<cwd>/.cursorclaw/sessions/<sanitize(sessionId)>.json` — one phase-state per codex session.
+- `<cwd>/.cursorclaw/ledger.jsonl` — SHARED append-only audit; every entry tagged with `sessionId`.
 
 ## File change map
-### NEW `plugins/codexclaw/components/pabcd-state/src/state.ts`
+### NEW `plugins/cursorclaw/components/pabcd-state/src/state.ts`
 ```ts
 import { mkdirSync, readFileSync, writeFileSync, renameSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
@@ -30,7 +30,7 @@ export interface LedgerEntry {
   ts: string; sessionId: string; from: Phase | null; to: Phase; reason: string; evidence?: string;
 }
 
-export const STATE_DIR = ".codexclaw";
+export const STATE_DIR = ".cursorclaw";
 export const SESSIONS_SUBDIR = "sessions";
 export const LEDGER_FILE = "ledger.jsonl";
 
@@ -75,7 +75,7 @@ export function appendLedger(cwd: string, entry: LedgerEntry): void {
 }
 ```
 
-### NEW `plugins/codexclaw/components/pabcd-state/src/fsm.ts`
+### NEW `plugins/cursorclaw/components/pabcd-state/src/fsm.ts`
 ```ts
 import { PHASES, type Phase, type State } from "./state.ts";
 
@@ -106,24 +106,24 @@ export const isBuildGateOpen = (s: State) => s.flags.auditPassed;
 export const isDone = (s: State) => s.phase === "D" && s.flags.checkPassed;
 ```
 
-### NEW `plugins/codexclaw/components/pabcd-state/test/state.test.ts`  (`node:test`)
+### NEW `plugins/cursorclaw/components/pabcd-state/test/state.test.ts`  (`node:test`)
 - missing dir → default (phase "I", carries sessionId); corrupt JSON → default (no throw).
 - write→read roundtrip per session; flags merge.
 - **two different sessionIds in the same cwd do NOT clobber** (core Finding-C regression test).
 - appendLedger creates `ledger.jsonl`, appends NDJSON, each line has `sessionId`.
 - isolated cwd via `mkdtempSync(os.tmpdir())`; cleanup after.
 
-### NEW `plugins/codexclaw/components/pabcd-state/test/fsm.test.ts`  (`node:test`)
+### NEW `plugins/cursorclaw/components/pabcd-state/test/fsm.test.ts`  (`node:test`)
 - table-driven: I→P blocked w/o interview, allowed with it; B blocked w/o auditPassed; D blocked
   w/o checkPassed; nextPhase order + terminal null at D; isDone only at D+check.
 
-### MODIFY `plugins/codexclaw/components/pabcd-state/package.json`
+### MODIFY `plugins/cursorclaw/components/pabcd-state/package.json`
 - add `"scripts": { "test": "node --test" }` (keep name/version/type/main/description).
 
 ### UNCHANGED this pass
 - `src/cli.ts` keeps stub; Pass 2 wires the hook and passes `session_id` from payload into state.ts.
 
-### `.gitignore` — already covers `.codexclaw/` (verified line 3). No change.
+### `.gitignore` — already covers `.cursorclaw/` (verified line 3). No change.
 
 ## Accept criteria (Pass 1 done = small C/D)
 - `node --test` green (state + fsm).

@@ -2,7 +2,7 @@
 created: 2026-08-15
 status: design
 workPhase: wp8
-tags: [codexclaw, source-receipt, c-to-d, producer]
+tags: [cursorclaw, source-receipt, c-to-d, producer]
 ---
 
 # 075 — C>D source-bound test receipt
@@ -18,7 +18,7 @@ tags: [codexclaw, source-receipt, c-to-d, producer]
    대체되므로(`source-receipt.ts:104-107`), 유효한 `sourceIdentity`만 복사한
    수기 JSON이 `kind:"test"` receipt로 파싱된다.
 3. 채팅 C>D는 `validateAttest`를 아예 타지 않는다(`orchestrate-apply.ts:93`).
-4. producer가 identity를 캡처한 뒤 `.codexclaw/evidence`에 쓰면 트리가 달라진다 —
+4. producer가 identity를 캡처한 뒤 `.cursorclaw/evidence`에 쓰면 트리가 달라진다 —
    050에서 겪은 자기오염.
 
 ## 1. producer — `cxc receipt test`
@@ -29,7 +29,7 @@ validator뿐이고 `kind:"qa"`를 쓰며, parser가 QA로 test 슬롯을 채우�
 
 ```
 cxc receipt test --session <id> -- <command...>
-  → 명령을 실제로 실행하고, 종료 후 receipt를 .codexclaw/evidence/에 쓴다.
+  → 명령을 실제로 실행하고, 종료 후 receipt를 .cursorclaw/evidence/에 쓴다.
   → stdout에 receipt 경로. exit는 실행한 명령의 exit code를 그대로 물려준다.
 ```
 
@@ -45,9 +45,9 @@ cxc receipt test --session <id> -- <command...>
 
 ### identity 캡처 규칙 (감사 R2 BLOCKER 1)
 
-**producer와 게이트가 같은 규칙을 써야 한다.** 한쪽만 `.codexclaw`를 제외하면
+**producer와 게이트가 같은 규칙을 써야 한다.** 한쪽만 `.cursorclaw`를 제외하면
 receipt는 발급 즉시 stale이다. `source-identity.ts:147` 주석대로 기본 캡처는
-`.codexclaw`를 포함하므로 자동으로 맞지 않는다.
+`.cursorclaw`를 포함하므로 자동으로 맞지 않는다.
 
 따라서 producer의 실행 전·후 캡처와 `check-gate.ts`의 현재 캡처를 **모두**
 `excludeCodexclawArtifacts: true`로 고정한다.
@@ -67,7 +67,7 @@ receipt는 발급 즉시 stale이다. `source-identity.ts:147` 주석대로 기�
   분기이며(`source-identity.ts:180`), "모르겠다"를 "같다"로 읽으면 안 된다.
 - `same`일 때만 **실행 후** identity를 기록한다.
 
-receipt 경로는 세션당 결정적이다: `.codexclaw/evidence/<session>/test-receipt.json`.
+receipt 경로는 세션당 결정적이다: `.cursorclaw/evidence/<session>/test-receipt.json`.
 producer는 **실행 시작 시 그 경로를 제거**한다 — QA producer와 같은 방식
 (`validate-evidence.mjs:170`). 결정적 경로가 아니면 실패한 재실행 뒤에도
 이전 성공본이 다른 이름으로 살아남아 그대로 소비된다.
@@ -75,7 +75,7 @@ producer는 **실행 시작 시 그 경로를 제거**한다 — QA producer와 
 ## 세션·사이클 결속 (감사 R2 BLOCKER 2)
 
 `--session`을 받으면서 receipt에도 게이트에도 세션 정보를 남기지 않았다.
-경로 가드는 `.codexclaw/evidence` 아래 **아무 파일이나** 허용하므로,
+경로 가드는 `.cursorclaw/evidence` 아래 **아무 파일이나** 허용하므로,
 다른 세션이나 이전 사이클이 같은 트리에서 발급한 receipt가 그대로 통과한다.
 그러면 c9의 `reuse` 거부 주장은 성립하지 않는다.
 
@@ -150,7 +150,7 @@ export interface SourceBoundReceipt {
 ## 3. attest 필드 + coercion
 
 ```ts
-/** C>D (075): path to a test receipt under .codexclaw/evidence. */
+/** C>D (075): path to a test receipt under .cursorclaw/evidence. */
 testReceiptPath?: string;
 ```
 
@@ -228,7 +228,7 @@ C 재진입이 epoch를 발급하므로 reset까지 갈 필요는 없다. 이 �
 | `src/check-gate.ts` (신규) | 파일 검증 + identity 비교 (attest는 순수 유지) |
 | `src/orchestrate-cli.ts` | CLI preflight 배선 |
 | `src/hook.ts` | 채팅 preflight 배선 (030 블록에 합류) |
-| `src/cli.ts` / `bin/codexclaw.mjs` / `bin/cxc.mjs` | `receipt` verb |
+| `src/cli.ts` / `bin/codexclaw.mjs` / `bin/cursorclaw.mjs` | `receipt` verb |
 | `test/receipt-binding.test.ts` (신규) | producer, check-gate 판정표 전 행, 양쪽 경로 무기록, 업그레이드 복구 |
 | `test/source-receipt.test.ts` | 새 필드 보존 + **기존 수락 케이스 무회귀** |
 

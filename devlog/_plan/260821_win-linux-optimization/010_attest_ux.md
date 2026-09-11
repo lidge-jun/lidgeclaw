@@ -14,7 +14,7 @@ spawnSync helper, because PowerShell cannot pass the inline JSON.
 
 ## MODIFY / NEW / DELETE map
 
-### 1. MODIFY plugins/codexclaw/components/pabcd-state/src/attest.ts
+### 1. MODIFY plugins/cursorclaw/components/pabcd-state/src/attest.ts
 
 #### 1a. AttestResult carries every reason
 
@@ -136,7 +136,7 @@ exception: the `auditOutput` reason is rewritten for the `agent_type` clause thi
 requires (issue #31). The existing substring assertions at `attest.test.ts:33` (`/auditOutput/`)
 and `:64` (`/SAME reviewer/`) still match after that rewrite, so no existing test breaks.
 
-### 2. MODIFY plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts
+### 2. MODIFY plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts
 
 #### 2a. --attest-file <path> (the P0 fix)
 
@@ -260,8 +260,8 @@ export function renderOrchestrateHelp(platform: NodeJS.Platform = process.platfo
     ? [
         "Attestation examples (PowerShell single quotes do NOT protect embedded double",
         "quotes and cmd.exe ignores them entirely, so write the JSON to a file):",
-        "  '{\"from\":\"P\",\"to\":\"A\",\"did\":\"wrote and audited the plan\",\"planUnit\":\"devlog/_plan/260714_slug\",\"workPhaseId\":\"wp1\"}' | Set-Content -Encoding utf8 .codexclaw/attest.json",
-        "  cxc orchestrate A --session <id> --attest-file .codexclaw/attest.json",
+        "  '{\"from\":\"P\",\"to\":\"A\",\"did\":\"wrote and audited the plan\",\"planUnit\":\"devlog/_plan/260714_slug\",\"workPhaseId\":\"wp1\"}' | Set-Content -Encoding utf8 .cursorclaw/attest.json",
+        "  cxc orchestrate A --session <id> --attest-file .cursorclaw/attest.json",
       ]
     : [
         "Attestation examples:",
@@ -287,7 +287,7 @@ The defaulted parameter keeps every existing caller and test working, and lets a
 run assert the win32 branch by passing "win32" explicitly (001 cross-cutting lesson:
 platform as a parameter).
 
-### 3. MODIFY plugins/codexclaw/components/pabcd-state/src/hook.ts
+### 3. MODIFY plugins/cursorclaw/components/pabcd-state/src/hook.ts
 
 #### 3a. STOP_NEXT_COMMAND emits the file form on win32
 
@@ -310,8 +310,8 @@ export function stopNextCommand(phase: Phase, platform: NodeJS.Platform = proces
   if (!json || !verb) return posix;
   // Backtick-quoted for the Stop reason renderer, same as the POSIX table entries.
   const q = String.fromCharCode(96);
-  const write = q + "'" + json + "' | Set-Content -Encoding utf8 .codexclaw/attest.json" + q;
-  const run = q + "cxc orchestrate " + verb + " --attest-file .codexclaw/attest.json" + q;
+  const write = q + "'" + json + "' | Set-Content -Encoding utf8 .cursorclaw/attest.json" + q;
+  const run = q + "cxc orchestrate " + verb + " --attest-file .cursorclaw/attest.json" + q;
   return write + " then " + run;
 }
 ```
@@ -337,12 +337,12 @@ AFTER
 `review-round-cli.ts:213` already says "(agent_type explorer)" on the v2 surface, so this
 change makes the two dispatch mandates agree.
 
-### 4. NEW plugins/codexclaw/components/pabcd-state/test/attest-batch.test.ts
+### 4. NEW plugins/cursorclaw/components/pabcd-state/test/attest-batch.test.ts
 
 A new file rather than an append, so the existing single-reason assertions in the
 8988-byte `attest.test.ts` stay untouched and the batching contract has one obvious home.
 
-### 5. MODIFY plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts
+### 5. MODIFY plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts
 
 Add the `--attest-file` cases listed below.
 
@@ -355,7 +355,7 @@ Add the `--attest-file` cases listed below.
 
 ## TESTS
 
-NEW `plugins/codexclaw/components/pabcd-state/test/attest-batch.test.ts`
+NEW `plugins/cursorclaw/components/pabcd-state/test/attest-batch.test.ts`
 
 1. "A>B with only did returns every A>B field in one rejection":
    `validateAttest("A", "B", coerceAttest({ from: "A", to: "B", did: "x" }))` -
@@ -400,31 +400,31 @@ MODIFY `test/orchestrate-cli.test.ts`
 Run from the repo root; each command must exit 0.
 
 ```powershell
-node --test --test-concurrency=1 "plugins/codexclaw/components/pabcd-state/test/attest.test.ts" "plugins/codexclaw/components/pabcd-state/test/attest-batch.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/pabcd-state/test/hook.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/pabcd-state/test/attest.test.ts" "plugins/cursorclaw/components/pabcd-state/test/attest-batch.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/pabcd-state/test/hook.test.ts"
 npm test
-node plugins/codexclaw/scripts/gate.mjs
+node plugins/cursorclaw/scripts/gate.mjs
 ```
 
 Manual win32 acceptance - the exact failure that produced issue #31. Expected exit 0:
 
 ```powershell
-'{"from":"P","to":"A","did":"wp02 diff-level doc set written","planUnit":"devlog/_plan/260821_win-linux-optimization","workPhaseId":"wp02-attest-ux"}' | Set-Content -Encoding utf8 .codexclaw/attest.json
-node bin/codexclaw.mjs orchestrate A --session cli --attest-file .codexclaw/attest.json
+'{"from":"P","to":"A","did":"wp02 diff-level doc set written","planUnit":"devlog/_plan/260821_win-linux-optimization","workPhaseId":"wp02-attest-ux"}' | Set-Content -Encoding utf8 .cursorclaw/attest.json
+node bin/codexclaw.mjs orchestrate A --session cli --attest-file .cursorclaw/attest.json
 ```
 
 Manual batching acceptance. Expected exit 1, with BOTH missing field names in ONE message:
 
 ```powershell
-'{"from":"A","to":"B","did":"audit ran"}' | Set-Content -Encoding utf8 .codexclaw/attest.json
-node bin/codexclaw.mjs orchestrate B --session cli --attest-file .codexclaw/attest.json
+'{"from":"A","to":"B","did":"audit ran"}' | Set-Content -Encoding utf8 .cursorclaw/attest.json
+node bin/codexclaw.mjs orchestrate B --session cli --attest-file .cursorclaw/attest.json
 ```
 
 WSL parity check (the POSIX branch must be unchanged), expected exit 0:
 
 ```bash
-wsl -d Ubuntu -- bash -lc "cd /mnt/c/Users/super/Downloads/codexclaw && node --test --test-concurrency=1 'plugins/codexclaw/components/pabcd-state/test/attest*.test.ts'"
+wsl -d Ubuntu -- bash -lc "cd /mnt/c/Users/super/Downloads/codexclaw && node --test --test-concurrency=1 'plugins/cursorclaw/components/pabcd-state/test/attest*.test.ts'"
 ```
 
 Record the C>D receipt with `cxc receipt test -- npm test` per CHECK-BINDING-01.

@@ -68,17 +68,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node plugins/codexclaw/scripts/inventory.mjs --check --tests "${{ steps.suite.outputs.total }}"
-      - run: node plugins/codexclaw/scripts/gate.mjs
+          node plugins/cursorclaw/scripts/inventory.mjs --check --tests "${{ steps.suite.outputs.total }}"
+      - run: node plugins/cursorclaw/scripts/gate.mjs
       # The suites above are largely pure-function suites. This executes the spawn
       # ladders, the bench, and the bundle - the surfaces where the audited win32
       # defects lived (devlog/_plan/260821_win-linux-optimization/002).
       - name: Platform smoke
-        run: node plugins/codexclaw/scripts/platform-smoke.mjs
+        run: node plugins/cursorclaw/scripts/platform-smoke.mjs
       - name: Upload receipts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: receipts-${{ matrix.os }}-crlf${{ matrix.autocrlf }}
-          path: .codexclaw/evidence/
+          path: .cursorclaw/evidence/
           if-no-files-found: warn

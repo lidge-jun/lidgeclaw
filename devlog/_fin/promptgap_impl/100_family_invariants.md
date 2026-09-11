@@ -18,7 +18,7 @@ Status: IN PROGRESS (PABCD WP1, session `cli`) · 2026-07-01 · class C2 (skill-
 
 Deliberately NOT doing (per 109 + jaw/cli-jaw no-bloat finding, INDEX non-goals): no per-skill
 authority marker stamped into all 20 bodies (the injected directive layer already carries
-`[codexclaw: …]` markers — Dirac Q4), no duplicated walls, no new skills/roles.
+`[cursorclaw: …]` markers — Dirac Q4), no duplicated walls, no new skills/roles.
 
 ## Native binding (confirmed by Dirac, codex-rs file:line)
 

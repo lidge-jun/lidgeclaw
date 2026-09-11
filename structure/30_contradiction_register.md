@@ -1,6 +1,6 @@
 ---
 created: 2026-06-30
-tags: [codexclaw, contradiction, truth-table, drift, sot]
+tags: [cursorclaw, contradiction, truth-table, drift, sot]
 aliases: [Contradiction Register, codexclaw drift register, structure truth table]
 ---
 
@@ -54,7 +54,7 @@ Cluster verdict: L9/L11/L12 are the recurring false-DONE trio. The fix is the tw
 status rule (`00_philosophy.md` §3): keep decision and impl on separate columns and never
 let an INDEX impl-DONE outrun the loop doc's own "no runtime shipped" admission.
 
-**L18 resolution (E8 gate, 2026-06-30):** `plugins/codexclaw/scripts/gate.mjs` `checkStatusSync`
+**L18 resolution (E8 gate, 2026-06-30):** `plugins/cursorclaw/scripts/gate.mjs` `checkStatusSync`
 now mechanically enforces the decision-axis rule (INDEX decision-state == loop-doc leading
 `Status:` token, LOCKED enum), and `gate.test.mjs` makes `npm test` fail on drift. The B-cluster
 is now gate-guarded: B1/B2/B3 impl-axis truth is carried by the two-axis columns + sub-loop docs

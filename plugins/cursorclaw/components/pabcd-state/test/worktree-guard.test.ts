@@ -32,7 +32,7 @@ interface Rig {
   cleanup: () => void;
 }
 
-/** tmp HOME + CODEX_HOME with worktrees/<slot>/<repo>/.git (gitfile, like a real worktree). */
+/** tmp HOME + CURSOR_HOME with worktrees/<slot>/<repo>/.git (gitfile, like a real worktree). */
 function makeRig(): Rig {
   // realpath: macOS tmpdir is a /var → /private/var symlink; detection canonicalizes.
   const home = realpathSync.native(mkdtempSync(join(tmpdir(), "cxc-wg-home-")));
@@ -42,7 +42,7 @@ function makeRig(): Rig {
   const checkoutRoot = join(slotRoot, "opencodex");
   mkdirSync(checkoutRoot, { recursive: true });
   writeFileSync(join(checkoutRoot, ".git"), "gitdir: /fake/main/.git/worktrees/7627\n");
-  const env: NodeJS.ProcessEnv = { CODEX_HOME: codexHome };
+  const env: NodeJS.ProcessEnv = { CURSOR_HOME: codexHome };
   return {
     home,
     codexHome,
@@ -71,13 +71,13 @@ test("detect: cwd under default worktrees root is managed with slot/checkout spl
   }
 });
 
-test("detect: CODEX_HOME override is honored", () => {
+test("detect: CURSOR_HOME override is honored", () => {
   const rig = makeRig();
   try {
-    const id = detectManagedWorktree(rig.checkoutRoot, { CODEX_HOME: rig.codexHome });
+    const id = detectManagedWorktree(rig.checkoutRoot, { CURSOR_HOME: rig.codexHome });
     assert.equal(id.managed, true);
-    // a different CODEX_HOME no longer covers the path
-    const other = detectManagedWorktree(rig.checkoutRoot, { CODEX_HOME: join(rig.home, "elsewhere") });
+    // a different CURSOR_HOME no longer covers the path
+    const other = detectManagedWorktree(rig.checkoutRoot, { CURSOR_HOME: join(rig.home, "elsewhere") });
     assert.equal(other.managed, false);
   } finally {
     rig.cleanup();
@@ -92,7 +92,7 @@ test("detect: CODEXCLAW_WORKTREE_ROOTS extra root (POSIX list) is honored", () =
     mkdirSync(extraCheckout, { recursive: true });
     writeFileSync(join(extraCheckout, ".git"), "gitdir: /fake\n");
     const env = {
-      CODEX_HOME: join(rig.home, "nowhere"),
+      CURSOR_HOME: join(rig.home, "nowhere"),
       CODEXCLAW_WORKTREE_ROOTS: [join(rig.home, "unused"), extraRoot].join(delimiter),
     };
     const id = detectManagedWorktree(extraCheckout, env);
@@ -114,13 +114,13 @@ test("detect: Windows-style drive-letter root survives path.delimiter parsing", 
   if (process.platform === "win32") {
     // ";" delimiter keeps the drive letter intact (round-2 B6: naive ":" split corrupts it).
     const winRoot = "C:\\Codex\\worktrees";
-    const roots = candidateWorktreeRoots({ CODEX_HOME: "/x", CODEXCLAW_WORKTREE_ROOTS: winRoot });
+    const roots = candidateWorktreeRoots({ CURSOR_HOME: "/x", CODEXCLAW_WORKTREE_ROOTS: winRoot });
     assert.deepEqual(roots, [join("/x", "worktrees"), winRoot]);
     return;
   }
   // POSIX: delimiter is ":", so multi-entry lists split on ":"; a single
   // entry without a colon survives whole.
-  const roots = candidateWorktreeRoots({ CODEX_HOME: "/x", CODEXCLAW_WORKTREE_ROOTS: "/opt/wt" });
+  const roots = candidateWorktreeRoots({ CURSOR_HOME: "/x", CODEXCLAW_WORKTREE_ROOTS: "/opt/wt" });
   assert.deepEqual(roots, [join("/x", "worktrees"), "/opt/wt"]);
 });
 
@@ -211,8 +211,8 @@ test("guard: symlink pointing OUT of the slot does not leak protection or manage
 
 test("SessionStart: managed cwd emits WORKTREE-GUARD-01 naming the checkout root", () => {
   const rig = makeRig();
-  const prev = process.env.CODEX_HOME;
-  process.env.CODEX_HOME = rig.codexHome;
+  const prev = process.env.CURSOR_HOME;
+  process.env.CURSOR_HOME = rig.codexHome;
   try {
     const out = handleWorktreeGuard(JSON.stringify({
       hook_event_name: "SessionStart",
@@ -226,8 +226,8 @@ test("SessionStart: managed cwd emits WORKTREE-GUARD-01 naming the checkout root
     assert.ok(env.additionalContext.includes(rig.checkoutRoot));
     assert.match(env.additionalContext, /ADOPT IN PLACE/);
   } finally {
-    if (prev === undefined) delete process.env.CODEX_HOME;
-    else process.env.CODEX_HOME = prev;
+    if (prev === undefined) delete process.env.CURSOR_HOME;
+    else process.env.CURSOR_HOME = prev;
     rig.cleanup();
   }
 });
@@ -253,8 +253,8 @@ test("rename intent regex: ko/en positives and non-matches", () => {
 
 test("UserPromptSubmit: managed + rename intent injects once per session (dedupe marker)", () => {
   const rig = makeRig();
-  const prev = process.env.CODEX_HOME;
-  process.env.CODEX_HOME = rig.codexHome;
+  const prev = process.env.CURSOR_HOME;
+  process.env.CURSOR_HOME = rig.codexHome;
   const session = "019fcd00-0000-7000-8000-000000000003";
   const payload = () => JSON.stringify({
     hook_event_name: "UserPromptSubmit",
@@ -270,16 +270,16 @@ test("UserPromptSubmit: managed + rename intent injects once per session (dedupe
     const second = handleWorktreeGuard(payload());
     assert.equal(second, "");
   } finally {
-    if (prev === undefined) delete process.env.CODEX_HOME;
-    else process.env.CODEX_HOME = prev;
+    if (prev === undefined) delete process.env.CURSOR_HOME;
+    else process.env.CURSOR_HOME = prev;
     rig.cleanup();
   }
 });
 
 test("UserPromptSubmit: unrelated prompt or non-managed cwd is silent", () => {
   const rig = makeRig();
-  const prev = process.env.CODEX_HOME;
-  process.env.CODEX_HOME = rig.codexHome;
+  const prev = process.env.CURSOR_HOME;
+  process.env.CURSOR_HOME = rig.codexHome;
   try {
     assert.equal(handleWorktreeGuard(JSON.stringify({
       hook_event_name: "UserPromptSubmit",
@@ -294,8 +294,8 @@ test("UserPromptSubmit: unrelated prompt or non-managed cwd is silent", () => {
       prompt: "rename the worktree",
     })), "");
   } finally {
-    if (prev === undefined) delete process.env.CODEX_HOME;
-    else process.env.CODEX_HOME = prev;
+    if (prev === undefined) delete process.env.CURSOR_HOME;
+    else process.env.CURSOR_HOME = prev;
     rig.cleanup();
   }
 });
@@ -391,7 +391,7 @@ test("grammar: benign and out-of-scope commands are allowed", () => {
 test("guard: non-managed cwd never denies, even for rm -rf of its own dir", () => {
   const outside = mkdtempSync(join(tmpdir(), "cxc-wg-plain-"));
   try {
-    const id = detectManagedWorktree(outside, { CODEX_HOME: join(outside, "nope") });
+    const id = detectManagedWorktree(outside, { CURSOR_HOME: join(outside, "nope") });
     assert.equal(evaluateCommand(`rm -rf ${outside}`, outside, id).action, "allow");
   } finally {
     rmSync(outside, { recursive: true, force: true });
@@ -413,8 +413,8 @@ function preToolPayload(rig: Rig, command: string, extra: Record<string, unknown
 
 test("PreToolUse: deny envelope for self-deletion, empty for benign", () => {
   const rig = makeRig();
-  const prev = process.env.CODEX_HOME;
-  process.env.CODEX_HOME = rig.codexHome;
+  const prev = process.env.CURSOR_HOME;
+  process.env.CURSOR_HOME = rig.codexHome;
   try {
     const denyOut = handleWorktreeGuardPreTool(preToolPayload(rig, `git worktree remove ${rig.checkoutRoot}`));
     assert.notEqual(denyOut, "");
@@ -425,16 +425,16 @@ test("PreToolUse: deny envelope for self-deletion, empty for benign", () => {
     assert.equal(typeof env.additionalContext, "string");
     assert.equal(handleWorktreeGuardPreTool(preToolPayload(rig, "git status")), "");
   } finally {
-    if (prev === undefined) delete process.env.CODEX_HOME;
-    else process.env.CODEX_HOME = prev;
+    if (prev === undefined) delete process.env.CURSOR_HOME;
+    else process.env.CURSOR_HOME = prev;
     rig.cleanup();
   }
 });
 
 test("PreToolUse: subagent-stamped payload is STILL denied (audit B3)", () => {
   const rig = makeRig();
-  const prev = process.env.CODEX_HOME;
-  process.env.CODEX_HOME = rig.codexHome;
+  const prev = process.env.CURSOR_HOME;
+  process.env.CURSOR_HOME = rig.codexHome;
   try {
     const out = handleWorktreeGuardPreTool(preToolPayload(rig, `rm -rf ${rig.slotRoot}`, {
       agent_id: "child-agent-1",
@@ -442,8 +442,8 @@ test("PreToolUse: subagent-stamped payload is STILL denied (audit B3)", () => {
     }));
     assert.match(out, /"permissionDecision":"deny"/);
   } finally {
-    if (prev === undefined) delete process.env.CODEX_HOME;
-    else process.env.CODEX_HOME = prev;
+    if (prev === undefined) delete process.env.CURSOR_HOME;
+    else process.env.CURSOR_HOME = prev;
     rig.cleanup();
   }
 });

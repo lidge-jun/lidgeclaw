@@ -19,7 +19,7 @@ with `structure/00_philosophy.md` §2 (no server, no daemon). The only in-philos
 reinforcement is to make ast-grep recipes more discoverable (doctor hint, dev-routing
 attachment), not to add a daemon or MCP search server.
 
-Note: codexclaw does ship exactly one MCP (`plugins/codexclaw/.mcp.json:2-10`, the
+Note: codexclaw does ship exactly one MCP (`plugins/cursorclaw/.mcp.json:2-10`, the
 codexclaw MCP for subagent config/GUI), so "no-server" means "no long-lived daemon /
 code-intel server", not "zero MCP". Keep that distinction precise in docs.
 
@@ -33,6 +33,6 @@ N/A — non-goal. Optional E4/E7 discoverability nudge for ast-grep only.
 (vendored RepoMapper: Aider tree-sitter tags + PageRank). This does NOT reopen
 the LOCKED non-goal: no daemon, no MCP server, no maintained code graph — it is
 a one-shot CLI in the same class as the ast-grep helper, with a rebuildable
-diskcache under `.codexclaw/cache/repomap/` (allowed by philosophy §2). The
+diskcache under `.cursorclaw/cache/repomap/` (allowed by philosophy §2). The
 "jaw식 보강 (제한적)" column above effectively gained one more in-philosophy
 row: exploration-time structure overview, agent-invoked, never resident.

@@ -68,7 +68,7 @@ enotdir_exit=0 stdout_bytes=0 stderr_bytes=0
 
 Build root: `/tmp/codexclaw-session-bootstrap.csmo3Y/repo` (independent local clone, no hardlinks/alternates, current dirty/untracked/ignored overlay with tracked deletions).
 
-- `node plugins/codexclaw/scripts/build.mjs`: exit 0, 102 temp files compiled after the clone-only diagnostic source shim.
+- `node plugins/cursorclaw/scripts/build.mjs`: exit 0, 102 temp files compiled after the clone-only diagnostic source shim.
 - freshness + packaging: 4/4 pass.
 - `npm run gate`: exit 0.
 - `npm test`: 1,070 tests, 1,065 pass, exactly five pre-existing failures, no new failure name.

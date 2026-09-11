@@ -6,7 +6,7 @@ Loop: satisfy-spec, C3 feature with careful persistent-dispatch boundary validat
 
 One integrated PABCD cycle covers this feature. Main owns dispatch lifecycle and integration; executor owns configuration and GUI with disjoint files after audit. Existing module homes are reused: subagent-config/src, subagent-config/test, gui/src/pages, gui/test. No AGENTS.md or POLICY.md was present in this checkout. Baseline is local origin/dev 6e97e73, adopted in the current managed worktree; no remote mutation.
 
-Verification: `CODEXCLAW_HOME=/tmp/cxc-first-fallback/empty-home node --test --test-concurrency=1 'plugins/codexclaw/components/subagent-config/test/*.test.ts'` reads the exact module tests: baseline 228 passed, exit 0. Unisolated invocation had 11 global-config contamination failures. Build via package script compiles src recursively into dist and checks manifest. GUI interaction will be rendered after implementation; it has not yet been verified.
+Verification: `CURSORCLAW_HOME=/tmp/cxc-first-fallback/empty-home node --test --test-concurrency=1 'plugins/cursorclaw/components/subagent-config/test/*.test.ts'` reads the exact module tests: baseline 228 passed, exit 0. Unisolated invocation had 11 global-config contamination failures. Build via package script compiles src recursively into dist and checks manifest. GUI interaction will be rendered after implementation; it has not yet been verified.
 
 See 010_implementation.md for field chain and failure activation cases. Architecture/SoT updates: docs-site/src/content/docs/guides/subagents.md and skills/pabcd/references/delegation.md.
 

@@ -3,8 +3,8 @@
 Status: PLANNED
 Date: 2026-07-07
 Source-of-record:
-- `.codexclaw/goalplans/codexclaw-messenger-bridge-telegram-discord-diff/goalplan.json`
-- `.codexclaw/goalplans/codexclaw-messenger-bridge-telegram-discord-diff/diff-specs.md`
+- `.cursorclaw/goalplans/codexclaw-messenger-bridge-telegram-discord-diff/goalplan.json`
+- `.cursorclaw/goalplans/codexclaw-messenger-bridge-telegram-discord-diff/diff-specs.md`
 
 ## Purpose
 

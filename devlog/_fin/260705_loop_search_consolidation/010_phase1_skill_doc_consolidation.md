@@ -67,7 +67,7 @@ frontmatter (name: cxc-loop, updated description to include goalplan triggers)
 ### Tier 3 — Subagent swarm (deep research, opt-in)
 For broad, costly, or multi-source research, the main agent may explicitly spawn
 a subagent swarm in ultraresearch mode...
-The deep-research method ... lives in the on-demand `$cxc-ultraresearch` skill...
+The deep-research method ... lives in the on-demand `$crc-ultraresearch` skill...
 ```
 
 **After — replace Tier 3 section with inlined ultraresearch protocol:**
@@ -94,7 +94,7 @@ auto-fires for ordinary latest/current lookups.
 [Copy ultraresearch lines 47-50: no new role, no server, on-demand]
 ```
 
-Also remove the `$cxc-ultraresearch` reference on line ~85 and the
+Also remove the `$crc-ultraresearch` reference on line ~85 and the
 "Subagent Skill Attachment" section's reference to ultraresearch (line ~90).
 
 ### MODIFY `skills/goalplan/SKILL.md` (currently 70 lines)
@@ -103,7 +103,7 @@ Also remove the `$cxc-ultraresearch` reference on line ~85 and the
 ```markdown
 ---
 name: cxc-goalplan
-description: "DEPRECATED — merged into cxc-loop. Use $cxc-loop for durable goalplans."
+description: "DEPRECATED — merged into cxc-loop. Use $crc-loop for durable goalplans."
 metadata:
   deprecated: true
   redirect: cxc-loop
@@ -111,10 +111,10 @@ metadata:
 
 # cxc-goalplan (DEPRECATED)
 
-This skill has been merged into `$cxc-loop`. All goalplan concepts (work-phases,
+This skill has been merged into `$crc-loop`. All goalplan concepts (work-phases,
 criteria, checkpoints, evidence, CLI surface) now live in the loop skill.
 
-Use `$cxc-loop` instead. The `cxc goalplan` CLI commands still work as deprecated
+Use `$crc-loop` instead. The `cxc goalplan` CLI commands still work as deprecated
 aliases for `cxc loop`.
 ```
 
@@ -124,7 +124,7 @@ aliases for `cxc loop`.
 ```markdown
 ---
 name: cxc-ultraresearch
-description: "DEPRECATED — merged into cxc-search Tier 3. Use $cxc-search for deep research."
+description: "DEPRECATED — merged into cxc-search Tier 3. Use $crc-search for deep research."
 metadata:
   deprecated: true
   redirect: cxc-search
@@ -132,11 +132,11 @@ metadata:
 
 # cxc-ultraresearch (DEPRECATED)
 
-This skill has been merged into `$cxc-search` as the Tier 3 Deep Research Protocol.
+This skill has been merged into `$crc-search` as the Tier 3 Deep Research Protocol.
 All ultraresearch concepts (EXPAND, waves, journal, claim-ledger) now live in the
 search skill's Tier 3 section.
 
-Use `$cxc-search` instead.
+Use `$crc-search` instead.
 ```
 
 ## Scope Boundary
@@ -147,5 +147,5 @@ Use `$cxc-search` instead.
 1. loop SKILL.md contains all goalplan concepts (schema, CLI, optimization, goal state)
 2. loop SKILL.md contains 5000-char goal-setting rule in HOTL section
 3. search SKILL.md Tier 3 contains full ultraresearch protocol inline
-4. No remaining `$cxc-ultraresearch` or `$cxc-goalplan` references in loop/search
+4. No remaining `$crc-ultraresearch` or `$crc-goalplan` references in loop/search
 5. goalplan + ultraresearch SKILL.md have deprecation headers with redirects

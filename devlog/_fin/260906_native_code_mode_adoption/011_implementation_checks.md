@@ -14,7 +14,7 @@ are source sizes, not measured token-cost reductions. Existing modules remain.
 On macmini Node24.20.0, isolated /Users/junny/codexclaw-native-eval-01a0702d
 at cf4115d2 fetched from a task-owned Git bundle:
 
-`node --test plugins/codexclaw/test/native-execution.test.mjs plugins/codexclaw/test/packaging.test.mjs plugins/codexclaw/test/skill-catalog.test.mjs`
+`node --test plugins/cursorclaw/test/native-execution.test.mjs plugins/cursorclaw/test/packaging.test.mjs plugins/cursorclaw/test/skill-catalog.test.mjs`
 
 29 tests, 29 pass, 0 fail/cancel/skip; 592.953542ms. Gate and inventory checks
 also exited zero. Baseline before the change was 8/8 package/catalog tests.
@@ -26,7 +26,7 @@ strings as data and zero dependent writes after invalid/incomplete prerequisites
 In-memory mutants losing partial outcomes, bypassing prerequisites and converting
 a cache miss to success are rejected by independent output/call-count oracles.
 
-Local evidence copy: .codexclaw/evidence/01a0702d-c493-7510-801f-7d8772a2689c/
+Local evidence copy: .cursorclaw/evidence/01a0702d-c493-7510-801f-7d8772a2689c/
 native-code-mode/codexclaw-native-eval-targeted.log. Product tests/builds were not
 run on the local interactive machine. Full suite completed on exact cf4115d2:
 2572 tests, 2571 pass, 0 fail/cancel, 1 existing optional repo-map skip,

@@ -3,7 +3,7 @@ created: 2026-08-15
 status: design
 workPhase: wp7
 supersedes: [011_superseded_verify_and_release.md]
-tags: [codexclaw, release, deploy]
+tags: [cursorclaw, release, deploy]
 ---
 
 # 080 — 통합 검증 + dev 푸시 + 정식 릴리스 배포
@@ -32,7 +32,7 @@ tags: [codexclaw, release, deploy]
 
 경로를 명시한다. `git add -A`는 쓰지 않는다.
 
-포함: 이 devlog 유닛, `plugins/codexclaw/components/pabcd-state/`의 src/dist/test.
+포함: 이 devlog 유닛, `plugins/cursorclaw/components/pabcd-state/`의 src/dist/test.
 
 **제외 (사용자 소유, untracked)**: `devlog/_plan/260722_*`,
 `devlog/_plan/260814_*`, `mktemp:` 디렉터리.

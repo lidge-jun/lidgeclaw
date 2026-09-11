@@ -2,7 +2,7 @@
 created: 2026-08-17
 status: design
 workPhase: wp4
-tags: [codexclaw, recovery]
+tags: [cursorclaw, recovery]
 ---
 
 # 030 — 정지한 라운드에서 빠져나온다

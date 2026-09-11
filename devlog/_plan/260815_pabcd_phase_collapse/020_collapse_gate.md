@@ -3,7 +3,7 @@ created: 2026-08-15
 status: superseded
 supersededBy: 023_final_design.md
 warning: 폐기됨 — A/C는 파일을 안 고치는 것이 정상이므로 편집 카운트 게이트는 틀렸다.
-tags: [codexclaw, pabcd, attest, gate]
+tags: [cursorclaw, pabcd, attest, gate]
 unit: 260815_pabcd_phase_collapse
 ---
 

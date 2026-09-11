@@ -6,14 +6,14 @@
 - Extended assertions before implementation: exit 1, 4 expected failures (small
   workspace pointer, SessionStart/PostCompact pointer, compiled symlink CLI pointer,
   blocking-denial wording). Remaining permission-path assertions still passed.
-- `node plugins/codexclaw/scripts/build.mjs`: exit 0, 156 files compiled, layout valid.
+- `node plugins/cursorclaw/scripts/build.mjs`: exit 0, 156 files compiled, layout valid.
   Exactly the two expected tracked dist files changed.
-- Two focused suites plus `plugins/codexclaw/test/dist-freshness.test.mjs`:
+- Two focused suites plus `plugins/cursorclaw/test/dist-freshness.test.mjs`:
   exit 0, 48 pass, 0 fail, 0 skipped. Existing test counts preserved.
 - Docs/inventory gate and whitespace check: exit 0. New Interview link resolves.
 - Direct compiled `cxc-ops/dist/cli.js hook session-start|post-compact` invocations
   in a temporary empty workspace: expected event names, exactly one 576-character
-  question pointer in each output, no `.codexclaw` state directory created.
+  question pointer in each output, no `.cursorclaw` state directory created.
 - Code review of goal-gate diff: only the denial string changed; exact-name guard,
   fail-closed lookup and decision branches remain unchanged. Async/legacy names
   pass through for active, inactive and unreadable goal status without DB access.

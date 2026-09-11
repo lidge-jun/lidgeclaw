@@ -1,6 +1,6 @@
 ---
 name: goalplan
-description: "DEPRECATED — merged into cxc-loop. Use $cxc-loop for durable goalplans."
+description: "DEPRECATED — merged into cxc-loop. Use $crc-loop for durable goalplans."
 metadata:
   deprecated: true
   redirect: cxc-loop

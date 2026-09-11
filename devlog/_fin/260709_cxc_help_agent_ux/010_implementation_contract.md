@@ -3,8 +3,8 @@
 ## Baseline
 
 - `bin/codexclaw.mjs` owns top-level dispatch. It currently defaults `cmd` to `help`, but `help` is not a real case; the default branch prints one terse command list and exits 0 for unknown commands.
-- `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts` owns terminal `cxc orchestrate`. Its parser validates `argv[0]` before reading flags, so `--help` is treated as an unknown verb.
-- `plugins/codexclaw/components/pabcd-state/src/cli.ts` exits 1 on orchestrate parse errors before `runOrchestrateCli` can enrich the error.
+- `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts` owns terminal `cxc orchestrate`. Its parser validates `argv[0]` before reading flags, so `--help` is treated as an unknown verb.
+- `plugins/cursorclaw/components/pabcd-state/src/cli.ts` exits 1 on orchestrate parse errors before `runOrchestrateCli` can enrich the error.
 - Existing tests cover top-level one-line usage and orchestrate status/reset/attestation safety, but not help paths or current-phase context.
 
 ## Necessity Gate
@@ -51,7 +51,7 @@ Acceptance:
 - `node bin/codexclaw.mjs help|--help|-h` exits 0.
 - Unknown top-level commands exit 1 and mention `cxc --help`.
 
-### MODIFY `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts`
+### MODIFY `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts`
 
 Extend result types:
 
@@ -96,7 +96,7 @@ Acceptance:
 - No implicit fallback is used for mutating verbs.
 - Unknown verb with `--session s1` can print current phase if `s1` exists.
 
-### MODIFY `plugins/codexclaw/components/pabcd-state/src/cli.ts`
+### MODIFY `plugins/cursorclaw/components/pabcd-state/src/cli.ts`
 
 Change orchestrate branch:
 
@@ -111,12 +111,12 @@ Change orchestrate branch:
 
 Import `renderOrchestrateParseError` from `orchestrate-cli.ts`.
 
-### MODIFY `plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts`
+### MODIFY `plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts`
 
 Add tests:
 
 - parser recognizes help tokens.
-- `runOrchestrateCli` help exits 0 and does not create `.codexclaw/sessions`, change existing session JSON, append `.codexclaw/ledger.jsonl`, or touch render-observation state.
+- `runOrchestrateCli` help exits 0 and does not create `.cursorclaw/sessions`, change existing session JSON, append `.cursorclaw/ledger.jsonl`, or touch render-observation state.
 - status text includes `session=s5 phase=C`.
 - refused transition with explicit session includes `current=P`.
 - reset text includes `current=<phase> -> IDLE` and no-op reset includes `current=IDLE`.
@@ -125,7 +125,7 @@ Add tests:
 - dist CLI help exits 0.
 - dist CLI unknown verb with a seeded session exits 1 and reports the current phase.
 
-### MODIFY `plugins/codexclaw/test/cli-usage.test.mjs`
+### MODIFY `plugins/cursorclaw/test/cli-usage.test.mjs`
 
 Add tests:
 
@@ -143,18 +143,18 @@ Update CLI surface notes:
 
 ## Activation Scenarios
 
-- Help branch: run `node bin/codexclaw.mjs --help` and `node plugins/codexclaw/components/pabcd-state/dist/cli.js orchestrate --help`.
+- Help branch: run `node bin/codexclaw.mjs --help` and `node plugins/cursorclaw/components/pabcd-state/dist/cli.js orchestrate --help`.
 - Unknown top-level branch: run `node bin/codexclaw.mjs nope` and observe exit 1 + `cxc --help`.
 - Orchestrate unknown verb branch: run dist CLI against a seeded temp session with `wat --session binsess --cwd <tmp>` and observe current phase.
 - Refused transition branch: call `runOrchestrateCli({ verb: "A", session: "s1", cwd, attest: null })` from phase `P` and observe current phase without mutation.
 - Malformed attest branch: call `runOrchestrateCli({ verb: "A", session: "s1", cwd, attest: null, json: false, attestError: "..." })` from phase `P`.
-- Dist parse-error branch: run `node plugins/codexclaw/components/pabcd-state/dist/cli.js orchestrate wat --session binsess --cwd <tmp>` after seeding `binsess` at phase `P`.
+- Dist parse-error branch: run `node plugins/cursorclaw/components/pabcd-state/dist/cli.js orchestrate wat --session binsess --cwd <tmp>` after seeding `binsess` at phase `P`.
 
 ## Verification Commands
 
 ```bash
 npm run build
-node --test plugins/codexclaw/components/pabcd-state/test/orchestrate-cli.test.ts plugins/codexclaw/test/cli-usage.test.mjs
+node --test plugins/cursorclaw/components/pabcd-state/test/orchestrate-cli.test.ts plugins/cursorclaw/test/cli-usage.test.mjs
 npm test
 node bin/codexclaw.mjs --help
 node bin/codexclaw.mjs orchestrate --help

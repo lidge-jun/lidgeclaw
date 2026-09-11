@@ -1,7 +1,7 @@
 # Opaque-Surface Gradient Discipline — Research
 
 **Date**: 2026-07-09
-**Method**: 3 parallel GPT-5.5 explorer lanes with `$cxc-search` attached (Tier 1
+**Method**: 3 parallel GPT-5.5 explorer lanes with `$crc-search` attached (Tier 1
 discovery -> Tier 2 source-open proof). Lane 3 (live field measurement) died on a
 proxy stream disconnect and was respawned as a slim Korean-services lane; lanes 1-2
 already carried concrete token values from official design-system docs.

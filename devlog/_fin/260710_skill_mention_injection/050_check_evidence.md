@@ -11,19 +11,19 @@
 ## Worker receipts (B phase)
 
 - Worker 1 (Zeno, subagent-config + hook-e2e):
-  `.codexclaw/evidence/260710_worker1_skill_mention_injection.md` — 115/115, exit 0.
+  `.cursorclaw/evidence/260710_worker1_skill_mention_injection.md` — 115/115, exit 0.
 - Worker 2 (Sagan, pabcd directives + docs):
-  `.codexclaw/evidence/260710_worker2_skill_mention_injection.md` — 33/33 hook.test.ts,
+  `.cursorclaw/evidence/260710_worker2_skill_mention_injection.md` — 33/33 hook.test.ts,
   stale-claim rg sweep exit=1 (no matches).
 
 ## Live activation probe (C-ACTIVATION-GROUNDING-01)
 
 PROBE-F (agent 019f488b, gpt-5.6-sol, spawned AFTER rebuild through the live
 dev-symlinked plugin): spawn message contained the previously-broken bare
-`$cxc-search`. Child reported:
+`$crc-search`. Child reported:
 1. injected `<skill>` body present — YES
 2. first heading: `# search — Unified Search Hub`
-3. received token: `[$cxc-search](skill:///Users/.../skills/search/SKILL.md)`
+3. received token: `[$crc-search](skill:///Users/.../skills/search/SKILL.md)`
 
 => PreToolUse normalization rewrote the bare slug to the link form in production,
 and codex-rs injected the body. Before the patch the identical form (PROBE-B,
@@ -46,7 +46,7 @@ FAILSAFE-SPAN-01"). Syntheses: 060/070/080/090/100.
   fail (final `npm test` exit=0).
 - Perf floods: unmatched-[ / tilde / paren-in-title ~0ms; standalone repair
   flood 14.1ms (1s budget).
-- PROBE-G (agent 019f48c5, post-rebuild live spawn): bare `$cxc-search`
+- PROBE-G (agent 019f48c5, post-rebuild live spawn): bare `$crc-search`
   arrived normalized to the skill:// link form and the child quoted
   `# search — Unified Search Hub` — end-to-end activation proof on the final
   scanner.

@@ -19,7 +19,7 @@ multi-adapter runtime (50) and the GUI cards (60) build on it.
 
 ## Part 2 — diff-level (rev 2, audit findings applied)
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/db.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/db.ts`
 
 Migration v4 — same ladder pattern as v1-v3 (`if (version < 4)` + manual
 BEGIN/COMMIT/ROLLBACK + `PRAGMA user_version = 4` inside the tx):
@@ -108,13 +108,13 @@ BEGIN/COMMIT/ROLLBACK + `PRAGMA user_version = 4` inside the tx):
      re-parent to legacy by nulling agent_id, which would pollute legacy lookup),
      then the agent row.
 
-### NEW `plugins/codexclaw/components/messenger-bridge/src/token-validate.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/src/token-validate.ts`
 (audit fix #4 — `validateToken` is currently module-local in connect-routes.ts:27-36)
 - Move the existing `validateToken(kind, token)` here, export it; `connect-routes.ts`
   imports it (behavior identical); `agent-routes.ts` accepts an injectable
   `validate` dep defaulting to it (tests stub the dep, no network).
 
-### NEW `plugins/codexclaw/components/messenger-bridge/src/agent-routes.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/src/agent-routes.ts`
 - Registry-shaped routes (server.ts ApiRoute: exact method+path, handler(ctx, body, url));
   controller optional (GUI-only mode tolerated):
   - `GET  /api/agents` → `{ agents: [{id,name,kind,hasToken,enabled,model,effort,autoSend,mentionOnly,heartbeatMinutes,heartbeatPrompt,allowlistCount}] }` — token NEVER returned (parity with /api/channels hasToken).
@@ -124,7 +124,7 @@ BEGIN/COMMIT/ROLLBACK + `PRAGMA user_version = 4` inside the tx):
   - `POST /api/agents/enable` `{id, enabled}` → flips flag (runtime reload lands in 50).
   - `POST /api/agents/handshake/open` `{id, seconds}` / `GET /api/agents/handshake/status?id=`.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/server.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/server.ts`
 - `baseRoutes()` appends `agentRoutes()`.
 
 ### Effort column consumer contract (audit fix #6 + rev-3 #3 — exact signatures, wired in slice 60)
@@ -154,7 +154,7 @@ BEGIN/COMMIT/ROLLBACK + `PRAGMA user_version = 4` inside the tx):
   observable behavior (it should not — assert suite stays green).
 
 ### Migration rehearsal (audit fix #5 — WAL-safe procedure, live file never touched)
-1. Live db (verified via lsof): `/Users/jun/Developer/new/700_projects/jawcode/.codexclaw/bridge.db`
+1. Live db (verified via lsof): `/Users/jun/Developer/new/700_projects/jawcode/.cursorclaw/bridge.db`
    with active WAL/SHM held by PID 4518.
 2. Safe copy: `sqlite3 <live>/bridge.db ".backup /tmp/cxc-rehearse/bridge.db"`
    (online backup API takes a read lock and folds WAL pages in — plain `cp` is

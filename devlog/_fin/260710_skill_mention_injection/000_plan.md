@@ -22,8 +22,8 @@ bug is $-slug skill attachment failing on subagent dispatch.
 
 | Probe | Mention form | Injected? |
 |-------|--------------|-----------|
-| A (Boyle) | `[$cxc-search](skill:///abs/.../search/SKILL.md)` | YES — `<skill>` body present |
-| B (Kant) | plain `$cxc-search` | **NO** — catalog shows `codexclaw:cxc-search`, bare token stays literal |
+| A (Boyle) | `[$crc-search](skill:///abs/.../search/SKILL.md)` | YES — `<skill>` body present |
+| B (Kant) | plain `$crc-search` | **NO** — catalog shows `codexclaw:cxc-search`, bare token stays literal |
 | C (James) | v1 `items` `{type:"skill",name,path}` | YES |
 | D (Plato) | plain `$codexclaw:cxc-search` | YES |
 | E (Anscombe) | hook-fire canary: `[CXC-LEAF-GUARD]` marker in received message | NO marker — expected: v1 spawn path adds no leaf guard |
@@ -36,14 +36,14 @@ hypothesis was REBUTTED — codex-rs canonicalizes v1/v2 spawn calls to hook-fac
 
 codex-rs registers plugin skills under the plugin-prefixed display name
 (`codexclaw:cxc-<folder>`). Name-based mention matching therefore only fires for the
-prefixed form; the bare `$cxc-<folder>` slug matches nothing and is silently left as
+prefixed form; the bare `$crc-<folder>` slug matches nothing and is silently left as
 literal text (no error). Path-based matching (`skill://<abs SKILL.md>`) and v1 `items`
 attachments bypass names entirely and work. codexclaw's own surfaces teach/emit the
 bare form:
 
-- `spawn-wrapper.ts skillMention()` link-unsafe fallback emits plain `$cxc-<folder>`.
-- pabcd-state `hook.ts` phase directives (B: "put the surface's $cxc-dev-* mention in
-  the spawn message"; C: "$cxc-dev-code-reviewer mentioned in the spawn message").
+- `spawn-wrapper.ts skillMention()` link-unsafe fallback emits plain `$crc-<folder>`.
+- pabcd-state `hook.ts` phase directives (B: "put the surface's $crc-dev-* mention in
+  the spawn message"; C: "$crc-dev-code-reviewer mentioned in the spawn message").
 - SKILL.md doctrine (pabcd AUDIT-LOOP-01 dispatch packet, search SEARCH-ATTACH-01
   example block, dev delegation lines) — full emitter list from the read-only sweep
   in `010_sweep_findings.md`.
@@ -58,7 +58,7 @@ bare form:
    - Protected spans skipped whole: fenced code blocks, inline code spans, and
      complete markdown link spans `[label](target)` (both label and target) —
      EXCEPT link-repair (audit r2 B1, narrowed r3/r4): when the label is a known
-     cxc mention (`$cxc-<f>`/`$codexclaw:cxc-<f>`, folder exists under skillsDir)
+     cxc mention (`$crc-<f>`/`$codexclaw:cxc-<f>`, folder exists under skillsDir)
      and the target is BROKEN, the WHOLE link is atomically replaced by the
      canonical `skill://<skillsDir>/<f>/SKILL.md` link. Broken means: after
      stripping an optional `skill://` prefix, the target path does NOT end in
@@ -71,12 +71,12 @@ bare form:
      /path)`. Regression tests: alternate-existing skill:// target untouched;
      alternate-existing plain-path /SKILL.md target untouched.
    - Token grammar: longest match first — `$codexclaw:cxc-<folder>` then
-     `$cxc-<folder>`; `<folder>` charset `[a-z0-9-]`, case-sensitive lowercase; the
+     `$crc-<folder>`; `<folder>` charset `[a-z0-9-]`, case-sensitive lowercase; the
      char after the token must NOT be a mention char `[A-Za-z0-9_:-]` (so
-     `$cxc-dev_extra` is untouched).
+     `$crc-dev_extra` is untouched).
    - Rewrite only when `<skillsDir>/<folder>/SKILL.md` exists; unknown folders and
      non-cxc mentions untouched. Rewrite target: link form
-     `[$cxc-<folder>](skill://<abs SKILL.md>)`; when skillsDir is not link-safe
+     `[$crc-<folder>](skill://<abs SKILL.md>)`; when skillsDir is not link-safe
      (space/paren), rewrite to `$codexclaw:cxc-<folder>` instead (PROBE-D-proven).
    - skillsDir resolution: env `CXC_SKILLS_DIR` override (tests/e2e) ->
      script-relative `<component>/dist/../../../skills` -> unresolvable = no-op.
@@ -108,12 +108,12 @@ bare form:
    ultraresearch is a deprecated redirect (audit r2 B4).
 5. **Tests (audit B1/B4)** — spawn-attach-hook.test.ts adversarial normalization
    cases (bare->link, prefixed->link, unknown folder untouched, inside link
-   label/target untouched, inside code fence/inline code untouched, `$cxc-dev_extra`
+   label/target untouched, inside code fence/inline code untouched, `$crc-dev_extra`
    untouched, case sensitivity, normalize-only v2 envelope, v1 envelope carries
    normalized message + model, D1 deny unaffected, prefix pinned to plugin.json
    name, link-repair cases: bad-target known-label link replaced / canonical link
    untouched / unknown-label link untouched); spawn-wrapper.test.ts updates;
-   plugins/codexclaw/test/hook-e2e.test.mjs (audit r2 B3): TWO resolution cases —
+   plugins/cursorclaw/test/hook-e2e.test.mjs (audit r2 B3): TWO resolution cases —
    (a) snapshot + CXC_SKILLS_DIR env override, (b) cache-shaped fixture
    `<tmp>/plugin/components/subagent-config/dist/` + sibling `<tmp>/plugin/skills/`
    with env unset (script-relative branch) — plus bare-mention spawn cases (v1, v2
@@ -124,7 +124,7 @@ bare form:
 Goalplan cr1-cr4 (unit tests green via `npm test`, live probe re-verification with a
 bare mention post-patch, no remaining spawn-bound bare-form emitters, docs teach
 working forms). Activation scenario (C-ACTIVATION-GROUNDING-01): C-phase probe spawns
-a child whose message contains ONLY the bare `$cxc-search` mention plus the explicit
+a child whose message contains ONLY the bare `$crc-search` mention plus the explicit
 instruction "quote the first heading line of any injected skill body verbatim"; PASS
 iff the child quotes `# search — Unified Search Hub`.
 

@@ -51,5 +51,5 @@ A timeout is an assertion failure with a named cause, not a silent pass.
 
 ## Verification
 
-`node --test --experimental-strip-types plugins/codexclaw/components/messenger-bridge/test/telegram-adapter.test.ts`
+`node --test --experimental-strip-types plugins/cursorclaw/components/messenger-bridge/test/telegram-adapter.test.ts`
 -> 28 tests, 28 pass, 0 fail (native Windows).

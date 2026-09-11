@@ -30,7 +30,7 @@ NON-SUPPRESSED same-phase prompt after recovery gets the FULL directive instead 
   (`schema.rs:172`), the parser returns `StatelessHookOutput` (`output_parser.rs:250`), and the
   runtime honors only `continue/stopReason/systemMessage` — NO `additionalContext`, NO `decision`
   block (`compact.rs:353,361`). So the hook CANNOT inject context; it can only mutate our own
-  `.codexclaw/` state and return `""`.
+  `.cursorclaw/` state and return `""`.
 - Re-inject mechanism (`hook.ts`): mode-2 full directive fires when `state.phase !==
   state.lastInjectedPhase` (`:305-307`). Setting `lastInjectedPhase=null` makes that true.
 - CRITICAL ordering caveat (`hook.ts`): the context-pressure bail `if (isContextPressureTail(tail))
@@ -44,7 +44,7 @@ NON-SUPPRESSED same-phase prompt after recovery gets the FULL directive instead 
 
 ## Design (diff-level)
 
-### New manifest `plugins/codexclaw/hooks/post-compact-resetting-reinject-cursor.json`
+### New manifest `plugins/cursorclaw/hooks/post-compact-resetting-reinject-cursor.json`
 
 ```json
 {
@@ -56,7 +56,7 @@ NON-SUPPRESSED same-phase prompt after recovery gets the FULL directive instead 
             "type": "command",
             "command": "node \"${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js\" hook post-compact",
             "timeout": 10,
-            "statusMessage": "(codexclaw) Recovering PABCD state after compaction"
+            "statusMessage": "(cursorclaw) Recovering PABCD state after compaction"
           }
         ]
       }
@@ -109,7 +109,7 @@ export function handlePostCompact(payload: PostCompactPayload): string {
 }
 ```
 
-Register the manifest in `.codex-plugin/plugin.json` hooks array (now 8).
+Register the manifest in `.cursor-plugin/plugin.json` hooks array (now 8).
 
 ## Honest scope (what 050 does and does NOT claim)
 
@@ -145,8 +145,8 @@ Register the manifest in `.codex-plugin/plugin.json` hooks array (now 8).
 
 ## Verification
 
-- `node --test plugins/codexclaw/components/pabcd-state/test/hook.test.*` (add handlePostCompact case)
-- extend `plugins/codexclaw/test/hook-e2e.test.mjs`: seed an active-cycle state, drive
+- `node --test plugins/cursorclaw/components/pabcd-state/test/hook.test.*` (add handlePostCompact case)
+- extend `plugins/cursorclaw/test/hook-e2e.test.mjs`: seed an active-cycle state, drive
   `cli.js hook post-compact`, assert `lastInjectedPhase` reset + idle no-op.
 - `npm run build` (idempotent) ; `npm test` (full suite green) ; `npm run gate` ; `git diff --check`.
 

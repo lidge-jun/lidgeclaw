@@ -7,13 +7,13 @@ workPhase: wp5
 
 Status: PLANNED
 
-Source: `.codexclaw/evidence/260826_readonly_gate_release.md` (read-only research lane).
+Source: `.cursorclaw/evidence/260826_readonly_gate_release.md` (read-only research lane).
 
 ## Version surfaces (12, moved together)
 
 Bare SemVer: root `package.json`, `cli/package.json`, and the 9 workspace packages
 (`components/{config-guard,cxc-ops,messenger-bridge,pabcd-state,provider-bridge,recall,skill-search,subagent-config}`
-plus `gui`). Manifest `plugins/codexclaw/.codex-plugin/plugin.json` takes
+plus `gui`). Manifest `plugins/cursorclaw/.cursor-plugin/plugin.json` takes
 `<VERSION>+codex.<stamp>` — the stamp is the local-install cachebuster and MUST change
 or `codex plugin add` will not repopulate the cache directory.
 
@@ -29,13 +29,13 @@ A green run does not prove all 12 moved. Verify those two explicitly.
 
 ```bash
 npm test                     # capture the tests total, require fail 0
-node plugins/codexclaw/scripts/inventory.mjs --write --tests "$TESTS"
-node plugins/codexclaw/scripts/check-versions.mjs 0.2.14
+node plugins/cursorclaw/scripts/inventory.mjs --write --tests "$TESTS"
+node plugins/cursorclaw/scripts/check-versions.mjs 0.2.14
 npm run build                # dist/ must be regenerated or dist-freshness fails
-node --test plugins/codexclaw/test/dist-freshness.test.mjs
+node --test plugins/cursorclaw/test/dist-freshness.test.mjs
 npm run gate
-node plugins/codexclaw/scripts/inventory.mjs --check
-git diff --exit-code plugins/codexclaw/components   # after build: expect clean
+node plugins/cursorclaw/scripts/inventory.mjs --check
+git diff --exit-code plugins/cursorclaw/components   # after build: expect clean
 ```
 
 ## Deploy (local)

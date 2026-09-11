@@ -361,7 +361,7 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import
   if (argv.includes("--published")) {
     const { counts, violations } = readPublished();
     if (violations.length) {
-      console.error("[codexclaw inventory] published-count problems:");
+      console.error("[cursorclaw inventory] published-count problems:");
       for (const v of violations) console.error("  - " + v);
       process.exit(1);
     }
@@ -373,13 +373,13 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import
     const testsArg = argValue("--tests");
     const tests = testsArg == null ? null : Number(testsArg);
     if (testsArg != null && !Number.isInteger(tests)) {
-      console.error("[codexclaw inventory] --tests must be an integer");
+      console.error("[cursorclaw inventory] --tests must be an integer");
       process.exit(1);
     }
     writeFileSync(INVENTORY_PATH, canonicalJson(inventory));
     const changed = applyBlocks(inventory, { tests, write: true });
     console.log(
-      "[codexclaw inventory] wrote inventory.json (" +
+      "[cursorclaw inventory] wrote inventory.json (" +
         inventory.skills.length + " skills, " +
         inventory.hooks.length + " hooks, " +
         inventory.components.length + " components)" +
@@ -393,14 +393,14 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import
   const expectedArg = argValue("--tests");
   const expectedTests = expectedArg == null ? null : Number(expectedArg);
   if (expectedArg != null && !Number.isInteger(expectedTests)) {
-    console.error("[codexclaw inventory] --tests must be an integer");
+    console.error("[cursorclaw inventory] --tests must be an integer");
     process.exit(1);
   }
 
   const result = check({ expectedTests });
   if (result.ok) {
     console.log(
-      "[codexclaw inventory] OK — " +
+      "[cursorclaw inventory] OK — " +
         result.inventory.skills.length + " skills, " +
         result.inventory.hooks.length + " hooks, " +
         result.inventory.components.length + " components; sets and published counts agree" +
@@ -409,7 +409,7 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import
     );
     process.exit(0);
   }
-  console.error("[codexclaw inventory] FAIL — " + result.violations.length + " violation(s):");
+  console.error("[cursorclaw inventory] FAIL — " + result.violations.length + " violation(s):");
   for (const v of result.violations) console.error("  - " + v);
   process.exit(1);
 }

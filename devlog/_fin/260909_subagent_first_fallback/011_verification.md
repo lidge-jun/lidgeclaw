@@ -10,9 +10,9 @@ Code checkpoints: `93c02c6` (feature), `83b06c4` (hook inventory and entrypoint 
 - Real compiled CLI with synthetic outcome reports: xai/grok-4.6 -> cursor/grok-4.6 -> main-direct. No native/provider inference calls were made by this probe. Unit tests also exercise ambiguous creation, stopped-child reconciliation, marker replay, no-tool-ID hosts, restart and config snapshots.
 - Main and child models were used for ordinary implementation/review delegation; no additional paid-provider failure/quota probes were performed.
 
-Evidence is under `.codexclaw/evidence/01a08476-5f10-75c1-bc04-81ab5318553f/`: test-receipt.json binds the final code; qa-receipt.json and qa/ hold browser images, actions, CLI trace and teardown. GUI/CLI observations at `93c02c6` remain applicable because the followup changes only inventory, hook entrypoint argv, its tests and documentation. The new hook argv itself was re-tested at `83b06c4`.
+Evidence is under `.cursorclaw/evidence/01a08476-5f10-75c1-bc04-81ab5318553f/`: test-receipt.json binds the final code; qa-receipt.json and qa/ hold browser images, actions, CLI trace and teardown. GUI/CLI observations at `93c02c6` remain applicable because the followup changes only inventory, hook entrypoint argv, its tests and documentation. The new hook argv itself was re-tested at `83b06c4`.
 
-Environment diagnosis: first unisolated component run saw user global settings (11 failures); isolated CODEXCLAW_HOME removed that contamination. Extended GUI tests then saw a pre-existing `/tmp/.git` (four fixture failures); TMPDIR=/var/tmp/cxc-first-fallback-tests removed that unrelated ancestor without deleting it or changing tests. Final tests used both isolated paths.
+Environment diagnosis: first unisolated component run saw user global settings (11 failures); isolated CURSORCLAW_HOME removed that contamination. Extended GUI tests then saw a pre-existing `/tmp/.git` (four fixture failures); TMPDIR=/var/tmp/cxc-first-fallback-tests removed that unrelated ancestor without deleting it or changing tests. Final tests used both isolated paths.
 
 Owned Vite PID 340728 / terminal 90158 was terminated; port 17944 has no listener. Browser contexts and CLI child processes exited. Only local fixture/evidence files and workspace dependencies remain.
 

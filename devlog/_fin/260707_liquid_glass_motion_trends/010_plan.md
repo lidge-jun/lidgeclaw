@@ -83,6 +83,6 @@ implementation → `dev-frontend`, design judgment → `dev-uiux-design`.
 
 ## Verification per phase
 
-- `rg -n "liquid-glass|Liquid Glass|animation-timeline|proximity" plugins/codexclaw/skills/dev-frontend` shows wiring.
-- `rg -n "Liquid Glass|1.12|Aside" plugins/codexclaw/skills/dev-uiux-design` shows wiring.
+- `rg -n "liquid-glass|Liquid Glass|animation-timeline|proximity" plugins/cursorclaw/skills/dev-frontend` shows wiring.
+- `rg -n "Liquid Glass|1.12|Aside" plugins/cursorclaw/skills/dev-uiux-design` shows wiring.
 - `git status --short` scope review each D-close.

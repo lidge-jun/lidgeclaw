@@ -70,7 +70,7 @@ Phase 1 (unified CLI) ──→ Phase 2 (auto-inject) ──→ Phase 3 (memory 
 
 | 참조 | 경로 |
 |------|------|
-| codexclaw recall | `plugins/codexclaw/components/recall/src/` |
+| codexclaw recall | `plugins/cursorclaw/components/recall/src/` |
 | cli-jaw chat search | `../cli-jaw/src/routes/messages.ts` |
 | cli-jaw memory index | `../cli-jaw/src/memory/indexing.ts` |
 | cli-jaw memory runtime | `../cli-jaw/src/memory/runtime.ts` |

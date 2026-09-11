@@ -1,18 +1,18 @@
 # 004 — 상태/goalplan 스키마 탐색 보고 (탐색 에이전트 Sagan, gpt-5.6-sol)
 
 수집: 2026-07-10, 사이클 3 선행 탐색. 읽기 전용. 사이클 3 B의 근거 소스.
-경로 표기: `goalplan.ts` 등 = `plugins/codexclaw/components/pabcd-state/src/` 하위.
+경로 표기: `goalplan.ts` 등 = `plugins/cursorclaw/components/pabcd-state/src/` 하위.
 
-## 1) .codexclaw 지형 표
+## 1) .cursorclaw 지형 표
 
 | 저장소 | 실측 | 스키마/예시 |
 |---|---:|---|
-| `.codexclaw/sessions/` | JSON 38개 | 12개 최상위 필드 동일. 예시 `.codexclaw/sessions/019f4754-031e-7fc0-b53e-cf146a123cee.json:2` |
-| `.codexclaw/ledger.jsonl` | 869행 | `{ts, sessionId, from, to, reason, evidence?}`. `event` 필드 없음 |
-| `.codexclaw/goalplans/` | 디렉터리 33, 파일 71 | `goalplan.json` 33, `ledger.jsonl` 33, 보조 `.md` 4 |
-| `.codexclaw/interviews/` | JSONL 11개, 56행 | `question_asked` 51, `rescan_completed` 5 |
-| `.codexclaw/evidence/` | 93개 | 단일 스키마 아님(증빙 가방). QA verdict JSON은 `{scenario, criterion, surface, verdict, artifactRefs, note}` |
-| `.codexclaw/divergence/` | 없음 | 현재 파일 없음 |
+| `.cursorclaw/sessions/` | JSON 38개 | 12개 최상위 필드 동일. 예시 `.cursorclaw/sessions/019f4754-031e-7fc0-b53e-cf146a123cee.json:2` |
+| `.cursorclaw/ledger.jsonl` | 869행 | `{ts, sessionId, from, to, reason, evidence?}`. `event` 필드 없음 |
+| `.cursorclaw/goalplans/` | 디렉터리 33, 파일 71 | `goalplan.json` 33, `ledger.jsonl` 33, 보조 `.md` 4 |
+| `.cursorclaw/interviews/` | JSONL 11개, 56행 | `question_asked` 51, `rescan_completed` 5 |
+| `.cursorclaw/evidence/` | 93개 | 단일 스키마 아님(증빙 가방). QA verdict JSON은 `{scenario, criterion, surface, verdict, artifactRefs, note}` |
+| `.cursorclaw/divergence/` | 없음 | 현재 파일 없음 |
 
 ## 2) sessions 스키마 대조
 
@@ -22,7 +22,7 @@
 
 차이/관찰:
 - `lastInjectedPhase` 타입은 `Phase|null`로 `IDLE` 허용, 실파일에도 `"IDLE"` 존재
-  (`.codexclaw/sessions/019f1827-abc8-7623-b899-c084e91b09a2.json:29`) — 그러나 복원기는
+  (`.cursorclaw/sessions/019f1827-abc8-7623-b899-c084e91b09a2.json:29`) — 그러나 복원기는
   `PHASES`(I..D)만 허용해 null로 강등(`state.ts:7-10`, `:113-116`).
 - 11개 파일이 `phase:"IDLE"` + `orchestrationActive:true` — 교차 필드 불변식 미강제(`state.ts:117`).
 
@@ -36,7 +36,7 @@ SKILL.md Shipped schema(`skills/loop/SKILL.md:140-151`)와 TS 선언 일대일 �
 - 문서에 있고 구현에 없는 개념: Contract가 약속하는 checkpoints / OPEN ASSUMPTIONS /
   steering decisions / quality gates 전용 필드 없음(`SKILL.md:129-133` vs `goalplan.ts:63-73`).
 - 구현에만 있는 필드: 없음. 단, 실데이터에 레거시 `criteria[].text` 형태 존재
-  (`.codexclaw/goalplans/opaque-surface-gradient-discipline-3-lane-gpt-5/goalplan.json:74`).
+  (`.cursorclaw/goalplans/opaque-surface-gradient-discipline-3-lane-gpt-5/goalplan.json:74`).
 
 ## 4) E8 실패 조건 전수 + 한계
 
@@ -62,7 +62,7 @@ SKILL.md Shipped schema(`skills/loop/SKILL.md:140-151`)와 TS 선언 일대일 �
   task_done 95 / criterion_met 82 / host_armed 3)은 선언(`SKILL.md:163-164`, `goalplan.ts:75-81`)과
   완전 일치. 행 필드는 불일치: 선언은 `{ts,slug,event,detail}`(`goalplan.ts:83-88`)인데
   185/337행이 하나 이상 결여(예: `{ts,event,workPhaseId,note}` 형태 —
-  `.codexclaw/goalplans/codexclaw-release-readiness-secret-scan-history/ledger.jsonl:2`).
+  `.cursorclaw/goalplans/codexclaw-release-readiness-secret-scan-history/ledger.jsonl:2`).
 
 ## 6) 발견 사항
 
@@ -77,7 +77,7 @@ SKILL.md Shipped schema(`skills/loop/SKILL.md:140-151`)와 TS 선언 일대일 �
    (`.../implement-the-260709-audit-nearpass-gate-unit-ha/ledger.jsonl:4`).
 7. **Med**: persisted vs 복원 상태 괴리 — `"IDLE"` lastInjectedPhase가 복원 시 null;
    `IDLE`+`orchestrationActive:true` 11건.
-8. **Med**: interview ledger 동일 eventId 중복 12건(예: `.codexclaw/interviews/019f4754-031e-7fc0-b53e-cf146a123cee.jsonl:1`, `:2`).
+8. **Med**: interview ledger 동일 eventId 중복 12건(예: `.cursorclaw/interviews/019f4754-031e-7fc0-b53e-cf146a123cee.jsonl:1`, `:2`).
 9. **Low**: Contract의 checkpoints/assumptions/steering 약속이 전용 필드 없이 자유 문자열 ledger 의존.
 
 ## 7) 사용한 명령

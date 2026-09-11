@@ -2,13 +2,13 @@
 
 ## The failure
 
-Session files live at `<cwd>/.codexclaw/sessions/<id>.json`. The id is stable;
+Session files live at `<cwd>/.cursorclaw/sessions/<id>.json`. The id is stable;
 the cwd is not. A Codex thread whose process cwd is one tree while its work is in
 another therefore has TWO FSMs under the same id, and nothing says so:
 
 ```
-~/.cli-jaw/.codexclaw/sessions/<id>.json    phase=I     13:16Z
-~/kim_wiki/.codexclaw/sessions/<id>.json    phase=IDLE  13:22Z
+~/.cli-jaw/.cursorclaw/sessions/<id>.json    phase=I     13:16Z
+~/kim_wiki/.cursorclaw/sessions/<id>.json    phase=IDLE  13:22Z
 ```
 
 The reporter closed D in the wiki tree and the next turn re-injected Interview
@@ -34,7 +34,7 @@ tree is never read from or written to.
 ```
 session=split-demo-0001 phase=IDLE interview=false auditPassed=false checkPassed=false
 WARNING: this session id also has state in 1 other tree(s); the phase above describes THIS cwd only.
-  also at: C:\Users\super\cxc-split-a\.codexclaw\sessions\split-demo-0001.json
+  also at: C:\Users\super\cxc-split-a\.cursorclaw\sessions\split-demo-0001.json
   Pass --cwd <path> to address a specific tree.
 ```
 

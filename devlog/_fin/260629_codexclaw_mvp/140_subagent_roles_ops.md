@@ -115,7 +115,7 @@ worktree integration까지 요구해 MVP scope를 크게 넓히기 때문이다.
 
 codexclaw 채택안:
 - **MVP:** `explorer/reviewer/executor` inline role + `spawn_agent`/`wait_agent`만 사용.
-- **후속:** “team mode”를 별도 feature flag로 설계. `.codexclaw/teams` 상태, Codex thread tool
+- **후속:** “team mode”를 별도 feature flag로 설계. `.cursorclaw/teams` 상태, Codex thread tool
   availability check, title hygiene hook, worktree integration이 모두 준비될 때만 활성화.
 
 ### 4) 진단/운영 컴포넌트 중 codexclaw doctor/reset(090)에 흡수할 것

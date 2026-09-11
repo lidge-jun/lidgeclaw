@@ -10,8 +10,8 @@ Status: PLANNED — work-phase wp1 (issue #24)
 - Goal: every inventory number a reader can see, and every committed build output,
   matches what the repository actually contains
 - Non-goals: generating those numbers automatically (020), release publication (050)
-- Verifier: `npm test`, `node plugins/codexclaw/scripts/gate.mjs`,
-  `git diff --exit-code plugins/codexclaw/components` after a rebuild, and the
+- Verifier: `npm test`, `node plugins/cursorclaw/scripts/gate.mjs`,
+  `git diff --exit-code plugins/cursorclaw/components` after a rebuild, and the
   INDEX path check below
 - Stop condition: zero drift rows from 002 remain; the dist diff is empty
 - Memory artifact: this doc + `CHANGELOG.md`
@@ -37,15 +37,15 @@ docs-site would be false.
 
 | File | Change |
 | --- | --- |
-| `plugins/codexclaw/components/cxc-ops/dist/cli.js` | commit the regenerated output |
-| `plugins/codexclaw/components/cxc-ops/dist/doctor.js` | commit the regenerated output |
+| `plugins/cursorclaw/components/cxc-ops/dist/cli.js` | commit the regenerated output |
+| `plugins/cursorclaw/components/cxc-ops/dist/doctor.js` | commit the regenerated output |
 
 These two files are already modified in the working tree. Verified: running
-`node plugins/codexclaw/scripts/build.mjs` reproduces exactly these two files and
+`node plugins/cursorclaw/scripts/build.mjs` reproduces exactly these two files and
 nothing else, so the working copy is **correct** and HEAD is stale. Preserve the
 existing content — regenerate and commit, never `checkout --` over it.
 
-Activation evidence: `git diff --exit-code plugins/codexclaw/components` must exit 1
+Activation evidence: `git diff --exit-code plugins/cursorclaw/components` must exit 1
 before and 0 after. Without the before-observation this step proves nothing.
 
 ### 2. Inventory corrections
@@ -67,7 +67,7 @@ before and 0 after. Without the before-observation this step proves nothing.
 | `structure/INDEX.md:142-167` | add three skills; remove `ultraresearch` |
 | `structure/INDEX.md` (8 sites) | `devlog/_plan/mvp_*` → `devlog/_fin/mvp_*`; drop the missing `codex-inject.ts` reference |
 | `structure/60_native_capabilities.md:155` | remove `cxc-ultraresearch` |
-| `plugins/codexclaw/skills/skill-hub/references/catalog.md:30` | remove the row claiming `skills/ultraresearch/SKILL.md` ships — found while validating criterion 2; **not** in 002 original table |
+| `plugins/cursorclaw/skills/skill-hub/references/catalog.md:30` | remove the row claiming `skills/ultraresearch/SKILL.md` ships — found while validating criterion 2; **not** in 002 original table |
 
 ### 3. New file
 
@@ -89,7 +89,7 @@ rg -n '1,213|1%2C213' README.md README.ko.md README.zh.md docs-site/src structur
 # 2. no doc claims ultraresearch SHIPS as a skill.
 #    Historical formerly/absorbed mentions are legitimate and stay:
 #    skills/README.md:71-72, search/SKILL.md:118,285, lunasearch/SKILL.md:149,162-167.
-rg -n 'skills/ultraresearch/' structure docs-site/src plugins/codexclaw/skills     # expect: no matches
+rg -n 'skills/ultraresearch/' structure docs-site/src plugins/cursorclaw/skills     # expect: no matches
 rg -n 'cxc-ultraresearch' structure docs-site/src                                  # expect: no matches
 
 # 3. the three worktree hooks are documented everywhere hooks are listed
@@ -104,14 +104,14 @@ for f in docs-site/src/content/docs/reference/hooks.md \
 done                                                                              # expect: no output
 
 # 4. committed dist matches source
-node plugins/codexclaw/scripts/build.mjs && git diff --exit-code plugins/codexclaw/components
+node plugins/cursorclaw/scripts/build.mjs && git diff --exit-code plugins/cursorclaw/components
 
 # 5. every repo-root path INDEX.md names actually exists
 rg -o '`((?:devlog|structure|plugins|docs|docs-site|scripts|cli|bin)/[A-Za-z0-9_./-]+)`' -r '$1' \
    structure/INDEX.md | sort -u | while read -r p; do [ -e "$p" ] || echo "MISSING: $p"; done
 
 # 6. regression guards
-npm test && node plugins/codexclaw/scripts/gate.mjs
+npm test && node plugins/cursorclaw/scripts/gate.mjs
 ```
 
 ### Criterion 5 scope — measured, not assumed

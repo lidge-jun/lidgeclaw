@@ -1,6 +1,6 @@
 ---
 created: 2026-06-30
-tags: [codexclaw, enforcement, hooks, sot, design]
+tags: [cursorclaw, enforcement, hooks, sot, design]
 aliases: [Enforcement Methods Catalog, codexclaw enforcement ladder, how to enforce]
 ---
 
@@ -32,10 +32,10 @@ Rule of thumb: **claim "enforced" only for E1, E2, and E8.** E3-E7 are "encourag
 "pre-loaded", or "documented" — never "enforced". E8 enforces the repo, not the turn.
 
 Hook-backed enforcement is conditional on Codex trust. Codex pins each hook identity as
-`hooks.state.<key>.trusted_hash` in `~/.codex/config.toml` and silently skips a hook when
+`hooks.state.<key>.trusted_hash` in `~/.cursor/config.toml` and silently skips a hook when
 its current identity hash drifts. A hook JSON identity change therefore disables that
 enforcement for new sessions until retrusted. After any edit, commit, or merge touching
-`plugins/codexclaw/hooks/*.json`, run `cxc doctor`; if it reports drift or an untrusted
+`plugins/cursorclaw/hooks/*.json`, run `cxc doctor`; if it reports drift or an untrusted
 hook, recover with `cxc hooks retrust` (timestamped config backup, atomic write, and
 identity-hash algorithm safety-pin) and rerun `cxc doctor`.
 
@@ -46,7 +46,7 @@ identity-hash algorithm safety-pin) and rerun `cxc doctor`.
 ### E1 — PreToolUse deny (the hardest runtime lever)
 Already used twice: `^create_goal$` budget guard and `^request_user_input$`
 interview-in-goal deny. Use E1 when an action must be *forbidden* under a condition you
-can detect from tool name + input + `.codexclaw/` state. Fail-closed for security paths;
+can detect from tool name + input + `.cursorclaw/` state. Fail-closed for security paths;
 fail-open elsewhere so codexclaw never bricks Codex. This is the only tier that can stop
 a specific action cold.
 
@@ -60,14 +60,14 @@ can never trap a session. Arming is the hard part (see L14 loop⇄goal handoff).
 `PreToolUse` can *modify* the tool input before it runs. For `spawn_agent`, this is the
 place codexclaw can repair an already-authored skill mention before dispatch. SHIPPED
 (WP2): the spawn hook (`spawn-attach-hook.ts`) normalizes known broken/bare cxc mentions
-in the spawn `message` to link-form `[$cxc-*](skill://…)`, or to the plugin-native
+in the spawn `message` to link-form `[$crc-*](skill://…)`, or to the plugin-native
 `$codexclaw:cxc-*` fallback when the path is not link-safe. Message rewrite is
 schema-safe when the hook receives plaintext (unlike `items`, which V2 rejects), and on
 plaintext V2 provider/proxy paths it also inlines recognized SKILL.md bodies. Native
 ChatGPT-backend V2 delivers encrypted `message` ciphertext to the hook, so normalization
 and inlining are safe no-ops there. When no body can be inlined, the hook appends a
 plaintext `[CXC-SKILL-AFFORDANCE]` block telling the child to self-load any
-`$cxc-<folder>` / `$codexclaw:cxc-<folder>` mention from
+`$crc-<folder>` / `$codexclaw:cxc-<folder>` mention from
 `<skillsDir>/<folder>/SKILL.md`; fork inheritance remains a secondary channel. It never
 invents role baselines or inferred surface skills; dispatchers still name every required
 skill. Configured model+effort injection and the D1/D2 leaf guard remain reliable on

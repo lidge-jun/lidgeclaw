@@ -28,7 +28,7 @@ Each phase consumes the verified output of the previous one. No effort bucketing
 | Doc | Work-phase | Consumes | Produces |
 | --- | --- | --- | --- |
 | `010` | Release truth | current repo state | correct published numbers, resolved PR #1 ancestry |
-| `020` | Inventory SOT generator + set drift gate | 010 corrected numbers | `plugins/codexclaw/inventory.json`, injected doc blocks, set-comparison gate |
+| `020` | Inventory SOT generator + set drift gate | 010 corrected numbers | `plugins/cursorclaw/inventory.json`, injected doc blocks, set-comparison gate |
 | `030` | Executable release gate | 020 inventory hash | candidate manifest producer + fail-closed `cxc release` CLI |
 | `040` | Release train channel | 030 gate CLI | macOS CI, packed-install lifecycle job, `release.yml` |
 | `050` | Publish + close channel | 040 green runs | published `v0.2.0-beta.1`, closed issues/PRs |
@@ -50,10 +50,10 @@ meaningless without a generator (020 -> 030); the release workflow calls the gat
 
 ## Scope boundary
 
-IN: `.github/workflows/*`, `plugins/codexclaw/scripts/*`,
-`plugins/codexclaw/components/*/{src,test,dist,package.json}`,
-`plugins/codexclaw/.codex-plugin/plugin.json`, `plugins/codexclaw/inventory.json`,
-`plugins/codexclaw/bin/cxc.mjs`, `bin/codexclaw.mjs`, `package.json`,
+IN: `.github/workflows/*`, `plugins/cursorclaw/scripts/*`,
+`plugins/cursorclaw/components/*/{src,test,dist,package.json}`,
+`plugins/cursorclaw/.cursor-plugin/plugin.json`, `plugins/cursorclaw/inventory.json`,
+`plugins/cursorclaw/bin/cursorclaw.mjs`, `bin/codexclaw.mjs`, `package.json`,
 `CHANGELOG.md`, `.gitignore`, `README*.md`, `structure/*.md`,
 `docs-site/src/*`, `docs/*`, this devlog unit.
 

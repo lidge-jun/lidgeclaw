@@ -1,12 +1,12 @@
 ---
 title: State Model
-description: The .codexclaw file state — phases, the session schema, the transition ledger, and the interview ledger.
+description: The .cursorclaw file state — phases, the session schema, the transition ledger, and the interview ledger.
 ---
 
-codexclaw keeps all durable state in plain files under the project's `.codexclaw/` directory.
+codexclaw keeps all durable state in plain files under the project's `.cursorclaw/` directory.
 The core PABCD/subagent surfaces use files only. The optional messenger bridge is the scoped
-exception: `cxc serve` opens `.codexclaw/bridge.db` for channel, allowlist, binding, job, and agent
-state. Recall also uses a rebuildable user-level cache under `~/.codexclaw`.
+exception: `cxc serve` opens `.cursorclaw/bridge.db` for channel, allowlist, binding, job, and agent
+state. Recall also uses a rebuildable user-level cache under `~/.cursorclaw`.
 
 ## Phases
 
@@ -23,15 +23,15 @@ type Phase = "IDLE" | "I" | "P" | "A" | "B" | "C" | "D";
 
 | Path | Contents |
 |---|---|
-| `.codexclaw/sessions/<sessionId>.json` | The session `State` object. |
-| `.codexclaw/ledger.jsonl` | Append-only `LedgerEntry` rows, one per transition. |
-| `.codexclaw/interview/freeze.json` | Interview-plan freeze manifest. |
-| `.codexclaw/interviews/<id>.jsonl` | Interview Q/A capture + scan-evidence events. |
-| `.codexclaw/subagents.json` | Subagent role → model/prompt config. |
-| `.codexclaw/bridge.db` | Optional messenger bridge SQLite DB for channels, allowlists, bindings, jobs, and named agents. |
+| `.cursorclaw/sessions/<sessionId>.json` | The session `State` object. |
+| `.cursorclaw/ledger.jsonl` | Append-only `LedgerEntry` rows, one per transition. |
+| `.cursorclaw/interview/freeze.json` | Interview-plan freeze manifest. |
+| `.cursorclaw/interviews/<id>.jsonl` | Interview Q/A capture + scan-evidence events. |
+| `.cursorclaw/subagents.json` | Subagent role → model/prompt config. |
+| `.cursorclaw/bridge.db` | Optional messenger bridge SQLite DB for channels, allowlists, bindings, jobs, and named agents. |
 
 :::note
-Older drafts referenced a single `.codexclaw/state.json`. The shipped layout is session-scoped
+Older drafts referenced a single `.cursorclaw/state.json`. The shipped layout is session-scoped
 under `sessions/`; there is no top-level `state.json`.
 :::
 

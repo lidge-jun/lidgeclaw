@@ -31,13 +31,13 @@ Three causes generated most of the thirteen:
 | 3 | High | **folded** | Field chains rewritten below for every new field, with one canonical name each. |
 | 4 | High | **folded** | `--version` (or `--candidate <path>`) required on `receipt`, `platform`, `verify`; zero/multiple candidates are explicit errors. |
 | 5 | High | **folded** | Build precedes verification. The workflow builds and archives first, records the `build` receipt from that step, and `verify` runs immediately before publication. |
-| 6 | High | **folded** | The install lane never calls a PATH `cxc`. It resolves the installed plugin root and runs `node "<plugin-root>/bin/cxc.mjs"`, and asserts `command -v cxc` fails first — which is also the activation proof that it is testing the installed payload rather than the checkout. |
-| 7 | High | **folded** | Verified: `node plugins/codexclaw/scripts/build.mjs` regenerates exactly `cxc-ops/dist/cli.js` and `dist/doctor.js`, i.e. the working tree's pre-existing modifications ARE the correct output and HEAD's committed dist is stale. 010 commits the regenerated dist (preserving, not discarding, the user's edits) before 040 introduces the freshness lane. |
-| 8 | High | **folded** | 020's marker map extended to `getting-started/installation.md`, `guides/native-tools.md`, `docs/*.md`, `plugins/codexclaw/skills/README.md`. Unknown or missing marker ids are `--check` failures. |
+| 6 | High | **folded** | The install lane never calls a PATH `cxc`. It resolves the installed plugin root and runs `node "<plugin-root>/bin/cursorclaw.mjs"`, and asserts `command -v cxc` fails first — which is also the activation proof that it is testing the installed payload rather than the checkout. |
+| 7 | High | **folded** | Verified: `node plugins/cursorclaw/scripts/build.mjs` regenerates exactly `cxc-ops/dist/cli.js` and `dist/doctor.js`, i.e. the working tree's pre-existing modifications ARE the correct output and HEAD's committed dist is stale. 010 commits the regenerated dist (preserving, not discarding, the user's edits) before 040 introduces the freshness lane. |
+| 8 | High | **folded** | 020's marker map extended to `getting-started/installation.md`, `guides/native-tools.md`, `docs/*.md`, `plugins/cursorclaw/skills/README.md`. Unknown or missing marker ids are `--check` failures. |
 | 9 | High | **folded** | An install lane that cannot run is **BLOCKED**, not optional. The `packed-install-lifecycle` receipt stays mandatory; only its `evidence` may name the artifact lane if the install lane is genuinely impossible, and that substitution is recorded in the published manifest. |
 | 10 | High | **rebutted, with a correction** | The PR-target workflow does gate `main`, but the repo does not promote by PR: `origin/main` and `origin/dev` are the *same commit* (`15b3d44a`) and `gh pr list --base main --state merged` returns `[]`. Promotion here is a fast-forward push of `dev` to `main`, which is the established mechanism and touches no PR automation. 050 amended accordingly. |
 | 11 | Medium | **folded** | PR #1 merged `2026-08-09T01:18:41Z` (`gh pr view 1`), not 2026-07-27. 001 corrected. |
-| 12 | Medium | **folded** | Scope boundary extended: `CHANGELOG.md`, `.gitignore`, `plugins/codexclaw/inventory.json`, `plugins/codexclaw/bin/cxc.mjs`, `bin/codexclaw.mjs`, `plugins/codexclaw/components/*/package.json`, `plugins/codexclaw/.codex-plugin/plugin.json` (exact path). |
+| 12 | Medium | **folded** | Scope boundary extended: `CHANGELOG.md`, `.gitignore`, `plugins/cursorclaw/inventory.json`, `plugins/cursorclaw/bin/cursorclaw.mjs`, `bin/codexclaw.mjs`, `plugins/cursorclaw/components/*/package.json`, `plugins/cursorclaw/.cursor-plugin/plugin.json` (exact path). |
 | 13 | Medium | **folded** | Exact verifier commands recorded in 050 and 010 (below). |
 
 ## Round-1 drafts — SUPERSEDED, NON-NORMATIVE
@@ -121,7 +121,7 @@ described the rejected design while a later section described the accepted one.
 | 5 | High | folded — 010 now lists both dist paths in its file map and scope, with the `git diff --exit-code` before/after activation requirement. |
 | 6 | High | folded — the naive path extractor reported 103 false misses (plugin-relative and illustrative paths). 010's check now extracts only markdown link targets rooted at known top-level dirs, which is the class that actually broke. |
 | 7 | Medium | folded — 050 now downloads and parses the manifest asset, dereferences annotated tags, and greps issue comments for a run id or release URL. |
-| 8 | Medium | folded — `generated/inventory.json` → `plugins/codexclaw/inventory.json`; 001 no longer says 020 generates the test count; "merge commit" → fast-forward; BLOCKED now names all three cases. |
+| 8 | Medium | folded — `generated/inventory.json` → `plugins/cursorclaw/inventory.json`; 001 no longer says 020 generates the test count; "merge commit" → fast-forward; BLOCKED now names all three cases. |
 
 Lesson recorded for later cycles: an amendment that leaves the original
 instruction in place produces a nondeterministic plan. Replace the text.

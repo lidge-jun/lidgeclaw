@@ -1,6 +1,6 @@
 ---
 created: 2026-07-02
-tags: [codexclaw, recall, agent-adoption, dev-skill, hooks, plan]
+tags: [cursorclaw, recall, agent-adoption, dev-skill, hooks, plan]
 aliases: [recall WP6 agent adoption plan]
 ---
 
@@ -18,7 +18,7 @@ Class: C2 (convention-following edits across known surfaces). Deliverables:
    (`ROLE_BASE_SKILLS`: explorer/reviewer/executor). A MUST-level rule: before asking
    the user about prior work — unfamiliar term, lost context, "그때/지난번/last time"
    references — run `cxc chat search "<terms>" --days 0` / `cxc memory search
-   "<topic>"`; details in `$cxc-recall`. Mirrors the cli-jaw AGENTS.md directive that
+   "<topic>"`; details in `$crc-recall`. Mirrors the cli-jaw AGENTS.md directive that
    makes agents actually search.
 
 2. **SessionStart hook** (`session-start-advertising-recall.json` → recall
@@ -32,7 +32,7 @@ Class: C2 (convention-following edits across known surfaces). Deliverables:
    re-explain.
 
 4. **Spawn-time attachment**: add `recall` to `SURFACE_SKILL` in subagent-config so a
-   spawn message mentioning recall/past-session work attaches the `$cxc-recall` skill
+   spawn message mentioning recall/past-session work attaches the `$crc-recall` skill
    to the subagent (same narrow keyword inference as other surfaces).
 
 5. Bookkeeping: manifest hooks 14 → 16, `hook-e2e.test.mjs` count, INDEX.md hook table,
@@ -49,7 +49,7 @@ All five deliverables shipped and live-verified:
   "Index: 1781 files / 357066 messages, last ingest …").
 - PostCompact hook injects the recovery directive at the context-loss moment.
 - `SURFACE_SKILL` gained `recall: "recall"` — spawn messages mentioning recall attach
-  `$cxc-recall` to the subagent.
+  `$crc-recall` to the subagent.
 - Gates: 530/530 tests + gate.mjs OK; manifest = 16 hooks. The global `cxc` binary is
   an npm-link symlink to this working tree, so agent shells resolve the new commands
   immediately.

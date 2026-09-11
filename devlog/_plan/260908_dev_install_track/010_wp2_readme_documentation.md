@@ -1,7 +1,7 @@
 # wp2 — README x3 dev-install documentation (diff-level)
 
 Depends on wp1. Touches `README.md`, `README.ko.md`, `README.zh.md`, `scripts/dev-install.sh`,
-and the already-edited `docs-site/` files. No `plugins/codexclaw/` changes in this phase.
+and the already-edited `docs-site/` files. No `plugins/cursorclaw/` changes in this phase.
 
 **Execution order (AUDIT-A1/A4).** This phase runs AFTER wp3 has merged 92/91/93 and the local
 branch has fast-forwarded. All three PRs edit these same READMEs, so every line number below is a
@@ -24,13 +24,13 @@ Content contract — every one of these must appear:
    leftover symlinks it finds.
 3. **Setup**, as a fenced bash block:
    ```bash
-   codex plugin marketplace add /path/to/codexclaw   # local marketplace, not the git URL
+   Cursor plugin install add /path/to/codexclaw   # local marketplace, not the git URL
    scripts/dev-install.sh
    ```
    Note that a git-source marketplace pins a commit, so a checkout under active development
    must use the local source.
 4. **What `codex plugin add` actually does**: copies the payload into
-   `~/.codex/plugins/cache/codexclaw/codexclaw/<version>/` and prunes files that no longer exist
+   `~/.cursor/plugins/cache/codexclaw/codexclaw/<version>/` and prunes files that no longer exist
    in the source, which is why a same-version reinstall is a true resync rather than a no-op.
 5. **The flags table**:
 
@@ -48,11 +48,11 @@ Content contract — every one of these must appear:
    name `cxc doctor`'s `hook-trust` line as the check.
 8. **Verification**, as a fenced bash block with the three commands and what each proves:
    ```bash
-   diff -rq plugins/codexclaw ~/.codex/plugins/cache/codexclaw/codexclaw/<version>
-   find ~/.codex/plugins/cache/codexclaw -type l | wc -l    # expect 0
-   node ~/.codex/plugins/cache/codexclaw/codexclaw/<version>/bin/cxc.mjs doctor
+   diff -rq plugins/cursorclaw ~/.cursor/plugins/cache/codexclaw/codexclaw/<version>
+   find ~/.cursor/plugins/cache/codexclaw -type l | wc -l    # expect 0
+   node ~/.cursor/plugins/cache/codexclaw/codexclaw/<version>/bin/cursorclaw.mjs doctor
    ```
-9. **Returning to the published track**: `codex plugin marketplace remove codexclaw` then re-add
+9. **Returning to the published track**: `Cursor plugin install remove codexclaw` then re-add
    the git URL.
 
 Also add a `Development install` bullet to the `## Documentation` list pointing at
@@ -88,7 +88,7 @@ Already written in the preceding turn. Re-audit for:
   `scripts/dev-install.sh:78` in the repoint check. Factor them into one `marketplace_root()`
   helper so they cannot drift apart. Leaving line 47 unfixed would make `--status` report a
   truncated root in exactly the case the fix exists for.
-- `CXC_CODEX_HOME` naming already avoids `$HOME`/`$CODEX_HOME` repurposing. Confirm.
+- `CURSOR_HOME` naming already avoids `$HOME`/`$CURSOR_HOME` repurposing. Confirm.
 
 ## Target 5 — docs-site consistency
 
@@ -103,6 +103,6 @@ retrospective paragraph inside `dogfood-dev-install.md`.
   sync script only rewrites the shields.io URL and `alt=` attribute
   (`sync-readme-badges.mjs:41,48`); it cannot see the prose count, so it exits 0 both before and
   after this fix and proves nothing about it.
-- `node plugins/codexclaw/scripts/sync-readme-badges.mjs` exits 0 (no badge drift)
+- `node plugins/cursorclaw/scripts/sync-readme-badges.mjs` exits 0 (no badge drift)
 - `npm run gate` OK
 - `bash -n scripts/dev-install.sh` and a live `--status` run

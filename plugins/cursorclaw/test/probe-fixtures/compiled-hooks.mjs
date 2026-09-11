@@ -53,7 +53,7 @@ export function compiledOutput(f, payload) {
 export function spawnPayload(f, surface) {
   return { hook_event_name: "PreToolUse", session_id: "probe-spawn", cwd: f.cwd,
     tool_name: surface === "V1" ? "spawn_agent" : "collaborationspawn_agent",
-    tool_input: { message: "$cxc-dev inspect the fixture", agent_type: "explorer",
+    tool_input: { message: "$crc-dev inspect the fixture", agent_type: "explorer",
       ...(surface === "V2" ? { task_name: "probe_leaf", fork_turns: "none" } : {}),
       probe_preserved: { nested: ["unchanged", 7] } } };
 }

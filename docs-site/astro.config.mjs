@@ -18,7 +18,7 @@ export default defineConfig({
       title: "codexclaw",
       description:
         "Codex-native development discipline: PABCD workflow, dev skills, subagent config, and an optional opencodex bridge, shipped as one Codex plugin.",
-      tagline: "Development discipline for OpenAI Codex.",
+      tagline: "Development discipline for Cursor.",
       logo: {
         src: "./src/assets/codexclaw-nav.png",
         alt: "codexclaw",

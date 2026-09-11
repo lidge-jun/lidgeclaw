@@ -28,7 +28,7 @@ model to follow). This slice promotes that logic into a spawn-shaped helper.
 
 ## MODIFY / NEW / DELETE map
 
-### 1. NEW plugins/codexclaw/components/cxc-ops/src/win-exec.ts
+### 1. NEW plugins/cursorclaw/components/cxc-ops/src/win-exec.ts
 
 ```ts
 /**
@@ -125,7 +125,7 @@ above. It gets the same three rules inline; the TS helper serves the components.
 BEFORE (:395-401)
 ```js
     if (!existsSync(guiVite) && !existsSync(rootVite)) {
-      console.log("codexclaw gui: dependencies not installed. Run `npm install` in plugins/codexclaw/gui first.");
+      console.log("codexclaw gui: dependencies not installed. Run `npm install` in plugins/cursorclaw/gui first.");
       process.exit(1);
     }
     console.log("codexclaw gui: starting the dashboard (Vite will print the local URL)...");
@@ -160,7 +160,7 @@ BEFORE (:256-260)
 ```js
 /** Locate the user-level rebuildable repomap venv (philosophy paragraph 2 derived-cache rule). */
 export function repoMapVenvPython(env, home) {
-  const base = env.CODEXCLAW_HOME && env.CODEXCLAW_HOME.trim() !== "" ? env.CODEXCLAW_HOME : join(home, ".codexclaw");
+  const base = env.CURSORCLAW_HOME && env.CURSORCLAW_HOME.trim() !== "" ? env.CURSORCLAW_HOME : join(home, ".cursorclaw");
   return join(base, "venvs", "repomap", "bin", "python3");
 }
 ```
@@ -178,7 +178,7 @@ AFTER
  * `platform` is a parameter so the packaging test can assert both shapes from one OS.
  */
 export function repoMapVenvPython(env, home, platform = process.platform) {
-  const base = env.CODEXCLAW_HOME && env.CODEXCLAW_HOME.trim() !== "" ? env.CODEXCLAW_HOME : join(home, ".codexclaw");
+  const base = env.CURSORCLAW_HOME && env.CURSORCLAW_HOME.trim() !== "" ? env.CURSORCLAW_HOME : join(home, ".cursorclaw");
   return platform === "win32"
     ? join(base, "venvs", "repomap", "Scripts", "python.exe")
     : join(base, "venvs", "repomap", "bin", "python3");
@@ -251,7 +251,7 @@ And the venv bootstrap interpreter at :274, `spawnSync("python3", ["-m", "venv",
 becomes `spawnSync(process.platform === "win32" ? "py" : "python3", bootstrapArgs)` with
 `bootstrapArgs = process.platform === "win32" ? ["-3", "-m", "venv", venvDir] : ["-m", "venv", venvDir]`.
 
-### 3. MODIFY plugins/codexclaw/components/cxc-ops/src/doctor.ts
+### 3. MODIFY plugins/cursorclaw/components/cxc-ops/src/doctor.ts
 
 `doctor.ts:409` probes ast-grep through a python helper and WARNs about a missing helper
 when it is really the Store stub. Route it through `commandInvocation` and treat
@@ -263,7 +263,7 @@ const res = spawnSync(inv.file, inv.args, { encoding: "utf8", ...inv.options });
 const missing = res.error?.code === "ENOENT" || res.status === 9009 || res.status === 127;
 ```
 
-### 4. MODIFY plugins/codexclaw/components/skill-search/src/cli.ts - defect #10
+### 4. MODIFY plugins/cursorclaw/components/skill-search/src/cli.ts - defect #10
 
 BEFORE (:76-87)
 ```ts
@@ -314,7 +314,7 @@ Leave `dir.split("/").pop()` at :98 alone. 002 B17 marks it explicitly
 deliberately-not-a-defect: those are GitHub API paths, always forward-slash, and
 "fixing" them to `path.sep` would break them on Windows.
 
-### 5. MODIFY plugins/codexclaw/components/messenger-bridge/src/runner.ts - defect #11
+### 5. MODIFY plugins/cursorclaw/components/messenger-bridge/src/runner.ts - defect #11
 
 BEFORE (:263-274, :306-318)
 ```ts
@@ -424,7 +424,7 @@ in a documented wrapper (`cxc receipt test -- npm.cmd test`, or a receipt-side
 
 ## TESTS
 
-NEW `plugins/codexclaw/components/cxc-ops/test/win-exec.test.ts`
+NEW `plugins/cursorclaw/components/cxc-ops/test/win-exec.test.ts`
 
 1. "POSIX is a passthrough" - `commandInvocation("npm", ["run", "dev"], "linux")` returns
    the input verbatim with empty options.
@@ -440,7 +440,7 @@ NEW `plugins/codexclaw/components/cxc-ops/test/win-exec.test.ts`
 7. "an unresolvable command returns the input" - no throw, so the caller's own
    ENOENT handling still runs.
 
-MODIFY `plugins/codexclaw/test/repo-map-packaging.test.mjs`
+MODIFY `plugins/cursorclaw/test/repo-map-packaging.test.mjs`
 
 8. "repoMapVenvPython returns Scripts\python.exe on win32" and `bin/python3` on linux,
    from one OS via the platform parameter.
@@ -450,7 +450,7 @@ MODIFY `plugins/codexclaw/test/repo-map-packaging.test.mjs`
 11. "CODEXCLAW_PYTHON still wins on win32" - the env override precedes the py rung.
 12. "--help short-circuits on both platforms" - the existing behavior at :240.
 
-NEW cases in `plugins/codexclaw/components/skill-search/test/`
+NEW cases in `plugins/cursorclaw/components/skill-search/test/`
 
 13. "a launch ENOENT reports an install hint, not an auth hint" - stub `spawnSync` to
     return `{ error: { code: "ENOENT" }, status: null }` and assert stderr matches
@@ -458,7 +458,7 @@ NEW cases in `plugins/codexclaw/components/skill-search/test/`
 14. "a non-zero exit reports the auth hint" - `{ status: 4, stderr: "auth required" }`
     matches `/gh auth status/`.
 
-NEW cases in `plugins/codexclaw/components/messenger-bridge/test/`
+NEW cases in `plugins/cursorclaw/components/messenger-bridge/test/`
 
 15. "win32 escalation calls taskkill with /T /F" - inject the spawn function and assert
     the argv is `["/pid", "<pid>", "/T", "/F"]` with `shell` absent.
@@ -472,12 +472,12 @@ NEW cases in `plugins/codexclaw/components/messenger-bridge/test/`
 Run from the repo root; each command must exit 0.
 
 ```powershell
-node --test --test-concurrency=1 "plugins/codexclaw/components/cxc-ops/test/win-exec.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/test/repo-map-packaging.test.mjs"
-node --test --test-concurrency=1 "plugins/codexclaw/components/skill-search/test/*.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/messenger-bridge/test/*.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/cxc-ops/test/win-exec.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/test/repo-map-packaging.test.mjs"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/skill-search/test/*.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/messenger-bridge/test/*.test.ts"
 npm test
-node plugins/codexclaw/scripts/gate.mjs
+node plugins/cursorclaw/scripts/gate.mjs
 ```
 
 Manual acceptance for defect #8 (this currently fails with a bare exit 1 after printing
@@ -502,7 +502,7 @@ Manual acceptance for defect #7 - the create-then-destroy cycle:
 
 ```powershell
 $env:CODEXCLAW_MAP_BOOTSTRAP="1"; node bin/codexclaw.mjs map --help
-Test-Path "$env:USERPROFILE\.codexclaw\venvs\repomap\Scripts\python.exe"
+Test-Path "$env:USERPROFILE\.cursorclaw\venvs\repomap\Scripts\python.exe"
 ```
 
 Expected `True`: the venv survives the run instead of being rmSync'd.

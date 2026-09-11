@@ -10,13 +10,13 @@ Incident (260709 morning, jawcode workspace): GPT-5.5 subagents spawned via
   (codex-rs `hooks/src/schema.rs:270,537`, commit `16d85e270`).
 - Child hook payloads reuse the PARENT session id (commit `fbfbfe5fc`), so child
   turns in the same cwd read/write the parent's
-  `.codexclaw/sessions/<parent>.json` — parent in phase `I` means every child
+  `.cursorclaw/sessions/<parent>.json` — parent in phase `I` means every child
   prompt turn gets the INTERVIEW directive re-injected
   (`components/pabcd-state/src/hook.ts:366,410`).
 - The directive instructs `request_user_input`, which codex-rs rejects for any
   non-root agent (`core/src/tools/handlers/request_user_input.rs:59`, commit
   `7a19b1422`) → children stall in a retry loop (evidence:
-  `jawcode/.codexclaw/evidence/20260709_*attempt/retry*.md`).
+  `jawcode/.cursorclaw/evidence/20260709_*attempt/retry*.md`).
 - codexclaw has NO runtime subagent discriminator today; "subagents never ask"
   exists only as directive prose (`hook.ts:225`).
 
@@ -26,11 +26,11 @@ directives falls out of the same guard.
 
 ## Changes
 
-1. `plugins/codexclaw/components/pabcd-state/src/parse.ts`
+1. `plugins/cursorclaw/components/pabcd-state/src/parse.ts`
    - Add `isSubagentHookPayload(raw: string): boolean` — true when the stdin
      JSON object carries a non-empty string `agent_id` or `agent_type`.
      Unparseable/absent → false (fail-open, existing behavior preserved).
-2. `plugins/codexclaw/components/pabcd-state/src/cli.ts`
+2. `plugins/cursorclaw/components/pabcd-state/src/cli.ts`
    - In the `hook` path, immediately after `readStdin()` and BEFORE the
      fail-closed `pre-tool-use` branch:
      `if (event !== "subagent-stop" && isSubagentHookPayload(raw)) process.exit(0);`
@@ -61,11 +61,11 @@ directives falls out of the same guard.
 ## Verification
 
 - Unit: `isSubagentHookPayload` cases in pabcd-state tests.
-- E2E (`plugins/codexclaw/test/hook-e2e.test.mjs`): UserPromptSubmit payload
+- E2E (`plugins/cursorclaw/test/hook-e2e.test.mjs`): UserPromptSubmit payload
   with `agent_type` + interview-trigger prompt → exit 0, empty stdout, no
   session state write; SubagentStop with `agent_type: worker` still gated.
 - E2E fail-closed pair (audit P1/P2, discriminating): with a seeded ACTIVE
-  `goals_1.sqlite` (thread_goals fixture, CODEX_HOME/CODEX_SQLITE_HOME env),
+  `goals_1.sqlite` (thread_goals fixture, CURSOR_HOME/CODEX_SQLITE_HOME env),
   PreToolUse `request_user_input`:
   - root payload (no agent fields) → DENY envelope (R-9 regression holds);
   - same payload + `agent_type: "worker"` → exit 0, EMPTY stdout (guard skips

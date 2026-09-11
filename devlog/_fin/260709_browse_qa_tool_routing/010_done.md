@@ -14,7 +14,7 @@ tool names and the two scoped ladders without needing to load `dev-testing` or
 
 ## What changed
 
-- **`plugins/codexclaw/skills/dev/SKILL.md`** (+21 lines)
+- **`plugins/cursorclaw/skills/dev/SKILL.md`** (+21 lines)
   - New subsection after Capability Routing Hub, before Skill Ownership Map
   - STRICT rule `DEV-BROWSE-NATIVE-01`: no direct Playwright/puppeteer install
     for ad-hoc browse/QA — use `tool_search` for native browser tools first

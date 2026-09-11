@@ -10,7 +10,7 @@
 ```typescript
 // session-start: 인덱스 상태만 출력
 function handleSessionStart(indexStatusLine: string): string {
-    return `[codexclaw] recall: ${indexStatusLine}`;
+    return `[cursorclaw] recall: ${indexStatusLine}`;
 }
 
 // user-prompt-submit: recall trigger 판별 (현재 미구현 수준)
@@ -46,7 +46,7 @@ function handleSessionStart(opts: { cwd: string; indexStatusLine: string }): str
 ### Auto-Inject Summary Format
 
 ```
-[codexclaw] Recent work in this project (last 3 days):
+[cursorclaw] Recent work in this project (last 3 days):
 • [Jul 14] PR triage + item-ID hardening + release 2.7.17
 • [Jul 13] bridge.ts streaming fix
 • [Jul 12] codex-rs source-of-truth analysis

@@ -1,6 +1,6 @@
 ---
 name: orchestrate
-description: "DEPRECATED — merged into cxc-pabcd. Use $cxc-pabcd for phase control."
+description: "DEPRECATED — merged into cxc-pabcd. Use $crc-pabcd for phase control."
 metadata:
   deprecated: true
   redirect: cxc-pabcd

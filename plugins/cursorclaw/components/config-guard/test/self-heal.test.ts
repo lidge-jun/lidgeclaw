@@ -247,7 +247,7 @@ test("a heal claims ownership in the manifest so cxc disable can revert it", () 
       backupPath: null,
       postActivateHash: null,
       flags: {
-        [SOFT]: { priorEnabled: false, enabledByCodexclaw: false, enableFailed: true, failure: { exitCode: 2, message: "boom" } },
+        [SOFT]: { priorEnabled: false, enabledByCursorclaw: false, enableFailed: true, failure: { exitCode: 2, message: "boom" } },
       },
       tableKeys: {},
     }),
@@ -261,7 +261,7 @@ test("a heal claims ownership in the manifest so cxc disable can revert it", () 
   const out = selfHealDeclaredFeatures(makeRealSelfHealDeps(home, run));
   assert.equal(out[0].action, "healed");
   const manifest = JSON.parse(readFileSync(join(home, ".cursorclaw-install.json"), "utf8"));
-  assert.equal(manifest.flags[SOFT].enabledByCodexclaw, true, "a heal must be recorded as codexclaw-owned");
+  assert.equal(manifest.flags[SOFT].enabledByCursorclaw, true, "a heal must be recorded as codexclaw-owned");
   assert.equal(manifest.flags[SOFT].enableFailed, false);
   assert.equal(manifest.flags[SOFT].failure, undefined);
 });

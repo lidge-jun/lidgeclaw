@@ -5,16 +5,16 @@ Unit: `260803_stacked_pull_requests` · Work-phase: WP3 · Depends on: WP2 (the
 them). Deliverable: the family actually *recommends* stacking at the decision points where
 stack-shaped work is produced, without duplicating the doctrine.
 
-Independently verifiable: `rg -n "DEV-STACK-" plugins/codexclaw/skills` shows pointer-only
+Independently verifiable: `rg -n "DEV-STACK-" plugins/cursorclaw/skills` shows pointer-only
 mentions in the four skills below; `npm run gate` + `npm test` exit 0.
 
 ## Scope
 
 IN (4 files, all MODIFY):
-`plugins/codexclaw/skills/pabcd/SKILL.md`,
-`plugins/codexclaw/skills/loop/SKILL.md`,
-`plugins/codexclaw/skills/dev-code-reviewer/SKILL.md`,
-`plugins/codexclaw/skills/dev-devops/SKILL.md`.
+`plugins/cursorclaw/skills/pabcd/SKILL.md`,
+`plugins/cursorclaw/skills/loop/SKILL.md`,
+`plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md`,
+`plugins/cursorclaw/skills/dev-devops/SKILL.md`.
 
 OUT: `dev` (WP2 owns it — do not re-edit), frontmatter/keywords (WP4), any new file.
 
@@ -108,7 +108,7 @@ here is the trigger that sends a reviewer there:
 1. Four files modified; each mention is a local trigger + rule ids + canonical path, **≤3
    added lines**, and none restates topology, depth numbers, cascade steps, CI arithmetic,
    review mechanics, or merge semantics. Apply the acceptance test above to each stub.
-2. `rg -n "stacked-prs.md" plugins/codexclaw/skills` returns ≥5 hits (owner + 4 stubs).
+2. `rg -n "stacked-prs.md" plugins/cursorclaw/skills` returns ≥5 hits (owner + 4 stubs).
 3. `npm run gate` exits 0 — note `checkForbiddenClaims` scans SKILL.md text, so no new
    line may claim hook enforcement (all four edits are DEFAULT-class agent discipline).
 4. `npm test` exits 0.

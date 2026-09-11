@@ -65,8 +65,8 @@ function tomlBoolInBody(body: string, key: string): boolean | null {
  * wording.
  */
 function v2SpawnSurface(): boolean {
-  const home = process.env.CODEX_HOME && process.env.CODEX_HOME.length > 0
-    ? process.env.CODEX_HOME
+  const home = process.env.CURSOR_HOME && process.env.CURSOR_HOME.length > 0
+    ? process.env.CURSOR_HOME
     : resolve(homedir(), ".codex");
   let content: string;
   try {

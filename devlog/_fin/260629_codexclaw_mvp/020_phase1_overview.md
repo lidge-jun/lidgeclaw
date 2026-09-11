@@ -6,17 +6,17 @@ Phase: 1 of 3
 ## Definition
 **State management + dev-skill custom injection working, with codex config untouched.**
 After phase 1: a user installs codexclaw and gets IPABCD + working dev skills + default-model
-subagents — without opencodex, without touching `~/.codex/config.toml`.
+subagents — without opencodex, without touching `~/.cursor/config.toml`.
 
 ## Success criteria (testable)
 - S1: `codex plugin add codexclaw@personal` installs; skills appear in `codex` skill discovery.
-- S2: An IPABCD trigger phrase activates the workflow; the session's `.codexclaw/sessions/<sessionId>.json` transitions P→A (per-session, see 016).
+- S2: An IPABCD trigger phrase activates the workflow; the session's `.cursorclaw/sessions/<sessionId>.json` transitions P→A (per-session, see 016).
 - S3: At least one migrated dev skill (pilot: dev-debugging) routes from a representative prompt.
-- S4: `~/.codex/config.toml` byte-identical before/after install + a full session (guard test).
+- S4: `~/.cursor/config.toml` byte-identical before/after install + a full session (guard test).
 - S5: A subagent role (explorer/reviewer/executor) spawns on the default model.
 
 ## Verified facts (research, 2026-06-29)
-- codex plugins install to `~/.codex/plugins/` via marketplace snapshots; `config.toml` is separate.
+- codex plugins install to `~/.cursor/plugins/` via marketplace snapshots; `config.toml` is separate.
 - Supported hook events: SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, PostCompact,
   Stop, SubagentStop (omo uses all).
 - codex has a native `create_goal` tool (omo intercepts via `PreToolUse matcher: ^create_goal$`).

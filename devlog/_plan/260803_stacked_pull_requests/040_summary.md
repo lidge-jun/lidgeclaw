@@ -44,7 +44,7 @@ pre-publish evidence for WP4 (which is still open at the time of writing):
 
 - `npm run gate` → exit 0, "no status drift, false-enforcement prose, or count mismatch"
 - `npm test` → 1449/1449 pass, 0 fail, exit 0
-- Ownership proof — `rg -n "DEV-STACK-" plugins/codexclaw/skills`: 5 rule definitions in
+- Ownership proof — `rg -n "DEV-STACK-" plugins/cursorclaw/skills`: 5 rule definitions in
   `dev/references/stacked-prs.md` only; every other hit is a pointer.
 - Frontmatter parse: both edited files' keyword arrays parse as valid JSON string arrays.
 

@@ -45,7 +45,7 @@ this before any user did.
 
 Not just `update_goal`. Any surface that calls `validateGoalplan` on a freshly
 created plan inherits a permanent failure reason. This session's own goalplan
-reproduces it live: `.codexclaw/goalplans/make-the-v1-goalplan-flow-the-working-default-in/goalplan.json`
+reproduces it live: `.cursorclaw/goalplans/make-the-v1-goalplan-flow-the-working-default-in/goalplan.json`
 declares `"schemaVersion": 3` and `cxc loop validate` reports the finalGate
 reason alongside the genuine open work.
 

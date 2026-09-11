@@ -7,5 +7,5 @@ P 수정(2026-09-09 23:3x): 사용자 요청으로 [040_codexclaw_lessons.md](04
 2. 로컬 확인: `inventory.mjs --check`, skill-catalog·visualize-inspection·subagent-config 테스트. A 단계: reviewer 서브에이전트에게 export 스크립트와 SKILL/reference diff를 읽혀 blocker를 받는다(030과 같은 기준).
 3. `git push -u origin codex/dev-visualizer-rename`; `gh pr create --base dev` 본문은 문제→변경→검증 순, 대화 이력 없이. 제목 `feat(dev-visualizer): rename from diagram-viewer, report storyline rules, A4 paged template and export QA`.
 4. 최종 헤드 SHA로 ci.yml 전 job SUCCESS 대기(`gh pr checks --watch`). skipped/cancelled는 증거가 아니다.
-5. `gh pr merge --merge`(레포 관행: dev로의 머지 커밋, #115 등 선례). 머지 후 `git fetch`, `git merge-base --is-ancestor <head> origin/dev`, `git diff --stat <head> origin/dev -- plugins/codexclaw/skills/dev-visualizer`가 비어 있음을 기록.
+5. `gh pr merge --merge`(레포 관행: dev로의 머지 커밋, #115 등 선례). 머지 후 `git fetch`, `git merge-base --is-ancestor <head> origin/dev`, `git diff --stat <head> origin/dev -- plugins/cursorclaw/skills/dev-visualizer`가 비어 있음을 기록.
 6. 이 worktree는 앱 관리 worktree이므로 브랜치를 지우지 않는다(WORKTREE-GUARD-01).

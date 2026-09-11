@@ -2,7 +2,7 @@
 
 ## Source and state boundary
 
-`session-source.ts` owns an immutable `.codexclaw/sources/<session>.json` binding:
+`session-source.ts` owns an immutable `.cursorclaw/sources/<session>.json` binding:
 version, ownerSessionId, nativeCwd, sourceRoot, commonDir and gitDir. Creation is
 `session source <absolute-worktree>`, after exact native identity and state checks.
 Canonical realpaths must describe another worktree in the same Git common dir.

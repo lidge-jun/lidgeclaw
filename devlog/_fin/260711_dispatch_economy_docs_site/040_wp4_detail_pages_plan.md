@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, pabcd-initiative, docs-site, detail-pages, plan, diff-level]
+tags: [cursorclaw, pabcd-initiative, docs-site, detail-pages, plan, diff-level]
 ---
 
 # WP4 — detail doc pages (diff-level plan)

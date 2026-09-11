@@ -9,7 +9,7 @@ Status: PLANNED (replaces the rejected `020_dispatch_capability_marker.md`)
 
 ## What the audit killed, and why it was right
 
-Round 1 proposed a parent-written `.codexclaw/dispatch-capability/<session>-<agent>.json`
+Round 1 proposed a parent-written `.cursorclaw/dispatch-capability/<session>-<agent>.json`
 marker that the gate would trust. Auditor: BLOCKER — the hook and the child run as the
 SAME host user, so a write-capable child (certainly one with `bypassPermissions`) can
 create its own `evidenceWritable:false` marker and skip evidence verification entirely.

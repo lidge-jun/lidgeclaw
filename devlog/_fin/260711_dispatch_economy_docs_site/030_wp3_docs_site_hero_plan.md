@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, pabcd-initiative, docs-site, hero, plan, diff-level]
+tags: [cursorclaw, pabcd-initiative, docs-site, hero, plan, diff-level]
 ---
 
 # WP3 — pabcd_initiative docs-site skeleton + ima2 hero (diff-level plan)

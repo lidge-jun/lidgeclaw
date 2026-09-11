@@ -8,7 +8,7 @@ the one that matches how you obtained the plugin.
 
 ## Prerequisites
 
-- OpenAI Codex (CLI, TUI, or App) with plugin support.
+- Cursor (CLI, TUI, or App) with plugin support.
 - Node.js 22+ (the components and hooks run under `node`).
 - Optional: [opencodex](https://github.com/lidge-jun/opencodex) (`ocx`) if you want the
   provider bridge to detect routed models.
@@ -18,7 +18,7 @@ the one that matches how you obtained the plugin.
 Add the codexclaw marketplace, then install the plugin from that marketplace:
 
 ```bash
-codex plugin marketplace add https://github.com/lidge-jun/codexclaw
+Cursor plugin install add https://github.com/lidge-jun/codexclaw
 codex plugin add codexclaw@codexclaw
 ```
 
@@ -38,11 +38,11 @@ declares. Two things follow from how Codex loads plugin hooks:
 `cxc doctor` reports the live state under `features` at any time, and tells you the exact command
 to run if something is off.
 
-It also ships the CLI: the payload includes a dispatcher at `bin/cxc.mjs`, so every install has
+It also ships the CLI: the payload includes a dispatcher at `bin/cursorclaw.mjs`, so every install has
 a working terminal surface without any extra step:
 
 ```bash
-node "<pluginRoot>/bin/cxc.mjs" doctor
+node "<pluginRoot>/bin/cursorclaw.mjs" doctor
 ```
 
 The SessionStart banner prints the exact resolved invocation for your machine when `cxc` is not
@@ -52,7 +52,7 @@ dispatcher prints a pointer for those.)
 Update and uninstall use the same marketplace surface:
 
 ```bash
-codex plugin marketplace upgrade codexclaw   # update
+Cursor plugin install upgrade codexclaw   # update
 codex plugin remove codexclaw@codexclaw      # uninstall
 ```
 

@@ -14,13 +14,13 @@ roles, config activation, provider bridge no-op, and MCP no-tool server. It is t
 
 ## Scope (decision-complete)
 - Files added/edited:
-  - `plugins/codexclaw/scripts/build.mjs`
-  - `plugins/codexclaw/components/*/dist/**`
-  - `plugins/codexclaw/test/build.test.mjs`
-  - `plugins/codexclaw/components/provider-bridge/src/cli.ts`
-  - `plugins/codexclaw/components/subagent-config/src/mcp.ts`
-  - `plugins/codexclaw/.codex-plugin/plugin.json`
-  - `plugins/codexclaw/.mcp.json`
+  - `plugins/cursorclaw/scripts/build.mjs`
+  - `plugins/cursorclaw/components/*/dist/**`
+  - `plugins/cursorclaw/test/build.test.mjs`
+  - `plugins/cursorclaw/components/provider-bridge/src/cli.ts`
+  - `plugins/cursorclaw/components/subagent-config/src/mcp.ts`
+  - `plugins/cursorclaw/.cursor-plugin/plugin.json`
+  - `plugins/cursorclaw/.mcp.json`
   - `devlog/_plan/260629_codexclaw_mvp/029.1_phase1_verification_done.md`
   - `devlog/_plan/260629_codexclaw_mvp/029_phase1_verification.md`
   - `devlog/_plan/260629_codexclaw_mvp/070_packaging.md`
@@ -85,8 +85,8 @@ None for Phase 1. Phase 2 and Phase 3 decisions remain outside L7.
 - `devlog/_plan/260629_codexclaw_mvp/029_phase1_verification.md`
 - `devlog/_plan/260629_codexclaw_mvp/029.1_phase1_verification_done.md`
 - `devlog/_plan/260629_codexclaw_mvp/160_pass1_7_completeness_audit.md`
-- `plugins/codexclaw/scripts/build.mjs`
-- `plugins/codexclaw/test/build.test.mjs`
-- `plugins/codexclaw/.codex-plugin/plugin.json`
+- `plugins/cursorclaw/scripts/build.mjs`
+- `plugins/cursorclaw/test/build.test.mjs`
+- `plugins/cursorclaw/.cursor-plugin/plugin.json`
 - `bin/codexclaw.mjs`
 - codex-rs plugin hook execution and marketplace install behavior cited in 070.1.

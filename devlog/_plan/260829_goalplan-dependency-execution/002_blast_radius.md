@@ -23,7 +23,7 @@ reviver가 허용 필드만 재구성하므로 새 필드는 `readGoalplan()` �
 | subagent-config/final-gate-guard.ts | 공용 decoder 없이 JSON 직접 읽음. finalGate 경로와 criteria surface만(125, 136). 쓰지 않음 | 낮음 |
 | cxc-ops/reset.ts, cli.ts | JSON 필드를 읽지 않고 디렉터리를 reset 단위로 취급(74, 131) | 낮음 |
 | pabcd-state/cli.ts | loop/goalplan 명령을 라우팅만(151) | 낮음 |
-| source-identity.ts | `.codexclaw/` 전체를 FSM 산출물로 보고 source-delta에서 제외 가능(139) | 낮음 |
+| source-identity.ts | `.cursorclaw/` 전체를 FSM 산출물로 보고 source-delta에서 제외 가능(139) | 낮음 |
 | messenger-bridge/db.ts | 주석에만 등장. 파일·필드를 읽거나 쓰지 않음(354) | 없음 |
 | skills/loop/SKILL.md | 사람이 직접 편집할 on-disk 스키마를 명시(239) | 높음(문서 계약) |
 

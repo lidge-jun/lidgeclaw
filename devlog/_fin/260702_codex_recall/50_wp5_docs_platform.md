@@ -1,6 +1,6 @@
 ---
 created: 2026-07-02
-tags: [codexclaw, recall, codex-source-verification, windows, linux, portability]
+tags: [cursorclaw, recall, codex-source-verification, windows, linux, portability]
 aliases: [recall WP5 doc-alignment and platform log]
 ---
 
@@ -15,7 +15,7 @@ verification pass).
 
 | Assumption | Verdict | Upstream evidence |
 | --- | --- | --- |
-| `CODEX_HOME` env override, else `home_dir()/.codex` | CONFIRMED | `utils/home-dir/src/lib.rs:13` (`find_codex_home`); `dirs::home_dir` maps to USERPROFILE on Windows — matches our `node:os homedir()` use |
+| `CURSOR_HOME` env override, else `home_dir()/.codex` | CONFIRMED | `utils/home-dir/src/lib.rs:13` (`find_codex_home`); `dirs::home_dir` maps to USERPROFILE on Windows — matches our `node:os homedir()` use |
 | `sessions/YYYY/MM/DD/` tree | CONFIRMED | `rollout/src/recorder.rs:1330-1343` — built from **local time** (`OffsetDateTime::now_local`) |
 | `rollout-YYYY-MM-DDTHH-MM-SS-<uuid>.jsonl` filename | CONFIRMED | same block; `-` instead of `:` for filesystem compatibility — our `dateFromRolloutName` regex matches |
 | LF-only line terminator on ALL platforms | CONFIRMED | `rollout/src/recorder.rs:1655` (`json.push('\n')`, no writeln!/CRLF) — byte-offset append parsing is Windows-safe |
@@ -40,7 +40,7 @@ against the newer fork `129ea2a` (2026-07-01). Verifier caveats folded in same-d
   `/repo2`; `\`-separated Windows paths handled; LIKE patterns escape the backslash
   separator correctly under `ESCAPE '\'`).
 - Memory relpaths normalize to `/` on every platform (Codex memory backend parity).
-- `codexHome()` resolves an explicit `CODEX_HOME` to an absolute path
+- `codexHome()` resolves an explicit `CURSOR_HOME` to an absolute path
   (canonicalization-lite, mirroring home-dir/lib.rs).
 - Accepted residuals (documented, not fixed): same-size-same-mtime rewrite staleness
   (self-heals on any later change), thread-list ordering differs from Codex's

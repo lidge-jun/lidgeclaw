@@ -17,7 +17,7 @@ Release workflow.
    the two inventory fields. The manifest and inventory may carry `+codex.<stamp>`
    build metadata; the others may not.
 3. Regenerate the inventory with the measured test count:
-   `node plugins/codexclaw/scripts/inventory.mjs --write --tests <n>`. Take `<n>`
+   `node plugins/cursorclaw/scripts/inventory.mjs --write --tests <n>`. Take `<n>`
    from the `tests` line of a real run, not `pass` - CI skips the repo-map live
    smoke, so `pass` is environment-dependent while `tests` is not.
 4. Open the promotion PR from `dev` to `main` and merge it once checks are green.

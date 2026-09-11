@@ -1,7 +1,7 @@
 # 260707_remote_usability — Hermes-level usability: remote setup + onboarding + docs
 
 HOTL goal loop, session `019f397d-9ad5-75b1-adeb-ab8734bb6c71`.
-Goalplan: `.codexclaw/goalplans/close-the-remaining-hermes-openclaw-usability-ga/`
+Goalplan: `.cursorclaw/goalplans/close-the-remaining-hermes-openclaw-usability-ga/`
 Host goal created via `create_goal` (freeze boundary), `host.armed=true`.
 
 Work-phases (1 WP = 1 PABCD cycle):

@@ -35,9 +35,9 @@ interface RootOpts {
 
 function makeRoot(opts: RootOpts = {}): string {
   const root = mkdtempSync(join(tmpdir(), "cxc-targets-"));
-  mkdirSync(join(root, ".codex-plugin"), { recursive: true });
+  mkdirSync(join(root, ".cursor-plugin"), { recursive: true });
   writeFileSync(
-    join(root, ".codex-plugin", "plugin.json"),
+    join(root, ".cursor-plugin", "plugin.json"),
     JSON.stringify({ name: "t", version: "0.0.1", hooks: ["./hooks/a.json"], mcpServers: "./.mcp.json" }),
   );
 
@@ -170,7 +170,7 @@ test("B3b: manifest hook documents themselves cannot escape the plugin root", ()
   const root = makeRoot();
   writeFileSync(join(root, "..", "outside-hook.json"), JSON.stringify({ hooks: {} }));
   writeFileSync(
-    join(root, ".codex-plugin", "plugin.json"),
+    join(root, ".cursor-plugin", "plugin.json"),
     JSON.stringify({ name: "t", hooks: ["../outside-hook.json"] }),
   );
   assert.deepEqual(validateManifestTargets(root), [

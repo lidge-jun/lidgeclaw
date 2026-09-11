@@ -98,7 +98,7 @@ hybrid merge: FTS hits + vec hits → RRF (k=60) → combined score
 
 ## codexclaw 적용 시 핵심 차이
 
-- codexclaw memory는 `~/.codex/memories/` (Codex 네이티브 구조)
+- codexclaw memory는 `~/.cursor/memories/` (Codex 네이티브 구조)
   - memory_summary.md, MEMORY.md, raw_memories.md
   - rollout_summaries/*.md, extensions/, skills/
 - 이미 paragraph-chunk + synonym expansion 구현됨 (memory-search.ts)

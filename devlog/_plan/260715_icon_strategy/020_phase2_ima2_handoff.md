@@ -246,9 +246,9 @@ portable.
 In the later codexclaw follow-up, re-verify and update only these already-planned
 surfaces:
 
-- `plugins/codexclaw/skills/dev-uiux-design/SKILL.md` `UX-ICON-01`: replace any
+- `plugins/cursorclaw/skills/dev-uiux-design/SKILL.md` `UX-ICON-01`: replace any
   future-capability wording with the confirmed `ima2 icon` command contract.
-- `plugins/codexclaw/skills/dev-frontend/SKILL.md` `FE-ICON-01`: replace the conceptual
+- `plugins/cursorclaw/skills/dev-frontend/SKILL.md` `FE-ICON-01`: replace the conceptual
   `ima2 icon → vtracer → svgo → svgr` route with one tested invocation referencing
   the confirmed `ima2 icon` command and its output paths.
 

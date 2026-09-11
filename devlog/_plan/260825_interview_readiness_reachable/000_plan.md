@@ -91,7 +91,7 @@ the `--dim=max` it forbids.
 ### What actually distinguishes a real interview
 
 `--derive` does not read agent input. It reads the Q&A ledger
-(`.codexclaw/interviews/<session>.jsonl`), which is written by
+(`.cursorclaw/interviews/<session>.jsonl`), which is written by
 `captureInterviewAnswers` from real `request_user_input` traffic — questions the
 user was actually asked and answers the user actually gave. `deriveFromLedger`
 then refuses to guess: an unmapped question is skipped entirely, an unanswered
@@ -153,7 +153,7 @@ the composition:
   conditions (contradictions empty, assumptions recorded, `scanRounds >= 1`); AND
 - **evidence**: every dimension the shape counted as `high` appears in
   `dimensionsBackedByAnswers`, computed by re-reading
-  `.codexclaw/interviews/<session>.jsonl`.
+  `.cursorclaw/interviews/<session>.jsonl`.
 
 The attribution map is the missing link: `deriveFromLedger` takes it as a
 `--map` argument and then throws it away, so a later reader cannot tell which

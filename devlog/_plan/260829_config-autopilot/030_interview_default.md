@@ -52,7 +52,7 @@
 
 ## 설계
 
-정책은 **프로젝트 로컬 파일**에 둔다. `~/.codex/config.toml`이 아니라 `.codexclaw/config.json`이다.
+정책은 **프로젝트 로컬 파일**에 둔다. `~/.cursor/config.toml`이 아니라 `.cursorclaw/config.json`이다.
 근거: 인터뷰 필요는 저장소마다 다르고, config.toml에 넣으면 wp2/wp3의 화이트리스트·되돌리기 부담이
 아무 이득 없이 늘어난다. 그리고 codexclaw가 사용자 전역 설정에 키를 하나라도 덜 심는 게 낫다.
 
@@ -60,7 +60,7 @@
     export type InterviewPolicy = "off" | "new-unit" | "always";
     export const DEFAULT_INTERVIEW_POLICY: InterviewPolicy = "new-unit";
 
-    export function readInterviewPolicy(cwd: string): InterviewPolicy;   // .codexclaw/config.json, 파싱 실패 시 기본값
+    export function readInterviewPolicy(cwd: string): InterviewPolicy;   // .cursorclaw/config.json, 파싱 실패 시 기본값
 
     export interface EntryDecisionInput {
       trigger: Phase | null;        // detectTrigger 결과
@@ -95,7 +95,7 @@
 | 6 | off | P | false | false | `P` |
 | 7 | 아무 값 | null | false | false | `null` — C0/C1 보호 |
 | 8 | off | I | false | false | `I` — 명시 키워드 우선 |
-| 9 | `.codexclaw/config.json` 없음 | — | — | — | `new-unit` |
+| 9 | `.cursorclaw/config.json` 없음 | — | — | — | `new-unit` |
 | 10 | 손상된 JSON | — | — | — | `new-unit`, 예외 없음 |
 
 ## 범위 경계
@@ -205,7 +205,7 @@ B를 I로 승격하면 그 규칙을 우회해 진입이 생긴다.
 
 ### B4·B5 (Medium) — 정책 파일 위치를 바꾼다
 
-`.codexclaw/`는 `.gitignore:4`에 있고 `cxc reset --all`이 디렉터리째 지운다.
+`.cursorclaw/`는 `.gitignore:4`에 있고 `cxc reset --all`이 디렉터리째 지운다.
 저장소마다 다른 정책을 담겠다는 근거와 모순된다.
 
 정정: **저장소 루트의 `codexclaw.json`** 에 둔다. 커밋 가능하고, reset이 건드리지 않고,

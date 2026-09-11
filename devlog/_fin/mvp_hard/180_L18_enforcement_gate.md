@@ -22,13 +22,13 @@ drift, false-enforcement prose, or count mismatch.
      DONE/PLANNED/PARTIAL/DEFERRED token. VIOLATION when INDEX impl-state is `DONE` but the loop
      doc status token is not `DONE` (and vice-versa). Missing loop doc for a decade = violation.
      Tokens come from a LOCKED enum (no new tokens): `DONE|PLANNED|PARTIAL|DEFERRED|PROPOSED`.
-   - `checkForbiddenClaims(repoRoot)`: scan `plugins/codexclaw/skills/**/SKILL.md` for
+   - `checkForbiddenClaims(repoRoot)`: scan `plugins/cursorclaw/skills/**/SKILL.md` for
      false-enforcement phrases. A line may opt out with a trailing `<!-- gate-ok: <reason> -->`
      for verified-true claims. VIOLATION = a matching line without the escape (cli-jaw claim-audit).
    - `checkCounts(repoRoot)`: assert the number of `./hooks/*.json` entries in `plugin.json.hooks`
-     equals the count of files in `plugins/codexclaw/hooks/`.
+     equals the count of files in `plugins/cursorclaw/hooks/`.
 2. A `gate` runner wired as `"gate": "node scripts/gate.mjs"` in `package.json` AND a test
-   (`plugins/codexclaw/test/gate.test.mjs`) importing the checks and asserting `ok === true` on the
+   (`plugins/cursorclaw/test/gate.test.mjs`) importing the checks and asserting `ok === true` on the
    live repo, so `npm test` fails on drift.
 3. C9: document in `structure/INDEX.md` that the root `package.json` glob is the single test source
    and component `test` scripts are intentionally not uniform (least churn, honest) — unless the

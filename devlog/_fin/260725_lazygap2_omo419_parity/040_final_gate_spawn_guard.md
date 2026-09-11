@@ -40,7 +40,7 @@
 1. `../../pabcd-state/dist/goalplan.js`를 직접 import — dist가 dist를 부르므로 경로는
    맞지만, 소스에서 테스트를 돌릴 때 dist가 낡아 있으면 다른 코드를 시험하게 된다.
 2. **goalplan JSON을 가드가 직접 읽는다** — `pabcd-state`에 의존하지 않고
-   `.codexclaw/goalplans/<slug>/goalplan.json`을 파싱한다.
+   `.cursorclaw/goalplans/<slug>/goalplan.json`을 파싱한다.
 
 **2를 택한다.** 가드가 필요한 것은 `finalGate.testReceiptPath`/`qaReceiptPath`와
 각 영수증의 `sourceIdentity`뿐이고, 전부 JSON에서 직접 읽을 수 있다. 컴포넌트 간
@@ -52,9 +52,9 @@ deny가 아니라 **allow(fail-open)** 한다 — 조기 경고 층이 스키마
 ## 문제
 
 C 단계 산문은 테스트와 독립 리뷰를 요구하지만 PreToolUse는 선행 산출물을 확인하지 않는다
-(`plugins/codexclaw/components/pabcd-state/src/hook.ts:257-267`;
+(`plugins/cursorclaw/components/pabcd-state/src/hook.ts:257-267`;
 spawn 훅은 토폴로지·스킬·라우팅만 처리 —
-`plugins/codexclaw/components/subagent-config/src/spawn-attach-hook.ts:705-845`).
+`plugins/cursorclaw/components/subagent-config/src/spawn-attach-hook.ts:705-845`).
 그래서 테스트를 돌리지 않고 최종 리뷰어를 띄울 수 있다.
 
 ## before → after
@@ -110,8 +110,8 @@ export function checkFinalGatePrereqs(
 
 ```
 payload.session_id
-  → .codexclaw/sessions/<sanitize(session_id)>.json  의 `slug`   (state.ts:19, :98)
-  → .codexclaw/goalplans/<slug>/goalplan.json        의 `finalGate` / `criteria`
+  → .cursorclaw/sessions/<sanitize(session_id)>.json  의 `slug`   (state.ts:19, :98)
+  → .cursorclaw/goalplans/<slug>/goalplan.json        의 `finalGate` / `criteria`
   → finalGate.testReceiptPath / qaReceiptPath        의 `sourceIdentity`
 ```
 
@@ -163,7 +163,7 @@ payload.session_id
 
 ### `spawn-attach-hook.ts` — 호출 지점
 
-before (`plugins/codexclaw/components/subagent-config/src/spawn-attach-hook.ts:705-845`): 재귀 deny → 페이로드 검증 → 역할/스킬 라우팅 → allow 또는 rewrite.
+before (`plugins/cursorclaw/components/subagent-config/src/spawn-attach-hook.ts:705-845`): 재귀 deny → 페이로드 검증 → 역할/스킬 라우팅 → allow 또는 rewrite.
 
 after: 재귀 deny(`:732`)와 페이로드 검증 이후, **`cwd`가 확정되는 지점(`:813`) 뒤,
 최종 no-op/allow(`:865`) 직전**에 `checkFinalGatePrereqs`를 호출한다.
@@ -200,8 +200,8 @@ deny는 기존 `denyEnvelope`(`:330`)를 그대로 쓴다. 훅은 예외에서 f
 
 표의 행들이 실제로 관측되려면 두 가지를 fixture가 갖춰야 한다.
 
-**세 파일을 만든다.** 임시 `cwd`에 `.codexclaw/sessions/<id>.json`(`slug` 포함),
-`.codexclaw/goalplans/<slug>/goalplan.json`, `.codexclaw/evidence/*.json`을 쓴다.
+**세 파일을 만든다.** 임시 `cwd`에 `.cursorclaw/sessions/<id>.json`(`slug` 포함),
+`.cursorclaw/goalplans/<slug>/goalplan.json`, `.cursorclaw/evidence/*.json`을 쓴다.
 세 파일 중 하나만 빠져도 allow가 되므로, deny 케이스는 전부 세 파일이 갖춰진
 상태에서만 성립한다.
 
@@ -230,8 +230,8 @@ deny/allow가 나오는지 확인하고, 페이로드에 `session_id`를 반드�
   ```
   npx tsc --noEmit --allowImportingTsExtensions --module nodenext --target es2022 \
     --moduleResolution nodenext \
-    plugins/codexclaw/components/subagent-config/src/final-gate-guard.ts \
-    plugins/codexclaw/components/subagent-config/test/final-gate-guard.test.ts
+    plugins/cursorclaw/components/subagent-config/src/final-gate-guard.ts \
+    plugins/cursorclaw/components/subagent-config/test/final-gate-guard.test.ts
   ```
 
   신규 파일이라 baseline 오류가 없다 — 수용 조건은 **exit 0**이다.

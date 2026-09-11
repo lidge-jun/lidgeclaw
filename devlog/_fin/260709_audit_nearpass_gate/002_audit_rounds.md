@@ -1,7 +1,7 @@
 # 002 — A-gate audit rounds (evidence ledger)
 
 Reviewer: gpt-5.5 explorer "Sartre" (id 019f4444-4c5a-7f62-8223-c4971b8e5450),
-dispatched with `$cxc-dev-code-reviewer` + `$cxc-search` attached and the
+dispatched with `$crc-dev-code-reviewer` + `$crc-search` attached and the
 normalized VERDICT-line contract — this unit's own doctrine, dogfooded.
 
 ## Round 1 — VERDICT: GO-WITH-FIXES (blockers=2) + 1 Medium
@@ -11,7 +11,7 @@ normalized VERDICT-line contract — this unit's own doctrine, dogfooded.
 **B1 (Critical, ACCEPT) — dist rebuild missing from scope/verifier.**
 RCA: I scoped phases to `src/` + `test/` out of edit-surface habit; but runtime
 entrypoints are committed compiled dist (`structure/INDEX.md:180,186,234`) and
-`plugins/codexclaw/test/dist-freshness.test.mjs:52-53` fails stale dist.
+`plugins/cursorclaw/test/dist-freshness.test.mjs:52-53` fails stale dist.
 Disposition: folded — C phase now runs root `npm run build` (regenerates both
 components' dist) + the root dist-freshness test; dist/ added to write scope as
 generated output owned by the MAIN session at C (workers never touch dist/).

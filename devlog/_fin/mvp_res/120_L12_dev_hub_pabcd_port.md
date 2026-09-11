@@ -21,18 +21,18 @@ shipping as a separate `dev-pabcd` skill.
 
 ## Scope (decision-complete)
 Files to add/edit:
-- `plugins/codexclaw/skills/dev/SKILL.md`
-- `plugins/codexclaw/skills/dev/agents/openai.yaml`
-- `plugins/codexclaw/skills/pabcd/SKILL.md`
-- `plugins/codexclaw/skills/pabcd/agents/openai.yaml`
+- `plugins/cursorclaw/skills/dev/SKILL.md`
+- `plugins/cursorclaw/skills/dev/agents/openai.yaml`
+- `plugins/cursorclaw/skills/pabcd/SKILL.md`
+- `plugins/cursorclaw/skills/pabcd/agents/openai.yaml`
 
 Concrete source -> target map:
-- `/Users/jun/.cli-jaw-3459/skills/dev/SKILL.md` -> `plugins/codexclaw/skills/dev/SKILL.md`
-- `/Users/jun/.cli-jaw-3459/skills/dev-pabcd/SKILL.md` -> `plugins/codexclaw/skills/pabcd/SKILL.md`
-- `devlog/.lazycodex/plugins/omo/skills/comment-checker/SKILL.md` -> `plugins/codexclaw/skills/dev/SKILL.md` completion-gate sentence only
-- `devlog/.lazycodex/plugins/omo/skills/programming/SKILL.md` -> `plugins/codexclaw/skills/dev/SKILL.md` strict typing/static-analysis discipline
-- `devlog/.lazycodex/plugins/omo/skills/git-master/SKILL.md` -> `plugins/codexclaw/skills/dev/SKILL.md` local git discipline only
-- `devlog/.lazycodex/plugins/omo/skills/ultraresearch/SKILL.md` -> `plugins/codexclaw/skills/dev/SKILL.md` guard separating ordinary context gathering from explicit deep research
+- `/Users/jun/.cli-jaw-3459/skills/dev/SKILL.md` -> `plugins/cursorclaw/skills/dev/SKILL.md`
+- `/Users/jun/.cli-jaw-3459/skills/dev-pabcd/SKILL.md` -> `plugins/cursorclaw/skills/pabcd/SKILL.md`
+- `devlog/.lazycodex/plugins/omo/skills/comment-checker/SKILL.md` -> `plugins/cursorclaw/skills/dev/SKILL.md` completion-gate sentence only
+- `devlog/.lazycodex/plugins/omo/skills/programming/SKILL.md` -> `plugins/cursorclaw/skills/dev/SKILL.md` strict typing/static-analysis discipline
+- `devlog/.lazycodex/plugins/omo/skills/git-master/SKILL.md` -> `plugins/cursorclaw/skills/dev/SKILL.md` local git discipline only
+- `devlog/.lazycodex/plugins/omo/skills/ultraresearch/SKILL.md` -> `plugins/cursorclaw/skills/dev/SKILL.md` guard separating ordinary context gathering from explicit deep research
 
 Exact behavior:
 - `dev` is implicit-on in `openai.yaml`; all other dev surface skills remain
@@ -40,7 +40,7 @@ Exact behavior:
 - Keep the C0-C5 classifier as self-assessment, not cli-jaw `task_tags`.
 - Rewrite boss/employee/dispatch/bgtask/goal-server wording to main agent,
   subagent, background subagent polling, and codexclaw/codex-native goals.
-- `pabcd` absorbs `dev-pabcd`; do not create `plugins/codexclaw/skills/dev-pabcd/`.
+- `pabcd` absorbs `dev-pabcd`; do not create `plugins/cursorclaw/skills/dev-pabcd/`.
 - Add dev-pabcd's depth table, work-phase terminology, anti-skip rule,
   delegation model, long verification pattern, and root-resolution rule to
   `pabcd`.
@@ -75,7 +75,7 @@ Must-NOT-Have:
 ## Acceptance (1-3 testable criteria)
 1. `dev` and `pabcd` SKILL.md files use only `name`, `description`, and
    `metadata.short-description` frontmatter; `dev` policy is implicit true.
-2. `rg "cli-jaw|orchestrate|dispatch|bgtask|devlog/|verify-counts" plugins/codexclaw/skills/dev plugins/codexclaw/skills/pabcd` has no runtime-command leaks except historical references inside plan docs are irrelevant.
+2. `rg "cli-jaw|orchestrate|dispatch|bgtask|devlog/|verify-counts" plugins/cursorclaw/skills/dev plugins/cursorclaw/skills/pabcd` has no runtime-command leaks except historical references inside plan docs are irrelevant.
 3. `pabcd` documents that L4 router stubs were only activation shells and that
    L12 supplies the real discipline content for future loops.
 

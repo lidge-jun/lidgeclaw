@@ -255,7 +255,7 @@ export function runDoctor(
   const checks: CheckResult[] = [];
 
   // 1. plugin manifest parses and references hooks.
-  const manifestPath = join(pluginRoot, ".codex-plugin", "plugin.json");
+  const manifestPath = join(pluginRoot, ".cursor-plugin", "plugin.json");
   if (!existsSync(manifestPath)) {
     checks.push({ name: "manifest", severity: "FAIL", evidence: `missing ${manifestPath}` });
   } else {
@@ -354,7 +354,7 @@ export function runDoctor(
   // Read plugin version for report metadata.
   let pluginVersion: string | undefined;
   try {
-    const mf = JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8")) as { version?: unknown };
+    const mf = JSON.parse(readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8")) as { version?: unknown };
     pluginVersion = typeof mf.version === "string" ? mf.version : undefined;
   } catch { /* already caught by check #1 */ }
 
@@ -392,9 +392,9 @@ export function runDoctor(
  * the repair line says the only thing that actually works — restart Codex.
  */
 export function runInstalledRootCheck(pluginRoot: string, options: DoctorOptions = {}): CheckResult {
-  const codexHome = options.codexHome ?? process.env.CODEX_HOME ?? join(homedir(), ".codex");
+  const codexHome = options.codexHome ?? process.env.CURSOR_HOME ?? join(homedir(), ".codex");
   try {
-    const manifest = JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8")) as {
+    const manifest = JSON.parse(readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8")) as {
       name?: unknown;
       version?: unknown;
     };
@@ -438,9 +438,9 @@ export function runInstalledRootCheck(pluginRoot: string, options: DoctorOptions
 }
 
 export function runHookTrustCheck(pluginRoot: string, options: DoctorOptions = {}): CheckResult {
-  const codexHome = options.codexHome ?? process.env.CODEX_HOME ?? join(homedir(), ".codex");
+  const codexHome = options.codexHome ?? process.env.CURSOR_HOME ?? join(homedir(), ".codex");
   try {
-    const manifest = JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8")) as { name?: unknown };
+    const manifest = JSON.parse(readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8")) as { name?: unknown };
     if (typeof manifest.name !== "string" || !manifest.name) {
       return { name: "hook-trust", severity: "WARN", evidence: "manifest has no plugin name; cannot resolve install key" };
     }
@@ -495,7 +495,7 @@ export function runHookTrustCheck(pluginRoot: string, options: DoctorOptions = {
  */
 export function runDriftCheck(pluginRoot: string): CheckResult[] {
   const checks: CheckResult[] = [];
-  const manifestPath = join(pluginRoot, ".codex-plugin", "plugin.json");
+  const manifestPath = join(pluginRoot, ".cursor-plugin", "plugin.json");
 
   // declared version presence (drift baseline).
   try {

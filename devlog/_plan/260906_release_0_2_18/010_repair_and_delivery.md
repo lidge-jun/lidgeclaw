@@ -2,13 +2,13 @@
 
 ## PR69 PostCompact repair
 
-MODIFY components/cxc-ops/src/map-affordance.ts (under plugins/codexclaw):
+MODIFY components/cxc-ops/src/map-affordance.ts (under plugins/cursorclaw):
 replace unsupported PostCompact context output with an empty-output enqueue of a
 per-session recovery marker. Identity comes from valid absolute cwd and session_id
 in native hook stdin; missing/malformed/child payloads stay silent. Check agent_id
 AND agent_type before BOTH enqueue and consume: children can share the parent's
 session_id and must never unlink its marker. Hash session_id
-for the marker name. Marker belongs to .codexclaw/affordance-recovery, never the
+for the marker name. Marker belongs to .cursorclaw/affordance-recovery, never the
 PABCD state, goalplan or native DB. Reject symlinked state/recovery directories.
 Use exclusive marker creation to coalesce compactions; no secret/question content.
 Add a UserPromptSubmit consumer: remove the matching marker once, then emit the

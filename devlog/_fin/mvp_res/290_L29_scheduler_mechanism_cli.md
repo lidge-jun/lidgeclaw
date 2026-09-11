@@ -6,7 +6,7 @@ Source-of-record: 260629_codexclaw_mvp/040_phase3_overview.md, 041/042
 
 ## Goal (one slice)
 Ship the Phase 3 scheduling base: `cxc schedule` records recurring jobs in
-`.codexclaw/schedule.json` and installs an OS scheduler entry that runs
+`.cursorclaw/schedule.json` and installs an OS scheduler entry that runs
 `codex exec` with codexclaw active. codexclaw does not add a built-in cron loop.
 
 ## Why now / dependencies
@@ -17,7 +17,7 @@ Ship the Phase 3 scheduling base: `cxc schedule` records recurring jobs in
 
 ## Scope (decision-complete except Q-P3-1)
 - Files to add/edit: CLI schedule command under the existing `cxc` CLI surface;
-  `.codexclaw/schedule.json` project job store; generated launchd plist on
+  `.cursorclaw/schedule.json` project job store; generated launchd plist on
   macOS or cron entry on Unix-like hosts.
 - Exact behavior: `cxc schedule add --every 15m --prompt "..."` creates a job
   definition, writes scheduler metadata, and arranges a recurring invocation of
@@ -47,7 +47,7 @@ Ship the Phase 3 scheduling base: `cxc schedule` records recurring jobs in
 ## Acceptance (1-3 testable criteria)
 1. `cxc schedule add --every 15m --prompt "..." --dry-run` prints the job id,
    store record preview, and OS scheduler artifact without touching the system.
-2. `.codexclaw/schedule.json` roundtrips enabled jobs and rejects malformed
+2. `.cursorclaw/schedule.json` roundtrips enabled jobs and rejects malformed
    intervals/prompts with clear CLI errors.
 3. `cxc schedule remove <id>` removes the job record and prints the scheduler
    artifact/action that must be removed or was removed.
@@ -70,7 +70,7 @@ Options:
 - Option B - always-on daemon using codex app-server/exec-server: codexclaw
   owns a resident process that wakes jobs itself. Impact: more uniform behavior,
   but adds service lifecycle, crash recovery, and experimental runtime surface.
-- Option C - store-only planner: write `.codexclaw/schedule.json` but require
+- Option C - store-only planner: write `.cursorclaw/schedule.json` but require
   users to install scheduler entries manually. Impact: safest implementation,
   but not a shippable heartbeat-style UX.
 

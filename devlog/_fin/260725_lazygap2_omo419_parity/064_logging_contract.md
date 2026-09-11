@@ -5,8 +5,8 @@
 ## 문제
 
 codexclaw에는 `observability` 주제를 `dev-backend`로 보내는 라우팅이 있고
-(`plugins/codexclaw/skills/dev/SKILL.md:90`) 그 라우팅은 production 표면으로 한정된다
-(`plugins/codexclaw/skills/dev/SKILL.md:121`). 하지만 CLI·라이브러리·스크립트를 포함한 **cross-surface logging 계약을 소유하는
+(`plugins/cursorclaw/skills/dev/SKILL.md:90`) 그 라우팅은 production 표면으로 한정된다
+(`plugins/cursorclaw/skills/dev/SKILL.md:121`). 하지만 CLI·라이브러리·스크립트를 포함한 **cross-surface logging 계약을 소유하는
 문서가 없다.** codexclaw 자체가 훅과 CLI로 이루어진 제품이므로 이 공백이 직접 아프다.
 
 upstream이 이 계약을 문서화했다
@@ -18,7 +18,7 @@ upstream이 이 계약을 문서화했다
 
 ### 이미 있는 것
 
-`plugins/codexclaw/skills/dev-backend/references/core/observability.md:83-99`가
+`plugins/cursorclaw/skills/dev-backend/references/core/observability.md:83-99`가
 **Structured Logging** 절을 소유한다:
 
 1. production은 JSON only, free-text `console.log` 금지
@@ -36,7 +36,7 @@ upstream이 이 계약을 문서화했다
 ### 진짜 공백
 
 `dev-backend`는 **production 백엔드 서비스** 전용이다 — 라우팅 자체가 그렇게 한정한다
-(`plugins/codexclaw/skills/dev/SKILL.md:121`). 그런데 codexclaw 자신은 훅과 CLI로 이루어져
+(`plugins/cursorclaw/skills/dev/SKILL.md:121`). 그런데 codexclaw 자신은 훅과 CLI로 이루어져
 있고, 거기에는 traceId도 OTel도 JSON 파이프라인도 없다. **CLI·스크립트·라이브러리에서
 언제 무엇을 출력할지**를 다루는 문서가 없다.
 
@@ -46,8 +46,8 @@ upstream이 이 계약을 문서화했다
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/skills/dev/references/logging.md` | 신규 — CLI·스크립트·라이브러리 표면 전용 |
-| `plugins/codexclaw/skills/dev/SKILL.md` | 라우팅 표(`:90` 부근)에 행 1개 추가 |
+| `plugins/cursorclaw/skills/dev/references/logging.md` | 신규 — CLI·스크립트·라이브러리 표면 전용 |
+| `plugins/cursorclaw/skills/dev/SKILL.md` | 라우팅 표(`:90` 부근)에 행 1개 추가 |
 
 ## before → after
 
@@ -59,17 +59,17 @@ upstream이 이 계약을 문서화했다
 
 | 초안 규칙 | 이미 있는 곳 | 처리 |
 | --- | --- | --- |
-| 1. 기존 관행 우선 | `plugins/codexclaw/skills/dev/SKILL.md:245-250` ("MUST follow existing conventions when they are clear") | 삭제, 링크로 대체 |
+| 1. 기존 관행 우선 | `plugins/cursorclaw/skills/dev/SKILL.md:245-250` ("MUST follow existing conventions when they are clear") | 삭제, 링크로 대체 |
 | 2. 소비자를 말할 수 없으면 출력 금지 | 없음 | **유지** |
-| 3. 결정 지점에만 배치 | `plugins/codexclaw/skills/dev-debugging/references/methodologies.md:135-165` | 삭제, 링크 |
-| 4. 레벨은 소비자 기준 | `plugins/codexclaw/skills/dev-backend/references/core/observability.md:83-89` | 삭제 — 아래 블로커 3 참조 |
+| 3. 결정 지점에만 배치 | `plugins/cursorclaw/skills/dev-debugging/references/methodologies.md:135-165` | 삭제, 링크 |
+| 4. 레벨은 소비자 기준 | `plugins/cursorclaw/skills/dev-backend/references/core/observability.md:83-89` | 삭제 — 아래 블로커 3 참조 |
 | 5. stdout/stderr 의미 | 없음 (QA는 캡처 규율이지 작성 규율이 아니다) | **유지** |
 | 6. 오류를 두 번 말하지 않기 | **owner 없음** — `dev:397-403`은 경계에서 표면화만 요구하고 `dev-debugging:238-242`는 boundary log-and-rethrow를 **명시적으로 허용**한다 | 좁혀서 **유지** (아래 `LOG-ONCE-01`) |
 
 #### 문서 최종 형태
 
 **Scope (3분할 — 블로커 2 반영).** "service면 dev-backend"는 codexclaw 자신에게
-적용 불가능하다. `cxc serve`(`plugins/codexclaw/components/messenger-bridge/src/cli.ts:62-81`)는
+적용 불가능하다. `cxc serve`(`plugins/cursorclaw/components/messenger-bridge/src/cli.ts:62-81`)는
 CLI 서브커맨드이면서 HTTP 서버이고, 같은 프로그램이 service install 표면도 제공한다
 (`:128-146`). backend 우선으로 읽으면 현재 free-text stdout 구현
 (`:66-74`, `:111-121`)이 즉시 전부 위반이 된다.
@@ -90,13 +90,13 @@ CLI 서브커맨드이면서 HTTP 서버이고, 같은 프로그램이 service i
 > stdout은 **성공 시의 명령 출력**이고 stderr는 **진단·진행·경고·오류**다.
 > 파이프 대상 값을 stderr에 섞지 않고, 진단을 stdout에 섞지 않는다.
 > (`--help`/`--version`은 성공 출력이므로 stdout이 맞다 —
-> `plugins/codexclaw/skills/qa/references/cli-tui-qa.md:18-20`.)
+> `plugins/cursorclaw/skills/qa/references/cli-tui-qa.md:18-20`.)
 >
 > 예상된 usage error(잘못된 플래그·입력)는 error-level **telemetry**는 아니지만
 > CLI에서는 **stderr + nonzero exit**를 유지한다. 두 개념을 섞지 않는다.
 >
 > **long-running local server는 이 규칙의 대상이 아니다.** `cxc serve`는 주입된 lifecycle
-> logger를 전부 stdout으로 보내고 있고(`plugins/codexclaw/components/messenger-bridge/src/cli.ts:66`,
+> logger를 전부 stdout으로 보내고 있고(`plugins/cursorclaw/components/messenger-bridge/src/cli.ts:66`,
 > `:111-118`, `bridge-controller.ts:165-166`, `:181-203`) 그 자체가 잘못이 아니다 —
 > 서버 프로세스의 stdout은 파이프 산출물이 아니라 로그 스트림이기 때문이다.
 > 서버 프로세스 로그 전송은 기존 관행을 따르고, 이 규칙을 소급 적용하지 않는다.
@@ -106,7 +106,7 @@ CLI 서브커맨드이면서 HTTP 서버이고, 같은 프로그램이 service i
 > 기록 하나와 사람이 읽는 진단 하나는 정당하다. 금지되는 것은 **같은 싱크에 같은 소비자를
 > 향해 구분되지 않는 반복**을 남기는 것이다.
 > 경계에서 맥락을 덧붙이는 log-and-rethrow도 허용된다
-> (`plugins/codexclaw/skills/dev-debugging/SKILL.md:238-242`가 명시적으로 허용한다).
+> (`plugins/cursorclaw/skills/dev-debugging/SKILL.md:238-242`가 명시적으로 허용한다).
 >
 > 실제 예 — `cxc serve`의 adapter 실패 경로는 **위반이 아니다**:
 > `bridge-controller.ts:191-196`이 지속 이벤트/메트릭에 기록하고 rethrow하며,
@@ -147,7 +147,7 @@ CLI 서브커맨드이면서 HTTP 서버이고, 같은 프로그램이 service i
 | 스위트 회귀 | 1,224 pass 유지 | **자동** — 내용 미관측 |
 
 **삭제한 행 (블로커 4):** "manifest 카운트 무영향 | `checkCounts`"는 거짓이었다.
-`plugins/codexclaw/scripts/gate.mjs:277-288`의 `checkCounts`는 manifest hook 수와
+`plugins/cursorclaw/scripts/gate.mjs:277-288`의 `checkCounts`는 manifest hook 수와
 `hooks/*.json` 파일 수만 비교한다 — skills나 references와 무관하므로 이 변경을
 보호하지 않는다.
 
@@ -159,7 +159,7 @@ CLI 서브커맨드이면서 HTTP 서버이고, 같은 프로그램이 service i
   읽지 않는다.** `dev/SKILL.md`의 라우팅 행은 읽지만 금지 문구 3패턴만 본다.
   → **내용 미관측 회귀 명령.**
 - `npm test` — **실측**: 1,224 pass / 0 fail.
-  사슬: `package.json:24` → `plugins/codexclaw/test/*.test.mjs`.
+  사슬: `package.json:24` → `plugins/cursorclaw/test/*.test.mjs`.
   **정정 (블로커 4):** 초안은 "WP2가 `dev/SKILL.md` 산문 단정을 전부 제거했다"고 적었으나
   틀렸다. `manifest-policy.test.mjs`의 L19가 여전히 `dev/SKILL.md`를 읽는다 — 다만 WP2가
   교체한 뒤라 **첫 `references/*.md` 경로를 추출해 파일 존재만 확인**하고 routing 의미는

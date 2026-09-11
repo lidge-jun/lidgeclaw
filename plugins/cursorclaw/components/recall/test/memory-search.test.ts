@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 // Pin the cxc-resolve seam (B1): a literal `crc chat search` assertion below
 // must not depend on whether the test runner's PATH carries a cxc binary.
-process.env.CODEXCLAW_CXC = "cxc";
+process.env.CURSORCLAW_CRC = "cxc";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";

@@ -19,14 +19,14 @@ user task, entrypoint and raw fixtures, not intended decisions or prior verdicts
 Read actual tool calls/output, not final self-reported compliance alone. Do not
 manufacture permission denials; controlled rejection is labeled synthetic.
 
-MODIFY plugins/codexclaw/inventory.json and generated README.md/README.ko.md/README.zh.md/skills
+MODIFY plugins/cursorclaw/inventory.json and generated README.md/README.ko.md/README.zh.md/skills
 README and docs-site count artifacts only as changed by the existing inventory
 generator using a measured full-suite total. Inspect generator diff, do not guess
 test counts. No version/cachebuster or dependency update in this PR.
 
 On macmini, isolated exact-commit checkout: npm ci; targeted examples + packaging
-+ skill catalog; npm test; node plugins/codexclaw/scripts/gate.mjs;
-node plugins/codexclaw/scripts/inventory.mjs --check; npm run build and dist diff. The suite
++ skill catalog; npm test; node plugins/cursorclaw/scripts/gate.mjs;
+node plugins/cursorclaw/scripts/inventory.mjs --check; npm run build and dist diff. The suite
 owns executable example validation; semantic routing remains independent review.
 No local product tests/build/typecheck. In-memory mutation tests run remotely.
 

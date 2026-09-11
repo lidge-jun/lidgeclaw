@@ -3,7 +3,7 @@
 Class call: C2 (doc-rule port, no code paths touched) — fast-path record per
 UNIT-RESIDENCE-01.
 
-What changed: `plugins/codexclaw/skills/pabcd/SKILL.md` gained five rules adopted
+What changed: `plugins/cursorclaw/skills/pabcd/SKILL.md` gained five rules adopted
 from the Sakana Fugu learned-orchestrator report (arXiv:2606.21228v1):
 
 - Delegation Model: DISPATCH-ISOLATION-01 (DEFAULT, read isolation + explicit

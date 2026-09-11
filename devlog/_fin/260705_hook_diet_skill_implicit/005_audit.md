@@ -33,22 +33,22 @@
 #### session-start-injecting-project-rules 재평가
 
 소스 확인 결과 (`rules.ts`):
-1. `.codexclaw/rules/*.md` 파일들을 읽어서 concatenate + dedup + 8000자 cap
+1. `.cursorclaw/rules/*.md` 파일들을 읽어서 concatenate + dedup + 8000자 cap
 2. 없으면 fallback으로 프로젝트 루트 `AGENTS.md`를 읽음
 3. `additionalContext` envelope으로 SessionStart에 주입
 
 **Codex 네이티브 AGENTS.md 주입과의 차이점**:
 - Codex 네이티브: 프로젝트 루트 AGENTS.md만 읽음
-- 이 hook: `.codexclaw/rules/*.md` (다중 파일) + AGENTS.md fallback
+- 이 hook: `.cursorclaw/rules/*.md` (다중 파일) + AGENTS.md fallback
 
 **현재 실제 상태**:
-- `.codexclaw/rules/` 디렉토리가 존재하지 않음
+- `.cursorclaw/rules/` 디렉토리가 존재하지 않음
 - 따라서 현재는 AGENTS.md fallback만 작동 → Codex 네이티브와 중복
 
 **결정**:
 - 즉시 제거 가능 (현재 중복 상태)
-- 단, `.codexclaw/rules/` 기능을 활용할 계획이 있다면 유지해야 함
-- **Plan 수정**: REMOVE 유지하되, "향후 `.codexclaw/rules/` 필요 시 복원"을
+- 단, `.cursorclaw/rules/` 기능을 활용할 계획이 있다면 유지해야 함
+- **Plan 수정**: REMOVE 유지하되, "향후 `.cursorclaw/rules/` 필요 시 복원"을
   risk mitigation에 추가
 
 ### Phase 4 — Dormant Pool
@@ -66,11 +66,11 @@
 ### Amendment 1: project-rules hook 제거 확정
 
 004_hook_audit.md의 REMOVE #5 "확인 사항" 해소:
-- hook이 `.codexclaw/rules/*.md` + AGENTS.md fallback을 읽는 것 확인
+- hook이 `.cursorclaw/rules/*.md` + AGENTS.md fallback을 읽는 것 확인
 - 현재 rules 디렉토리 부재 → 실질적으로 Codex 네이티브와 100% 중복
 - 제거 확정. rules 기능이 나중에 필요하면:
   a) hook을 복원하거나
-  b) `dev` skill에서 "세션 시작 시 .codexclaw/rules/ 확인" 규칙으로 대체
+  b) `dev` skill에서 "세션 시작 시 .cursorclaw/rules/ 확인" 규칙으로 대체
 
 ### Amendment 2: REMOVE hook 최종 9개 확정 (변동 없음)
 
@@ -80,7 +80,7 @@
 
 | Risk | Severity | Mitigation |
 |------|----------|------------|
-| .codexclaw/rules/ 기능 나중에 필요 | Low | hook 파일을 _deprecated/로 이동 (삭제X), 복원 용이 |
+| .cursorclaw/rules/ 기능 나중에 필요 | Low | hook 파일을 _deprecated/로 이동 (삭제X), 복원 용이 |
 
 ---
 

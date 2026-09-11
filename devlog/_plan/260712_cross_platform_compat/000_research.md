@@ -79,7 +79,7 @@ opencodex (PR #100, #102 and 8 core files) already solves the same cross-platfor
 
 ### SOFT — suboptimal on Windows (10)
 
-Skills that use `$CODEX_HOME`, `~/`, `grep`/`sort`/`uniq`, `./concepts/`, `cd && ...`, or Ubuntu+macOS-only CI matrix. Functional but require agent adaptation on Windows.
+Skills that use `$CURSOR_HOME`, `~/`, `grep`/`sort`/`uniq`, `./concepts/`, `cd && ...`, or Ubuntu+macOS-only CI matrix. Functional but require agent adaptation on Windows.
 
 ### NEUTRAL
 

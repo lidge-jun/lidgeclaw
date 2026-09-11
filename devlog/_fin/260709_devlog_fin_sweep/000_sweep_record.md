@@ -52,17 +52,17 @@ A-게이트 리뷰(gpt-5.5, FAIL→반영): enhance/promptgap 이동 철회, our
 
 ## 참조 갱신 (이동과 함께 `_plan` → `_fin`)
 
-- `plugins/codexclaw/test/emergence-doc-sync.test.mjs:25,56` (테스트가 HTML을 직접 read — 미갱신 시 스위트 파손)
+- `plugins/cursorclaw/test/emergence-doc-sync.test.mjs:25,56` (테스트가 HTML을 직접 read — 미갱신 시 스위트 파손)
 - `structure/INDEX.md:108,118` (260702_codex_recall)
 - `structure/00_philosophy.md:69,74` (codex_recall, messenger_bridge_active)
-- `plugins/codexclaw/skills/pabcd/SKILL.md:94` (fork_fsm_bug)
-- `plugins/codexclaw/skills/dev-uiux-design/references/color-system.md:29` (liquid_glass)
-- `plugins/codexclaw/skills/dev-frontend/references/core/motion.md:113,568,847,848` (liquid_glass, scroll_driven)
-- `plugins/codexclaw/skills/dev-frontend/references/core/liquid-glass.md:7` (liquid_glass)
-- `plugins/codexclaw/components/messenger-bridge/test/agent-store.test.ts:3` (주석, gui_production_hardening)
-- `plugins/codexclaw/components/pabcd-state/src/orchestrate-cli.ts:146` (주석, fork_fsm_bug — dist 재빌드 필요)
+- `plugins/cursorclaw/skills/pabcd/SKILL.md:94` (fork_fsm_bug)
+- `plugins/cursorclaw/skills/dev-uiux-design/references/color-system.md:29` (liquid_glass)
+- `plugins/cursorclaw/skills/dev-frontend/references/core/motion.md:113,568,847,848` (liquid_glass, scroll_driven)
+- `plugins/cursorclaw/skills/dev-frontend/references/core/liquid-glass.md:7` (liquid_glass)
+- `plugins/cursorclaw/components/messenger-bridge/test/agent-store.test.ts:3` (주석, gui_production_hardening)
+- `plugins/cursorclaw/components/pabcd-state/src/orchestrate-cli.ts:146` (주석, fork_fsm_bug — dist 재빌드 필요)
 - 손대지 않음: devlog 내부 상호참조(역사 기록), `../jawcode/...`(타 리포), `structure/INDEX.md`의 기존 stale `_plan/mvp_res|mvp_hard` 참조(이번 이동과 무관한 선행 부채 — 보고만)
-- 선행 부채 추가 보고(리뷰어 P3): `plugins/codexclaw/test/gate.test.mjs:90,104`가 `devlog/_plan/mvp_hard` 경로를 구성 — mvp_hard는 이미 _fin에 있으나 테스트는 픽스처 경로 생성이라 977 스위트 green (이번 이동 무관)
+- 선행 부채 추가 보고(리뷰어 P3): `plugins/cursorclaw/test/gate.test.mjs:90,104`가 `devlog/_plan/mvp_hard` 경로를 구성 — mvp_hard는 이미 _fin에 있으나 테스트는 픽스처 경로 생성이라 977 스위트 green (이번 이동 무관)
 
 ## Verification
 

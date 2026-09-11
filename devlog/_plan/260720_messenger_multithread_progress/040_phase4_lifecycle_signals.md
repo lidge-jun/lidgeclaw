@@ -65,7 +65,7 @@ failure is best-effort and never blocks the turn.
 
 Discord is narrower: gateway `MESSAGE_CREATE` only. The local interaction model
 contains token/channel fields but no originating user-message id
-(`plugins/codexclaw/components/messenger-bridge/src/discord-interactions.ts:32-39`),
+(`plugins/cursorclaw/components/messenger-bridge/src/discord-interactions.ts:32-39`),
 so slash commands and component retry are explicitly outside reaction scope.
 Gateway turns react to the original `DiscordMessageEvent.id` in
 `DiscordMessageEvent.channelId` (`discord-gateway.ts:31-39`), even if the answer
@@ -75,7 +75,7 @@ is routed into an auto-created `replyChannelId` thread.
 
 ### Telegram API and lifecycle
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/telegram-api.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/telegram-api.ts`
 
 Types/functions: new `TgChat`, `TgMessage.chat` typing, and new
 `TelegramApi.getChat()`, `pinChatMessage()`, `unpinChatMessage()`.
@@ -109,13 +109,13 @@ After:
   allowed because omitting it unpins the most recent message and can damage
   unrelated pin state.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/telegram-api.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/telegram-api.test.ts`
 
 Add request-shape tests for `getChat`, silent pin, explicit-id unpin, success,
 permission error, 429 retry, and fetch failure/token-redacted error. Assert the
 unpin body always contains `message_id`.
 
-### NEW `plugins/codexclaw/components/messenger-bridge/src/telegram-turn-lifecycle.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/src/telegram-turn-lifecycle.ts`
 
 Own pin leases, overlap ordering, exact-id cleanup, and shutdown cleanup.
 
@@ -155,7 +155,7 @@ After: pin mutation is serialized per CHAT (chat-wide lease — Telegram pin
 state is chat-wide), pre-existing state is preserved, and all owned ids have
 one exact cleanup path.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/queue.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/queue.ts`
 
 Before: `SerialQueues.enqueue()` accepts work forever; shutdown terminates
 only ACTIVE children, so queued tasks can start after shutdown.
@@ -165,7 +165,7 @@ After: add `close()` — subsequent `enqueue()` calls reject with a
 enqueue paths already handle `QueueFullError`; `QueueClosedError` follows the
 same error path (job marked error, no turn starts).
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/agent-service.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/agent-service.ts`
 
 Before: `shutdown()` is synchronous and terminates active children only.
 
@@ -204,7 +204,7 @@ RELOAD policy (separate from stop): reload replaces ONE adapter — it closes
 that adapter's ingress, awaits its `drain()`, and never touches the shared
 `AgentService`/queues (other agents keep running).
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/cli.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/cli.ts`
 
 Before: stop/reload proceeds synchronously to close server/database.
 
@@ -215,7 +215,7 @@ policy (own ingress + own drain only, shared service untouched). Shutdown
 tests prove queued work never starts after close, rejected pending jobs are
 marked error, and in-flight signal cleanup ran.
 
-### NEW `plugins/codexclaw/components/messenger-bridge/test/telegram-turn-lifecycle.test.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/test/telegram-turn-lifecycle.test.ts`
 
 Cover clear preflight → silent pin → exact unpin; already-pinned trigger;
 different pre-existing pin; preflight failure; missing permission; pin failure;
@@ -225,7 +225,7 @@ waits while topic A holds the chat lease, and never pins over A);
 `cleanupAll()` during preflight/active/pending states; and no id-less unpin
 call.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/telegram-adapter.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/telegram-adapter.ts`
 
 Functions: `createTelegramAdapter()`, `runTurn()`, and returned `stop()`.
 
@@ -245,7 +245,7 @@ After:
   though shared `AgentService.shutdown()` remains controller-owned. Adapter
   stop must not terminate another agent's turn.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/telegram-webhook.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/telegram-webhook.ts`
 
 Types/functions: `TelegramWebhookHandler`, `createWebhookHandler()`, and
 `acceptMessage()`.
@@ -264,7 +264,7 @@ After:
   `cleanup(): Promise<void>` and attach manager `cleanupAll()` to it. HTTP call
   shape stays callable, so `server.ts` routing does not change.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/bridge-controller.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/bridge-controller.ts`
 
 Functions: `buildAdapterEntry()`, `createWebhookAdapter()`, and `stop()`.
 
@@ -278,14 +278,14 @@ before shared `AgentService.shutdown()` as today; cleanup is idempotent and may
 also be awaited by controller test seams. No webhook request is admitted after
 cleanup closes the manager.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/telegram-adapter.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/telegram-adapter.test.ts`
 
 Test ordinary and `/retry` start/finish, success/error/cancel, queue-full
 result, pin failure, exact cleanup, overlap in one topic, concurrency across
 topics is replaced by CHAT-WIDE lease ordering (topic B waits behind topic
 A's lease), and stop cleanup.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/telegram-webhook.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/telegram-webhook.test.ts`
 
 The fake Telegram API GAINS `getChat`/`pinChatMessage`/`unpinChatMessage`
 stubs — a missing method must NOT masquerade as a conservative preflight
@@ -294,14 +294,14 @@ success/error/rejection cleanup, immediate queue-full cleanup, overlapping
 enqueued turns, and handler cleanup on shutdown. Existing positional/
 send-sequence assertions are updated explicitly for the added signal calls.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/bridge-controller.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/bridge-controller.test.ts`
 
 Test that webhook reload/stop invokes handler cleanup before discarding the
 entry and does not shut down another adapter early.
 
 ### Discord reaction API and gateway lifecycle
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-api.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-api.ts`
 
 Functions: new `DiscordApi.createReaction()` and
 `DiscordApi.deleteOwnReaction()`, plus a bounded-call extension.
@@ -340,14 +340,14 @@ deleteOwnReaction(channelId: string, messageId: string, emoji: string, options?:
 - Reuse `DiscordApi.call()` and return `DiscordApiResult<unknown>`; 204/no JSON
   remains a successful result.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/discord-adapter.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/discord-adapter.test.ts`
 
 Extend the existing fetch recorder with direct API assertions for PUT/DELETE,
 encoded `👀`, `✅`, and `❌`, 204 handling, 429 retry, and failure results. If
 API tests are split during B, use NEW `test/discord-api.test.ts`; do not duplicate
 transport fixtures across both files.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-adapter.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-adapter.ts`
 
 Functions: `handleMessage()` and new nested
 `createReactionLifecycle(originalChannelId, originalMessageId)`.
@@ -401,7 +401,7 @@ After:
 - Keep interaction handlers untouched: `Interaction` has no original user
   message id, so `/ask`, `/review`, and component retry receive no reactions.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/discord-adapter.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/discord-adapter.test.ts`
 
 Add gateway tests for success (`👀` remove then `✅`), result error/queue reject,
 runner throw/cancel/final-delivery failure (`❌`), auto-threading target identity,

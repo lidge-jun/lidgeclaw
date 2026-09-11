@@ -94,7 +94,7 @@ To activate permanently: `cli-jaw skill install <name>`
 ## agbrowse 상태
 
 - 설치됨: `/Users/jun/.local/bin/agbrowse`
-- helper: `plugins/codexclaw/skills/search/scripts/agbrowse_helper.py`
+- helper: `plugins/cursorclaw/skills/search/scripts/agbrowse_helper.py`
   - lazy resolve: $CODEXCLAW_AGBROWSE_PATH → PATH → adjacent checkout → install hint
 - 현재 언급 위치: `search` SKILL.md (Tier 2 ladder) + `ultraresearch` SKILL.md
 - 문제: search가 implicit-off이므로 에이전트가 agbrowse 존재를 인지 못함

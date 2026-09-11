@@ -17,7 +17,7 @@ Can codexclaw do cli-jaw-style recurring/heartbeat work using codex's own facili
 - A codexclaw CLI command to register/list/remove scheduled jobs:
   `codexclaw schedule add --every 15m --prompt "..."` → writes a launchd plist / cron entry that
   runs `codex exec` with the codexclaw plugin active.
-- Job definitions stored in `.codexclaw/schedule.json` (mirrors cli-jaw heartbeat.json shape).
+- Job definitions stored in `.cursorclaw/schedule.json` (mirrors cli-jaw heartbeat.json shape).
 - Results delivery (channel/file) — phase 3 design decision.
 
 ## Open decisions (ask jun)

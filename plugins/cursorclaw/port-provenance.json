@@ -5,7 +5,7 @@
     {
       "skill": "dev",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/dev/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev/SKILL.md",
       "status": "adapted",
       "deltas": ["Codex hook lifecycle integration", "cxc CLI surface", "worktree-aware safety rules"],
       "gate": "npm test (manifest-policy, gate.mjs)"
@@ -13,7 +13,7 @@
     {
       "skill": "dev-architecture",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-architecture/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/dev-architecture/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-architecture/SKILL.md",
       "status": "adapted",
       "deltas": ["Codex runtime routing"],
       "gate": "npm test (manifest-policy)"
@@ -21,7 +21,7 @@
     {
       "skill": "dev-backend",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-backend/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/dev-backend/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-backend/SKILL.md",
       "status": "adapted",
       "deltas": ["Codex runtime routing"],
       "gate": "npm test (manifest-policy)"
@@ -29,7 +29,7 @@
     {
       "skill": "dev-code-reviewer",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-code-reviewer/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/dev-code-reviewer/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md",
       "status": "adapted",
       "deltas": ["Codex subagent dispatch contract"],
       "gate": "npm test (manifest-policy)"
@@ -37,7 +37,7 @@
     {
       "skill": "dev-data",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-data/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/dev-data/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-data/SKILL.md",
       "status": "adapted",
       "deltas": ["Codex runtime routing"],
       "gate": "npm test (manifest-policy)"
@@ -45,7 +45,7 @@
     {
       "skill": "dev-debugging",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-debugging/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/dev-debugging/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-debugging/SKILL.md",
       "status": "adapted",
       "deltas": ["Codex runtime routing"],
       "gate": "npm test (manifest-policy)"
@@ -53,7 +53,7 @@
     {
       "skill": "dev-devops",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-devops/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/dev-devops/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-devops/SKILL.md",
       "status": "adapted",
       "deltas": ["Codex runtime routing"],
       "gate": "npm test (manifest-policy)"
@@ -61,7 +61,7 @@
     {
       "skill": "dev-visualizer",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/dev-visualizer/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-visualizer/SKILL.md",
       "status": "extension",
       "deltas": ["Codex Desktop app rendering detection", "report writing rules, A4 paged template and export QA (renamed from dev-diagram-viewer 2026-09-09)"],
       "gate": "npm test (manifest-policy)"
@@ -69,7 +69,7 @@
     {
       "skill": "dev-diagram-viewer",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/dev-diagram-viewer/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-diagram-viewer/SKILL.md",
       "status": "deprecated-redirect",
       "redirectTo": "dev-visualizer",
       "gate": null
@@ -77,7 +77,7 @@
     {
       "skill": "dev-frontend",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/dev-frontend/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-frontend/SKILL.md",
       "status": "local-only",
       "owner": "maintainer",
       "deltas": ["Personal frontend harness with accumulated design preferences"],
@@ -86,7 +86,7 @@
     {
       "skill": "dev-scaffolding",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-scaffolding/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/dev-scaffolding/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-scaffolding/SKILL.md",
       "status": "adapted",
       "deltas": ["Codex devlog conventions"],
       "gate": "npm test (manifest-policy)"
@@ -94,7 +94,7 @@
     {
       "skill": "dev-security",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-security/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/dev-security/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-security/SKILL.md",
       "status": "adapted",
       "deltas": ["Codex runtime routing"],
       "gate": "npm test (manifest-policy)"
@@ -102,7 +102,7 @@
     {
       "skill": "dev-testing",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-testing/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/dev-testing/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-testing/SKILL.md",
       "status": "adapted",
       "deltas": ["Codex runtime routing"],
       "gate": "npm test (manifest-policy)"
@@ -110,7 +110,7 @@
     {
       "skill": "dev-uiux-design",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/dev-uiux-design/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/dev-uiux-design/SKILL.md",
       "status": "local-only",
       "owner": "maintainer",
       "deltas": ["Personal UX judgment harness with design grammar"],
@@ -119,7 +119,7 @@
     {
       "skill": "pabcd",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-pabcd/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/pabcd/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/pabcd/SKILL.md",
       "status": "adapted",
       "deltas": ["Codex hook lifecycle", "local FSM persistence", "agent-gated attest CLI", "goal-complete gate hook"],
       "gate": "npm test (pabcd-state/*, gate.mjs)"
@@ -127,7 +127,7 @@
     {
       "skill": "interview",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-pabcd/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/interview/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/interview/SKILL.md",
       "status": "adapted",
       "deltas": ["Extracted as standalone Codex skill surface", "HITL-only in goal mode"],
       "gate": "npm test (interview.test.ts)"
@@ -135,7 +135,7 @@
     {
       "skill": "loop",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-pabcd/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/loop/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/loop/SKILL.md",
       "status": "extension",
       "deltas": ["Stop-continuation hook", "durable goalplan", "HOTL/HITL mode split", "divergence layer"],
       "gate": "npm test (goalplan.test.ts, goal-gate.test.ts, hook-continuation.test.ts)"
@@ -143,7 +143,7 @@
     {
       "skill": "search",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-search/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/search/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/search/SKILL.md",
       "status": "adapted",
       "deltas": ["Codex web_search tool integration", "absorbed ultraresearch protocol"],
       "gate": "npm test (manifest-policy)"
@@ -151,7 +151,7 @@
     {
       "skill": "lunasearch",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/lunasearch/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/lunasearch/SKILL.md",
       "status": "extension",
       "deltas": ["Cheap parallel discovery lane for search"],
       "gate": "npm test (manifest-policy)"
@@ -159,7 +159,7 @@
     {
       "skill": "recall",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/recall/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/recall/SKILL.md",
       "status": "extension",
       "deltas": ["Codex memory/chat search integration"],
       "gate": "npm test (recall/*)"
@@ -167,7 +167,7 @@
     {
       "skill": "qa",
       "upstream": { "repository": "lidge-jun/pabcd_initiative", "path": "skills/dev-qa/SKILL.md" },
-      "destination": "plugins/codexclaw/skills/qa/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/qa/SKILL.md",
       "status": "adapted",
       "deltas": ["Evidence matrix format", "E7 teardown discipline"],
       "gate": "npm test (qa-validate-evidence.test.mjs)"
@@ -175,7 +175,7 @@
     {
       "skill": "remote",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/remote/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/remote/SKILL.md",
       "status": "extension",
       "deltas": ["Messenger bridge onboarding ladder"],
       "gate": "npm test (messenger-bridge/*)"
@@ -183,7 +183,7 @@
     {
       "skill": "ast-grep",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/ast-grep/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/ast-grep/SKILL.md",
       "status": "extension",
       "deltas": ["AST-aware structural search"],
       "gate": "npm test (ast-grep.test.ts)"
@@ -191,7 +191,7 @@
     {
       "skill": "kwrite",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/kwrite/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/kwrite/SKILL.md",
       "status": "local-only",
       "owner": "maintainer",
       "deltas": ["Korean prose polishing"],
@@ -200,7 +200,7 @@
     {
       "skill": "repo-map",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/repo-map/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/repo-map/SKILL.md",
       "status": "extension",
       "deltas": ["Tree-sitter + PageRank structure map"],
       "gate": "npm test (repo-map-*.test.mjs)"
@@ -208,7 +208,7 @@
     {
       "skill": "worktree-guardian",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/worktree-guardian/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/worktree-guardian/SKILL.md",
       "status": "extension",
       "deltas": ["Codex-app managed-worktree safety hooks"],
       "gate": "npm test (worktree-guard.test.ts)"
@@ -216,7 +216,7 @@
     {
       "skill": "orchestrate",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/orchestrate/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/orchestrate/SKILL.md",
       "status": "deprecated-redirect",
       "redirectTo": "pabcd",
       "gate": null
@@ -224,7 +224,7 @@
     {
       "skill": "goalplan",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/goalplan/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/goalplan/SKILL.md",
       "status": "deprecated-redirect",
       "redirectTo": "loop",
       "gate": null
@@ -232,7 +232,7 @@
     {
       "skill": "skill-hub",
       "upstream": null,
-      "destination": "plugins/codexclaw/skills/skill-hub/SKILL.md",
+      "destination": "plugins/cursorclaw/skills/skill-hub/SKILL.md",
       "status": "deprecated-redirect",
       "redirectTo": "dev",
       "gate": null

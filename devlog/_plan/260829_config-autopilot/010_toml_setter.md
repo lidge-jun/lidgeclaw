@@ -12,16 +12,16 @@ opencodex는 같은 벽을 만나 손수 줄 단위 편집기를 만들었다(`s
 
 | 파일 | 동작 |
 |---|---|
-| `plugins/codexclaw/components/config-guard/src/toml-edit.ts` | NEW — 순수 문자열 변환 계층 |
-| `plugins/codexclaw/components/config-guard/src/managed-keys.ts` | NEW — 화이트리스트 |
-| `plugins/codexclaw/components/config-guard/test/toml-edit.test.ts` | NEW — 케이스 테스트 |
-| `plugins/codexclaw/components/config-guard/src/features.ts` | MODIFY — 상단 불변식 주석에 예외 명시 |
+| `plugins/cursorclaw/components/config-guard/src/toml-edit.ts` | NEW — 순수 문자열 변환 계층 |
+| `plugins/cursorclaw/components/config-guard/src/managed-keys.ts` | NEW — 화이트리스트 |
+| `plugins/cursorclaw/components/config-guard/test/toml-edit.test.ts` | NEW — 케이스 테스트 |
+| `plugins/cursorclaw/components/config-guard/src/features.ts` | MODIFY — 상단 불변식 주석에 예외 명시 |
 
 ## 설계: 순수 변환 + 얇은 IO
 
 핵심 결정은 **파일 IO를 함수 밖으로 밀어내는 것**이다. opencodex의 `setMaxConcurrentThreads`는
 읽기·편집·쓰기를 한 함수에 묶어 테스트가 임시 파일을 필요로 한다. 우리는 문자열→문자열 순수 함수로 만들어
-픽스처 문자열만으로 전 케이스를 덮는다. config-guard의 기존 규율(주입된 의존, 테스트가 실제 `~/.codex`에
+픽스처 문자열만으로 전 케이스를 덮는다. config-guard의 기존 규율(주입된 의존, 테스트가 실제 `~/.cursor`에
 닿지 않음)과도 맞는다.
 
 ```ts
@@ -72,7 +72,7 @@ export function restoreTableKey(
 
 ### 원자적 쓰기
 
-호출부(`activate.ts`)가 담당한다. 같은 디렉터리에 `config.toml.codexclaw-tmp-<pid>-<rand>` 로 쓰고
+호출부(`activate.ts`)가 담당한다. 같은 디렉터리에 `config.toml.cursorclaw-tmp-<pid>-<rand>` 로 쓰고
 `renameSync`로 교체한다. 같은 파일시스템이므로 rename은 원자적이다. 임시 파일 잔여를 방지하려고
 `try/finally`에서 존재 시 삭제한다. opencodex는 `atomicWriteFile` 헬퍼를 공유하지만 그 모듈은
 Windows ACL·비밀 처리까지 얽혀 있어 그대로 끌어오지 않고 이 한 가지 용도만 지역 구현한다.
@@ -128,12 +128,12 @@ export const CONFIG_MANAGED_KEYS: readonly ManagedKey[] = [
 
 ## 범위 경계
 
-IN: 위 네 파일. OUT: 실제 `~/.codex/config.toml` 쓰기(이 사이클에서는 어떤 테스트도 실제 경로를 열지 않는다),
+IN: 위 네 파일. OUT: 실제 `~/.cursor/config.toml` 쓰기(이 사이클에서는 어떤 테스트도 실제 경로를 열지 않는다),
 `activate.ts`의 호출 배선(wp3에서 매니페스트와 함께), CLI 노출(wp5).
 
 ## 검증
 
-`node --test plugins/codexclaw/components/config-guard/test/toml-edit.test.ts` 통과 후 `npm test` 전체.
+`node --test plugins/cursorclaw/components/config-guard/test/toml-edit.test.ts` 통과 후 `npm test` 전체.
 
 
 ## A-phase 감사 정정 (파견 감사자 Descartes, GO-WITH-FIXES blockers=5)

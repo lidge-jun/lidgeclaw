@@ -96,7 +96,7 @@ test("install turns the key on and records that it did not exist before", () => 
   assert.ok(rec, "an unrecorded write would be unrevertable, which is the whole risk");
   assert.equal(rec?.priorValue, null, "absent before install -> deactivate removes the line");
   assert.equal(rec?.appliedValue, "true");
-  assert.equal(rec?.setByCodexclaw, true);
+  assert.equal(rec?.setByCursorclaw, true);
 });
 
 test("round trip: enable writes the key, disable removes it and leaves the table alone", () => {
@@ -117,7 +117,7 @@ test("a user who already turned it on keeps their true after disable", () => {
 
   const rec = record(home);
   assert.equal(rec?.priorValue, "true");
-  assert.equal(rec?.setByCodexclaw, false, "we changed nothing, so we own nothing");
+  assert.equal(rec?.setByCursorclaw, false, "we changed nothing, so we own nothing");
 
   deactivate({ run: fake.run, codexHome: home, configPath });
   assert.equal(
@@ -134,7 +134,7 @@ test("a user's explicit false is restored, not deleted", () => {
 
   const rec = record(home);
   assert.equal(rec?.priorValue, "false");
-  assert.equal(rec?.setByCodexclaw, true);
+  assert.equal(rec?.setByCursorclaw, true);
 
   deactivate({ run: fake.run, codexHome: home, configPath });
   assert.equal(
@@ -151,7 +151,7 @@ test("re-running enable keeps the ORIGINAL prior value, so history cannot be rew
 
   const rec = record(home);
   assert.equal(rec?.priorValue, "false", "the second run must not record our own true");
-  assert.equal(rec?.setByCodexclaw, true, "ownership from the first run is not lost by a no-op re-run");
+  assert.equal(rec?.setByCursorclaw, true, "ownership from the first run is not lost by a no-op re-run");
 
   deactivate({ run: fake.run, codexHome: home, configPath });
   assert.equal(readTableKey(readFileSync(configPath, "utf8"), "memories", "dedicated_tools"), "false");

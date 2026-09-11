@@ -11,7 +11,7 @@ Every install provides the CLI: the marketplace payload ships a dispatcher, and 
 checkout can additionally put `cxc` on `PATH` (Track 3).
 
 The examples below use the short `cxc` form. On a payload-only install, substitute the
-invocation the SessionStart banner names — `node "<pluginRoot>/bin/cxc.mjs" …` — for `cxc`.
+invocation the SessionStart banner names — `node "<pluginRoot>/bin/cursorclaw.mjs" …` — for `cxc`.
 
 No CLI? The same transitions work as line-anchored chat messages — sending `orchestrate P`
 in chat is the human free-pass path.

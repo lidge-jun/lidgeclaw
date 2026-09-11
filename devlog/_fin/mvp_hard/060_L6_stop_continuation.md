@@ -37,14 +37,14 @@ termination guard fires.
 - omo runStopHook: guard `stop_hook_active`, context-pressure bail, state===null release,
   else `{decision:"block",reason}` ([codex-hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/devlog/.lazycodex/plugins/omo/components/start-work-continuation/src/codex-hook.ts:6)).
 - codexclaw current `handleStop` with active-goal gating + bounded stagnation guard
-  ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/hook.ts) handleStop).
+  ([hook.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/hook.ts) handleStop).
 - StopPayload already carries `stop_hook_active`, `transcript_path`, `session_id`, `cwd`.
-- goal-active status reader ([goal-active.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/goal-active.ts:62)).
-- context-pressure tail detector ([transcript.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/transcript.ts)).
+- goal-active status reader ([goal-active.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/goal-active.ts:62)).
+- context-pressure tail detector ([transcript.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/transcript.ts)).
 
 ## File change map (IN scope)
 
-1. MODIFY `plugins/codexclaw/components/pabcd-state/src/hook.ts`
+1. MODIFY `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
    - Rewrite `handleStop(payload)`:
      - guard 1: `if (payload.stop_hook_active) return "";`
      - read state; guard 2a: `if (!state.orchestrationActive || state.phase === "IDLE") return "";`
@@ -68,7 +68,7 @@ termination guard fires.
 ## Scope boundary
 
 - IN: `handleStop` rewrite + `buildStopBlock` + continuation tests.
-- OUT: `$cxc-goalplan`/`$cxc-loop` skills (L7) — L6 reuses the EXISTING goal-active DB
+- OUT: `$crc-goalplan`/`$crc-loop` skills (L7) — L6 reuses the EXISTING goal-active DB
   signal; it does not create goal state. No new state fields. The Stop hook JSON
   registration already exists (no manifest change).
 

@@ -24,20 +24,20 @@ Codex exposes the same skill under several forms. Docs and prompts may use any o
 | Form | Example |
 |---|---|
 | Directory shorthand | `dev-testing`, `search`, `ast-grep` |
-| Skill name | `$cxc-dev-testing`, `$cxc-search`, `$cxc-ast-grep` |
+| Skill name | `$crc-dev-testing`, `$crc-search`, `$crc-ast-grep` |
 | Plugin-native mention | `$codexclaw:cxc-dev-testing` |
-| Source-path fallback | `plugins/codexclaw/skills/dev-testing/SKILL.md` |
+| Source-path fallback | `plugins/cursorclaw/skills/dev-testing/SKILL.md` |
 
 ## Subagent attachment (resolvable mentions in the spawn message)
 
 Skill attachment intent travels through the spawn **message**. Prefer link-form
-`[$cxc-<skill>](skill://<abs SKILL.md path>)`; when the path is not link-safe, use the
+`[$crc-<skill>](skill://<abs SKILL.md path>)`; when the path is not link-safe, use the
 plugin-native `$codexclaw:cxc-<skill>` fallback. V1 parses either form on the child's
 first turn and injects the full SKILL.md body. On plaintext V2 provider/proxy paths, the
 codexclaw spawn hook normalizes mentions and inlines recognized skill bodies. Native
 ChatGPT-backend V2 gives the hook ciphertext, so both operations are no-ops there. When
 no body can be inlined, the hook appends a plaintext `[CXC-SKILL-AFFORDANCE]` block telling
-the child to self-load any `$cxc-<folder>` / `$codexclaw:cxc-<folder>` mention from
+the child to self-load any `$crc-<folder>` / `$codexclaw:cxc-<folder>` mention from
 `<skillsDir>/<folder>/SKILL.md`; fork inheritance remains a secondary channel.
 Manual V1 callers may use the stronger structured `items` channel.
 

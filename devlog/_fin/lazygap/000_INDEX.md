@@ -8,7 +8,7 @@ parity explorers (Darwin/Beauvoir/Plato) + 2 codex-rs verification explorers (Eu
 > Every gap row is backed by file:line evidence from a read-only sweep of both trees.
 >
 > omo tree: `devlog/.lazycodex/plugins/omo/`
-> codexclaw tree: `plugins/codexclaw/`
+> codexclaw tree: `plugins/cursorclaw/`
 > Philosophy + enforcement vocabulary: `structure/00_philosophy.md`,
 > `structure/40_enforcement_methods.md` (tiers E1-E8).
 
@@ -16,9 +16,9 @@ parity explorers (Darwin/Beauvoir/Plato) + 2 codex-rs verification explorers (Eu
 
 ## Steering principle (LOCKED by user, 2026-06-30)
 
-**Do NOT grow the subagent role roster. Reinforce by attaching `$cxc-*` skills to the
+**Do NOT grow the subagent role roster. Reinforce by attaching `$crc-*` skills to the
 three base roles.** omo specializes by inventing many roles (librarian/plan/momus/metis/
-gate-reviewer/qa-executor/...). codexclaw already has a rich `$cxc-*` skill family, so
+gate-reviewer/qa-executor/...). codexclaw already has a rich `$crc-*` skill family, so
 specialization travels as a **skill attachment**, not a new role.
 
 > The dispatch pattern we want: "act as a reviewer, **red-team this per `cxc-dev` +
@@ -124,5 +124,5 @@ and memory parity that fell out of that comparison are folded into `001` (addend
   needs `Feature::Goals` on, bound to the current `conversation_id`. So the rule is now: codexclaw
   writes the host goal ONLY at the interview freeze approval boundary (the existing HITL gate),
   NEVER self-arms a goal mid-loop. The decomposed work-item state (workPhases/tasks/criteria/
-  evidence) still lives in project-local `.codexclaw/goalplan.json` — the host record only carries
+  evidence) still lives in project-local `.cursorclaw/goalplan.json` — the host record only carries
   `{objective, status, token_budget}`, so goalplan stays the local backbone regardless (001).

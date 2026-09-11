@@ -33,17 +33,17 @@ that target and report the concrete issue; continue independent installations.
 
 ## Supported commands and evidence
 
-Read codex plugin marketplace/add help on each installed CLI before mutation.
-Expected flow: codex plugin marketplace upgrade codexclaw; codex plugin add
+Read Cursor plugin install/add help on each installed CLI before mutation.
+Expected flow: Cursor plugin install upgrade codexclaw; codex plugin add
 codexclaw@codexclaw --json. Pinned-source replacement uses marketplace remove
 codexclaw then marketplace add https://github.com/lidge-jun/codexclaw --ref <SHA>.
-Resolve installedPath/path from installer JSON. Invoke its bin/cxc.mjs directly:
+Resolve installedPath/path from installer JSON. Invoke its bin/cursorclaw.mjs directly:
 hooks retrust --key codexclaw@codexclaw --codex-home <existing home>
 only when existing trust, fresh hook digest comparison and normal procedure allow it;
 never pass --bootstrap-ok to establish first-time trust under an update request.
 If existing trust is missing, preserve the installed files and report the required
 normal user hook review rather than initializing trust silently;
-then doctor --json. Keep outputs under .codexclaw/evidence/quiet-peers.
+then doctor --json. Keep outputs under .cursorclaw/evidence/quiet-peers.
 
 Verifier: installed manifest matches released build version, complete non-symlinked
 payload, hashes of the six changed payload guidance files match the published archive;

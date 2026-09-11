@@ -46,8 +46,8 @@ From this repository root:
     node devlog/_fin/260905_peer_collaboration_upgrade/evidence/check-docs.mjs --payload
     node devlog/_fin/260905_peer_collaboration_upgrade/evidence/check-docs.mjs --self-test
     node devlog/_fin/260905_peer_collaboration_upgrade/evidence/check-scenarios.mjs
-    node plugins/codexclaw/scripts/inventory.mjs --check
-    node --test --test-concurrency=1 plugins/codexclaw/test/skill-catalog.test.mjs plugins/codexclaw/test/inventory.test.mjs plugins/codexclaw/test/manifest-policy.test.mjs
+    node plugins/cursorclaw/scripts/inventory.mjs --check
+    node --test --test-concurrency=1 plugins/cursorclaw/test/skill-catalog.test.mjs plugins/cursorclaw/test/inventory.test.mjs plugins/cursorclaw/test/manifest-policy.test.mjs
 
 Historical commands/review links in earlier records use the former _plan residence.
 Only this new implementation unit is archived; the prior interview/research unit

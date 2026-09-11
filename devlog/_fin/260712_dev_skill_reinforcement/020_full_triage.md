@@ -1,6 +1,6 @@
 ---
 created: 2026-07-12
-tags: [codexclaw, dev-skills, triage, 96-gaps]
+tags: [cursorclaw, dev-skills, triage, 96-gaps]
 ---
 
 # Full Triage — 12 Dev-Skill Audit (96 Gaps)

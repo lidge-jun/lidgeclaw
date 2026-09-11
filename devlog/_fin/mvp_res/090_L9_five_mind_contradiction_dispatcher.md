@@ -32,10 +32,10 @@ review and OPEN ASSUMPTIONS.
 
 ## Scope (decision-complete)
 - Files to add/edit after unblock:
-  - `plugins/codexclaw/components/pabcd-state/src/hook.ts`
-  - `plugins/codexclaw/components/pabcd-state/src/state.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/hook.test.ts`
-  - `plugins/codexclaw/components/pabcd-state/test/state.test.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
+  - `plugins/cursorclaw/components/pabcd-state/src/state.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/hook.test.ts`
+  - `plugins/cursorclaw/components/pabcd-state/test/state.test.ts`
 - Add stable Mind identifiers:
   - `contrarian`
   - `socratic`
@@ -90,8 +90,8 @@ review and OPEN ASSUMPTIONS.
    question generation in the main session.
 
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
-- `node --test plugins/codexclaw/components/pabcd-state/test/hook.test.ts`
-- `node --test plugins/codexclaw/components/pabcd-state/test/state.test.ts`
+- `node --test plugins/cursorclaw/components/pabcd-state/test/hook.test.ts`
+- `node --test plugins/cursorclaw/components/pabcd-state/test/state.test.ts`
 - CLI stdout shape: `cxc interview minds --dry-run` prints selected Mind ids and
   normalized contradictions if that command is introduced.
 

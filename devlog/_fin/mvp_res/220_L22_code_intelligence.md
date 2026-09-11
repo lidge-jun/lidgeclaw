@@ -60,7 +60,7 @@ codegraph) validated on a TypeScript + Python repo roundtrip before promotion.
 This honors J-13 (ast-grep adopt) and J-16 (lsp/codegraph isolated) and closes the jun fork for MVP.
 
 Must-NOT-Have:
-- No lsp/codegraph in the base `plugins/codexclaw/.mcp.json`.
+- No lsp/codegraph in the base `plugins/cursorclaw/.mcp.json`.
 - No auto-start daemon or language-server install in the core install path.
 - No ast-grep binary auto-download outside the lazy provisioning convention.
 
@@ -105,4 +105,4 @@ None. 130-defer resolved to Option A: adopt ast-grep only for MVP; lsp/codegraph
 - devlog/.lazycodex/plugins/omo/skills/ast-grep/scripts/ast_grep_helper.py:230
 - devlog/.lazycodex/plugins/omo/components/lsp-daemon/dist/ensure-daemon.js:17
 - devlog/.lazycodex/plugins/omo/components/codegraph/src/serve.ts:85
-- plugins/codexclaw/.mcp.json:1 (base manifest, codexclaw MCP only)
+- plugins/cursorclaw/.mcp.json:1 (base manifest, codexclaw MCP only)

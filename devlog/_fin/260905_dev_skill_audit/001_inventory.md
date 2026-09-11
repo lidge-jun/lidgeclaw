@@ -27,91 +27,91 @@
 ## dev
 
 - 역할: 공통 분류·안전·검증·router 선택.
-- 검토: `plugins/codexclaw/skills/dev/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F01·F02·F07·F08·F14. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: 가벼운 작업의 기록·검증 예외를 이 파일 하나에서 정할지.
 
 ## dev-architecture
 
 - 역할: 모듈 경계·순환·검증 위치.
-- 검토: `plugins/codexclaw/skills/dev-architecture/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev-architecture/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F07·F12·Q03. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: 도메인 불변식과 입력 schema 검증을 나눌지.
 
 ## dev-backend
 
 - 역할: API·오류·큐·앱 운영 신호.
-- 검토: `plugins/codexclaw/skills/dev-backend/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev-backend/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F13·Q04. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: 기본 envelope/AppError/5초 queue 기준을 어느 조건에서 적용할지.
 
 ## dev-code-reviewer
 
 - 역할: 감사·중요도·변경 파일 증거.
-- 검토: `plugins/codexclaw/skills/dev-code-reviewer/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F07·F18. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: 길이만으로 merge blocker를 만들지, 실제 위험을 요구할지.
 
 ## dev-data
 
 - 역할: ETL·분석·품질·백필.
-- 검토: `plugins/codexclaw/skills/dev-data/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev-data/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F08·F13·F15·Q05. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: OLTP는 backend로 분리하고 수치 추천을 benchmark 조건으로 남길지.
 
 ## dev-debugging
 
 - 역할: 재현·반증·원인 추적.
-- 검토: `plugins/codexclaw/skills/dev-debugging/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev-debugging/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F09·F16. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: 진단 요청과 수정 요청, 장애 완화와 원인 규명을 구분할지.
 
 ## dev-devops
 
 - 역할: 배포·릴리스·인프라·브랜치 정리.
-- 검토: `plugins/codexclaw/skills/dev-devops/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev-devops/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F16·F19·Q06. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: 저장소 설정 자동 변경과 기술 권고를 분리할지.
 
 ## dev-diagram-viewer
 
 - 역할: 시각화 출력·검증·upstream 계약.
-- 검토: `plugins/codexclaw/skills/dev-diagram-viewer/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev-diagram-viewer/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F03·F17·F21. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: 상류 계약을 복사 유지할지, 현재 설치된 skill로 위임할지.
 
 ## dev-frontend
 
 - 역할: 구현·반응형·접근성·시각적 검증.
-- 검토: `plugins/codexclaw/skills/dev-frontend/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev-frontend/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F02·F05·F11·F18. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: 디자인 방향은 UX owner에 두고 스택 참조는 구현만 맡길지.
 
 ## dev-scaffolding
 
 - 역할: 구조·문서 위치·초기 설정.
-- 검토: `plugins/codexclaw/skills/dev-scaffolding/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev-scaffolding/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F01·F10·F20. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: 문서 scaffold와 실행 가능한 앱 scaffold의 검증을 나눌지.
 
 ## dev-security
 
 - 역할: 위협 모델·인증·공급망 정책.
-- 검토: `plugins/codexclaw/skills/dev-security/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev-security/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F04·F19·Q07. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: ASVS 공식 requirement 추적과 자체 체크리스트를 분리할지.
 
 ## dev-testing
 
 - 역할: 검증 깊이·회귀·CI·QA 도구.
-- 검토: `plugins/codexclaw/skills/dev-testing/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev-testing/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F02·F09·F12·F17. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: 테스트 범위와 browser routing을 중앙에서 정할지.
 
 ## dev-uiux-design
 
 - 역할: 디자인 판단·상태 의미·방향 선택.
-- 검토: `plugins/codexclaw/skills/dev-uiux-design/SKILL.md:1`부터 본문 전체와 router metadata.
+- 검토: `plugins/cursorclaw/skills/dev-uiux-design/SKILL.md:1`부터 본문 전체와 router metadata.
 - 진단: F05·F06·F11. 상세 근거는 `002_findings.md`, 판단 질문은 `004_interview.md`.
 - 인터뷰: 강제 기본 스타일·생성 개수와 예시를 분리할지.
 
@@ -131,7 +131,7 @@
 
 ## 링크 스캔의 오탐 제거
 
-기계 스캔은 6개 경로를 찾지 못했다. reviewer/debugging/devops의 4개 항목은 바로 앞에서 다른 owner를 지정한 참조여서, 단순히 현재 폴더 기준으로 풀면 오탐이 된다. 확정 누락은 frontend/UX 두 군데의 `.codexclaw/goalplans/.../090-synthesis.md`다(F11). 스캔 결과와 실제 결함 수를 혼동하지 않는다.
+기계 스캔은 6개 경로를 찾지 못했다. reviewer/debugging/devops의 4개 항목은 바로 앞에서 다른 owner를 지정한 참조여서, 단순히 현재 폴더 기준으로 풀면 오탐이 된다. 확정 누락은 frontend/UX 두 군데의 `.cursorclaw/goalplans/.../090-synthesis.md`다(F11). 스캔 결과와 실제 결함 수를 혼동하지 않는다.
 
 ## 미검증 영역
 

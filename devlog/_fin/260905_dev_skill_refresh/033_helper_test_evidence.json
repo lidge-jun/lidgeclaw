@@ -1,14 +1,14 @@
 {
   "red": {
-    "command": "node --test plugins/codexclaw/test/visualize-inspection.test.mjs",
+    "command": "node --test plugins/cursorclaw/test/visualize-inspection.test.mjs",
     "chunk_id": "d1c9b9",
     "wall_time_seconds": 0.0000045,
     "exit_code": 1,
     "original_token_count": 254,
-    "output": "✖ visualize inspection uses explicit root, version order, and failure states (31.594792ms)\nℹ tests 1\nℹ suites 0\nℹ pass 0\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 78.473666\n\n✖ failing tests:\n\ntest at plugins/codexclaw/test/visualize-inspection.test.mjs:11:1\n✖ visualize inspection uses explicit root, version order, and failure states (31.594792ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  1 !== 0\n  \n      at TestContext.<anonymous> (file:///Users/jun/.codex/worktrees/297d/codexclaw/plugins/codexclaw/test/visualize-inspection.test.mjs:34:12)\n      at Test.runInAsyncScope (node:async_hooks:227:14)\n      at Test.run (node:internal/test_runner/test:1306:25)\n      at Test.start (node:internal/test_runner/test:1177:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 1,\n    expected: 0,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n"
+    "output": "✖ visualize inspection uses explicit root, version order, and failure states (31.594792ms)\nℹ tests 1\nℹ suites 0\nℹ pass 0\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 78.473666\n\n✖ failing tests:\n\ntest at plugins/cursorclaw/test/visualize-inspection.test.mjs:11:1\n✖ visualize inspection uses explicit root, version order, and failure states (31.594792ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  1 !== 0\n  \n      at TestContext.<anonymous> (file:///Users/jun/.codex/worktrees/297d/codexclaw/plugins/cursorclaw/test/visualize-inspection.test.mjs:34:12)\n      at Test.runInAsyncScope (node:async_hooks:227:14)\n      at Test.run (node:internal/test_runner/test:1306:25)\n      at Test.start (node:internal/test_runner/test:1177:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 1,\n    expected: 0,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n"
   },
   "green": {
-    "command": "node --test plugins/codexclaw/test/manifest-policy.test.mjs plugins/codexclaw/test/visualize-inspection.test.mjs; bash syntax and current-cache inspection; git diff --check",
+    "command": "node --test plugins/cursorclaw/test/manifest-policy.test.mjs plugins/cursorclaw/test/visualize-inspection.test.mjs; bash syntax and current-cache inspection; git diff --check",
     "chunk_id": "f8f838",
     "wall_time_seconds": 0.097817,
     "exit_code": 0,

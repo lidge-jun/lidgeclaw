@@ -12,7 +12,7 @@ import assert from "node:assert/strict";
 
 // Pin the cxc-resolve seam (B1): these tests assert literal `crc ...` command
 // mentions, which would otherwise depend on whether the runner's PATH has cxc.
-process.env.CODEXCLAW_CXC = "cxc";
+process.env.CURSORCLAW_CRC = "cxc";
 import { mkdtempSync, mkdirSync, writeFileSync, existsSync, readFileSync, rmSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
@@ -276,7 +276,7 @@ test("hook JSON wires SessionStart to the cxc-ops dist entry", () => {
   assert.match(cmd, /components\/cxc-ops\/dist\/cli\.js" hook session-start/);
 });
 
-test("degraded mode: no CODEXCLAW_CXC + cxc-free PATH falls back to the payload bin; rewrite is backtick-anchored only", () => {
+test("degraded mode: no CURSORCLAW_CRC + cxc-free PATH falls back to the payload bin; rewrite is backtick-anchored only", () => {
   // Injected env: seam unset, PATH has no cxc — the ladder must land on the
   // payload dispatcher (fresh marketplace install simulation).
   const env = { PATH: "/usr/bin:/bin" };
@@ -296,7 +296,7 @@ test("degraded mode: no CODEXCLAW_CXC + cxc-free PATH falls back to the payload 
     assert.match(owned, /bin[\\/]cxc\.mjs/);
     assert.equal(cxcInvocation(import.meta.url, staleEnv, "map"), "cxc");
     assert.equal(cxcInvocation(import.meta.url, staleEnv, "gui"), "cxc");
-    assert.equal(cxcInvocation(import.meta.url, { ...staleEnv, CODEXCLAW_CXC: "chosen-cxc" }, "session"), "chosen-cxc");
+    assert.equal(cxcInvocation(import.meta.url, { ...staleEnv, CURSORCLAW_CRC: "chosen-cxc" }, "session"), "chosen-cxc");
     const mixed = resolveCxcCommands("`crc session current` and `crc map src`", staleEnv);
     assert.equal(mixed, `\`${owned} session current\` and \`crc map src\``);
     const absent = pathToFileURL(join(staleBin, "absent", "components", "cxc-ops", "src", "cxc-resolve.ts")).href;

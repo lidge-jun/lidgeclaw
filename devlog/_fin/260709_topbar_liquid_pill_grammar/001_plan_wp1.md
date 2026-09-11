@@ -6,7 +6,7 @@ Decision source: `000_interview.md` (D1/D2/D3 + S-series triage + rounds 2-4 ans
 
 ## Loop-spec (HOTL bounds)
 
-- Write scope: `plugins/codexclaw/skills/dev-frontend/references/core/top-bar.md`
+- Write scope: `plugins/cursorclaw/skills/dev-frontend/references/core/top-bar.md`
   (NEW), `liquid-glass.md`, `aesthetics.md`, `dev-frontend/SKILL.md` (table rows),
   `dev-uiux-design/SKILL.md` (pill-chrome cross-ref) + `references/design-isms.md`
   (§1.12 state-model wording update + pill-chrome cross-ref). Nothing else.

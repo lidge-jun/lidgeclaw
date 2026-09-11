@@ -108,7 +108,7 @@ interview loops), NEVER "RESOLVED". "RESOLVED" belongs only in the Open-decision
 | Loop | Decade | Slug | Status | Source-of-record |
 |------|--------|------|--------|------------------|
 | L23 | 230 | Provider bridge (ocx DETECT-ONLY / graceful skip) | DONE | 031_provider_bridge |
-| L24 | 240 | Subagent config store (.codexclaw/subagents.json) | DONE | 032_subagent_config_store |
+| L24 | 240 | Subagent config store (.cursorclaw/subagents.json) | DONE | 032_subagent_config_store |
 | L25 | 250 | Model catalog (ocx catalog + main = n+1) | DONE | 033_model_catalog |
 | L26 | 260 | GUI scaffold (Vite + React, layout-ref only) | DONE | 034_gui_scaffold |
 | L27 | 270 | GUI subagent page (role->model+prompt) + 10100 link bar | DONE | 035_gui_subagent_page |
@@ -129,9 +129,9 @@ interview loops), NEVER "RESOLVED". "RESOLVED" belongs only in the Open-decision
 
 | ID | Loop | Fork |
 |----|------|------|
-| ~~T4~~ | L9 | RESOLVED -> A: **main-agent owns loop (prompt-only)**; hook injects directives only; state in `.codexclaw/` |
+| ~~T4~~ | L9 | RESOLVED -> A: **main-agent owns loop (prompt-only)**; hook injects directives only; state in `.cursorclaw/` |
 | ~~T7~~ | L9 | RESOLVED -> A: **main-session-only Mind dispatch**; nested session -> skip interview (inline fallback last resort) |
-| ~~Q-GM-1-f~~ | L11 | RESOLVED (codex-rs 실측, 2026-06-30) -> goal-active 감지 = codexclaw hook이 codex `goals_1.sqlite`를 thread_id(=session_id)로 READ-ONLY 조회 (hook payload엔 goal 필드 없음=INDIRECT). `.codexclaw/goal-active` 마커는 폐기. PreToolUse hard-deny가 `request_user_input`/인터뷰 트리거를 막음 — codex의 게이트 억제가 PARTIAL(continuation 프롬프트만 있고 "묻지마"·request_user_input 비활성화는 없음)이라 codexclaw가 직접 enforce해야 함 |
+| ~~Q-GM-1-f~~ | L11 | RESOLVED (codex-rs 실측, 2026-06-30) -> goal-active 감지 = codexclaw hook이 codex `goals_1.sqlite`를 thread_id(=session_id)로 READ-ONLY 조회 (hook payload엔 goal 필드 없음=INDIRECT). `.cursorclaw/goal-active` 마커는 폐기. PreToolUse hard-deny가 `request_user_input`/인터뷰 트리거를 막음 — codex의 게이트 억제가 PARTIAL(continuation 프롬프트만 있고 "묻지마"·request_user_input 비활성화는 없음)이라 codexclaw가 직접 enforce해야 함 |
 | ~~130-defer~~ | L22 | RESOLVED -> ast-grep only (lazy install); lsp/codegraph explicitly deferred (post-MVP) |
 | ~~Q-P2-2~~ | L23/L25 | RESOLVED (ocx 소스 실측, jun 2026-06-30) -> ocx = DETECT ONLY, auto-ensure 안 함(감지만: ocx 설치 여부 + 서브에이전트/모델 목록). 멀티모델은 ocx 부재여도 동작: codex 네이티브 카탈로그를 소스로 사용. 근거 = opencodex `src/codex-catalog.ts:43` `NATIVE_OPENAI_MODELS`(gpt-5.5/5.4/5.4-mini/5.3-codex-luna)를 codex live catalog(CODEX_MODELS_CACHE_PATH)에서 읽어 allowlist 필터. L25 "ocx 없으면 default 1개"는 폐기 |
 | ~~Q-P2-1~~ | L26 | RESOLVED (jun 2026-06-30) -> opencodex GUI는 **레이아웃/구조만 참조**하고 내부 콘텐츠는 codexclaw가 신규 구현. 파일 복사/벤더링 금지(D5와 일관). opencodex GUI는 API-driven(Subagents.tsx가 `/api/*` fetch) 이므로 레이아웃 패턴만 차용 |
@@ -143,10 +143,10 @@ interview loops), NEVER "RESOLVED". "RESOLVED" belongs only in the Open-decision
 
 codexclaw는 **FSM만 소유하고, goal 생명주기는 codex 내장에 위임**한다 (HITL/HOTL 병존의 토대).
 
-- **FSM (IDLE/I/P/A/B/C/D)**: codexclaw가 `.codexclaw/` 세션 스코프로 소유. (L1~L7 구현 완료)
+- **FSM (IDLE/I/P/A/B/C/D)**: codexclaw가 `.cursorclaw/` 세션 스코프로 소유. (L1~L7 구현 완료)
 - **goal 생명주기 + 자율 continuation**: codex 내장 `ThreadGoal`에 **continuation 구동만** 위임한다.
   codexclaw는 goal을 만들지 않지만, plan hash / checkpoints / assumptions / phase-evidence 같은
-  **감사추적은 codexclaw 소유 보조 ledger(`.codexclaw/`)에 둔다** (R-1 정정, 007 findings). jawcode
+  **감사추적은 codexclaw 소유 보조 ledger(`.cursorclaw/`)에 둔다** (R-1 정정, 007 findings). jawcode
   (`.jwc/goal/ledger.jsonl`)·omo(`.omo/ulw-loop/`) 둘 다 native goal은 continuation에만 쓰고 ledger는
   파일로 따로 든다 — "100% 위임"은 overclaim이었다. 실측 근거:
   - `ThreadGoal` 영속 = `codex-rs/state/src/model/thread_goal.rs:11` (status Active/Paused/Blocked/

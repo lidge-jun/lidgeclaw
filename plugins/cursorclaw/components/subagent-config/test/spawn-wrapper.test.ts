@@ -28,7 +28,7 @@ import {
 import { resolveSpawnConfig } from "../src/store.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
-// Real shipped role TOMLs: plugins/codexclaw/agents/*.toml.
+// Real shipped role TOMLs: plugins/cursorclaw/agents/*.toml.
 const AGENTS_DIR = resolve(here, "..", "..", "..", "agents");
 const SKILLS_DIR = resolve(here, "..", "..", "..", "skills");
 
@@ -348,10 +348,10 @@ test("070: non-research intents do NOT auto-attach ultraresearch", async () => {
 test("080.2: buildPathHints resolves existing repo tokens + flags none-existent", async () => {
   const { buildPathHints } = await import("../src/spawn-wrapper.ts");
   const repo = resolve(here, "..", "..", "..", "..", ".."); // codexclaw repo root
-  const hints = buildPathHints(repo, "please read package.json and plugins/codexclaw and ghost-nope.xyz");
+  const hints = buildPathHints(repo, "please read package.json and plugins/cursorclaw and ghost-nope.xyz");
   const tokens = hints.map((h) => h.token);
   assert.ok(tokens.includes("package.json"), "existing file token resolved");
-  assert.ok(tokens.includes("plugins/codexclaw"), "existing dir token resolved");
+  assert.ok(tokens.includes("plugins/cursorclaw"), "existing dir token resolved");
   assert.ok(!tokens.includes("ghost-nope.xyz"), "non-existent token dropped");
   for (const h of hints) assert.equal(h.outsideRepo, false, "in-repo paths not flagged");
 });
@@ -452,7 +452,7 @@ test('intent dispatch includes the native type for existing review and implement
 test("executor resolution on upgrade falls back to worker until native registration exists", t => {
   const home = mkdtempSync(join(tmpdir(), "executor-upgrade-"));
   t.after(() => rmSync(home, {recursive:true, force:true}));
-  const env = { ...process.env, CODEX_HOME: home };
+  const env = { ...process.env, CURSOR_HOME: home };
   const before = resolveSpawnPayload(home, "executor", "apply patch", AGENTS_DIR, env);
   assert.equal(before.agent_type, "worker");
   assert.match(before.message, /TASK: apply patch/);

@@ -18,22 +18,22 @@
 #   scripts/dev-install.sh --status     # report install state, change nothing
 set -euo pipefail
 
-MARKETPLACE="codexclaw"
-PLUGIN="codexclaw"
+MARKETPLACE="cursorclaw"
+PLUGIN="cursorclaw"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PLUGIN_SRC="$REPO_ROOT/plugins/$PLUGIN"
-CXC_CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
-PLUGIN_CACHE="$CXC_CODEX_HOME/plugins/cache/$MARKETPLACE/$PLUGIN"
+CURSOR_HOME="${CURSOR_HOME:-$HOME/.codex}"
+PLUGIN_CACHE="$CURSOR_HOME/plugins/cache/$MARKETPLACE/$PLUGIN"
 
 die() { echo "error: $*" >&2; exit 1; }
 
 # The configured root for our marketplace, or empty when it is not registered.
-# `codex plugin marketplace list` prints whitespace-aligned columns, so a naive
+# `Cursor plugin install list` prints whitespace-aligned columns, so a naive
 # `{print $2}` truncates any root containing a space and the repoint check below
 # would then fire on every run. Take everything after the first field instead.
 marketplace_root() {
-  codex plugin marketplace list 2>/dev/null | awk -v m="$MARKETPLACE" '$1 == m {
+  Cursor plugin install list 2>/dev/null | awk -v m="$MARKETPLACE" '$1 == m {
     sub(/^[^[:space:]]+[[:space:]]+/, ""); sub(/[[:space:]]+$/, ""); print; exit
   }'
 }
@@ -42,7 +42,7 @@ marketplace_root() {
 command -v codex >/dev/null 2>&1 || die "codex CLI not on PATH"
 
 installed_version() {
-  python3 - "$PLUGIN_SRC/.codex-plugin/plugin.json" <<'PY'
+  python3 - "$PLUGIN_SRC/.cursor-plugin/plugin.json" <<'PY'
 import json, sys
 with open(sys.argv[1], encoding="utf-8") as fh:
     print(json.load(fh)["version"])
@@ -90,9 +90,9 @@ if [ "$current_root" != "$REPO_ROOT" ]; then
   echo "==> pointing marketplace $MARKETPLACE at $REPO_ROOT (was: ${current_root:-unset})"
   if [ -n "$current_root" ]; then
     codex plugin remove "$PLUGIN@$MARKETPLACE" >/dev/null 2>&1 || true
-    codex plugin marketplace remove "$MARKETPLACE" >/dev/null
+    Cursor plugin install remove "$MARKETPLACE" >/dev/null
   fi
-  codex plugin marketplace add "$REPO_ROOT" >/dev/null
+  Cursor plugin install add "$REPO_ROOT" >/dev/null
 fi
 
 # Legacy dev-symlink.sh left symlinked children behind; Codex does not resolve those.
@@ -124,5 +124,5 @@ remaining_links="$(find "$VER_DIR" -type l 2>/dev/null | wc -l | tr -d ' ')"
 [ "$remaining_links" = "0" ] || die "$remaining_links symlink(s) still present under $VER_DIR"
 
 echo "installed real copy: $VER_DIR"
-node "$VER_DIR/bin/cxc.mjs" doctor 2>&1 | tail -20 || true
+node "$VER_DIR/bin/cursorclaw.mjs" doctor 2>&1 | tail -20 || true
 echo "done. open a NEW Codex thread to pick up the update."

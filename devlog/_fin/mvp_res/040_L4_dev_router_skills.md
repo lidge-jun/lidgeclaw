@@ -14,7 +14,7 @@ L5 because the subagent role prompts route through these skills, and it unblocks
 validation.
 
 ## Scope (decision-complete)
-- Files added/edited under `plugins/codexclaw/skills/`:
+- Files added/edited under `plugins/cursorclaw/skills/`:
   - `dev/`
   - `dev-architecture/`
   - `dev-backend/`
@@ -79,7 +79,7 @@ None.
 - `devlog/_plan/260629_codexclaw_mvp/024_dev_skills_conversion.md`
 - `devlog/_plan/260629_codexclaw_mvp/024.3_skill_conversion_delta.md`
 - `devlog/_plan/260629_codexclaw_mvp/024.4_pass4_P_plan.md`
-- `plugins/codexclaw/skills/README.md`
-- `plugins/codexclaw/skills/dev/SKILL.md`
-- `plugins/codexclaw/skills/pabcd/SKILL.md`
+- `plugins/cursorclaw/skills/README.md`
+- `plugins/cursorclaw/skills/dev/SKILL.md`
+- `plugins/cursorclaw/skills/pabcd/SKILL.md`
 - codex-rs `core-skills/loader.rs` skill frontmatter constraints.

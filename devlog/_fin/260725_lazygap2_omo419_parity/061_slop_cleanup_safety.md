@@ -4,8 +4,8 @@
 
 ## 문제
 
-`plugins/codexclaw/skills/dev-code-reviewer/SKILL.md:343-358`은 AI slop 목록을 가지고 있고
-`plugins/codexclaw/skills/dev/SKILL.md:297-332`는 필요성·재사용 사다리를 가지고 있다.
+`plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md:343-358`은 AI slop 목록을 가지고 있고
+`plugins/cursorclaw/skills/dev/SKILL.md:297-332`는 필요성·재사용 사다리를 가지고 있다.
 빠진 것은 하나다: **신뢰 경계 가드를 "불필요한 방어 코드"로 오인해 삭제하는 것**을 막는 장치.
 
 upstream이 이 지점을 명시했다
@@ -18,12 +18,12 @@ upstream이 이 지점을 명시했다
 
 | 초안이 추가하려던 것 | 이미 있는 곳 |
 | --- | --- |
-| 삭제 전 green test로 동작 고정 | `plugins/codexclaw/skills/dev-code-reviewer/SKILL.md:345-346` "Lock behavior with green tests before deletion" |
+| 삭제 전 green test로 동작 고정 | `plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md:345-346` "Lock behavior with green tests before deletion" |
 | 불필요한 방어 코드 분류 | 같은 파일 `:351` (row 2 Over-defense) |
 | 동작 변경 시 regression 요구 | 같은 파일 `:358` (row 9 Missing behavior tests) |
 | 신뢰 경계 미검증은 High | 같은 파일 `:234` (Missing validation → **High**) |
-| malformed/hostile 입력 regression | `plugins/codexclaw/skills/dev-testing/SKILL.md:333` |
-| mutation RED/GREEN 확인 | `plugins/codexclaw/skills/dev-testing/SKILL.md:443-444` (WP2가 방금 넣음) |
+| malformed/hostile 입력 regression | `plugins/cursorclaw/skills/dev-testing/SKILL.md:333` |
+| mutation RED/GREEN 확인 | `plugins/cursorclaw/skills/dev-testing/SKILL.md:443-444` (WP2가 방금 넣음) |
 
 따라서 `dev-testing/SKILL.md` 변경은 **철회한다** — `:443-444`가 이미 같은 것을 말한다.
 
@@ -51,7 +51,7 @@ upstream이 이 지점을 명시했다
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/skills/dev-code-reviewer/SKILL.md` | slop 표(`:350-358`) 마지막 행 뒤, `---`(`:360`) 앞에 문단 2개 삽입 |
+| `plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md` | slop 표(`:350-358`) 마지막 행 뒤, `---`(`:360`) 앞에 문단 2개 삽입 |
 
 **WP3 P 실측 앵커 (A 감사 정정):** header `:343`, 표 header/separator `:348-349`,
 데이터 9행 `:350-358`, 빈 줄 `:359`, `---` `:360`, 다음 절 `:362`.
@@ -81,7 +81,7 @@ upstream이 이 지점을 명시했다
 ## PLAN-BYPASS-NAMED-01 기록 (다섯 필드)
 
 이 슬라이스는 리뷰 규칙 2개를 추가하므로 강제 기록 의무가 있다
-(`plugins/codexclaw/skills/pabcd/SKILL.md:131`).
+(`plugins/cursorclaw/skills/pabcd/SKILL.md:131`).
 
 | 필드 | 값 |
 | --- | --- |

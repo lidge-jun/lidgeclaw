@@ -2,7 +2,7 @@
 created: 2026-08-15
 status: design-final
 supersedes: [010_phase_tracking.md, 020_collapse_gate.md, 021_audit_fold_redesign.md, 022_cycle_granularity.md]
-tags: [codexclaw, pabcd, goalplan, roadmap-lock]
+tags: [cursorclaw, pabcd, goalplan, roadmap-lock]
 unit: 260815_pabcd_phase_collapse
 ---
 

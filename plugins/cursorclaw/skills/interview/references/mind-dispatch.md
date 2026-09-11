@@ -18,7 +18,7 @@ and actual-returned-handle rules apply; this is still Interview, not an A gate.
   to the label. Do not invent arguments, IDs or native role enforcement.
 - Use a NON-full-history task: V2 fork_turns:"none" only where exposed; V1 omit
   fork_context (or use supported false). A full-history fork rejects model/effort
-  overrides upstream and skips the .codexclaw/subagents.json role-config injection;
+  overrides upstream and skips the .cursorclaw/subagents.json role-config injection;
   do not use it to transport a Mind snapshot.
 - Select lowest-scoring dimensions, with concurrent cap 3. Preserve the five
   existing lenses: contrarian, socratic, ontologist, evaluator and simplifier.

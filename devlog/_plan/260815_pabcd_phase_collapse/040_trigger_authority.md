@@ -2,7 +2,7 @@
 created: 2026-08-15
 status: design
 workPhase: wp3
-tags: [codexclaw, hook, trigger]
+tags: [cursorclaw, hook, trigger]
 ---
 
 # 040 — mid-cycle phase authority 회수

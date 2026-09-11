@@ -16,9 +16,9 @@ multi-model subagents and the GUI.
 
 ## Scope (decision-complete)
 - Files to add/edit:
-  - `plugins/codexclaw/test/phase2.test.mjs`
-  - `plugins/codexclaw/test/fixtures/phase2/`
-  - `plugins/codexclaw/gui` test/smoke scripts if L26/L27 place them there
+  - `plugins/cursorclaw/test/phase2.test.mjs`
+  - `plugins/cursorclaw/test/fixtures/phase2/`
+  - `plugins/cursorclaw/gui` test/smoke scripts if L26/L27 place them there
   - `devlog/_fin/` done note only when implementation actually completes
 - Exact behavior verified:
   - S6: ocx present is DETECTED (read/list); ocx absent gracefully skips. NEVER auto-run `ocx ensure` (detect-only, Q-P2-2).
@@ -50,17 +50,17 @@ multi-model subagents and the GUI.
 - D: done = all S6-S10 checks pass and Phase 2 has an evidence bundle.
 
 ## Acceptance (1-3 testable criteria)
-1. `plugins/codexclaw/test/phase2.test.mjs` covers S6, S7, S8, S9, and S10 with
+1. `plugins/cursorclaw/test/phase2.test.mjs` covers S6, S7, S8, S9, and S10 with
    deterministic fixtures.
 2. GUI build and `cxc gui` smoke both pass without requiring ocx to be installed.
 3. The verification output includes absent-ocx and present-ocx evidence without
    exposing credentials or vendoring ocx.
 
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
-- node:test path: `plugins/codexclaw/test/phase2.test.mjs`
-- GUI build output from `plugins/codexclaw/gui`
+- node:test path: `plugins/cursorclaw/test/phase2.test.mjs`
+- GUI build output from `plugins/cursorclaw/gui`
 - CLI stdout: `cxc gui` startup and provider bridge fixture runs.
-- Data dump: catalog JSON and `.codexclaw/subagents.json` roundtrip.
+- Data dump: catalog JSON and `.cursorclaw/subagents.json` roundtrip.
 
 ## Commit unit (one atomic conventional commit)
 `test(phase2): verify multi-model subagents and gui gate`

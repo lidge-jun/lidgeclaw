@@ -5,7 +5,7 @@ Session: `019f8fd8-d4c3-7633-9e5e-7577937031d9` · Goalplan:
 
 ## Objective
 
-On a fresh marketplace install (`codex plugin marketplace add` + `codex plugin
+On a fresh marketplace install (`Cursor plugin install add` + `codex plugin
 add codexclaw@codexclaw`), the orchestrate/PABCD surface must work
 out-of-the-box: every command the plugin's own injections and skills tell the
 model to run must actually resolve. Then finish production deployment prep:
@@ -15,7 +15,7 @@ polish the README to release quality.
 ## Root cause (evidence: 001_rca.md)
 
 **Install/payload gap, NOT a prompting gap.** The marketplace payload is only
-`plugins/codexclaw/` (`.agents/plugins/marketplace.json`), but the `cxc` bin
+`plugins/cursorclaw/` (`.agents/plugins/marketplace.json`), but the `cxc` bin
 maps from repo-root `package.json` → `bin/codexclaw.mjs`, outside the payload.
 Local dev works because npm bin-linking puts `cxc` on PATH; a marketplace user
 has no `cxc`, so every injected directive (`LOOP_ARM_DIRECTIVE`,
@@ -27,11 +27,11 @@ subcommand anywhere.
 
 ## Constraints
 
-- Payload-only fix: a marketplace install gets exactly `plugins/codexclaw/`;
+- Payload-only fix: a marketplace install gets exactly `plugins/cursorclaw/`;
   no postinstall scripts, no PATH mutation, no global config writes.
 - Local dev UX (`cxc` on PATH) must keep working unchanged.
 - Do not touch `devlog/_plan/260722_260722-repo-governance-config/` (user's
-  untracked work) or `~/.codex` global config.
+  untracked work) or `~/.cursor` global config.
 - Push to origin main is pre-approved; `dev` branch creation is requested.
 
 ## Dependency-ordered work-phase map (PHASE-SPLIT-01)
@@ -39,7 +39,7 @@ subcommand anywhere.
 | WP | Decade doc | Delivers | Depends on |
 |----|-----------|----------|------------|
 | WP0 | this cycle | RCA + all decade docs to diff level; D locks goalplan | — |
-| WP1 | `010_payload_cxc_dispatcher.md` | payload-resident `bin/cxc.mjs` dispatcher + runtime cxc-resolution in injected directives + `cxc scan evidence` fix + tests | WP0 |
+| WP1 | `010_payload_cxc_dispatcher.md` | payload-resident `bin/cursorclaw.mjs` dispatcher + runtime cxc-resolution in injected directives + `cxc scan evidence` fix + tests | WP0 |
 | WP2 | `020_readme_release_polish.md` | README(.ko/.zh) + docs claims aligned with the now-true fresh-install story | WP1 (docs must describe the shipped fix) |
 | WP3 | `030_push_dev_branch.md` | push main, create+push `dev` branch, final release-readiness verification | WP1+WP2 landed |
 
@@ -49,7 +49,7 @@ subcommand anywhere.
   sandbox evidence.
 - CR-B: payload-only sandbox shows orchestrate end-to-end (status, P entry,
   attested edge) with the shipped fix and no repo-root files.
-- CR-C: touched component suites + `plugins/codexclaw/scripts/gate.mjs` green.
+- CR-C: touched component suites + `plugins/cursorclaw/scripts/gate.mjs` green.
 - CR-D: per-work-phase commits pushed to origin/main.
 - CR-E: `dev` branch created per opencodex convention and pushed.
 - CR-F: README consistent with shipped reality.

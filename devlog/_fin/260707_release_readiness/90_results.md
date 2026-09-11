@@ -24,8 +24,8 @@ Goal session 019f3901-f128-7b50-bea8-60df7c2876c1, goalplan slug
   implicit skills, marketplace rename); build 25 pages exit 0.
 - **Marketplace prep**: marketplace `personal` -> `codexclaw`; plugin.json
   repository/homepage/websiteURL + defaultPrompt array (spec-conformant);
-  categories aligned. Public install smoke (temp CODEX_HOME):
-  `codex plugin marketplace add https://github.com/lidge-jun/codexclaw.git` ->
+  categories aligned. Public install smoke (temp CURSOR_HOME):
+  `Cursor plugin install add https://github.com/lidge-jun/codexclaw.git` ->
   `Added marketplace codexclaw`; `codex plugin add codexclaw@codexclaw` ->
   installed. Submission checklist: `30_marketplace_checklist.md` (OpenAI public
   directory is "coming soon" — git marketplace is the live path).

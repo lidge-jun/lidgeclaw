@@ -7,7 +7,7 @@ question; PASS when it produces report-source.md with a claim-to-source ledger, 
 matrix, and delivers an HTML artifact through dev-diagram-viewer or states the
 limitation).
 
-## NEW plugins/codexclaw/skills/search/references/deep-research.md (~150 lines)
+## NEW plugins/cursorclaw/skills/search/references/deep-research.md (~150 lines)
 
 Canonical owner "Deep research protocol" (SEARCH-DEEP-01..06). Aligned with the host
 deep-research-work skill 0.1.14 so an agent behaves the same whether the host skill
@@ -66,7 +66,7 @@ is exposed or not; when it is exposed, its native update_plan/artifact contract 
    it is the audit trail, separate from the reader report (READER-DOC-04).
 10. **Sources** — pointer to devlog 001_sources.md section C.
 
-## MODIFY plugins/codexclaw/skills/search/SKILL.md
+## MODIFY plugins/cursorclaw/skills/search/SKILL.md
 
 - Frontmatter description: append triggers "딥리서치, 심층 조사, deep-research".
 - Metadata last-verified → 2026-09-08.
@@ -81,16 +81,16 @@ is exposed or not; when it is exposed, its native update_plan/artifact contract 
 - Notes: add "Host deep-research-work skill, when exposed, owns plan/artifact
   mechanics; this reference supplies the search discipline underneath it."
 
-## MODIFY plugins/codexclaw/skills/dev/references/browser-routing.md
+## MODIFY plugins/cursorclaw/skills/dev/references/browser-routing.md
 
 Row "Signed-in / judgment-heavy browsing": add "delegated research surveys: see
 search/references/deep-research.md Aside lane". No policy change.
 
-## MODIFY plugins/codexclaw/skills/dev/references/skill-ownership.md
+## MODIFY plugins/cursorclaw/skills/dev/references/skill-ownership.md
 
 Add row: `| Deep research protocol (SEARCH-DEEP-*) | \`search/references/deep-research.md\` | \`search\` Tier 3, \`dev\` browser-routing |`
 
-## MODIFY plugins/codexclaw/skills/search/agents/openai.yaml
+## MODIFY plugins/cursorclaw/skills/search/agents/openai.yaml
 
 No change unless the file lists triggers; inspect at B.
 

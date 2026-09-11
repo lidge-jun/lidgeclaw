@@ -82,7 +82,7 @@ presented as model actions or permission grants from a scripted answer.
 3. 일반 요청은 자동 HOTL이 아니다. HOTL도 push/merge/release/deploy/외부 메시지 권한을 추가하지 않는다.
 4. agent는 필요한 SKILL을 읽고 해당 작업에 필요한 references만 선택한다. `cxc skill search`는 외부 카탈로그 검색이지 설치된 스킬의 native 목록 API가 아니다.
 
-`plugins/codexclaw/skills/loop/SKILL.md:83-90`의 기존 HITL 기본 안내는 선행 owner 변경 대상이다. wp3가 이 파일을 다시 소유하지 않는다. 그 owner 변경과 아래 hook 문구가 함께 활성화되기 전에는 새 기본값이 전달됐다고 주장하지 않는다. initiative는 읽기 전용이며 `skills/dev-pabcd/SKILL.md:9`의 일반 승인 안내를 수정하지 않는다.
+`plugins/cursorclaw/skills/loop/SKILL.md:83-90`의 기존 HITL 기본 안내는 선행 owner 변경 대상이다. wp3가 이 파일을 다시 소유하지 않는다. 그 owner 변경과 아래 hook 문구가 함께 활성화되기 전에는 새 기본값이 전달됐다고 주장하지 않는다. initiative는 읽기 전용이며 `skills/dev-pabcd/SKILL.md:9`의 일반 승인 안내를 수정하지 않는다.
 
 ## 구조 결정과 현재 책임
 
@@ -99,23 +99,23 @@ plugin.json → hook JSON → 기존 component dist/cli entry
 
 | 현재 근거 | 분류 | wp3 결정 |
 | --- | --- | --- |
-| `.codex-plugin/plugin.json:22-45` (실제 위치: `plugins/codexclaw/.codex-plugin/plugin.json`) | 23개 command 등록 | 초기 A에서 23개 유지. 등록 수 감소를 성과로 주장하지 않음 |
-| `plugins/codexclaw/components/pabcd-state/src/hook.ts:290-431` | phase 본문 + B active-work-phase 한정 + I Mind 전달 | 본문은 축소, `phaseDirective`의 동적 B scope와 `interviewDirective`의 Mind 전달은 유지 |
+| `.cursor-plugin/plugin.json:22-45` (실제 위치: `plugins/cursorclaw/.cursor-plugin/plugin.json`) | 23개 command 등록 | 초기 A에서 23개 유지. 등록 수 감소를 성과로 주장하지 않음 |
+| `plugins/cursorclaw/components/pabcd-state/src/hook.ts:290-431` | phase 본문 + B active-work-phase 한정 + I Mind 전달 | 본문은 축소, `phaseDirective`의 동적 B scope와 `interviewDirective`의 Mind 전달은 유지 |
 | 같은 파일 `:660-846` | human chat parser, trigger, state/dedup, passive 재주입 | 분기·state writes·ledger·turnless 처리 그대로. 문자열 외의 변경 금지 |
 | 같은 파일 `:607-610`, `:1979-1986` | bootstrap / compaction cursor의 silent state write | empty stdout이어도 삭제하지 않음 |
 | 같은 파일 `:1793-1854` | active goal에서 Stop block, I/context-pressure/stagnation release | 결정과 counter 유지. render grounding은 soft advisory임을 유지 |
-| `plugins/codexclaw/components/pabcd-state/src/cli.ts:321-342`, `:378-383` | child에도 worktree 보호, fail-closed interview, edit deny 우선 | 전혀 수정하지 않음 |
-| `plugins/codexclaw/components/cxc-ops/src/map-affordance.ts:156-167`, `:254-267` | sessionbinding, PATH fallback, 기타 안내 | sessionbinding/PATH bytes 및 호출 위치 유지. loop 문구만 교체 |
-| `plugins/codexclaw/components/subagent-config/src/spawn-attach-hook.ts:751-936` | recursion deny + 본문 transport + scope prose + 설정 routing + final preflight | 초기 A 전체 그대로 |
-| `plugins/codexclaw/components/pabcd-state/src/hook.ts:1905-1935`, `src/cli.ts:360-370` | interview capture/rescan, review observer, worker receipt gate | 기록 채널과 role 계약 그대로 |
+| `plugins/cursorclaw/components/pabcd-state/src/cli.ts:321-342`, `:378-383` | child에도 worktree 보호, fail-closed interview, edit deny 우선 | 전혀 수정하지 않음 |
+| `plugins/cursorclaw/components/cxc-ops/src/map-affordance.ts:156-167`, `:254-267` | sessionbinding, PATH fallback, 기타 안내 | sessionbinding/PATH bytes 및 호출 위치 유지. loop 문구만 교체 |
+| `plugins/cursorclaw/components/subagent-config/src/spawn-attach-hook.ts:751-936` | recursion deny + 본문 transport + scope prose + 설정 routing + final preflight | 초기 A 전체 그대로 |
+| `plugins/cursorclaw/components/pabcd-state/src/hook.ts:1905-1935`, `src/cli.ts:360-370` | interview capture/rescan, review observer, worker receipt gate | 기록 채널과 role 계약 그대로 |
 
-주의: spawn의 `LEAF_GUARD_BLOCK`은 recursion deny 외의 모든 문장을 기계적으로 강제하지 않는다. arbitrary file write scope와 skill/reference 읽기는 모델 규율이다. final-gate spawn check는 marker-dependent early warning이며 authoritative completion validation을 대체하지 않는다 (`plugins/codexclaw/components/subagent-config/src/final-gate-guard.ts:8-18`). `goal-gate.ts:295-316`의 completion fail-open / interview exception deny 차이도 그대로 남긴다.
+주의: spawn의 `LEAF_GUARD_BLOCK`은 recursion deny 외의 모든 문장을 기계적으로 강제하지 않는다. arbitrary file write scope와 skill/reference 읽기는 모델 규율이다. final-gate spawn check는 marker-dependent early warning이며 authoritative completion validation을 대체하지 않는다 (`plugins/cursorclaw/components/subagent-config/src/final-gate-guard.ts:8-18`). `goal-gate.ts:295-316`의 completion fail-open / interview exception deny 차이도 그대로 남긴다.
 
 ## Strategy A — wp3의 확정 제안
 
 ### H0 — Interview owner에 기존 의무를 먼저 보존
 
-감사에서 hook 축소 전에 owner 이전이 빠진 부분을 발견했다. `plugins/codexclaw/skills/interview/SKILL.md`의 `## Question quality (INTERVIEW-Q-01)` 앞에 아래 절을 추가한다. 기존 hook.ts:306–315의 의무를 옮기는 것이며 새 전역 방법론을 추가하지 않는다.
+감사에서 hook 축소 전에 owner 이전이 빠진 부분을 발견했다. `plugins/cursorclaw/skills/interview/SKILL.md`의 `## Question quality (INTERVIEW-Q-01)` 앞에 아래 절을 추가한다. 기존 hook.ts:306–315의 의무를 옮기는 것이며 새 전역 방법론을 추가하지 않는다.
 
 ```markdown
 ## Classify the loop before Plan
@@ -139,11 +139,11 @@ technology choices that the project already settles.
 | 순서 | 파일 / 작업 | delta와 완료 증거 |
 | --- | --- | --- |
 | 0 | 선행 owner 계약, baseline / DEPENDENCY ONLY | loop·pabcd·dev의 책임 및 bareloop 우선순위 확인. wp3가 선행 파일을 중복 편집하지 않음 |
-| 1 | `plugins/codexclaw/components/pabcd-state/src/hook.ts` / MODIFY | H1 phase 본문, H2 loop arming return 문구만 교체. exported function signature/call sites/guards 유지 |
-| 2 | `plugins/codexclaw/components/cxc-ops/src/map-affordance.ts` / MODIFY | H3 loop affordance만 교체. binding/map/search/kwrite/background/PATH transport 유지 |
-| 3 | `plugins/codexclaw/components/pabcd-state/test/hook.test.ts` / MODIFY | H2 literal snapshot 변경, H4 scope-first hook-output fixtures와 H5 phase-owner assertion 추가 |
-| 3a | `plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts` / MODIFY | H5의 실제 mode2 stdout owner assertion만 추가. I/Stop/recovery 기대값은 그대로 |
-| 4 | `plugins/codexclaw/components/cxc-ops/test/map-affordance.test.ts` / MODIFY | H6 emitted loop scope assertion. sessionbinding/size/PATH 테스트 유지 |
+| 1 | `plugins/cursorclaw/components/pabcd-state/src/hook.ts` / MODIFY | H1 phase 본문, H2 loop arming return 문구만 교체. exported function signature/call sites/guards 유지 |
+| 2 | `plugins/cursorclaw/components/cxc-ops/src/map-affordance.ts` / MODIFY | H3 loop affordance만 교체. binding/map/search/kwrite/background/PATH transport 유지 |
+| 3 | `plugins/cursorclaw/components/pabcd-state/test/hook.test.ts` / MODIFY | H2 literal snapshot 변경, H4 scope-first hook-output fixtures와 H5 phase-owner assertion 추가 |
+| 3a | `plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts` / MODIFY | H5의 실제 mode2 stdout owner assertion만 추가. I/Stop/recovery 기대값은 그대로 |
+| 4 | `plugins/cursorclaw/components/cxc-ops/test/map-affordance.test.ts` / MODIFY | H6 emitted loop scope assertion. sessionbinding/size/PATH 테스트 유지 |
 | 5 | `docs/native-thin-harness.md` / MODIFY | H7: compact 안내와 guard/transport 보존 경계를 현행 SoT에 반영 |
 | 6 | 위 두 component의 해당 generated dist / REGENERATE ONLY | 기존 build가 생성. 손으로 수정하지 않음. 설치 payload activation은 별도 승인 범위에서 메인이 수행 |
 
@@ -151,12 +151,12 @@ technology choices that the project already settles.
 
 ### H1 — phase 본문: 정확한 before/after
 
-대상: `plugins/codexclaw/components/pabcd-state/src/hook.ts:290-380`의 `PHASE_DIRECTIVES` 전체. 아래 diff 밖의 `activeWorkPhaseOpts`, `phaseDirective`, `interviewDirective`, `MIND_DISPATCH_DIRECTIVE` import/call, footer는 유지한다.
+대상: `plugins/cursorclaw/components/pabcd-state/src/hook.ts:290-380`의 `PHASE_DIRECTIVES` 전체. 아래 diff 밖의 `activeWorkPhaseOpts`, `phaseDirective`, `interviewDirective`, `MIND_DISPATCH_DIRECTIVE` import/call, footer는 유지한다.
 
 ```diff
  const PHASE_DIRECTIVES: Partial<Record<Phase, string>> = {
    I: [
-     "[codexclaw: INTERVIEW]",
+     "[cursorclaw: INTERVIEW]",
 -    "Clarify requirements before planning. Cover four dimensions — Goal, Constraint,",
 -    "Success criteria, Ontology. Research the repo first, then ask focused questions.",
 -    "GROUND EVERY QUESTION IN STATE, not in a blank slate (INTERVIEW-GROUND-01). Before",
@@ -164,7 +164,7 @@ technology choices that the project already settles.
 -    "`cxc scan record --session <id> --derive --map <questionId>=<dimension> ...` reads the",
 -    "captured answer ledger and writes each answered question into that dimension's known[]",
 -    "and each unanswered one into unknown[]. Read the result back from",
--    "`.codexclaw/sessions/<id>.json` and let the weakest dimension pick your next question.",
+-    "`.cursorclaw/sessions/<id>.json` and let the weakest dimension pick your next question.",
 -    "Then SHOW YOUR WORK before the question (INTERVIEW-RENDER-01): a short status block",
 -    "naming what is now known, which dimension is weakest and why, and what the answer will",
 -    "change. A question the user cannot situate reads as context-blind even when it is not.",
@@ -182,12 +182,12 @@ technology choices that the project already settles.
 -    "(INTERVIEW-INDEPENDENT-01); independence governs, not a count. Do NOT start implementing yet.",
 +    "Load $codexclaw:cxc-interview for the four dimensions, question shape and readiness rules. Do not implement.",
 +    "INTERVIEW-GROUND-01: `cxc scan record --session <id> --derive --map <questionId>=<dimension> ...`",
-+    "records known[]/unknown[]; read `.codexclaw/sessions/<id>.json` before choosing the next question.",
++    "records known[]/unknown[]; read `.cursorclaw/sessions/<id>.json` before choosing the next question.",
 +    "INTERVIEW-RENDER-01: show knowns, the weakest dimension and the answer's impact before the question.",
 +    "INTERVIEW-INDEPENDENT-01: batch only INDEPENDENT questions; independence governs, not a count.",
    ].join("\n"),
    P: [
-     "[codexclaw: PLAN]",
+     "[cursorclaw: PLAN]",
 -    "Write a diff-level plan: file change map, scope boundary (IN/OUT), and testable",
 -    "accept criteria. Open C2+ plans with a loop-spec header: loop archetype (from",
 -    "Interview) · verifier (and what it measures) · stop condition · expected terminal",
@@ -199,7 +199,7 @@ technology choices that the project already settles.
 +    "Use $codexclaw:cxc-dev to select required surface skills and only relevant references.",
    ].join("\n"),
    A: [
-     "[codexclaw: AUDIT]",
+     "[cursorclaw: AUDIT]",
 -    "Audit the plan adversarially before building. Dispatch an independent reviewer",
 -    "as a sub-agent with agent_type \"explorer\" (DISPATCH-AGENT-TYPE-01: there is no",
 -    "\"reviewer\" agent_type - the reviewer ROLE maps to the explorer TYPE) to challenge",
@@ -223,7 +223,7 @@ technology choices that the project already settles.
 +    "Name the review, search and required surface skills in the dispatch packet; follow the owner's verdict contract.",
    ].join("\n"),
    B: [
-     "[codexclaw: BUILD]",
+     "[cursorclaw: BUILD]",
 -    "Implement the audited plan in small atomic commits. Verify as you go (run tests).",
 -    "When delegating a build slice, put the surface's $codexclaw:cxc-dev-* mention in",
 -    "the spawn message so the subagent loads the discipline. Stay inside the plan's",
@@ -232,7 +232,7 @@ technology choices that the project already settles.
 +    "Implement only the audited scope; verify within the authorized scope. Name required skills when delegating.",
    ].join("\n"),
    C: [
-     "[codexclaw: CHECK]",
+     "[cursorclaw: CHECK]",
 -    "Run the real verification: tests, type checks, and adversarial review. For the review",
 -    "pass, dispatch with $codexclaw:cxc-dev-code-reviewer in the spawn message",
 -    "(tool_search for spawn_agent first if it is not visible). For UI-facing changes,",
@@ -250,7 +250,7 @@ technology choices that the project already settles.
 +    "C-RENDER-GROUNDING-01: changed render artifacts need RUN, OBSERVE, FIX evidence. No pass claim without fresh proof.",
    ].join("\n"),
    D: [
-     "[codexclaw: DONE]",
+     "[cursorclaw: DONE]",
 -    "Summarize what was checked with evidence, update STATUS/devlog, and commit. Confirm",
 -    "no pending work remains for this work-phase before closing. For loop/multi-pass",
 -    "work add the pessimistic close-out (LOOP-PESSIMIST-01): what did NOT improve, which",
@@ -263,14 +263,14 @@ technology choices that the project already settles.
  };
 ```
 
-삭제되는 세부 규칙의 owner 확인: `plugins/codexclaw/skills/interview/SKILL.md:13-92`(질문/grounding), `plugins/codexclaw/skills/pabcd/SKILL.md:155-225`(각 phase·audit·render·close), `plugins/codexclaw/skills/dev/SKILL.md:129-158`(surface/dispatch skills). 문구의 이동은 규칙 삭제가 아니다. I의 `MIND_DISPATCH_DIRECTIVE`와 post-answer `RESCAN_REINJECT_DIRECTIVE`는 이번 축소에서 그대로 전달한다. 지침에 필요한 owner가 선행 skill diet에서 사라졌다면 H1을 적용하지 않고 먼저 owner 계약을 복구한다.
+삭제되는 세부 규칙의 owner 확인: `plugins/cursorclaw/skills/interview/SKILL.md:13-92`(질문/grounding), `plugins/cursorclaw/skills/pabcd/SKILL.md:155-225`(각 phase·audit·render·close), `plugins/cursorclaw/skills/dev/SKILL.md:129-158`(surface/dispatch skills). 문구의 이동은 규칙 삭제가 아니다. I의 `MIND_DISPATCH_DIRECTIVE`와 post-answer `RESCAN_REINJECT_DIRECTIVE`는 이번 축소에서 그대로 전달한다. 지침에 필요한 owner가 선행 skill diet에서 사라졌다면 H1을 적용하지 않고 먼저 owner 계약을 복구한다.
 
 ### H2 — bareloop HOTL은 scope-first advisory
 
-대상: `plugins/codexclaw/components/pabcd-state/src/hook.ts:524-546`. `platform`별 `advance` 배열과 `PA_ATTEST_EXAMPLE`은 바꾸지 않는다. 권한/의미 판단을 새 regex로 옮기지 않는다.
+대상: `plugins/cursorclaw/components/pabcd-state/src/hook.ts:524-546`. `platform`별 `advance` 배열과 `PA_ATTEST_EXAMPLE`은 바꾸지 않는다. 권한/의미 판단을 새 regex로 옮기지 않는다.
 
 ```diff
-     "[codexclaw: LOOP — orchestrate arming mandate (ORCH-MANDATE-01)]",
+     "[cursorclaw: LOOP — orchestrate arming mandate (ORCH-MANDATE-01)]",
 -    "A loop/goalplan claim without persisted FSM evidence is INVALID, and the PABCD FSM is not",
 -    "armed right now. Arm it with explicit commands before narrating any loop work:",
 +    "Scope first: explicit interview-only, plan-only, HITL, read-only or no-goal limits override the bare cxc-loop default.",
@@ -303,17 +303,17 @@ technology choices that the project already settles.
 
 ### H3 — SessionStart의 loop 안내도 같은 우선순위
 
-대상: `plugins/codexclaw/components/cxc-ops/src/map-affordance.ts:178-185`.
+대상: `plugins/cursorclaw/components/cxc-ops/src/map-affordance.ts:178-185`.
 
 ```diff
  export function renderLoopAffordance(): string {
    return resolveCxcCommands([
--    "[codexclaw] Loop contract: a multi-cycle/PABCD/루프 request is INVALID without",
+-    "[cursorclaw] Loop contract: a multi-cycle/PABCD/루프 request is INVALID without",
 -    "the persisted FSM — run `cxc orchestrate status --session <your id>` first,",
 -    "then enter P and advance each edge with --attest. One work-phase = one full",
 -    "PABCD cycle; never implement two plan pages in one B. Load",
 -    "$codexclaw:cxc-loop + $codexclaw:cxc-pabcd for the full discipline.",
-+    "[codexclaw] Loop contract: load $codexclaw:cxc-loop + $codexclaw:cxc-pabcd for an actual loop request.",
++    "[cursorclaw] Loop contract: load $codexclaw:cxc-loop + $codexclaw:cxc-pabcd for an actual loop request.",
 +    "Bare cxc-loop means scoped HOTL; explicit interview-only, plan-only, HITL and read-only/no-goal limits win.",
 +    "For authorized orchestration, run `cxc orchestrate status --session <your id>` first.",
 +    "One work-phase = one full PABCD cycle. No extra external permissions; a mention alone does not start a loop.",
@@ -324,7 +324,7 @@ technology choices that the project already settles.
 `renderSessionBinding:156-167`, `runMapAffordanceSessionStart:254`의 binding 호출, `:260-267`의 PATH fallback은 **before = after**다. 아래 핵심 출력은 원문 그대로 남긴다.
 
 ```text
-[codexclaw] This session's id is `<payload session_id>`.
+[cursorclaw] This session's id is `<payload session_id>`.
 --session <payload session_id>
 IDENTITY RULE: use the MOST RECENT SessionStart binding line
 ```
@@ -333,7 +333,7 @@ IDENTITY RULE: use the MOST RECENT SessionStart binding line
 
 ### H4 — loop scope hook-output test 추가 및 snapshot 변경
 
-대상: `plugins/codexclaw/components/pabcd-state/test/hook.test.ts`. 기존 `posix arming directive is byte-identical to its pinned snapshot`의 `expected` 배열(`:248-272`)에 **H2의 두 diff를 같은 literal 값으로 적용**한다. `expected = loopArmDirective(...)`로 바꾸지 않는다. win32 test(`:232`)는 유지한다.
+대상: `plugins/cursorclaw/components/pabcd-state/test/hook.test.ts`. 기존 `posix arming directive is byte-identical to its pinned snapshot`의 `expected` 배열(`:248-272`)에 **H2의 두 diff를 같은 literal 값으로 적용**한다. `expected = loopArmDirective(...)`로 바꾸지 않는다. win32 test(`:232`)는 유지한다.
 
 기존 loop-arm tests 뒤에 아래 test를 추가하는 제안이다. 현재 존재하는 `freshCwd`, `ups`, `readState`, `rmSync`를 재사용한다.
 
@@ -390,7 +390,7 @@ IDENTITY RULE: use the MOST RECENT SessionStart binding line
 
 source helper뿐 아니라 기존 UPS explicit/changed-phase 경로에서 owner pointer가 실제 stdout에 도달함을 다음 두 hunk로 검증한다. footer, phase/lastInjectedPhase/injectedTurns의 기대값은 바꾸지 않는다. I의 전용 delivery tests는 아래 표처럼 유지한다.
 
-`plugins/codexclaw/components/pabcd-state/test/hook.test.ts:146-151`:
+`plugins/cursorclaw/components/pabcd-state/test/hook.test.ts:146-151`:
 
 ```diff
      assert.equal(parsed.hookSpecificOutput.additionalContext, withFooter(phaseDirective("P"), "P"));
@@ -398,7 +398,7 @@ source helper뿐 아니라 기존 UPS explicit/changed-phase 경로에서 owner 
 +    assert.match(parsed.hookSpecificOutput.additionalContext, /No implementation yet/);
 ```
 
-`plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts:213-220`:
+`plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts:213-220`:
 
 ```diff
      assert.equal(parsed.hookSpecificOutput.additionalContext, withFooter(phaseDirective("A"), "A"));
@@ -409,7 +409,7 @@ source helper뿐 아니라 기존 UPS explicit/changed-phase 경로에서 owner 
 
 ### H6 — SessionStart의 새 우선순위 assertion
 
-대상: `plugins/codexclaw/components/cxc-ops/test/map-affordance.test.ts:109-120`. 기존 assertion에 추가하며 600문자 상한을 완화하지 않는다.
+대상: `plugins/cursorclaw/components/cxc-ops/test/map-affordance.test.ts:109-120`. 기존 assertion에 추가하며 600문자 상한을 완화하지 않는다.
 
 ```diff
    assert.match(text, /cxc-loop/);
@@ -434,7 +434,7 @@ source helper뿐 아니라 기존 UPS explicit/changed-phase 경로에서 owner 
 +test("wp3: SessionStart preserves the complete binding literal for each session", () => {
 +  for (const id of ["parent-session", "child-session"]) {
 +    const expected = [
-+      `[codexclaw] This session's id is \`${id}\`. Every mutating`,
++      `[cursorclaw] This session's id is \`${id}\`. Every mutating`,
 +      "`cxc orchestrate` command (I/P/A/B/C/D/reset) MUST pass",
 +      `\`--session ${id}\` — the implicit latest-session fallback is`,
 +      "disabled for writes, which prevents ACCIDENTAL implicit-fallback",
@@ -480,10 +480,10 @@ source helper뿐 아니라 기존 UPS explicit/changed-phase 경로에서 owner 
 | `pabcd-state/test/hook-continuation.test.ts:481`, `:529`, `:539`, `:552`, `:963` | Stop idle cap, interactive release, I release, stagnation/absolute cap 유지 | HOTL 의미를 이유로 guard counter/permission을 우회하지 않음 |
 | `pabcd-state/test/goal-gate.test.ts`, `session-split.test.ts`, `interview-ledger.test.ts:267` | 수정 없이 영향 검증 | goal completion/interview deny, parent-child 분리, post-answer capture/rescan 보존 |
 | `subagent-config/test/spawn-attach-hook.test.ts:387-439`, `:474`, `:617`, `:843-910`, `:960-1022` | 수정 없이 영향 검증 | grant replay/deny, full-history, items/full replacement, V1/V2 inlining 및 affordance 보존 |
-| `plugins/codexclaw/test/hook-e2e.test.mjs:127-142`, `:686-740` | 23개 literal/target/matcher 및 opaque payload checks 그대로 | 줄어든 hook 개수로 test를 고치지 않음. 실제 host의 암호화·context 소비는 별도 관측 |
+| `plugins/cursorclaw/test/hook-e2e.test.mjs:127-142`, `:686-740` | 23개 literal/target/matcher 및 opaque payload checks 그대로 | 줄어든 hook 개수로 test를 고치지 않음. 실제 host의 암호화·context 소비는 별도 관측 |
 | `cxc-ops/test/map-affordance.test.ts:109-165` | loop 의미 assertion만 추가; binding/size/cwd/wiring 유지 | sessionbinding은 map 광고와 함께 삭제되지 않음 |
 
-위 표에서 `pabcd-state/`, `cxc-ops/`, `subagent-config/`는 모두 `plugins/codexclaw/components/` 아래다. source helper를 자기 자신과 비교하는 tests만으로 보존을 판단하지 않는다. baseline/candidate의 stdout envelope에서 허용된 안내문 값만 비교 제외하고, state/ledger/deny/block/updatedInput의 나머지는 동일 fixture로 대조한다. timestamp/nonce는 각각 의미·형태와 참조 일관성을 검사하며 비교를 위해 임의로 제거하지 않는다.
+위 표에서 `pabcd-state/`, `cxc-ops/`, `subagent-config/`는 모두 `plugins/cursorclaw/components/` 아래다. source helper를 자기 자신과 비교하는 tests만으로 보존을 판단하지 않는다. baseline/candidate의 stdout envelope에서 허용된 안내문 값만 비교 제외하고, state/ledger/deny/block/updatedInput의 나머지는 동일 fixture로 대조한다. timestamp/nonce는 각각 의미·형태와 참조 일관성을 검사하며 비교를 위해 임의로 제거하지 않는다.
 
 ## Process hook 삭제 결정
 
@@ -531,14 +531,14 @@ source helper뿐 아니라 기존 UPS explicit/changed-phase 경로에서 owner 
 현재 요청의 no-tests/no-build가 PABCD의 일반 'verifier를 미리 실행' 지침보다 우선한다. 아래 명령은 파일/호출 경로를 읽어 대상 연결만 확인했으며 exit code, 테스트 pass, 설치 적용을 주장하지 않는다. 메인이 승인한 원격 candidate checkout을 working directory로 사용한다. 경로는 그 checkout 상대경로다.
 
 ```sh
-node --test plugins/codexclaw/components/pabcd-state/test/hook.test.ts plugins/codexclaw/components/pabcd-state/test/hook-continuation.test.ts plugins/codexclaw/components/cxc-ops/test/map-affordance.test.ts
-node --test plugins/codexclaw/components/pabcd-state/test/goal-gate.test.ts plugins/codexclaw/components/pabcd-state/test/session-split.test.ts plugins/codexclaw/components/pabcd-state/test/interview-ledger.test.ts plugins/codexclaw/components/subagent-config/test/spawn-attach-hook.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/hook.test.ts plugins/cursorclaw/components/pabcd-state/test/hook-continuation.test.ts plugins/cursorclaw/components/cxc-ops/test/map-affordance.test.ts
+node --test plugins/cursorclaw/components/pabcd-state/test/goal-gate.test.ts plugins/cursorclaw/components/pabcd-state/test/session-split.test.ts plugins/cursorclaw/components/pabcd-state/test/interview-ledger.test.ts plugins/cursorclaw/components/subagent-config/test/spawn-attach-hook.test.ts
 npm run build
-node --test plugins/codexclaw/test/hook-e2e.test.mjs
-node plugins/codexclaw/scripts/hook-bench.mjs --json --iterations 20
+node --test plugins/cursorclaw/test/hook-e2e.test.mjs
+node plugins/cursorclaw/scripts/hook-bench.mjs --json --iterations 20
 ```
 
-첫 두 명령은 direct test file 인자로 source handlers를 읽는다. `package.json:22`의 build는 `plugins/codexclaw/scripts/build.mjs`로 연결되며 `build.mjs:97-102`의 기존 manifest target validator를 재사용한다. E2E는 compiled entrypoint/manifest를 읽으므로 build 이후다. 마지막 command는 process baseline 참고용이며 matcher/activation 한계를 고치지 않은 상태에서는 최종 parity verifier가 아니다. 20은 script 반복 횟수 예시이지 모델 표본 수나 통계적 충분성 선언이 아니다.
+첫 두 명령은 direct test file 인자로 source handlers를 읽는다. `package.json:22`의 build는 `plugins/cursorclaw/scripts/build.mjs`로 연결되며 `build.mjs:97-102`의 기존 manifest target validator를 재사용한다. E2E는 compiled entrypoint/manifest를 읽으므로 build 이후다. 마지막 command는 process baseline 참고용이며 matcher/activation 한계를 고치지 않은 상태에서는 최종 parity verifier가 아니다. 20은 script 반복 횟수 예시이지 모델 표본 수나 통계적 충분성 선언이 아니다.
 
 설치 검증은 source SHA → generated dist → 설치 payload/manifest → hook trust → fresh session → 실제 모델 출력/도구 trace 순서다. live session이 이전 payload를 보유할 수 있으므로 현재 대화가 새 hook을 읽었다고 가정하지 않는다. hook trust 실패를 approval/sandbox bypass로 덮지 않는다. 재설치/retrust/재시작 및 외부 쓰기는 메인의 명시적 승인 범위를 따른다.
 

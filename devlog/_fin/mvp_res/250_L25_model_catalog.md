@@ -16,9 +16,9 @@ exposed by the optional ocx provider bridge, with no duplicate entries.
 
 ## Scope (decision-complete)
 - Files to add/edit:
-  - `plugins/codexclaw/components/subagent-config/src/catalog.ts`
-  - `plugins/codexclaw/components/subagent-config/src/mcp.ts`
-  - `plugins/codexclaw/components/subagent-config/test/catalog.test.ts`
+  - `plugins/cursorclaw/components/subagent-config/src/catalog.ts`
+  - `plugins/cursorclaw/components/subagent-config/src/mcp.ts`
+  - `plugins/cursorclaw/components/subagent-config/test/catalog.test.ts`
   - provider-bridge status reader if L23 exposes catalog metadata there
   - generated `dist/` output for changed components
 - Exact behavior:
@@ -57,7 +57,7 @@ exposed by the optional ocx provider bridge, with no duplicate entries.
 3. Duplicate model IDs are collapsed without removing native entries.
 
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
-- node:test path: `plugins/codexclaw/components/subagent-config/test/catalog.test.ts`
+- node:test path: `plugins/cursorclaw/components/subagent-config/test/catalog.test.ts`
 - Data dump: catalog JSON for ocx absent, ocx present, and duplicate fixtures.
 
 ## Commit unit (one atomic conventional commit)
@@ -79,5 +79,5 @@ Codex live catalog cache (`CODEX_MODELS_CACHE_PATH`) through the allowlist.
 - 260629_codexclaw_mvp/033_model_catalog.md
 - 260629_codexclaw_mvp/030_phase2_overview.md (S7)
 - 260629_codexclaw_mvp/000_research.md (ocx provider proxy; default model remains available)
-- plugins/codexclaw/components/provider-bridge/src/cli.ts
-- plugins/codexclaw/components/subagent-config/src/mcp.ts
+- plugins/cursorclaw/components/provider-bridge/src/cli.ts
+- plugins/cursorclaw/components/subagent-config/src/mcp.ts

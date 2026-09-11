@@ -27,7 +27,7 @@ HTTP 400 risk (openai/codex#26753) and asked for a full conversion.
   once resolved).
 - V2 on + `[agents] max_threads` set = startup validation ERROR
   (`validate_multi_agent_v2_config`: "agents.max_threads cannot be set when
-  features.multi_agent_v2 is enabled"). Current `~/.codex/config.toml` HAS
+  features.multi_agent_v2 is enabled"). Current `~/.cursor/config.toml` HAS
   `[agents] max_threads = 1000` -> must be removed in the same edit.
 - V2 toolset: `spawn_agent` (task_name+message required, encrypted message,
   `deny_unknown_fields` -> `items` rejected, `fork_turns` none|all|N),

@@ -21,10 +21,10 @@ Codexclaw already has an explicit skill-attachment path for subagents.
 
 Local evidence:
 
-- `plugins/codexclaw/skills/dev/SKILL.md` says subagent dispatch should attach `cxc-dev` and relevant surface skills through `$cxc-*` mentions or structured `items`.
-- `plugins/codexclaw/skills/search/SKILL.md` has `SEARCH-ATTACH-01`, which says search subagents should receive `cxc-search` as a real skill attachment, not a rewritten inline tool block.
-- `structure/10_subagent_skill_routing.md` says the shipped `^spawn_agent$` hook prepends link-form `$cxc-*` mentions into spawn messages, schema-safe across v1/v2 because `message` is shared.
-- `plugins/codexclaw/components/subagent-config/src/spawn-wrapper.ts` owns skill item/mention construction and dispatch shaping.
+- `plugins/cursorclaw/skills/dev/SKILL.md` says subagent dispatch should attach `cxc-dev` and relevant surface skills through `$crc-*` mentions or structured `items`.
+- `plugins/cursorclaw/skills/search/SKILL.md` has `SEARCH-ATTACH-01`, which says search subagents should receive `cxc-search` as a real skill attachment, not a rewritten inline tool block.
+- `structure/10_subagent_skill_routing.md` says the shipped `^spawn_agent$` hook prepends link-form `$crc-*` mentions into spawn messages, schema-safe across v1/v2 because `message` is shared.
+- `plugins/cursorclaw/components/subagent-config/src/spawn-wrapper.ts` owns skill item/mention construction and dispatch shaping.
 
 Implication:
 
@@ -37,9 +37,9 @@ This task exercised the existing `cxc-search` plugin discipline.
 
 Local evidence:
 
-- `plugins/codexclaw/skills/search/SKILL.md:70-91` defines `agbrowse` as the primary Tier-2 proof surface, with browser/chrome/computer-use fallback only when needed.
+- `plugins/cursorclaw/skills/search/SKILL.md:70-91` defines `agbrowse` as the primary Tier-2 proof surface, with browser/chrome/computer-use fallback only when needed.
 - `structure/60_native_capabilities.md:59-90` describes browser/computer-use and `agbrowse` as the underused proof tier.
-- `plugins/codexclaw/components/pabcd-state/src/hook.ts` contains an `agbrowse` request directive for user prompts that explicitly ask to route research through `agbrowse`.
+- `plugins/cursorclaw/components/pabcd-state/src/hook.ts` contains an `agbrowse` request directive for user prompts that explicitly ask to route research through `agbrowse`.
 
 Implication:
 

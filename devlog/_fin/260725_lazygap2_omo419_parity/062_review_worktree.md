@@ -1,14 +1,14 @@
 # 062 — 리뷰 worktree 요구 좁히기
 
 출처: `002` #11 (ADAPT / E7) · 의존: 없음 · 상태: PLANNED
-소유자: `plugins/codexclaw/skills/dev-code-reviewer/SKILL.md` 단일
+소유자: `plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md` 단일
 
 ## 문제
 
 upstream은 리뷰마다 전용 worktree를 요구한다
 (`devlog/.lazycodex/plugins/omo/skills/review-work/SKILL.md:62-88,125-135`).
 codexclaw은 exact base/head anchor는 이미 요구하지만
-(`plugins/codexclaw/skills/dev-code-reviewer/SKILL.md:399-406`, `REVIEW-INTERDIFF-01`)
+(`plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md:399-406`, `REVIEW-INTERDIFF-01`)
 리뷰 실행 시 worktree 격리 조건은 없다.
 
 무조건 요구하면 과잉이다 — 지금 내가 작업 중인 branch를 검토할 때 worktree를 또 만드는 것은
@@ -48,7 +48,7 @@ review"는 **전부 여기 있다.** 그 부분은 삭제한다.
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/skills/dev-code-reviewer/SKILL.md` | `REVIEW-INTERDIFF-01` 절(`:399-406`) 뒤에 문단 1개 삽입 |
+| `plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md` | `REVIEW-INTERDIFF-01` 절(`:399-406`) 뒤에 문단 1개 삽입 |
 
 ## before → after
 
@@ -94,11 +94,11 @@ after: 아래를 그 절 뒤에 추가한다.
 ### 검증 명령 (PLAN-VERIFIER-REAL-01)
 
 - `npm run gate` — **실측**: exit 0 + WARN 7건. **대상 파일을 실제로 읽는다** —
-  `plugins/codexclaw/scripts/gate.mjs:147-175`가 skills 트리의 모든 `SKILL.md`를 재귀로 훑는다.
+  `plugins/cursorclaw/scripts/gate.mjs:147-175`가 skills 트리의 모든 `SKILL.md`를 재귀로 훑는다.
   다만 검사하는 것은 좁은 false-enforcement 정규식 3개뿐이고 `REVIEW-WORKTREE-01`의
   의미는 보지 않는다. 관측 범위 = 금지 문구 스캔.
 - `npm test` — **실측**: 1,224 pass / 0 fail. 역시 **대상을 읽는다** —
-  `plugins/codexclaw/test/gate.test.mjs:18-20`이 live gate를 호출하기 때문이다.
+  `plugins/cursorclaw/test/gate.test.mjs:18-20`이 live gate를 호출하기 때문이다.
   관측 범위는 위와 같다. 테스트를 건드리지 않으므로 개수가 유지돼야 한다.
 - 규칙 문장의 존재와 내용: **어떤 자동 명령도 관측하지 않는다.** 사람 리뷰다.
 - `npx tsc --noEmit`은 **적지 않는다** — root `tsconfig.json`이 없다.

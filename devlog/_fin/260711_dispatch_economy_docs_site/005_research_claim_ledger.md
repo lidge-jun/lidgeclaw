@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, dispatch-economy, research, claim-ledger, arxiv, tier2]
+tags: [cursorclaw, dispatch-economy, research, claim-ledger, arxiv, tier2]
 ---
 
 # Research claim-ledger — delegation economy (Tier-2 verified)

@@ -77,7 +77,7 @@ SKILL.md 본문 안에 있어서 에이전트가 SKILL.md를 읽기 전까진 �
 ## §X.1 Available proof tools
 - `agbrowse` is on PATH for HTTP-first URL verification.
   For any URL proof, prefer `agbrowse fetch <url> --json` before browser tools.
-  Full ladder: `$cxc-search` Tier 2.
+  Full ladder: `$crc-search` Tier 2.
 ```
 
 이러면 에이전트가 매 코딩 턴에 dev를 읽을 때 agbrowse를 인지하고, 필요하면
@@ -104,7 +104,7 @@ search skill을 로드해서 전체 tier ladder를 따름.
 
 | # | Hook file | 흡수 위치 | 방법 |
 |---|-----------|-----------|------|
-| 1 | post-tool-use-capturing-shell-friction | `dev` §3 | 규칙: "셸 에러 시 .codexclaw/friction.log에 기록" |
+| 1 | post-tool-use-capturing-shell-friction | `dev` §3 | 규칙: "셸 에러 시 .cursorclaw/friction.log에 기록" |
 | 2 | pre-tool-use-advising-on-friction | `dev` §3 | 규칙: "재시도 전 friction.log 확인" |
 | 3 | post-tool-use-detecting-edit-shapes | `dev` §3 | 규칙: "3회 유사 패치 감지 시 리팩터로 전환" |
 | 4 | subagent-stop-verifying-evidence | `pabcd` / `dev` | 서브에이전트 결과 검증 절차를 skill에 명시 |

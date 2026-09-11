@@ -16,7 +16,7 @@ provide an OS-level immutable audit trail against an unrestricted process.
 
 ## Exact changes
 
-MODIFY plugins/codexclaw/scripts/probe-recorder.mjs:
+MODIFY plugins/cursorclaw/scripts/probe-recorder.mjs:
 - Extend existing cleanSource to fingerprint actual Git-tracked file bytes after
   checking exact HEAD and clean status. One NUL-delimited git ls-files snapshot;
   validate canonical contained regular files. This also catches assume-unchanged
@@ -33,14 +33,14 @@ MODIFY plugins/codexclaw/scripts/probe-recorder.mjs:
 - Preserve schema1 and existing fields. Additional before/after identities strengthen
   newly recorded attempts; historical records are not retroactively strengthened.
 
-MODIFY plugins/codexclaw/test/probe-fixtures/recorder.mjs: reuse fake dispatcher and
+MODIFY plugins/cursorclaw/test/probe-fixtures/recorder.mjs: reuse fake dispatcher and
 fake Codex; bind fixture source paths before serializing those scripts. Add scoped
 mutation scenarios for preflight doctor, execution and postflight doctor: approval,
 install, prompt, source bytes, source HEAD, hidden source byte drift and Codex
 entrypoint. All mutations remain inside that fixture's temp root. A separate
 copied-recorder scenario must never modify the real repository recorder.
 
-MODIFY plugins/codexclaw/test/probe-recorder.test.mjs: preserve originals. Show RED
+MODIFY plugins/cursorclaw/test/probe-recorder.test.mjs: preserve originals. Show RED
 before the recorder fix, then GREEN for those reachable boundaries; assert no
 inference on preflight drift, postflightError/ok:false for later drift, original
 provenance hashes retained, and analyzer rejection. Include removed-input failure

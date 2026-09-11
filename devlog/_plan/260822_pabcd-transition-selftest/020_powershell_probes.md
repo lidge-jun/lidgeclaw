@@ -6,7 +6,7 @@ harness, and the harness then paid for itself four more times.
 
 ## Harness
 
-Three probes under `.codexclaw/psprobe/`:
+Three probes under `.cursorclaw/psprobe/`:
 
 | probe | answers |
 |---|---|

@@ -1,6 +1,6 @@
 ---
 created: 2026-07-12
-tags: [codexclaw, taste, triage]
+tags: [cursorclaw, taste, triage]
 ---
 
 # Triage — Taste/Design Research Findings

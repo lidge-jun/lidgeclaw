@@ -5,7 +5,7 @@ Depends on: roadmap; no new package or native registration.
 
 ## Exact change map
 
-Paths below are relative to plugins/codexclaw/ unless stated otherwise. MODIFY existing entries in place, preserving unrelated behavior.
+Paths below are relative to plugins/cursorclaw/ unless stated otherwise. MODIFY existing entries in place, preserving unrelated behavior.
 
 - `components/subagent-config/src/store.ts`: `ROLES = ["explorer", "reviewer", "executor"]` -> append `"architect"`. Add architect defaultRole(), sources session, overrides false to existing typed records. Existing ROLES iteration performs reconstruction, scoped inheritance, validation and serialization; do not add migration or provider defaults.
 - `components/subagent-config/src/dispatch-contract.ts`: import ROLES/RoleName from store; role union -> RoleName; three explicit comparisons -> ROLES membership, error lists all roles. Keep main judgment invariant and existing receipt shape.
@@ -32,7 +32,7 @@ Reuse existing APIs, no new transport/scheduler. Role inference is routing, not 
 
 ## Concrete new role source
 
-Create `plugins/codexclaw/agents/architect.toml` with:
+Create `plugins/cursorclaw/agents/architect.toml` with:
 
 ```toml
 # Canonical prompt source; not an auto-registered native agent.
@@ -64,7 +64,7 @@ Additional existing producer: `components/subagent-config/src/spawn-wrapper.ts` 
 
 ## Baseline verifier observations
 
-`npm run build` exit 0, compiles component source including every named runtime target (build.mjs COMPONENTS plus listTsFiles). `npm run gate` exit 0, observes shipped skill/structure inventory but does not prove lifecycle semantics. `npm run build --workspace @codexclaw/gui` exit 0, Vite entry includes affected pages. `node node_modules/typescript/bin/tsc -p plugins/codexclaw/gui/tsconfig.json` exit 0, config include is `["src"]`. Logs are /home/jun/tmp/cxc-architect-handoff.nnzEDx/baseline-{build,gate,gui-build,types}.log. Components use Node type stripping; no existing full component tsc project is claimed.
+`npm run build` exit 0, compiles component source including every named runtime target (build.mjs COMPONENTS plus listTsFiles). `npm run gate` exit 0, observes shipped skill/structure inventory but does not prove lifecycle semantics. `npm run build --workspace @codexclaw/gui` exit 0, Vite entry includes affected pages. `node node_modules/typescript/bin/tsc -p plugins/cursorclaw/gui/tsconfig.json` exit 0, config include is `["src"]`. Logs are /home/jun/tmp/cxc-architect-handoff.nnzEDx/baseline-{build,gate,gui-build,types}.log. Components use Node type stripping; no existing full component tsc project is claimed.
 
 Routing marker remains in the message for repeat-hook idempotence and visible role provenance. It is not an authorization token and cannot change explicit native write/reviewer roles.
 
@@ -76,4 +76,4 @@ C integration finding: messenger-bridge/test/subagent-effort.test.ts creates thr
 
 C verification: full suite at 6db5134: 2706 tests, 2635 pass, 71 skipped, zero failures. Independent reviewer 01a082bd-fbcf-7933-ab34-da3439fb2b83 PASS; accepted direct no-op assertion and forbidden executor-marker regression. Non-blocking limitation: first-marker precedence is per initial dispatch; hook prompt overrides that themselves quote role marker lines can influence logical role on reapplication. Existing explicit model/effort survive; marker is not a permission boundary. Avoid role markers in override prose and use producer dispatch payloads. No broader prompt-override deduplication refactor in this feature. Agent README inventory is owned by the next workflow cycle.
 
-UI: real isolated Vite/backend with fixture model catalog, 1440x900 screenshot inspected; four roles, architect model/prompt save, fresh-page Korean persistence and inheritance reset passed. CLI list/set/get/repeat/invalid effort/unknown role captured. Native evidence: .codexclaw/evidence/01a0829e-d196-7b31-bed9-9551e9ea3c18/qa in the native checkout. No native architect installation or inference; narrow viewport unverified.
+UI: real isolated Vite/backend with fixture model catalog, 1440x900 screenshot inspected; four roles, architect model/prompt save, fresh-page Korean persistence and inheritance reset passed. CLI list/set/get/repeat/invalid effort/unknown role captured. Native evidence: .cursorclaw/evidence/01a0829e-d196-7b31-bed9-9551e9ea3c18/qa in the native checkout. No native architect installation or inference; narrow viewport unverified.

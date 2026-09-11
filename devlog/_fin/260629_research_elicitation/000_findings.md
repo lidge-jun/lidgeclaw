@@ -63,7 +63,7 @@ MCP server  --elicitation/create-->  codex core  --EventMsg::ElicitationRequest-
     sanctioned path for codex-side choice prompts.
 
 ## Registration (how a server gets wired)
-- `~/.codex/config.toml` uses `[mcp_servers.<name>]` blocks (existing example: `node_repl`).
+- `~/.cursor/config.toml` uses `[mcp_servers.<name>]` blocks (existing example: `node_repl`).
 - CLI: `codex mcp add|list|get|remove` manage external MCP servers.
 - A codexclaw plugin can also declare servers via its `.mcp.json` (`mcpServers`).
 
@@ -113,7 +113,7 @@ MCP server  --elicitation/create-->  codex core  --EventMsg::ElicitationRequest-
   `default_mode_request_user_input` flag (the confirmed path), not assistant-emitted text fences.
 - **PABCD (iPABCD) implementation** will also drive its interactive prompts through this same
   `request_user_input` selector path.
-- Enabled now in `~/.codex/config.toml` (`[features] default_mode_request_user_input = true`;
+- Enabled now in `~/.cursor/config.toml` (`[features] default_mode_request_user_input = true`;
   backup: `config.toml.bak-default_mode_request_user_input-20260629-222710`).
 - Open: reconcile with phase-1 "config untouched" — this flag is a USER-set option, not something
   codexclaw mutates automatically. codexclaw should DETECT the flag and document enabling it, not

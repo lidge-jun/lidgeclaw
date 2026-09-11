@@ -1,6 +1,6 @@
 ---
 created: 2026-07-11
-tags: [codexclaw, subagent, evidence-gate, audit, synthesis]
+tags: [cursorclaw, subagent, evidence-gate, audit, synthesis]
 ---
 
 # A-gate Audit Synthesis

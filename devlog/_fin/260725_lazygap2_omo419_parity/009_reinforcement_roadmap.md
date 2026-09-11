@@ -64,15 +64,15 @@ upstream이 같은 기간에 키운 큰 표면(ultrawork 전역 모드, teammode
 | `100` | `100_plan_rule_hardening.md` | 없음 (다른 슬라이스 타입 미사용) | P/A 규칙 보강. `dev-testing/SKILL.md`를 `060`/`061`과 순차 공유 |
 | `130` | `130_removed_backend_contract.md` | `060` | `manifest-policy.test.mjs:113-149`의 forbidden-backend 산문 검사를 삭제하고 보호를 `REVIEW-REMOVED-BACKEND-01` 리뷰 규칙으로 이전 — 독립 오라클(백엔드 registry)이 코드에 없어 자동 계약을 포기했다 (WP2 A 감사 3라운드) |
 | `120` | `120_doc_sync_contracts.md` | `060` | `loop-activation-doc-sync`(10 단정)와 `emergence-doc-sync`(25 호출/36 실행)를 구조화 계약 비교로 재작성 — 스킬에 계약 필드 신설이 필요해 `060`에서 이월 (WP2 A 감사 2라운드) |
-| `110` | `110_devlog_archive.md` | 나머지 전부 | 완료된 devlog 유닛을 `_fin/`으로 아카이브 — D 단계 규칙 (`plugins/codexclaw/skills/pabcd/SKILL.md:190`). 다른 슬라이스가 모두 닫힌 뒤에만 실행 |
+| `110` | `110_devlog_archive.md` | 나머지 전부 | 완료된 devlog 유닛을 `_fin/`으로 아카이브 — D 단계 규칙 (`plugins/cursorclaw/skills/pabcd/SKILL.md:190`). 다른 슬라이스가 모두 닫힌 뒤에만 실행 |
 
 실행 순서: `020`이 사슬의 뿌리다 — `020` → `010` → `030` → `040`.
 `070`도 `020`에만 의존한다. 별도 사슬로 `090` → `091`.
 `050`, `063`, `064`, `080`, `090`은 서로 및 위 사슬과 독립이므로 어느 순서로도 실행할 수 있다.
 
 **독립 선언 정정 (Interview Mind, 2026-07-26):** `060`·`061`·`100`은 모두
-`plugins/codexclaw/skills/dev-testing/SKILL.md`를 만지고, `061`·`062`는
-`plugins/codexclaw/skills/dev-code-reviewer/SKILL.md`를 만진다. 이들은 독립이 아니라
+`plugins/cursorclaw/skills/dev-testing/SKILL.md`를 만지고, `061`·`062`는
+`plugins/cursorclaw/skills/dev-code-reviewer/SKILL.md`를 만진다. 이들은 독립이 아니라
 **같은 파일 소유권을 순차 공유**한다 — 병렬 브랜치면 hunk 충돌이고, 순차면 뒤 슬라이스의
 P가 앞 변경을 반영해 stale 검사를 해야 한다. `070`은 깨진 `020`에 의존한다.
 
@@ -107,13 +107,13 @@ A 단계 변경 이력 (리뷰어 블로커 7, 재감사 6):
 
 ## 비목표 재확인 (LOCK 유지)
 
-- 서브에이전트 역할 증설 금지 — 전문화는 `$cxc-*` skill attachment로.
+- 서브에이전트 역할 증설 금지 — 전문화는 `$crc-*` skill attachment로.
   upstream의 metis/momus/librarian/gate-reviewer/티어 worker 전부 REJECT.
 - 서버/데몬/LSP/CDP 상주 프로세스 금지 — stealth browser 계열 REJECT.
 - host goal 쓰기는 **금지가 아니라 게이팅**이다 (A 단계, 리뷰어 블로커 8 반영).
   정확한 규칙: codexclaw은 interview freeze 승인 경계에서만 host goal을 쓰고,
   루프 중에는 절대 자기무장하지 않는다. 분해된 작업 상태(workPhases/tasks/criteria/
-  evidence)는 프로젝트 로컬 `.codexclaw/`에 남는다. superseding SoT은
+  evidence)는 프로젝트 로컬 `.cursorclaw/`에 남는다. superseding SoT은
   `devlog/_fin/lazygap/000_INDEX.md:121-128` ("REVISED 2026-07-01")이고,
   `structure/00_philosophy.md`의 read-only 표현은
   그보다 앞선 기술이므로 정정 대상 목록에 넣었다.
@@ -151,7 +151,7 @@ A 단계 변경 이력 (리뷰어 블로커 7, 재감사 6):
   전건 반영 후 재감사. 반영 내역은 아래 감사 기록 절.
 - 메인 에이전트 직접 실행 (2026-07-25, cwd `/Users/jun/Developer/new/700_projects/codexclaw`):
   `npm run gate` → exit 0,
-  `[codexclaw gate] OK — no status drift, false-enforcement prose, or count mismatch.`
+  `[cursorclaw gate] OK — no status drift, false-enforcement prose, or count mismatch.`
 - 리뷰어가 벤더 스냅샷에서 독립 실행: `node --test test/subagent-limit-migration.test.mjs`
   → 17건 중 16 pass / 1 fail, 실패 위치가 `001`의 주장과 일치.
 - 서브에이전트 자기보고 중 재현되지 않은 집계는 검증 증거로 승격하지 않았다
@@ -163,7 +163,7 @@ A 단계 변경 이력 (리뷰어 블로커 7, 재감사 6):
 ## 감사 기록 (A 단계)
 
 독립 리뷰어: Sol subagent "Epicurus" (explorer/reviewer, read-only),
-`$cxc-dev-code-reviewer` + `$cxc-search` 첨부. 총 4라운드.
+`$crc-dev-code-reviewer` + `$crc-search` 첨부. 총 4라운드.
 
 | 라운드 | verdict | 블로커 | 성격 | 처리 |
 | --- | --- | --- | --- | --- |

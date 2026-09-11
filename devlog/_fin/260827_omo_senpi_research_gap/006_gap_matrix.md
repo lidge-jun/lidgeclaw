@@ -20,12 +20,12 @@
 - OMO/Senpi의 generic research/investigation 분류는 prompt-only IntentGate다. Deterministic parser는 named mode만 arm한다: `devlog/_fin/260827_omo_senpi_research_gap/001_omo_active_research.md:12-21`, `devlog/_fin/260827_omo_senpi_research_gap/002_senpi_active_research.md:18-26`, `devlog/_fin/260827_omo_senpi_research_gap/003_omo_senpi_adapter.md:7-21`.
 - Generic `찾아봐/look into/explain`을 hook으로 잡으면 ordinary Tier1-2, Interview의 자체 “Research the repo first”, 변수/파일명, quoted directives까지 deep mode로 올릴 위험이 있다.
 - 따라서 generic parser는 REJECT한다. 기존 `cxc-search` metadata/Intent Guard가 semantic routing을 맡긴다.
-- 별도 수요 증거가 생기면 `detectDeepResearchRequest`를 DEFER/ADAPT할 수 있다. Positive는 `ulw-research`, `$cxc-search comprehensive/deep research`, “research swarm + wave journal + prove every claim”, “철저한 조사로 끝까지”처럼 named/strong deliverable marker가 결합된 경우다. Negative는 ordinary explain/look-into/latest, implementation discussion, code/quote, `ulw_helper.ts`, product-injected research wording이다.
+- 별도 수요 증거가 생기면 `detectDeepResearchRequest`를 DEFER/ADAPT할 수 있다. Positive는 `ulw-research`, `$crc-search comprehensive/deep research`, “research swarm + wave journal + prove every claim”, “철저한 조사로 끝까지”처럼 named/strong deliverable marker가 결합된 경우다. Negative는 ordinary explain/look-into/latest, implementation discussion, code/quote, `ulw_helper.ts`, product-injected research wording이다.
 - 이 parser도 directive만 낸다. create_goal, PABCD 전이, spawn은 하지 않는다.
 
 ## G2 — Existing goalplan을 authoritative research projection으로 확장
 
-새 subsystem/FSM이나 ledger-derived projection을 만들지 않는다. Authoritative state는 지금 Stop/completion이 이미 읽는 `GoalplanWorkPhase.tasks[]`와 `criteria[]`다: `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:50-90,700-723,791-818`. Ledger는 append-only history일 뿐이며 state source가 아니다: 같은 파일 `:192-220,638-658`.
+새 subsystem/FSM이나 ledger-derived projection을 만들지 않는다. Authoritative state는 지금 Stop/completion이 이미 읽는 `GoalplanWorkPhase.tasks[]`와 `criteria[]`다: `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:50-90,700-723,791-818`. Ledger는 append-only history일 뿐이며 state source가 아니다: 같은 파일 `:192-220,638-658`.
 
 Canonical lifecycle mapping:
 
@@ -39,15 +39,15 @@ Canonical lifecycle mapping:
 
 Creation → serialization → deserialization → consumers:
 
-- Creation/mutation: extend `plugins/codexclaw/components/pabcd-state/src/steering.ts:34-66,130-190,202-245` with additive task creation and fail-closed task/criterion resolution; expose explicit verbs in `plugins/codexclaw/components/pabcd-state/src/goalplan-cli.ts:37-103,209-260`.
-- Serialization: existing atomic `writeGoalplan` persists the structured projection, `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:620-636`.
-- Deserialization: extend the task/criterion reviver near `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:449-454` to validate optional research metadata and reject unknown outcomes.
-- Consumers: existing `nextOpenTask`, `unmetCriteria`, `advanceWorkPhase`, and `validateGoalplan` already keep pending tasks/open criteria visible to Stop/completion, `plugins/codexclaw/components/pabcd-state/src/goalplan.ts:700-723,791-818,1029-1071`; render the wave/axis metadata in `goalplan-cli.ts` `show`.
+- Creation/mutation: extend `plugins/cursorclaw/components/pabcd-state/src/steering.ts:34-66,130-190,202-245` with additive task creation and fail-closed task/criterion resolution; expose explicit verbs in `plugins/cursorclaw/components/pabcd-state/src/goalplan-cli.ts:37-103,209-260`.
+- Serialization: existing atomic `writeGoalplan` persists the structured projection, `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:620-636`.
+- Deserialization: extend the task/criterion reviver near `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:449-454` to validate optional research metadata and reject unknown outcomes.
+- Consumers: existing `nextOpenTask`, `unmetCriteria`, `advanceWorkPhase`, and `validateGoalplan` already keep pending tasks/open criteria visible to Stop/completion, `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts:700-723,791-818,1029-1071`; render the wave/axis metadata in `goalplan-cli.ts` `show`.
 
 Mode boundary:
 
 - HITL exhaustive research may initialize/bind a local goalplan and enter PABCD, but never creates a host goal from “deep research” wording alone.
-- HOTL may call `create_goal` only when the user separately requested autonomous/continue-until-done execution, per `plugins/codexclaw/skills/loop/SKILL.md:79-93`.
+- HOTL may call `create_goal` only when the user separately requested autonomous/continue-until-done execution, per `plugins/cursorclaw/skills/loop/SKILL.md:79-93`.
 - Parser가 goal/FSM을 자동 생성하거나 이동하지 않는다. Main remains dispatcher; child writes no journal; runtime concurrency remains host-owned.
 
 ## G3 — Wake-source bus는 지금 만들지 않는다
@@ -69,7 +69,7 @@ Evidence classes:
 4. `model_self_report` — skill use claim, never hard proof.
 5. `host_unobservable` — implicit selector/load cannot be seen.
 
-Current `activated` wording collapses 1-5: `plugins/codexclaw/components/cxc-ops/src/activation-trace.ts:18-43,54-150`. MLB activation-baseline 작업과 분리한다. 이 upgrade에서는 spawn-time `referenced` event만 필요성이 입증될 때 재개방하고, main-turn `activated`는 생성하지 않는다.
+Current `activated` wording collapses 1-5: `plugins/cursorclaw/components/cxc-ops/src/activation-trace.ts:18-43,54-150`. MLB activation-baseline 작업과 분리한다. 이 upgrade에서는 spawn-time `referenced` event만 필요성이 입증될 때 재개방하고, main-turn `activated`는 생성하지 않는다.
 
 ## G6 — Evidence lineage subset
 
@@ -88,7 +88,7 @@ Reject:
 - compulsory PDF/DOCX/visual QA for code research;
 - unlimited exploration overriding all budget boundaries.
 
-Source: OMO schema is `devlog/.omo/packages/shared-skills/skills/ulw-research/SKILL.md:61-71,127-149,195-245`; current CodexClaw Tier 3 journal/claim contract is `plugins/codexclaw/skills/search/SKILL.md:126-177`.
+Source: OMO schema is `devlog/.omo/packages/shared-skills/skills/ulw-research/SKILL.md:61-71,127-149,195-245`; current CodexClaw Tier 3 journal/claim contract is `plugins/cursorclaw/skills/search/SKILL.md:126-177`.
 
 ## Prior 4.19 disposition keys
 

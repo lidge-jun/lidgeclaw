@@ -1,6 +1,6 @@
 ---
 name: dev-diagram-viewer
-description: "DEPRECATED — renamed to cxc-dev-visualizer. Use $cxc-dev-visualizer for visual documents, diagrams, HTML/SVG explainers and PDF reports."
+description: "DEPRECATED — renamed to cxc-dev-visualizer. Use $crc-dev-visualizer for visual documents, diagrams, HTML/SVG explainers and PDF reports."
 metadata:
   deprecated: true
   redirect: cxc-dev-visualizer

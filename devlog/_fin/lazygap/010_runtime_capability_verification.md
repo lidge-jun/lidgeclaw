@@ -70,5 +70,5 @@ and **structurally impossible on v2** (strict schema rejects `items`). So the ro
   to a committed E1 hook; matcher on `agent_type`, payload carries `last_assistant_message`.
 - `008` open question -> **RESOLVED SPLIT**: E3 on v1, E5 on v2; the hook fails open. No longer
   "verify first" — verified.
-- Receipt convention (009 Q3) stays codexclaw's `--evidence`/`.codexclaw/evidence/` (omo uses
+- Receipt convention (009 Q3) stays codexclaw's `--evidence`/`.cursorclaw/evidence/` (omo uses
   `.omo/evidence` + `EVIDENCE_RECORDED: <path>`); adopt the same last-line marker contract.

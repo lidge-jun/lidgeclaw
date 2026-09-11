@@ -87,7 +87,7 @@ export function benchEnv(tmpHome) {
     // Windows resolves the home from USERPROFILE, so HOME alone left the hook
     // reading the REAL user home during a benchmark meant to be hermetic.
     USERPROFILE: tmpHome,
-    CODEX_HOME: join(tmpHome, ".codex"),
+    CURSOR_HOME: join(tmpHome, ".codex"),
     CODEX_SQLITE_HOME: join(tmpHome, ".codex"),
   };
   for (const key of Object.keys(env)) {

@@ -34,7 +34,7 @@ plugin integration tests:
 - `messenger-bridge`
 - `skill-search`
 - `gui`
-- plugin integration (`plugins/codexclaw/test/*.test.mjs`)
+- plugin integration (`plugins/cursorclaw/test/*.test.mjs`)
 
 ## CI expectations
 
@@ -69,7 +69,7 @@ Cross-platform behavior is covered by two workflows, and both matter:
   native ext4. Those are different filesystems with different locking and permission behavior,
   so a green run on one says nothing about the other.
 
-Some defects only appear on a real installation. `~/.codexclaw` (the global recall index and
+Some defects only appear on a real installation. `~/.cursorclaw` (the global recall index and
 skill cache) exists on a developer machine and not on a runner, symlink creation needs elevation
 on Windows while junctions do not, and the Store-packaged `codex` alias only exists where the
 Codex desktop app is installed. If you are chasing a Windows report, reproduce it on a Windows

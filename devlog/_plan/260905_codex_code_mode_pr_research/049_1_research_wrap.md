@@ -48,7 +48,7 @@ worktree. No push, merge, release, or production rollout is included.
 ## Fresh remote verification
 
 On macmini-cf, clean `wp3-candidate-mind-source` at the product SHA above, with an
-isolated HOME/CODEX_HOME: build;20-file affected node:test selection; gate; inventory.
+isolated HOME/CURSOR_HOME: build;20-file affected node:test selection; gate; inventory.
 Result: **703 passed,0 failed,0 cancelled,0 skipped,0 todo**,32,708.742ms.
 Build, gate and inventory also pass; post-check source remains clean.
 Inventory:28 skills,23 registered hooks,8 components. Hook count did not decrease.
@@ -58,7 +58,7 @@ separate typecheck. No local tests, build or typecheck were run.
 Remote evidence root R:
 `/Users/junny/codexclaw-probes/01a0702d-c493-7510-801f-7d8772a2689c`.
 Fresh logs: `R/wp3-wrap-{build,regression,gate,inventory}.log`.
-Local retained copies: `.codexclaw/evidence/01a0702d-c493-7510-801f-7d8772a2689c/wrap/`.
+Local retained copies: `.cursorclaw/evidence/01a0702d-c493-7510-801f-7d8772a2689c/wrap/`.
 SHA256 of regression log:
 `e7155a2a98a5171284b45437e20a5cbb6d51caae5fb5c120fbc91c0d01151bf7`.
 Historical694 at fb7 and290 at29 are separate selections, not984 current-head tests.

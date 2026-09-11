@@ -60,8 +60,8 @@ Handoff phase. Write implementation-ready spec in ima2-gen devlog.
 | `devlog/_plan/260715_icon_strategy/001_research_archive.md` | CREATE | WP1 |
 | `devlog/_plan/260715_icon_strategy/010_phase1_skill_patches.md` | CREATE | WP1 |
 | `devlog/_plan/260715_icon_strategy/020_phase2_ima2_handoff.md` | CREATE | WP1 |
-| `plugins/codexclaw/skills/dev-uiux-design/SKILL.md` | PATCH | WP2 |
-| `plugins/codexclaw/skills/dev-frontend/SKILL.md` | PATCH | WP2 |
+| `plugins/cursorclaw/skills/dev-uiux-design/SKILL.md` | PATCH | WP2 |
+| `plugins/cursorclaw/skills/dev-frontend/SKILL.md` | PATCH | WP2 |
 | ima2: `devlog/_plan/260715_icon_pipeline/000_plan.md` | CREATE | WP3 |
 | ima2: `devlog/_plan/260715_icon_pipeline/010_cli_design.md` | CREATE | WP3 |
 | ima2: `devlog/_plan/260715_icon_pipeline/020_dependencies.md` | CREATE | WP3 |
@@ -84,7 +84,7 @@ Handoff phase. Write implementation-ready spec in ima2-gen devlog.
 
 **WP1 exit:** 000-020 range files exist in devlog unit; 001 has official URLs per library row; 010/020 name concrete insertion points or file anchors.
 
-**WP2 exit:** `rg 'UX-ICON-01|FE-ICON-01' plugins/codexclaw/skills/dev-uiux-design/SKILL.md plugins/codexclaw/skills/dev-frontend/SKILL.md` returns matches; YAML frontmatter parses; no phantom reference-table links added.
+**WP2 exit:** `rg 'UX-ICON-01|FE-ICON-01' plugins/cursorclaw/skills/dev-uiux-design/SKILL.md plugins/cursorclaw/skills/dev-frontend/SKILL.md` returns matches; YAML frontmatter parses; no phantom reference-table links added.
 
 **WP3 exit:** ima2 devlog unit exists with 000/010/020 docs; 010 references `bin/commands/icon.ts` and `bin/lib/client.ts`; codexclaw skills mention `ima2 icon`.
 

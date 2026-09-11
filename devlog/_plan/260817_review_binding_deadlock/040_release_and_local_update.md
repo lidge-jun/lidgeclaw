@@ -2,7 +2,7 @@
 created: 2026-08-17
 status: design
 workPhase: wp5
-tags: [codexclaw, release, ci, local-install]
+tags: [cursorclaw, release, ci, local-install]
 ---
 
 # 040 — 검증, dev 푸시, 정식 릴리스, 로컬 설치본 갱신
@@ -68,7 +68,7 @@ assert.deepEqual(st.planUnit?.split(/[\\/]/), ["devlog", "_plan", "260817_probe"
 - `.github/workflows/release.yml` 어디에도 `npm publish`도 NPM 토큰도 없다.
   실제로 하는 일은 `gh release create` + `gh release upload dist-artifacts/*`
   뿐이고, 사후 검증도 `gh release view`로 에셋 개수만 센다(:216-223).
-- README의 설치 경로는 `codex plugin marketplace add` + `codex plugin add
+- README의 설치 경로는 `Cursor plugin install add` + `codex plugin add
   codexclaw@codexclaw`다. 배포 채널은 Codex 플러그인 마켓플레이스다.
 
 다른 저장소의 릴리스 습관을 여기에 옮겨 적은 것이다. 존재하지 않는 검증을
@@ -77,13 +77,13 @@ assert.deepEqual(st.planUnit?.split(/[\\/]/), ["devlog", "_plan", "260817_probe"
 ## 로컬 설치본
 
 로컬 마켓플레이스 `codexclaw`는 이 저장소 체크아웃 자체를 소스로 가리킨다
-(`~/.codex/config.toml`의 `source = /Users/jun/Developer/new/700_projects/codexclaw`).
+(`~/.cursor/config.toml`의 `source = /Users/jun/Developer/new/700_projects/codexclaw`).
 즉 설치본은 레지스트리가 아니라 작업 트리에서 온다. 그래서 코드를 고쳐도
 **설치본은 자동으로 따라오지 않는다** — 캐시 디렉터리에 복사된 판본이 계속
 실행된다. 갱신은 매니페스트 캐시버스터를 올리고 재설치하는 것이다:
 
 ```
-python3 <plugin-creator>/scripts/update_plugin_cachebuster.py plugins/codexclaw
+python3 <plugin-creator>/scripts/update_plugin_cachebuster.py plugins/cursorclaw
 codex plugin add codexclaw@codexclaw
 ```
 
@@ -99,14 +99,14 @@ codex plugin add codexclaw@codexclaw
 
 050이 `subagent-stop-observing-review.json`의 matcher를 바꾼다. matcher는
 훅 identity 해시에 들어가므로(`cxc-ops/src/hook-trust.ts`), 바뀐 훅은
-`~/.codex/config.toml`의 `trusted_hash`와 어긋나 **발화하지 않는다.**
+`~/.cursor/config.toml`의 `trusted_hash`와 어긋나 **발화하지 않는다.**
 새 observer가 동작한다고 주장하기 전에 신뢰를 갱신해야 한다:
 
 **어느 payload를 신뢰시키는지가 중요하다** (감사 r9 지적). `retrustHooks`는
 `pluginRootFrom()`으로 **자기 자신이 실행된 CLI 파일 위치**에서 루트를
 구한다(`cxc-ops/src/cli.ts:27`). 개발 체크아웃에서 PATH의 `cxc`는 이
 저장소의 `bin/codexclaw.mjs`를 가리키므로 작업 트리 payload를 신뢰시키고,
-캐시 설치본의 dispatcher(`plugins/codexclaw/bin/cxc.mjs`)는 자기 캐시
+캐시 설치본의 dispatcher(`plugins/cursorclaw/bin/cursorclaw.mjs`)는 자기 캐시
 payload를 신뢰시킨다. 실제로 발화하는 것은 후자다.
 
 그래서 순서와 대상을 함께 못박는다:
@@ -116,7 +116,7 @@ payload를 신뢰시킨다. 실제로 발화하는 것은 후자다.
 codex plugin add codexclaw@codexclaw
 
 # 2) 설치본 payload를 대상으로 재신뢰
-node ~/.codex/plugins/cache/codexclaw/codexclaw/<version>/components/cxc-ops/dist/cli.js \\
+node ~/.cursor/plugins/cache/codexclaw/codexclaw/<version>/components/cxc-ops/dist/cli.js \\
   hooks retrust
 ```
 

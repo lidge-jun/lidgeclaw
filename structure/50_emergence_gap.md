@@ -1,6 +1,6 @@
 ---
 created: 2026-07-01
-tags: [codexclaw, pabcd, emergence, exploration-exploitation, algorithm-tasks, diagnosis]
+tags: [cursorclaw, pabcd, emergence, exploration-exploitation, algorithm-tasks, diagnosis]
 aliases: [PABCD emergence gap, why creativity did not emerge, exploration gap]
 ---
 

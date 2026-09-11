@@ -22,7 +22,7 @@ the bare-slug path, so `my_slug` silently becomes `my-slug` even with no date in
 
 ## MODIFY / NEW / DELETE map
 
-### 1. MODIFY plugins/codexclaw/components/pabcd-state/src/plan-cli.ts
+### 1. MODIFY plugins/cursorclaw/components/pabcd-state/src/plan-cli.ts
 
 #### 1a. PlanCliArgs carries the caller's date
 
@@ -203,7 +203,7 @@ export function runPlanCli(args: PlanCliArgs): PlanCliResult {
 This closes the naming half of 002 B18; the other half (the `cxc gui` dependency-probe
 message) belongs to wp06 and is handled in 050_spawn_quoting.md.
 
-### 2. MODIFY plugins/codexclaw/components/pabcd-state/test/plan-cli.test.ts
+### 2. MODIFY plugins/cursorclaw/components/pabcd-state/test/plan-cli.test.ts
 
 The existing file has two tests. The first asserts `ok.slug === "my-big-feature"` for
 input `"My Big Feature!"` - still true under `derivePlanSlug` (spaces and `!` are not in
@@ -213,7 +213,7 @@ Both survive unchanged; the new cases are additive.
 
 ## TESTS
 
-MODIFY `plugins/codexclaw/components/pabcd-state/test/plan-cli.test.ts`
+MODIFY `plugins/cursorclaw/components/pabcd-state/test/plan-cli.test.ts`
 
 1. "splitDatePrefix parses both separators and passes through bare slugs":
    `splitDatePrefix("260821_win-linux-optimization")` -> `{ date: "260821", rest: "win-linux-optimization" }`;
@@ -246,11 +246,11 @@ MODIFY `plugins/codexclaw/components/pabcd-state/test/plan-cli.test.ts`
 Run from the repo root; each command must exit 0.
 
 ```powershell
-node --test --test-concurrency=1 "plugins/codexclaw/components/pabcd-state/test/plan-cli.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/pabcd-state/test/plan-gate.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/pabcd-state/test/freeze.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/pabcd-state/test/plan-cli.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/pabcd-state/test/plan-gate.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/pabcd-state/test/freeze.test.ts"
 npm test
-node plugins/codexclaw/scripts/gate.mjs
+node plugins/cursorclaw/scripts/gate.mjs
 ```
 
 `freeze.test.ts` is in that list on purpose: this slice removes `plan-cli`'s only
@@ -277,7 +277,7 @@ Get-ChildItem devlog\_plan
 WSL parity (path semantics differ, slug logic must not), expected exit 0:
 
 ```bash
-wsl -d Ubuntu -- bash -lc "cd /mnt/c/Users/super/Downloads/codexclaw && node --test 'plugins/codexclaw/components/pabcd-state/test/plan-cli.test.ts'"
+wsl -d Ubuntu -- bash -lc "cd /mnt/c/Users/super/Downloads/codexclaw && node --test 'plugins/cursorclaw/components/pabcd-state/test/plan-cli.test.ts'"
 ```
 
 Record the C>D receipt with `cxc receipt test -- npm test` per CHECK-BINDING-01.

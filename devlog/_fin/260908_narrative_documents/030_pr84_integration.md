@@ -2,9 +2,9 @@
 
 Depends on wp1. Class C3 (runtime component change authored by a contributor;
 review, do not rewrite). Verifier: `node --test --test-concurrency=1
-'plugins/codexclaw/components/pabcd-state/test/*.test.ts'
-'plugins/codexclaw/components/subagent-config/test/*.test.ts'
-'plugins/codexclaw/test/*.test.mjs'` on the merged head (reads every changed test),
+'plugins/cursorclaw/components/pabcd-state/test/*.test.ts'
+'plugins/cursorclaw/components/subagent-config/test/*.test.ts'
+'plugins/cursorclaw/test/*.test.mjs'` on the merged head (reads every changed test),
 plus exact-head GitHub CI on the PR after retarget/update.
 
 ## Observed state (2026-09-08)

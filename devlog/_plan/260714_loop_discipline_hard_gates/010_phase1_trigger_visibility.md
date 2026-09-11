@@ -3,7 +3,7 @@
 Goal: the natural Korean/English phrasings for "run PABCD repeatedly" must arm the
 loop mandate, and the loop contract must be visible without the model deciding to look.
 
-## MODIFY `plugins/codexclaw/components/pabcd-state/src/hook.ts`
+## MODIFY `plugins/cursorclaw/components/pabcd-state/src/hook.ts`
 
 ### 1. `detectLoopArmRequest` (~line 150)
 
@@ -50,16 +50,16 @@ Deliberate: "PABCD 여러 번" is a LOOP request, not a single-phase entry; addi
 here would fire single-phase transitions for loop asks. The arming mandate (which tells
 the agent to run `orchestrate status` + enter P itself) is the correct surface.
 
-## MODIFY `plugins/codexclaw/skills/loop/SKILL.md` frontmatter description
+## MODIFY `plugins/cursorclaw/skills/loop/SKILL.md` frontmatter description
 
 Append Korean triggers to the `Triggers:` tail (keep under the existing sentence):
 `..., PABCD 여러 번, 여러 번 돌려, 반복 실행, 루프 돌려, 끝까지 해줘`.
 
-## MODIFY `plugins/codexclaw/skills/pabcd/SKILL.md` frontmatter description
+## MODIFY `plugins/cursorclaw/skills/pabcd/SKILL.md` frontmatter description
 
 Append to `Triggers:` tail: `..., 'PABCD 돌려', 'PABCD 여러 번', '한 사이클씩', '단계별로 제대로'`.
 
-## MODIFY `plugins/codexclaw/skills/loop/agents/openai.yaml` + `pabcd/agents/openai.yaml`
+## MODIFY `plugins/cursorclaw/skills/loop/agents/openai.yaml` + `pabcd/agents/openai.yaml`
 
 `short_description` currently "HOTL work-phase continuation." / "Structured Plan-Audit-Build-Check-Done
 workflow discipline for multi-phase work." — extend with the visible contract cue:
@@ -74,7 +74,7 @@ short_description: "Plan-Audit-Build-Check-Done discipline - one work-phase per 
 `allow_implicit_invocation` stays `true` (already visible; the gap was the description
 text, not the policy bit).
 
-## MODIFY `plugins/codexclaw/components/cxc-ops/src/map-affordance.ts`
+## MODIFY `plugins/cursorclaw/components/cxc-ops/src/map-affordance.ts`
 
 `runMapAffordanceSessionStart` composes the SessionStart envelope. Add ONE always-on
 line (new `renderLoopAffordance()` helper, appended where the skill-search/kwrite lines
@@ -83,7 +83,7 @@ are joined):
 ```ts
 export function renderLoopAffordance(): string {
   return [
-    "[codexclaw] Loop contract: a multi-cycle/PABCD/루프 request is INVALID without the",
+    "[cursorclaw] Loop contract: a multi-cycle/PABCD/루프 request is INVALID without the",
     "persisted FSM — run `cxc orchestrate status --session <your id>` first, then enter",
     "P and advance each edge with --attest. One work-phase = one full PABCD cycle;",
     "never implement two plan pages in one B. Load $codexclaw:cxc-loop + cxc-pabcd.",
@@ -97,7 +97,7 @@ to the prompt-regex single point of failure.
 
 ## TESTS
 
-`plugins/codexclaw/components/pabcd-state/test/hook.test.ts` (or the existing detect*
+`plugins/cursorclaw/components/pabcd-state/test/hook.test.ts` (or the existing detect*
 test file): add cases —
 
 Positive: "pabcd 여러 번 돌려서 해결해" / "PABCD를 여러 번 돌려서 이 문제 해결해라"
@@ -111,7 +111,7 @@ optional `s` — descriptive "runs" must not match) / "pabcd가 뭐야? 계속 �
 "앱 아이콘 여러 번 실행해도 안 열려"* / "빌드 반복 실행해서 flaky 잡아줘"* /
 "여러 번 진행된 마이그레이션 롤백해줘"* → all false.
 
-`plugins/codexclaw/components/cxc-ops/test/map-affordance.test.ts`: envelope contains
+`plugins/cursorclaw/components/cxc-ops/test/map-affordance.test.ts`: envelope contains
 "Loop contract:" line.
 
 ## Verification (C) — corrected by audit round 1

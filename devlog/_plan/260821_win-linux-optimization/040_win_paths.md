@@ -18,7 +18,7 @@ the win32 branch.
 
 ## MODIFY / NEW / DELETE map
 
-### 1. NEW plugins/codexclaw/components/cxc-ops/src/win-paths.ts
+### 1. NEW plugins/cursorclaw/components/cxc-ops/src/win-paths.ts
 
 One module for path identity, so no call site invents its own comparison (001 1.1).
 
@@ -83,7 +83,7 @@ export function homePathVariants(
 }
 ```
 
-### 2. MODIFY plugins/codexclaw/components/cxc-ops/src/scouting-bundle.ts
+### 2. MODIFY plugins/cursorclaw/components/cxc-ops/src/scouting-bundle.ts
 
 #### 2a. redactPaths - defect #3 (P0)
 
@@ -155,7 +155,7 @@ AFTER
 The empty-string guard in `redactPaths` stays regardless: it converts a silent
 corruption into a no-op, which is the correct failure direction for a diagnostics tool.
 
-### 3. NEW plugins/codexclaw/components/pabcd-state/src/atomic-write.ts
+### 3. NEW plugins/cursorclaw/components/pabcd-state/src/atomic-write.ts
 
 Defect #12 in one place, adopted from 001 5.1.
 
@@ -217,14 +217,14 @@ Each is the same one-line substitution: `renameSync(tmp, finalPath)` becomes
 
 | File | Line |
 |------|------|
-| `plugins/codexclaw/components/pabcd-state/src/state.ts` | 305 |
-| `plugins/codexclaw/components/pabcd-state/src/goalplan.ts` | 542 |
-| `plugins/codexclaw/components/pabcd-state/src/metrics.ts` | 141 |
-| `plugins/codexclaw/components/pabcd-state/src/divergence.ts` | 126 |
-| `plugins/codexclaw/components/pabcd-state/src/release-cli.ts` | 137 |
-| `plugins/codexclaw/components/pabcd-state/src/subagent-evidence.ts` | 148 |
-| `plugins/codexclaw/components/subagent-config/src/store.ts` | 132 |
-| `plugins/codexclaw/components/cxc-ops/src/hook-trust.ts` | 356 |
+| `plugins/cursorclaw/components/pabcd-state/src/state.ts` | 305 |
+| `plugins/cursorclaw/components/pabcd-state/src/goalplan.ts` | 542 |
+| `plugins/cursorclaw/components/pabcd-state/src/metrics.ts` | 141 |
+| `plugins/cursorclaw/components/pabcd-state/src/divergence.ts` | 126 |
+| `plugins/cursorclaw/components/pabcd-state/src/release-cli.ts` | 137 |
+| `plugins/cursorclaw/components/pabcd-state/src/subagent-evidence.ts` | 148 |
+| `plugins/cursorclaw/components/subagent-config/src/store.ts` | 132 |
+| `plugins/cursorclaw/components/cxc-ops/src/hook-trust.ts` | 356 |
 
 Representative, `state.ts:295-314`:
 
@@ -248,7 +248,7 @@ The existing `catch` + tmp-cleanup blocks are untouched, so error semantics are
 unchanged; only the transient window is absorbed. `store.ts` and `hook-trust.ts` live
 outside `pabcd-state`, so they import through their own package's copy - see section 6.
 
-### 5. MODIFY plugins/codexclaw/components/pabcd-state/src/state.ts - defect #13
+### 5. MODIFY plugins/cursorclaw/components/pabcd-state/src/state.ts - defect #13
 
 BEFORE (:199-212)
 ```ts
@@ -323,7 +323,7 @@ helpers, in 100 section 5.
 
 ## TESTS
 
-NEW `plugins/codexclaw/components/cxc-ops/test/win-paths.test.ts`
+NEW `plugins/cursorclaw/components/cxc-ops/test/win-paths.test.ts`
 
 1. "samePathIdentity folds case only on win32" - `("C:\\A", "c:\\a", "win32")` true,
    `("/a/B", "/a/b", "linux")` false.
@@ -335,7 +335,7 @@ NEW `plugins/codexclaw/components/cxc-ops/test/win-paths.test.ts`
    forms still come back.
 5. "empty and whitespace-only home yield no variants".
 
-MODIFY `plugins/codexclaw/components/cxc-ops/test/scouting-bundle.test.ts`
+MODIFY `plugins/cursorclaw/components/cxc-ops/test/scouting-bundle.test.ts`
 
 The two existing redaction tests stay valid (a POSIX path and a Windows path both
 redact). Add:
@@ -356,7 +356,7 @@ redact). Add:
 11. "the longest variant wins" - text containing both `C:/Users/x/AppData` and
     `C:/Users/x` redacts to `~/AppData` and `~`, never a dangling fragment.
 
-NEW `plugins/codexclaw/components/pabcd-state/test/atomic-write.test.ts`
+NEW `plugins/cursorclaw/components/pabcd-state/test/atomic-write.test.ts`
 
 12. "a clean rename does not retry" - injected `rename` called once, `sleep` never.
 13. "EBUSY then success retries once" - `rename` called twice, `sleep` called with 25.
@@ -366,7 +366,7 @@ NEW `plugins/codexclaw/components/pabcd-state/test/atomic-write.test.ts`
     immediately. The retry must not mask a real POSIX failure.
 16. "ENOENT is not transient" - rethrown immediately even on win32.
 
-MODIFY `plugins/codexclaw/components/pabcd-state/test/fsm.test.ts` (or wherever
+MODIFY `plugins/cursorclaw/components/pabcd-state/test/fsm.test.ts` (or wherever
 `ensureState` is covered)
 
 17. "ensureState falls back when linkSync answers EPERM" - stub `linkSync` to throw
@@ -380,12 +380,12 @@ MODIFY `plugins/codexclaw/components/pabcd-state/test/fsm.test.ts` (or wherever
 Run from the repo root; each command must exit 0.
 
 ```powershell
-node --test --test-concurrency=1 "plugins/codexclaw/components/cxc-ops/test/win-paths.test.ts" "plugins/codexclaw/components/cxc-ops/test/scouting-bundle.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/pabcd-state/test/atomic-write.test.ts" "plugins/codexclaw/components/pabcd-state/test/fsm.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/pabcd-state/test/goalplan.test.ts" "plugins/codexclaw/components/pabcd-state/test/metrics.test.ts" "plugins/codexclaw/components/pabcd-state/test/divergence.test.ts" "plugins/codexclaw/components/pabcd-state/test/release-cli.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/cxc-ops/test/hook-trust.test.ts" "plugins/codexclaw/components/subagent-config/test/store.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/cxc-ops/test/win-paths.test.ts" "plugins/cursorclaw/components/cxc-ops/test/scouting-bundle.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/pabcd-state/test/atomic-write.test.ts" "plugins/cursorclaw/components/pabcd-state/test/fsm.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/pabcd-state/test/goalplan.test.ts" "plugins/cursorclaw/components/pabcd-state/test/metrics.test.ts" "plugins/cursorclaw/components/pabcd-state/test/divergence.test.ts" "plugins/cursorclaw/components/pabcd-state/test/release-cli.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/cxc-ops/test/hook-trust.test.ts" "plugins/cursorclaw/components/subagent-config/test/store.test.ts"
 npm test
-node plugins/codexclaw/scripts/gate.mjs
+node plugins/cursorclaw/scripts/gate.mjs
 ```
 
 Manual acceptance for the bundle corruption (002 B3), on Windows:

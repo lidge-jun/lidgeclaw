@@ -1,7 +1,7 @@
 ---
 created: 2026-08-15
 status: research
-tags: [codexclaw, pabcd, attest, phase-collapse, hooks]
+tags: [cursorclaw, pabcd, attest, phase-collapse, hooks]
 session: 01a005f6-9189-74f1-bf5d-03608a638a01
 ---
 
@@ -16,9 +16,9 @@ session: 01a005f6-9189-74f1-bf5d-03608a638a01
 
 가설은 "훅이 없어졌다"였다. 반증됐다.
 
-- `plugins/codexclaw/.codex-plugin/plugin.json`의 `hooks[]`는 21개 항목을 전부 등록하고 있다.
-- 설치 캐시본 `~/.codex/plugins/cache/codexclaw/codexclaw/0.2.0+codex.20260815092106`과
-  저장소 `plugins/codexclaw`의 `hooks/` 디렉터리를 `diff -rq`로 비교하면 차이가 없다.
+- `plugins/cursorclaw/.cursor-plugin/plugin.json`의 `hooks[]`는 21개 항목을 전부 등록하고 있다.
+- 설치 캐시본 `~/.cursor/plugins/cache/codexclaw/codexclaw/0.2.0+codex.20260815092106`과
+  저장소 `plugins/cursorclaw`의 `hooks/` 디렉터리를 `diff -rq`로 비교하면 차이가 없다.
   `dist/attest.js`도 동일하고 `plugin.json`도 동일하다.
 - `_deprecated/`로 내려간 3개는 friction advisory 2개와 project-rules 주입 1개로,
   전부 조언성 훅이며 위상 게이트와 무관하다.
@@ -27,7 +27,7 @@ session: 01a005f6-9189-74f1-bf5d-03608a638a01
 
 ## 실제로 일어난 일 — ledger 정량 증거
 
-`.codexclaw/ledger.jsonl` 전체를 gated edge(`P>A`, `A>B`, `B>C`, `C>D`) 기준으로
+`.cursorclaw/ledger.jsonl` 전체를 gated edge(`P>A`, `A>B`, `B>C`, `C>D`) 기준으로
 직전 이벤트와의 시간차를 계산했다.
 
 ### 월별 체류시간 분포

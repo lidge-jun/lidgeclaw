@@ -10,14 +10,14 @@ works end to end. L30 consumes the L29 schedule mechanism and turns a recurring
 job into inspectable output without adding channel delivery yet.
 
 ## Why now / dependencies
-- Upstream: depends on L29 for `cxc schedule`, `.codexclaw/schedule.json`, and
+- Upstream: depends on L29 for `cxc schedule`, `.cursorclaw/schedule.json`, and
   OS scheduler artifact generation.
 - Downstream: provides the result contract that L31 channel delivery can later
   read or forward; also closes Phase 3 as a shippable MVP unit.
 
 ## Scope (decision-complete except Q-P3-2)
 - Files to add/edit: result writer/reader under the scheduler CLI surface;
-  project-local result paths under `.codexclaw/`; verification docs/tests for
+  project-local result paths under `.cursorclaw/`; verification docs/tests for
   an end-to-end scheduled `codex exec` run.
 - Exact behavior: each scheduled run captures the prompt, start/end timestamps,
   exit status, stdout/stderr summary, and result body according to the selected
@@ -53,7 +53,7 @@ job into inspectable output without adding channel delivery yet.
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
 - node:test for run-result schema, retention rules, and failed-exit capture.
 - CLI stdout for `cxc schedule verify --dry-run`, `runs`, and `show-run`.
-- Data dump under `.codexclaw/` for a seeded run result fixture.
+- Data dump under `.cursorclaw/` for a seeded run result fixture.
 
 ## Commit unit (one atomic conventional commit)
 `feat(schedule): capture scheduled run results and verify phase 3`
@@ -66,7 +66,7 @@ Options:
   configured stdout/stderr files. Impact: minimal implementation, but hard for
   users to inspect inside `cxc` and weak for failure triage.
 - Option B - project-local file store (recommended): write run records under
-  `.codexclaw/` and expose them through `cxc schedule runs/show-run`. Impact:
+  `.cursorclaw/` and expose them through `cxc schedule runs/show-run`. Impact:
   good MVP observability, deterministic tests, and a clean bridge for L31.
 - Option C - direct channel delivery: every scheduled result goes to telegram or
   discord immediately. Impact: useful for heartbeat notifications, but couples

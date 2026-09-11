@@ -31,7 +31,7 @@ Non-goals (LOCKED upstream): no LSP daemon, no codegraph MCP, no new subagent ro
 
 ## Part 2 — diff-level plan
 
-### NEW `plugins/codexclaw/skills/ast-grep/references/patterns.md`
+### NEW `plugins/cursorclaw/skills/ast-grep/references/patterns.md`
 
 Per-language verified examples (TypeScript/JS, Python, plus one YAML relational rule).
 Each row: intent → pattern → helper command → expected match on a fixture snippet.
@@ -44,7 +44,7 @@ in the doc's Sources/verification footer, FAMILY-FRESH-01). Content sections:
   `--lang` required for correct parser · metavariable must be WHOLE token (`$FN(` ok,
   `use$HOOK(` invalid) · pattern must be a parsable expression for the target language.
 
-### MODIFY `plugins/codexclaw/skills/ast-grep/SKILL.md`
+### MODIFY `plugins/cursorclaw/skills/ast-grep/SKILL.md`
 
 - Add section **"Verification loop (MUST)"**: `validate` → `search` (review the JSON
   match list — count + spot-check 2-3 sites) → refine pattern → `replace` preview →
@@ -52,7 +52,7 @@ in the doc's Sources/verification footer, FAMILY-FRESH-01). Content sections:
 - Add routing line to `references/patterns.md` (tiered loading — read on demand).
 - Keep total ≤500 lines (currently 81; additions ~25 lines).
 
-### NEW `plugins/codexclaw/components/pabcd-state/src/edit-shape.ts`
+### NEW `plugins/cursorclaw/components/pabcd-state/src/edit-shape.ts`
 
 Fail-open PostToolUse capture for `apply_patch` (same coverage limit as comment-lint:
 shell-based writes are invisible; stated in the module header).
@@ -64,13 +64,13 @@ shell-based writes are invisible; stated in the module header).
   `*** Update File:` / `*** Add File:` sections → per file, signature =
   sha256(joined normalized `-`/`+` body lines). Whole-hunk match, not per-line —
   cuts false positives.
-- Ledger `.codexclaw/edit-shapes.jsonl`, rows
+- Ledger `.cursorclaw/edit-shapes.jsonl`, rows
   `{ts, key, file, files: string[], advised: boolean}` — friction.ts idioms
   (append-only, best-effort write, FAIL-OPEN readers).
 - `handleEditShapeCapture(payload)`: records shapes; when a key reaches **≥3 distinct
   files** and was not yet advised → mark advised (dedupe: fires ONCE per signature)
   and emit a PostToolUse additionalContext envelope:
-  "same-shaped edit in N files — consider `$cxc-ast-grep` replace for the rest;
+  "same-shaped edit in N files — consider `$crc-ast-grep` replace for the rest;
   preview first". Otherwise `""`.
 - Threshold 3 mirrors the friction stop threshold (verdictForCount).
 
@@ -79,18 +79,18 @@ additionalContext-style envelope (check lazygap `010_runtime_capability_verifica
 / codex-rs source). Fallback if unsupported: side-effect ledger + surface the advisory
 on the NEXT `pre-tool-use-friction`-style PreToolUse "ask" instead.
 
-### NEW `plugins/codexclaw/hooks/post-tool-use-detecting-edit-shapes.json`
+### NEW `plugins/cursorclaw/hooks/post-tool-use-detecting-edit-shapes.json`
 
 Matcher `^apply_patch$`, command
 `node "${PLUGIN_ROOT}/components/pabcd-state/dist/cli.js" hook post-tool-use-edit-shape`,
-timeout 10, statusMessage "(codexclaw) Watching for repeated edit shapes".
+timeout 10, statusMessage "(cursorclaw) Watching for repeated edit shapes".
 
-### MODIFY `plugins/codexclaw/components/pabcd-state/src/cli.ts`
+### MODIFY `plugins/cursorclaw/components/pabcd-state/src/cli.ts`
 
 Add `post-tool-use-edit-shape` branch inside the existing fail-open try (after
 `post-tool-use-friction`), dispatching to `handleEditShapeCapture(parsePostToolUse(raw))`.
 
-### NEW `plugins/codexclaw/components/pabcd-state/test/edit-shape.test.ts`
+### NEW `plugins/cursorclaw/components/pabcd-state/test/edit-shape.test.ts`
 
 node:test (`node --test`, matches component convention): normalization table cases ·
 per-file signature extraction from a realistic apply_patch envelope · threshold + 

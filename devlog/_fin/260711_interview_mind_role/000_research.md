@@ -17,7 +17,7 @@
   서브에이전트 정의. 전체 프로파일-티어 시스템까지는 요구 범위 아님(가정,
   040 OPEN ASSUMPTIONS 참조).
 
-## 현행 인터뷰 런타임 (codexclaw)
+## 현행 인터뷰 런타임 (cursorclaw)
 
 - Mind 5종(contrarian/socratic/ontologist/evaluator/simplifier)은 **고정 프롬프트
   문자열**로만 존재 — `components/pabcd-state/src/minds.ts:33` `MIND_ROLE_PROMPTS`,
@@ -56,7 +56,7 @@
 ## 결정에 영향 주는 제약
 
 - store는 글로벌 Codex config를 절대 변경하지 않음 (store.ts 계약) → 옵트인은
-  프로젝트 로컬 `.codexclaw/subagents.json` 안에 있어야 함.
+  프로젝트 로컬 `.cursorclaw/subagents.json` 안에 있어야 함.
 - pabcd-state ↔ subagent-config는 별도 컴포넌트 패키지 — 옵트인 판독 시 순환
   의존 회피 필요 (040 §설계 결정 D3).
 - LEAF-TOPOLOGY-01: interviewer 역할도 leaf — 재귀 스폰 금지 문구 필수.

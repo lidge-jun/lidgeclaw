@@ -1,23 +1,32 @@
 /**
- * paths.ts — Codex session-root path resolution for the recall component.
+ * paths.ts — session-root path resolution for the recall component.
  *
- * Everything reads from CODEX_HOME (default ~/.codex). Codex versions its sqlite
- * stores (state_5.sqlite, memories_1.sqlite, ...), so the db resolvers glob for the
- * highest-numbered file instead of hardcoding today's suffix.
+ * Cursorclaw dual-reads Cursor and Codex homes so migrated users keep history.
+ * Derived recall index lives under ~/.cursorclaw (see index-db.ts), never inside
+ * the corpus home.
  */
+import { existsSync, readdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
-import { existsSync, readdirSync } from "node:fs";
 
+/**
+ * Corpus home for chat/memory search.
+ * Order: CURSOR_HOME / CODEX_HOME / ~/.cursor (if projects exist) / ~/.codex / ~/.cursor.
+ */
 export function codexHome(env: Record<string, string | undefined> = process.env): string {
-  const fromEnv = env["CODEX_HOME"];
-  // Codex canonicalizes an explicit CODEX_HOME (home-dir/lib.rs); resolving to an
-  // absolute path keeps relative/`.`-style values pointing at the same root.
-  return fromEnv && fromEnv.trim() !== "" ? resolve(fromEnv) : join(homedir(), ".codex");
+  const fromEnv = (env.CURSOR_HOME || env.CODEX_HOME || "").trim();
+  if (fromEnv) return resolve(fromEnv);
+  const cursor = join(homedir(), ".cursor");
+  const codex = join(homedir(), ".codex");
+  if (existsSync(join(cursor, "projects"))) return cursor;
+  if (existsSync(codex)) return codex;
+  return cursor;
 }
 
 export function sessionsDir(home: string): string {
-  return join(home, "sessions");
+  const codexSessions = join(home, "sessions");
+  if (existsSync(codexSessions)) return codexSessions;
+  return join(home, "projects");
 }
 
 export function memoriesDir(home: string): string {

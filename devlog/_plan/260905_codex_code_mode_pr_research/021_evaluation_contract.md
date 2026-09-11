@@ -130,7 +130,7 @@ original rollout/usage → hash-bound sources + pointers → exact runtime/wire 
 adapter source snapshots → main audit + digest → non-authoritative response
 interpretation. All reporting is offline; no production consumer or host gate.
 
-## 2. NEW `plugins/codexclaw/scripts/probe-recorder.mjs`
+## 2. NEW `plugins/cursorclaw/scripts/probe-recorder.mjs`
 
 Complete proposed file. No SSH, install, retrust, auth copying, resume, provider
 fallback, or environment dump. macOS-only is intentional for the approved host.
@@ -182,9 +182,9 @@ const shellQuote = value => "'" + value.replaceAll("'", "'\\''") + "'";
 export function probeEnv(home, launchDir, pluginRoot) {
   return {
     PATH: [launchDir, dirname(process.execPath), "/usr/bin", "/bin", "/usr/sbin", "/sbin"].join(":"),
-    CODEXCLAW_CXC: shellQuote(process.execPath) + " " + shellQuote(join(pluginRoot, "bin", "cxc.mjs")),
+    CURSORCLAW_CRC: shellQuote(process.execPath) + " " + shellQuote(join(pluginRoot, "bin", "cxc.mjs")),
     LANG: "en_US.UTF-8", HOME: home, USERPROFILE: home,
-    CODEX_HOME: join(home, ".codex"), CODEX_SQLITE_HOME: join(home, ".codex"),
+    CURSOR_HOME: join(home, ".codex"), CODEX_SQLITE_HOME: join(home, ".codex"),
     TMPDIR: join(home, "tmp"),
   };
 }
@@ -219,8 +219,8 @@ function prepare(spec) {
   real(join(root, "approval.md"));
   const installed = json(real(join(root, "install.json")));
   const pluginRoot = real(installed.installedPath || installed.path || "");
-  if (!inside(codexHome, pluginRoot)) throw new Error("installed root outside isolated CODEX_HOME");
-  const manifest = json(join(pluginRoot, ".codex-plugin", "plugin.json"));
+  if (!inside(codexHome, pluginRoot)) throw new Error("installed root outside isolated CURSOR_HOME");
+  const manifest = json(join(pluginRoot, ".cursor-plugin", "plugin.json"));
   if (manifest.name !== "codexclaw" || manifest.version !== spec.expectedVersion) throw new Error("manifest identity mismatch");
   const timeoutMs = spec.timeoutMs ?? 180000;
   if (!Number.isInteger(timeoutMs) || timeoutMs < 1000 || timeoutMs > 600000) throw new Error("invalid timeout");
@@ -232,7 +232,7 @@ function prepare(spec) {
   const launchDir = join(home, "probe-bin");
   mkdirSync(launchDir, {mode:0o700});
   const env = probeEnv(home, launchDir, pluginRoot);
-  writeFileSync(join(launchDir, "cxc"), "#!/bin/sh\nexec " + env.CODEXCLAW_CXC + ' "$@"\n', {flag:"wx", mode:0o700});
+  writeFileSync(join(launchDir, "cxc"), "#!/bin/sh\nexec " + env.CURSORCLAW_CRC + ' "$@"\n', {flag:"wx", mode:0o700});
   writeFileSync(join(launchDir, "codex"), "#!/bin/sh\nexec " + shellQuote(codexBin) + ' "$@"\n', {flag:"wx", mode:0o700});
   const out = join(root, "output");
   mkdirSync(out, {mode:0o700}); // exclusive; a failed run is never overwritten
@@ -325,7 +325,7 @@ export async function record(spec) {
     schemaVersion:1, candidate:spec.candidate, sourceSha:spec.sourceSha,
     pluginRoot:p.pluginRoot, version:spec.expectedVersion,
     codexBin:p.codexBin, codexSha256:fileDigest(p.codexBin),
-    dispatch:{path:p.env.PATH, cxc:p.env.CODEXCLAW_CXC, launcherRoot:p.launchDir},
+    dispatch:{path:p.env.PATH, cxc:p.env.CURSORCLAW_CRC, launcherRoot:p.launchDir},
     recorderSha256:fileDigest(fileURLToPath(import.meta.url)),
     approvalSha256:fileDigest(join(p.root, "approval.md")),
     installSha256:fileDigest(join(p.root, "install.json")), promptSha256:digest(prompt),
@@ -363,7 +363,7 @@ Hard SIGKILL of the
 recorder itself cannot guarantee cleanup; main inspects the recorded/private
 host process state after such an interruption and does not reuse that packet.
 
-## 3. NEW `plugins/codexclaw/scripts/probe-evidence.mjs`
+## 3. NEW `plugins/cursorclaw/scripts/probe-evidence.mjs`
 
 Complete proposed file. No model calls. Exit 0 means eligible **for main review**,
 1 means failed, 2 means unknown/incomplete/incomparable. A non-authoritative raw
@@ -571,7 +571,7 @@ history array is not silently flattened into a matching last event. If real
 usage files carry heterogeneous envelope lines, main amends the mapping/parser
 against a retained real fixture before B proceeds; no catch-and-ignore parsing.
 
-## 4. NEW `plugins/codexclaw/test/probe-evidence.test.mjs`
+## 4. NEW `plugins/cursorclaw/test/probe-evidence.test.mjs`
 
 Complete proposed deterministic core fixture file. The source fixture uses flat
 synthetic fields explicitly; it is not documentation of live OCX field names.
@@ -698,8 +698,8 @@ test("args are exact and do not bypass hook trust; environment does not inherit 
   assert.throws(() => execArgs("default", "/tmp/final.txt"));
   const env = probeEnv("/tmp/isolated", "/tmp/isolated/probe-bin", "/tmp/isolated/.codex/plugins/candidate");
   assert.equal(env.PATH.split(":")[0], "/tmp/isolated/probe-bin");
-  assert.ok(env.CODEXCLAW_CXC.includes("/tmp/isolated/.codex/plugins/candidate/bin/cxc.mjs"));
-  assert.deepEqual(Object.keys(env).sort(), ["CODEXCLAW_CXC","CODEX_HOME","CODEX_SQLITE_HOME","HOME","LANG","PATH","TMPDIR","USERPROFILE"].sort());
+  assert.ok(env.CURSORCLAW_CRC.includes("/tmp/isolated/.codex/plugins/candidate/bin/cursorclaw.mjs"));
+  assert.deepEqual(Object.keys(env).sort(), ["CURSORCLAW_CRC","CURSOR_HOME","CODEX_SQLITE_HOME","HOME","LANG","PATH","TMPDIR","USERPROFILE"].sort());
 });
 test("payload digest changes on byte change", () => {
   const dir = mkdtempSync(join(tmpdir(), "cxc-payload-"));
@@ -742,8 +742,8 @@ and fs; never a real model, SSH, shared config or production service.
 | raw response tier priority on known non-authoritative path | keep other required evidence exact | scheduler remains unknown, not confirmed |
 | response echo or limitation flag absent | valid required model/effort/wire proof | still eligible; raw missing echo null; no scheduler inference |
 | payload nested symlink | payloadDigest(temp root) | throws; original target unchanged |
-| record(spec) dispatcher symlink, not merely payloadDigest unit call | Use the valid macOS integration fixture and clean source git repo; replace only installed bin/cxc.mjs with a symlink to a test-owned script outside payload that writes a marker and emits valid four-check doctor JSON | record rejects with payload-symlink error; target marker remains absent. Reverting validation to after doctor must make this test fail |
-| record(spec) payload replaced during Codex execution | Valid preflight; fake Codex replaces bin/cxc.mjs with the marker-writing external symlink before exiting successfully | record returns not ok with postflightError; analyzer classifies FAILED before requiring absent after identity; linked marker absent and no postflight doctor execution. Repeat with config/launcher byte drift, and with a doctor that mutates an identity file after its valid invocation |
+| record(spec) dispatcher symlink, not merely payloadDigest unit call | Use the valid macOS integration fixture and clean source git repo; replace only installed bin/cursorclaw.mjs with a symlink to a test-owned script outside payload that writes a marker and emits valid four-check doctor JSON | record rejects with payload-symlink error; target marker remains absent. Reverting validation to after doctor must make this test fail |
+| record(spec) payload replaced during Codex execution | Valid preflight; fake Codex replaces bin/cursorclaw.mjs with the marker-writing external symlink before exiting successfully | record returns not ok with postflightError; analyzer classifies FAILED before requiring absent after identity; linked marker absent and no postflight doctor execution. Repeat with config/launcher byte drift, and with a doctor that mutates an identity file after its valid invocation |
 | initial doctor mutates an identity component | Valid fixture until doctor executes; fake doctor changes config, payload or a launcher and still prints valid PASS diagnostics | record rejects before starting fake Codex; inference marker remains absent. A valid doctor report cannot override changed bytes |
 | conflicting global cxc and candidate dispatcher | Valid macOS record fixture; put a marker-writing foreign cxc on the original process PATH. Fake Codex invokes cxc through its received PATH; candidate cxc handles doctor normally and writes a distinct candidate marker for that invocation | Candidate marker present, foreign marker absent; run.json dispatch and launcher digests match candidate. Restore test PATH in finally. Final native fixture additionally inspects actual cxc resolution inside the model shell |
 | incompatible benchmark host/harness; 1 iteration; negative floor | analyzeBench separately | UNKNOWN/2, no percentage claim |
@@ -757,14 +757,14 @@ and fs; never a real model, SSH, shared config or production service.
 | fixture starts separately detached background work | fixture records its own handle/PID and closes it through its explicit teardown | independent teardown proof required; recorder does not claim to clean another group or broaden its kill scope |
 | macOS prepare integration | fresh temp clean git repo, isolated home/work, fake installed dispatcher doctor JSON and fake executable codex | correct spec runs once; full version mismatch/outside install/config symlink/trust WARN/missing dist each stops before fake exec marker |
 | omitted timeoutMs, then explicit 600000, then 600001 | same valid macOS spec with fake immediate-exit Codex | persisted timeoutMs is 180000, then 600000; last preflight refuses before exec |
-| compiled spawn V1 activation | same cache-shaped fixture as hook-e2e.test.mjs:827; actual manifest-selected command; tool_input message `$cxc-dev inspect the fixture`, agent_type explorer, no task_name | parseable updatedInput, installed fixture skill path/body delivery per current contract; original unrelated keys preserved |
-| compiled spawn V2 activation | separate payload with task_name `probe_leaf`, message `$cxc-dev inspect the fixture`, native V2 tool name exposed by host; same isolated fixture | V2 branch actually emits updatedInput/guard; no invented items field; original unrelated keys preserved |
+| compiled spawn V1 activation | same cache-shaped fixture as hook-e2e.test.mjs:827; actual manifest-selected command; tool_input message `$crc-dev inspect the fixture`, agent_type explorer, no task_name | parseable updatedInput, installed fixture skill path/body delivery per current contract; original unrelated keys preserved |
+| compiled spawn V2 activation | separate payload with task_name `probe_leaf`, message `$crc-dev inspect the fixture`, native V2 tool name exposed by host; same isolated fixture | V2 branch actually emits updatedInput/guard; no invented items field; original unrelated keys preserved |
 | spawn nonmatch and repeated input | first wrong tool name, then replay original matched payload with the already-updated message | nonmatch empty output; matched replay does not duplicate delivered body/guard; no model invoked |
 | protected worktree and completion gate | reuse worktree-guard.test.ts:414 and hook-e2e.test.mjs:436 preconditions in temp paths, invoke compiled manifest-selected hook | actual denial envelope for self-deletion/mid-cycle completion; benign/blocked paths remain allowed; never execute deletion |
 
 For macOS integration, the fake `codex` is a test-owned executable shell/Node script
 with an absolute shebang; never put a fake binary on shared PATH. The fake plugin
-contains `bin/cxc.mjs` responding only to `doctor --json`, manifest/version, and
+contains `bin/cursorclaw.mjs` responding only to `doctor --json`, manifest/version, and
 four named PASS checks. Each negative changes exactly one precondition, keeping
 the earlier guards satisfiable. Counter/marker files prove exec was not reached.
 Hook activation fixture owner is **this new test file**, not hook-bench.mjs and

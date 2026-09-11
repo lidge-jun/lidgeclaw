@@ -9,7 +9,7 @@ The core GUI surface: configure subagents + prompt tuning + ocx link bar.
 - For each role (explorer/reviewer/executor):
   - model selector populated from the catalog (033): default/main or a specific model.
   - per-role prompt override editor.
-- Persist to `.codexclaw/subagents.json` (032).
+- Persist to `.cursorclaw/subagents.json` (032).
 
 ## Link bar
 - When ocx detected: show a link to `http://localhost:10100` (opencodex dashboard).

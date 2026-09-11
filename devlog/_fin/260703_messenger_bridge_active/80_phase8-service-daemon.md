@@ -11,7 +11,7 @@ launchd install/uninstall/status; log files; auto-restart; user docs
 
 - Built `service.ts`: pure `buildPlist()` (launchd XML, RunAtLoad + KeepAlive,
   ProgramArguments = node + bin/codexclaw.mjs serve --port --cwd, StandardOut/
-  ErrPath → ~/.codexclaw/serve.{out,err}.log) + `servicePaths()`, and
+  ErrPath → ~/.cursorclaw/serve.{out,err}.log) + `servicePaths()`, and
   install/uninstall/status that shell out to launchctl. Non-darwin returns an
   explicit "unsupported" rather than pretending. `cxc service <install|
   uninstall|status>` wired through the messenger-bridge CLI + bin delegator.

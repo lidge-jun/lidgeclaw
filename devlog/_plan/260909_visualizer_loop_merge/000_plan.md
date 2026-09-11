@@ -1,7 +1,7 @@
 # cxc-dev-visualizer 마무리와 열린 PR 머지 큐 (HOTL 로드맵)
 
 기준 HEAD: `46e2a439` on `codex/dev-visualizer-rename` (base `origin/dev` = `5f11fb8b`). 세션: `01a08654-a5d0-71c0-a348-922a0b3ed7ff`.
-goalplan: `.codexclaw/goalplans/hotl-1-finish-the-cxc-dev-visualizer-report-qual/`.
+goalplan: `.cursorclaw/goalplans/hotl-1-finish-the-cxc-dev-visualizer-report-qual/`.
 요청: "cjk나 aside 조사도 계속하면서 cxc-loop 한번 더 돌아서 완벽하게 하고 머지까지 완료해놔 그리고 내가 올린 다른 pr들도 pabcd 좀 돌면서 dev에 머지해놔". push·PR·merge 권한은 이 요청에 명시돼 있다. release·npm publish·deploy·브랜치 삭제는 포함되지 않는다.
 이전 D 결론(`devlog/_plan/260909_visualizer_report_quality/000_plan.md`): 내용 층은 고쳤으나 v2의 생김새는 여전히 카드·콜아웃·둥근 박스·도식이라는 AI 템플릿 문법이고, 브랜드 자산 없이는 무명 템플릿에서 끝난다. 이번 루프는 그 방향을 그대로 잇는다.
 

@@ -2,7 +2,7 @@
 created: 2026-08-17
 status: design
 workPhase: wp3
-tags: [codexclaw, hook, plan-binding]
+tags: [cursorclaw, hook, plan-binding]
 ---
 
 # 020 — 채팅 경로에도 plan binding을 기록한다

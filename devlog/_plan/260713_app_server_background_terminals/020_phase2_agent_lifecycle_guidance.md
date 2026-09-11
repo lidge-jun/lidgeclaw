@@ -19,7 +19,7 @@ Teach `cxc-dev` how to manage long-lived terminal processes without conflating a
 
 ## Files
 
-### NEW `plugins/codexclaw/skills/dev/references/background-terminals.md`
+### NEW `plugins/cursorclaw/skills/dev/references/background-terminals.md`
 
 Create a focused reference distilled from `001_codex_rs_runtime_guide.md` with these sections:
 
@@ -35,7 +35,7 @@ Create a focused reference distilled from `001_codex_rs_runtime_guide.md` with t
 
 The reference stays operational and concise. The long historical/source walkthrough remains in this devlog research document.
 
-### MODIFY `plugins/codexclaw/skills/dev/SKILL.md`
+### MODIFY `plugins/cursorclaw/skills/dev/SKILL.md`
 
 Add one modular-reference pointer near the execution/verification rules:
 
@@ -83,7 +83,7 @@ The section links the reference instead of embedding the full protocol guide in 
 
 ```bash
 rg -n "Background terminal lifecycle|background-terminals.md|turn/interrupt|same app-server" \
-  plugins/codexclaw/skills/dev/SKILL.md \
-  plugins/codexclaw/skills/dev/references/background-terminals.md
+  plugins/cursorclaw/skills/dev/SKILL.md \
+  plugins/cursorclaw/skills/dev/references/background-terminals.md
 npm run build
 ```

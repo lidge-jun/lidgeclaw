@@ -101,8 +101,8 @@ function dispatchTextWithConfig(configText: string, id: string): string {
   const cwd = mkdtempSync(join(tmpdir(), "codexclaw-crlf-rr-"));
   const home = mkdtempSync(join(tmpdir(), "cxc-crlf-home-"));
   writeFileSync(join(home, "config.toml"), configText, "utf8");
-  const prev = process.env.CODEX_HOME;
-  process.env.CODEX_HOME = home;
+  const prev = process.env.CURSOR_HOME;
+  process.env.CURSOR_HOME = home;
   try {
     seedAtA(cwd, id);
     const args = parseReviewRoundCliArgs(
@@ -114,8 +114,8 @@ function dispatchTextWithConfig(configText: string, id: string): string {
     assert.equal(r.code, 0, r.output);
     return r.output;
   } finally {
-    if (prev === undefined) delete process.env.CODEX_HOME;
-    else process.env.CODEX_HOME = prev;
+    if (prev === undefined) delete process.env.CURSOR_HOME;
+    else process.env.CURSOR_HOME = prev;
     rmSync(cwd, { recursive: true, force: true });
     rmSync(home, { recursive: true, force: true });
   }

@@ -1,6 +1,6 @@
 # 005 — codexclaw Recall 기존 구현 상세
 
-Source: `codexclaw/plugins/codexclaw/components/recall/src/`
+Source: `codexclaw/plugins/cursorclaw/components/recall/src/`
 
 ## 파일 구조
 
@@ -13,7 +13,7 @@ components/recall/src/
 ├── index-search.ts    — FTS query execution (trigram ≥3, LIKE <3, JOIN files)
 ├── rollout.ts         — JSONL parser + meta reader + file lister
 ├── threads-db.ts      — Codex state.db thread metadata loader
-├── paths.ts           — CODEX_HOME/CODEXCLAW_HOME resolution
+├── paths.ts           — CURSOR_HOME/CURSORCLAW_HOME resolution
 ├── format.ts          — text/json output formatters
 ├── synonyms.ts        — curated ko/en synonym expansion
 ├── hook.ts            — Codex hook integration (session-start, user-prompt-submit)
@@ -21,7 +21,7 @@ components/recall/src/
 └── ingest.ts          — rollout JSONL → index.sqlite ingest pipeline
 ```
 
-## Sidecar Index Schema (`~/.codexclaw/recall/index.sqlite`)
+## Sidecar Index Schema (`~/.cursorclaw/recall/index.sqlite`)
 
 ```sql
 -- meta: schema_version, last_ingest_at
@@ -73,7 +73,7 @@ Filters: synthetic, match_field, role, ts >= cutoff, source, cwd (prefix match).
 ## Memory Search Flow (memory-search.ts)
 
 1. `searchMemory(query, opts)` entry
-2. `~/.codex/memories/` 하위 모든 .md 파일 scan
+2. `~/.cursor/memories/` 하위 모든 .md 파일 scan
 3. paragraph chunking (heading 혹은 blank-line split)
 4. word group matching (synonym expanded)
 5. stage1_outputs 테이블 추가 검색 (memories_N.sqlite)

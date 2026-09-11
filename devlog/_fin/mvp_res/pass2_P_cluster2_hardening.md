@@ -32,7 +32,7 @@ G5. **L18.3 target conflict**: scope lists 2 target files but body promises a de
 3. G3: edit 193 to match 190 (L19 hard-deps = L12-L17; L18 cataloged-if-present, not a hard dep).
 4. G4: INDEX L18 row + add a one-line locked note.
 5. G5: add the deep-research-swarm reference target to 183 scope (e.g.
-   `plugins/codexclaw/skills/search/references/deep-research.md`).
+   `plugins/cursorclaw/skills/search/references/deep-research.md`).
 6. NOTE on wildcard maps: the audit flags `references/*` etc. as non-exact. Decision: per-file
    enumeration of every reference file is OUT of scope for a PLAN doc — the exact files are
    discoverable at implementation time by `ls` of the (now-correct) source dir. Instead, pin the

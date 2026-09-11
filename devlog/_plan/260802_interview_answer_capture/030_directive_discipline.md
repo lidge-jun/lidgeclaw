@@ -53,7 +53,7 @@ lands, that block is backed by real persisted scores instead of narration.
 ## Scope boundary
 
 IN: `components/pabcd-state/src/hook.ts` (`PHASE_DIRECTIVES.I` only),
-`plugins/codexclaw/skills/interview/SKILL.md`,
+`plugins/cursorclaw/skills/interview/SKILL.md`,
 `components/pabcd-state/test/hook-continuation.test.ts`.
 
 OUT: `QUESTION_SHAPE_DIRECTIVE` (leave it alone — see below), the Mind dispatch

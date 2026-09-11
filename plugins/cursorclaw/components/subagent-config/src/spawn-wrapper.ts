@@ -8,7 +8,7 @@
  * Contract (omo B-opt2 parity, agents/README.md):
  *  - role -> native agent_type: architect -> "architect" (explicit registration required),
  *    explorer/reviewer -> "explorer", executor -> "worker". Architect never aliases another role.
- *    executor resolves to its registered native "executor" type when $CODEX_HOME/agents/executor.toml
+ *    executor resolves to its registered native "executor" type when $CURSOR_HOME/agents/executor.toml
  *    exists (cxc subagents register executor); unregistered installs keep built-in worker.
  *  - the role prompt is injected INLINE in the message ("TASK: ..."), since plugin
  *    install dirs are not a config layer.
@@ -402,7 +402,7 @@ export function resolveSpawnPayload(cwd: string, role: RoleName, task: string, a
   const resolution = resolveSpawnConfig(cwd, role, env);
   const { developerInstructions } = readRoleToml(agentsDir, role);
   let executorRegistered = false;
-  try { executorRegistered = statSync(join(env.CODEX_HOME || join(homedir(), ".codex"), "agents", "executor.toml")).isFile(); }
+  try { executorRegistered = statSync(join(env.CURSOR_HOME || join(homedir(), ".codex"), "agents", "executor.toml")).isFile(); }
   catch { /* Missing or inaccessible registration retains the built-in worker. */ }
   return buildSpawnPayload({ role, task, resolution, developerInstructions, executorRegistered });
 }

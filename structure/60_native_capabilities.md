@@ -1,6 +1,6 @@
 ---
 created: 2026-07-02
-tags: [codexclaw, native-tools, browser-use, computer-use, subagents, capability-matrix, sot]
+tags: [cursorclaw, native-tools, browser-use, computer-use, subagents, capability-matrix, sot]
 aliases: [Native Capability Matrix, codex native tools, browse use, computer use]
 ---
 
@@ -13,7 +13,7 @@ exposes these tool names or arguments. Inspect the callable catalog/schema for t
 current task. Optional native browser plugins, `tool_search`, `update_plan`, and
 `agent_type`/fork fields may be absent. Use supported equivalents only; record any
 missing capability without fabricating a successful call. Portable browser selection
-is owned by `plugins/codexclaw/skills/dev/references/browser-routing.md`.
+is owned by `plugins/cursorclaw/skills/dev/references/browser-routing.md`.
 
 
 Status: VERIFIED against live probes plus the codex-rs snapshot on 2026-07-10, including
@@ -56,7 +56,7 @@ stronger manual `items` channel. On plaintext V2 provider/proxy paths, the codex
 spawn hook normalizes mentions and inlines recognized SKILL.md bodies. Native
 ChatGPT-backend V2 gives the hook encrypted `message` ciphertext, so both operations are
 no-ops there. When no body can be inlined, the hook appends a plaintext
-`[CXC-SKILL-AFFORDANCE]` block telling the child to self-load any `$cxc-<folder>` /
+`[CXC-SKILL-AFFORDANCE]` block telling the child to self-load any `$crc-<folder>` /
 `$codexclaw:cxc-<folder>` mention from `<skillsDir>/<folder>/SKILL.md`; fork inheritance
 remains a secondary channel. The hook also reliably applies D1/D2 leaf guards and injects
 configured role model/effort on native V2 when the spawn is not a full-history fork.
@@ -64,10 +64,10 @@ configured role model/effort on native V2 when the spawn is not a full-history f
 ### Hook trust
 
 Codex pins each hook identity hash as `hooks.state.<key>.trusted_hash` in
-`~/.codex/config.toml` and silently skips a hook whose current hash differs. Any edit,
+`~/.cursor/config.toml` and silently skips a hook whose current hash differs. Any edit,
 commit, or merge that changes a hook identity therefore disables that hook for all new
 sessions until retrusted. Contributors must run `cxc doctor` after every change touching
-`plugins/codexclaw/hooks/*.json`; when it reports a drifted or untrusted hook, run
+`plugins/cursorclaw/hooks/*.json`; when it reports a drifted or untrusted hook, run
 `cxc hooks retrust` to create a timestamped config backup and atomically record recomputed
 hashes under the algorithm safety-pin, then rerun `cxc doctor`.
 
@@ -106,7 +106,7 @@ if a spawn-level 400 reproduces, the terminal outcome is NEEDS_HUMAN + rollback
 
 ## 2.1 Async user questions (2026-09-06 observation)
 
-Canonical guidance: [Async user questions](../plugins/codexclaw/skills/dev/references/async-questions.md).
+Canonical guidance: [Async user questions](../plugins/cursorclaw/skills/dev/references/async-questions.md).
 This is the mid-work question surface; the persisted Interview stays on its existing
 synchronous `request_user_input` flow.
 
@@ -144,7 +144,7 @@ Research provenance: `devlog/_fin/260906_async_questions/001_research.md`.
 ## 2.2 Independent Desktop tasks (2026-09-05 observation)
 
 These are existing user-owned tasks, not the V1/V2 child address space.
-Canonical behavior: [peer collaboration](../plugins/codexclaw/skills/dev/references/peer-collaboration.md).
+Canonical behavior: [peer collaboration](../plugins/cursorclaw/skills/dev/references/peer-collaboration.md).
 The current host catalog is authoritative; absence is a supported condition.
 
 | Exposed tool | Purpose | Boundary |
@@ -161,7 +161,7 @@ logic may miss this input path. The skill is guidance, not a runtime wake/stop g
 
 ## 2.3 Native execution selection (2026-09-06)
 
-Common owner: [native execution](../plugins/codexclaw/skills/dev/references/native-execution.md).
+Common owner: [native execution](../plugins/cursorclaw/skills/dev/references/native-execution.md).
 The dev/loop/pabcd entrypoints route composition, projection and in-context JS
 there; this is preferred-use guidance, not an automatic loader or enforced switch.
 The current callable contract, not this historical inventory, decides availability.

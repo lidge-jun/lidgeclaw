@@ -1,6 +1,6 @@
 ---
 created: 2026-06-30
-tags: [codexclaw, pabcd, dispatch, routing, doctrine, sot, cli-jaw-lineage]
+tags: [cursorclaw, pabcd, dispatch, routing, doctrine, sot, cli-jaw-lineage]
 aliases: [PABCD Dispatch Doctrine, cli-jaw lineage, codexclaw orchestration philosophy]
 ---
 
@@ -20,18 +20,18 @@ aliases: [PABCD Dispatch Doctrine, cli-jaw lineage, codexclaw orchestration phil
 ## 0. The translation table (cli-jaw -> codexclaw)
 
 cli-jaw is a multi-runtime server with employees, a dashboard, and a DB. codexclaw is
-a single Codex plugin with hooks and `.codexclaw/` files. The doctrine survives the
+a single Codex plugin with hooks and `.cursorclaw/` files. The doctrine survives the
 move; the machinery does not.
 
 | cli-jaw concept | codexclaw translation |
 | --- | --- |
 | Boss agent | the main Codex session (you) |
 | Employee (`cli-jaw dispatch --agent`) | a Codex `spawn_agent` subagent (`explorer`/`worker`) |
-| Employee registry (server) | role TOMLs in `plugins/codexclaw/agents/` (prompt sources only) |
-| `cli-jaw orchestrate I/P/A/B/C/D` (HTTP) | `cxc orchestrate I/P/A/B/C/D` (agent-gated CLI over `.codexclaw/`) |
+| Employee registry (server) | role TOMLs in `plugins/cursorclaw/agents/` (prompt sources only) |
+| `cli-jaw orchestrate I/P/A/B/C/D` (HTTP) | `cxc orchestrate I/P/A/B/C/D` (agent-gated CLI over `.cursorclaw/`) |
 | `--attest` gate (`orchestrator/attestation.ts`) | `cxc orchestrate <phase> --attest` (same JSON gate) |
 | Shared Plan auto-inject (server pipeline) | main agent inlines the plan into each spawn (no server to inject it) |
-| Worklog `## Plan` SSOT | `.codexclaw/` session files + devlog evidence path |
+| Worklog `## Plan` SSOT | `.cursorclaw/` session files + devlog evidence path |
 | Goal autonomy (`src/goal/`) | native Codex goal DB, read-only to codexclaw |
 
 The honesty rule from `00_philosophy.md` §1 governs every row: where cli-jaw enforced
@@ -47,7 +47,7 @@ exact command. Narrating "현재는 B입니다" does nothing.** codexclaw keeps 
 
 - Entry is explicit: the user invokes the orchestrate/interview surface, or the agent
   runs `cxc orchestrate P` (task needs structure) / `cxc orchestrate I` (request
-  unclear). codexclaw additionally parses `$cxc-orchestrate` / `$codexclaw:cxc-orchestrate`
+  unclear). codexclaw additionally parses `$crc-orchestrate` / `$codexclaw:cxc-orchestrate`
   shorthand in the prompt hook.
 - **No auto-advance.** A phase advances only when the exact `cxc orchestrate <phase>`
   command runs. There is no hook that silently moves P->A. The Stop hook can *block*
@@ -100,7 +100,7 @@ are peers, not additional employees of this main session. Keep their evidence
 read-only by default. Outbound contact is limited to explicit user requests or
 necessary confirmed blocking CI/merge collision coordination, subject to host
 permissions and wake checks in the canonical
-[peer collaboration reference](../plugins/codexclaw/skills/dev/references/peer-collaboration.md).
+[peer collaboration reference](../plugins/cursorclaw/skills/dev/references/peer-collaboration.md).
 They retain separate user instructions, goals and FSMs; this adds no team manager.
 
 cli-jaw: **only the Boss dispatches employees; employees use their own CLI sub-agents;
@@ -132,7 +132,7 @@ codexclaw translation:
   `cxc evidence resolve` requires a valid receipt (there is no override flag; the honest
   escape is `update_goal {status:"blocked"}`). The symptom this replaced: a read-only
   packet sent to a `worker` produced endless identical SubagentStop blocks, because the
-  child could never create a file under the parent's `.codexclaw/evidence/`. If you see
+  child could never create a file under the parent's `.cursorclaw/evidence/`. If you see
   a subagent repeating the same answer against the same directive, check the dispatch
   lane first — it is almost always a read-only packet on a `worker`.
 - **Architect consultation in formal P.** Main evidence -> architect proposal -> main
@@ -157,7 +157,7 @@ codexclaw translation:
   surfaces: (1) a spawn issued BY a subagent (stdin `agent_id` present) is DENIED
   unless the message carries `CXC-SUBSPAWN-ALLOWED`; (2) every spawn message gets the
   `[CXC-LEAF-GUARD]` block. For a non-full-history fork, configured role `model` and
-  `reasoning_effort` from `.codexclaw/subagents.json` are independently injected when
+  `reasoning_effort` from `.cursorclaw/subagents.json` are independently injected when
   the caller omits them; otherwise each omitted field inherits. Recursion is a
   deliberate per-dispatch grant, never a default. Evidence + design:
   `devlog/_plan/260709_multi_agent_v2_switch/060_leaf_agent_hardening.md`.
@@ -257,13 +257,13 @@ skill-hub/loop — which improves discovery but does not change this dev-* routi
 collapse.) The spawn-time
 attachment intent is explicit in both payload shapes: L15's production builder emits
 resolvable message mentions, while manual V1 callers may use the stronger `items`
-channel (`buildSpawnItems`/`SpawnPayload.items`). Prefer `[$cxc-<name>](skill://<abs SKILL.md>)`; use
+channel (`buildSpawnItems`/`SpawnPayload.items`). Prefer `[$crc-<name>](skill://<abs SKILL.md>)`; use
 plugin-native `$codexclaw:cxc-<name>` when a link is unsafe. The WP2 E3
 spawn PreToolUse hook normalizes known broken/bare cxc mentions and inlines recognized
 skill bodies on V2-shaped spawns only when `message` reaches it as plaintext. Native
 ChatGPT-backend V2 presents ciphertext, so both operations are no-ops there. When no body
 can be inlined, the hook appends a plaintext `[CXC-SKILL-AFFORDANCE]` block telling the
-child to self-load any `$cxc-<folder>` / `$codexclaw:cxc-<folder>` mention from
+child to self-load any `$crc-<folder>` / `$codexclaw:cxc-<folder>` mention from
 `<skillsDir>/<folder>/SKILL.md`; fork inheritance remains a secondary channel. The native
 V2 hook also carries the leaf guard and configured model/effort injection; it does not add
 role baselines or infer surface skills.
@@ -291,15 +291,15 @@ keeps them strictly separated (`00_philosophy.md` §4):
 Per `00_philosophy.md` §2, these cli-jaw surfaces are non-goals — do not port them:
 
 - No *orchestration* server, no employees-as-processes, no multi-runtime registry.
-  (The opt-in loopback messenger bridge — `cxc serve` + `.codexclaw/bridge.db`,
+  (The opt-in loopback messenger bridge — `cxc serve` + `.cursorclaw/bridge.db`,
   2026-07-03 — is a scoped exception recorded in `00_philosophy.md` §2; it relays
   chat messages to stock `codex exec` and never dispatches subagents.)
 - No goal *write* path: codexclaw reads the native goal DB; only the main session
   calls `create_goal`.
 - No `cli-jaw dispatch` HTTP path; subagents are Codex-native `spawn_agent` calls.
-- No memory/chat/project/worklog server stores; `.codexclaw/` files (including the
+- No memory/chat/project/worklog server stores; `.cursorclaw/` files (including the
   bridge's project-local `bridge.db`) are the only durable state (user-level
-  `~/.codexclaw` holds rebuildable derived caches only — recall FTS index, ast-grep
+  `~/.cursorclaw` holds rebuildable derived caches only — recall FTS index, ast-grep
   runtime — per the 2026-07-02 owner re-scope).
 - No provider mutation; the provider bridge is detect-only.
 
@@ -311,7 +311,7 @@ feature — raise it against §2 first.
 ## 7. Inherited gate ideas (SHIPPED as the L18 gate)
 
 cli-jaw hardens truth with mechanical gates; codexclaw grew analogues. These shipped as
-the L18 E8 gate (`plugins/codexclaw/scripts/gate.mjs` + `gate.test.mjs`, `npm run gate`):
+the L18 E8 gate (`plugins/cursorclaw/scripts/gate.mjs` + `gate.test.mjs`, `npm run gate`):
 
 - A **status-sync gate** that diffs each `mvp_hard` ledger row's decision-state against
   its loop-doc `Status:` leading token (`checkStatusSync`).

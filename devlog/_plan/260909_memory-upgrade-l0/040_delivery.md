@@ -15,7 +15,7 @@ wp0 사이클의 종결 문서다. 로드맵(`000_plan.md` 351줄 + `020_roadmap
 | PR | work-phase | 한 줄 | head | CI |
 |---|---|---|---|---|
 | #100 | wp0 | 로드맵·플랜 문서를 `devlog/_plan/260909_memory-upgrade-l0/`에 확정 | `04721e68` | 11/11 통과 |
-| #102 | wp1-A | 승인 없는 `~/.codex/memories` 쓰기를 PreToolUse 훅으로 차단 | `9567e144` | 10/10 통과 |
+| #102 | wp1-A | 승인 없는 `~/.cursor/memories` 쓰기를 PreToolUse 훅으로 차단 | `9567e144` | 10/10 통과 |
 | #103 | wp5-A | chat search를 BM25(`msgs_fts`) + trigram RRF + recency로 랭킹 | `4c35602a` | 10/10 통과 |
 | #104 | wp4 | PostCompact 실버그 제거, compaction 캡·2티어 밀도·신선도 라벨 | `85378628` | 10/10 통과 |
 | #105 | wp2 | 심볼 질의 단어 경계 매칭 + 한국어 어미 정규화 | `730c8604` | 10/10 통과 |
@@ -81,7 +81,7 @@ base 스택(위 PR의 base를 아래 PR의 head로 두는 방식)을 쓰면 그 
 | c-11 | chat search가 BM25+trigram RRF+recency, `msgs_fts`가 실제 쿼리됨 | #103 | 충족 |
 | c-12 | hit-count 감점이 자동 주입에만, 명시 검색은 결정론적 | #107 | 충족 |
 | c-13 | 전 work-phase가 stacked PR로 올라가고 각 최종 head CI 통과 | 전체 | 부분 |
-| c-14 | 임베딩·dreaming·네이티브 재구현 없음, `~/.codex`는 쓰기 대상 아님 | 전체 | 충족 |
+| c-14 | 임베딩·dreaming·네이티브 재구현 없음, `~/.cursor`는 쓰기 대상 아님 | 전체 | 충족 |
 
 충족 9, 부분 4, 미충족 0. 부분 넷의 내역은 아래와 같다.
 

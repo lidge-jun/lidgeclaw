@@ -15,7 +15,7 @@ could silently fail to load. Two further defects made it unusable in practice:
 | Defect | Evidence |
 |---|---|
 | Hardcoded `VERSION="0.1.0"` | script line 19; the live cache directory is `0.2.24+codex.20260908031619` |
-| Not actually in use | `find ~/.codex/plugins/cache/codexclaw -type l` returned 0 before this unit |
+| Not actually in use | `find ~/.cursor/plugins/cache/codexclaw -type l` returned 0 before this unit |
 
 The marketplace was registered as a **git** source pinned to `bb85227` (= `origin/main`), so the
 installed plugin was a snapshot of `main`, not the `dev` working tree. That is the actual gap the
@@ -38,7 +38,7 @@ user reported as "symlink을 거니까 코덱스 잘 인식을 하지 못해".
 | wp4 | dev sync, fast-forward, real reinstall, fresh proof | wp2, wp3 | `030_wp4_sync_and_reinstall.md` |
 
 wp2 and wp3 are independent: wp2 touches `README*.md` / `docs-site/` / `scripts/`, wp3 lands
-changes under `plugins/codexclaw/` through GitHub merges. They are executed as separate PABCD
+changes under `plugins/cursorclaw/` through GitHub merges. They are executed as separate PABCD
 cycles regardless, per the one-work-phase-one-cycle invariant.
 
 ## Baseline state at wp1
@@ -47,7 +47,7 @@ cycles regardless, per the one-work-phase-one-cycle invariant.
 branch:        dev @ 6d70ef44 (= origin/dev)
 origin/main:   bb852272
 open PRs:      91, 92, 93 — all base dev, all MERGEABLE
-plugin cache:  0.2.24+codex.20260908031619, 0 symlinks, byte-identical to plugins/codexclaw
+plugin cache:  0.2.24+codex.20260908031619, 0 symlinks, byte-identical to plugins/cursorclaw
 marketplace:   codexclaw -> local /Users/jun/Developer/new/700_projects/codexclaw
 doctor:        overall PASS, 24 hook hashes trusted
 ```

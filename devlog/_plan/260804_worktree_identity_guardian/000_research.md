@@ -8,7 +8,7 @@ opens (`gh issue view`, web_search open, agbrowse fetch).
 ## 1. Problem statement (user-reported, 2026-08-04)
 
 The Codex desktop app creates a worktree per thread from the selected base branch.
-These start as unnamed/hash-named directories under `~/.codex/worktrees/`. When the
+These start as unnamed/hash-named directories under `~/.cursor/worktrees/`. When the
 user later asks to "name the worktree and start properly", agents repeatedly DELETE
 the original worktree (including uncommitted work) and create a new one, instead of
 renaming/adopting in place. Observed incident: the ocx usage-rollup session worked in
@@ -18,7 +18,7 @@ renaming/adopting in place. Observed incident: the ocx usage-rollup session work
 
 ## 2. Local evidence (this machine)
 
-- `ls ~/.codex/worktrees` mixes hash slots (`1429`, `250c`, `404d`, `7627`),
+- `ls ~/.cursor/worktrees` mixes hash slots (`1429`, `250c`, `404d`, `7627`),
   UUID slots (`02319b23-c267-...`, `0cd4515f-...`), and date-slug names
   (`260727-pr526`, `260728-release`, ...). Both namespaces coexist.
 - codex-rs local checkout `/Users/jun/Developer/codex/121_openai-codex` @ `2b5bdcf67`
@@ -34,7 +34,7 @@ renaming/adopting in place. Observed incident: the ocx usage-rollup session work
 Official docs — https://developers.openai.com/codex/environments/git-worktrees
 (lane Popper crawled 2026-08-04; main-session web_search open corroborated;
 agbrowse direct fetch mis-redirected to /rss.xml — recorded as fetch quirk):
-- Managed worktrees live under `$CODEX_HOME/worktrees`; root configurable in
+- Managed worktrees live under `$CURSOR_HOME/worktrees`; root configurable in
   Settings > Worktrees.
 - Created from the selected starting branch, normally **detached HEAD**.
 - Managed worktrees are per-chat disposable; app retains latest 15 by default
@@ -54,7 +54,7 @@ GitHub openai/codex issues (primary):
 - #13367 (lane, 2026-03-03): worktrees hard to find; wants configurable roots;
   "Fork into new worktree" locks the worktree to one thread.
 - #10522 (lane, 2026-02-03): worktree threads vanish from sidebar while data
-  persists under `$CODEX_HOME/worktrees/...`.
+  persists under `$CURSOR_HOME/worktrees/...`.
 - #14498 (lane, 2026-03-12): renaming the thread leaves the worktree name visually
   dominant — thread-name and worktree-dir-name are SEPARATE namespaces.
 - #34662 (lane, 2026-07-22): implementation left in hidden `.worktrees/...` across
@@ -103,7 +103,7 @@ GitHub openai/codex issues (primary):
 ## 7. Design decision
 
 Chosen (A): codexclaw hook-based "worktree guardian":
-- SessionStart: detect cwd under `$CODEX_HOME/worktrees/` → inject identity block
+- SessionStart: detect cwd under `$CURSOR_HOME/worktrees/` → inject identity block
   (managed status, base repo, do-not-delete rule, detached-HEAD note, retention fact).
 - UserPromptSubmit: worktree rename-intent trigger → inject the adopt-in-place
   procedure (branch -m / switch -c / thread-vs-dir namespace; move only for
@@ -124,7 +124,7 @@ Rejected/deferred:
 
 | Claim | Status |
 |-------|--------|
-| Managed worktrees under $CODEX_HOME/worktrees, detached HEAD, retention 15, archive-deletes | verified (docs opened by lane + main web_search) |
+| Managed worktrees under $CURSOR_HOME/worktrees, detached HEAD, retention 15, archive-deletes | verified (docs opened by lane + main web_search) |
 | codex-rs has no worktree creation code | verified (local rg @2b5bdcf67) |
 | #10917 / #12862 content | verified (gh issue view) |
 | #13367 / #10522 / #14498 / #34662 | candidate — lane-opened, not main-session re-opened |

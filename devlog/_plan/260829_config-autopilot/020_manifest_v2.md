@@ -11,7 +11,7 @@
     }
 
 이 설계는 codexclaw가 그 파일의 유일한 writer일 때만 성립한다. 실제 환경은 그렇지 않다.
-사용자가 직접 편집하고(현재 `~/.codex/config.toml` 636행 대부분이 손으로 쓴 항목),
+사용자가 직접 편집하고(현재 `~/.cursor/config.toml` 636행 대부분이 손으로 쓴 항목),
 `codex` 자신이 다른 설정을 쓰고, 옆 저장소 opencodex가 같은 파일을 쓴다
 (`src/codex/sync.ts`, `src/codex/features.ts:415`).
 
@@ -34,7 +34,7 @@
       key: string;
       priorValue: string | null;   // 우리가 쓰기 전 값. 키가 없었으면 null
       appliedValue: string;        // 우리가 실제로 쓴 값(직렬화 형태)
-      setByCodexclaw: boolean;     // false면 이미 목표 값이라 손대지 않았다는 뜻
+      setByCursorclaw: boolean;     // false면 이미 목표 값이라 손대지 않았다는 뜻
     }
 
     export interface InstallManifest {
@@ -56,13 +56,13 @@ v1 매니페스트 읽기는 유지한다. `version`이 1이거나 `tableKeys`�
 
     각 tableKeys 항목에 대해:
       live = readTableKey(현재 내용, table, key)
-      if !rec.setByCodexclaw            -> skip (우리가 안 건드림)
+      if !rec.setByCursorclaw            -> skip (우리가 안 건드림)
       else if live === null             -> skip: missing (누군가 지웠다)
       else if live !== rec.appliedValue -> skip: changed (외부가 값을 바꿨다)
       else                              -> restoreTableKey(priorValue) 로 되돌린다
 
 플래그 쪽도 같은 원칙으로 옮긴다. `codex features list`가 현재 상태를 알려주므로
-`priorEnabled=false && enabledByCodexclaw && 지금도 enabled` 일 때만 `features disable`을 부른다.
+`priorEnabled=false && enabledByCursorclaw && 지금도 enabled` 일 때만 `features disable`을 부른다.
 그러면 전체 파일 해시는 판단에서 완전히 빠지고, `skippedDrift` 대신 항목별 사유가 남는다.
 
 반환 shape을 넓힌다. 기존 필드는 호출부 호환으로 유지한다.
@@ -97,7 +97,7 @@ v1 매니페스트 읽기는 유지한다. `version`이 1이거나 `tableKeys`�
 | 4 | `priorValue=null` | 키 줄 제거, 다른 키 보존 |
 | 5 | `priorValue="false"` | 값이 false로 복귀 |
 | 6 | v1 매니페스트 | 예외 없이 플래그만 처리 |
-| 7 | `setByCodexclaw=false` | 손대지 않음 |
+| 7 | `setByCursorclaw=false` | 손대지 않음 |
 
 ## 범위 경계
 

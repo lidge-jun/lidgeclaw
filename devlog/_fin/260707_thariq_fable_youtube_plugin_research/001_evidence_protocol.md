@@ -39,7 +39,7 @@ Each source ledger row should record:
 
 "Plugin attachment" is interpreted through existing Codex/Codexclaw surfaces:
 
-- Skill attachment: pass `cxc-search`, `cxc-loop`, and relevant skills to subagents through `$cxc-*` mentions or structured skill items.
+- Skill attachment: pass `cxc-search`, `cxc-loop`, and relevant skills to subagents through `$crc-*` mentions or structured skill items.
 - Browser plugin fallback: use in-app browser or Chrome control only when `agbrowse` cannot prove a JS-heavy page.
 - Codexclaw plugin docs: keep reusable guidance in a numbered devlog unit first; do not alter shipped plugin skills until a separate implementation task.
 - Native future: if the research suggests reusable behavior, record candidate surfaces such as `ToolContributor`, `ContextContributor`, `TurnLifecycleContributor`, or tool lifecycle events for later Codex-rs-native work.

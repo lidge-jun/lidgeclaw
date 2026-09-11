@@ -18,7 +18,7 @@ OMO가 앞서는 부분은 parser가 아니라 **활성화 이후의 연구 프�
 | Sisyphus IntentGate | prompt-only | 매 turn research/investigation 포함 의미 분류 | 모델 variant/noncompliance; machine state 없음 | model-generated routing line. `devlog/.omo/packages/omo-opencode/src/agents/sisyphus/gpt-5-5.ts:68-96`, `devlog/.omo/packages/omo-opencode/src/agents/sisyphus/gemini.ts:213-246` |
 | `ulw-research` skill | prompt-only | explicit `ulw-research`, ulw research wording, explicit deep/ultra-precise research | ordinary question/debugging/context gathering; runtime verifier 없음 | `.omo/ulw-research/<timestamp>` journal family와 cited synthesis. `devlog/.omo/packages/shared-skills/skills/ulw-research/SKILL.md:30-59,114-149` |
 
-Codex adapter는 shared skill을 build time에 plugin skills tree로 복사할 뿐이다. generated metadata는 display name을 만들며 `allow_implicit_invocation` 같은 active-selector 계약을 추가하지 않는다: `devlog/.omo/packages/omo-codex/plugin/scripts/sync-skills.mjs:186-235,221-270`, `devlog/.omo/packages/omo-codex/plugin/.codex-plugin/plugin.json:21-30`.
+Codex adapter는 shared skill을 build time에 plugin skills tree로 복사할 뿐이다. generated metadata는 display name을 만들며 `allow_implicit_invocation` 같은 active-selector 계약을 추가하지 않는다: `devlog/.omo/packages/omo-codex/plugin/scripts/sync-skills.mjs:186-235,221-270`, `devlog/.omo/packages/omo-codex/plugin/.cursor-plugin/plugin.json:21-30`.
 
 ## `ulw-research`에서 가져올 만한 것
 

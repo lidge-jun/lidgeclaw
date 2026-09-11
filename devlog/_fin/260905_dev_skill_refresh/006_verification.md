@@ -11,7 +11,7 @@
 | exact plan delivery | 109 edits / 33 files 일치 | 잠근 계획과 실제 코드·문서 전달 정합성, 의미 증명은 아님 |
 | relative Markdown links | 9개, 누락0 | 실제 상대 링크의 파일 존재 |
 | git diff --check | exit0 | whitespace |
-| node plugins/codexclaw/scripts/gate.mjs | exit0 | status drift, false-enforcement prose, count/inventory mismatch 없음 |
+| node plugins/cursorclaw/scripts/gate.mjs | exit0 | status drift, false-enforcement prose, count/inventory mismatch 없음 |
 | tmp fixture teardown | remainingFixtureDirs=[] | 테스트 임시 디렉터리 남지 않음 |
 | 독립 검토 | Kuhn A / Galileo wp1 C / Russell wp2 C / Erdos final C | 의미 충돌과 scope, 사례별 지침 판단 |
 
@@ -20,10 +20,10 @@
 ## 명령
 
 ```sh
-node --test plugins/codexclaw/test/manifest-policy.test.mjs plugins/codexclaw/test/visualize-inspection.test.mjs
-bash -n plugins/codexclaw/skills/dev-diagram-viewer/upstream/sync-check.sh
-bash plugins/codexclaw/skills/dev-diagram-viewer/upstream/sync-check.sh
-node plugins/codexclaw/scripts/gate.mjs
+node --test plugins/cursorclaw/test/manifest-policy.test.mjs plugins/cursorclaw/test/visualize-inspection.test.mjs
+bash -n plugins/cursorclaw/skills/dev-diagram-viewer/upstream/sync-check.sh
+bash plugins/cursorclaw/skills/dev-diagram-viewer/upstream/sync-check.sh
+node plugins/cursorclaw/scripts/gate.mjs
 git diff --check
 ```
 

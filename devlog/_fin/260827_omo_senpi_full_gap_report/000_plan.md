@@ -137,7 +137,7 @@ De-duplication: orchestration/goal/task/research pages split by authoritative ow
 11. `pypdf`/`pdfplumber` reopen all pages; text bounds remain inside media box.
 12. `pdftoppm` renders all 42 pages; verifier emits a 42-row manifest with nonwhite-pixel and text counts.
 13. Contact sheets cover pages 1–42; `full-gap-inspection.json` has exactly 42 `PASS` rows and zero open defects.
-14. No change under `plugins/codexclaw/`, `structure/`, `README.md`, `docs/`, `.github/`, `package.json`, or `bin/`; unrelated dirty work preserved.
+14. No change under `plugins/cursorclaw/`, `structure/`, `README.md`, `docs/`, `.github/`, `package.json`, or `bin/`; unrelated dirty work preserved.
 15. Every diagnostic page maps to one pillar and one strategic program; every program has owner, baseline, formula, source, cadence, and gate.
 
 ## Verifier
@@ -155,5 +155,5 @@ test "$(jq '[.pages[] | select(.status != "PASS")] | length' tmp/pdfs/full-gap-i
   --allow devlog/_fin/260827_omo_senpi_full_gap_report \
   --allow tmp/pdfs \
   --allow output/pdf/codexclaw-omo-senpi-gap-analysis-ko.pdf
-test -z "$(git status --short -- plugins/codexclaw structure README.md docs .github package.json bin)"
+test -z "$(git status --short -- plugins/cursorclaw structure README.md docs .github package.json bin)"
 ```

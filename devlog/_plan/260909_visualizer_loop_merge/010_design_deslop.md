@@ -18,7 +18,7 @@ v2 PDF는 논지와 조판 결함은 해결됐지만 시각 문법이 AI 템플�
 
 - export QA PASS(양식·v2), 페이지 이미지 육안 확인(표지·요약·본문·부록), REPORT-VIZ-01 인쇄 크기 확인.
 - fresh-read: 답·근거·요청 + "AI 템플릿처럼 보이는 요소" 질문에 남은 항목 0~1개.
-- `node plugins/codexclaw/scripts/test.mjs` skill-catalog, visualize-inspection; inventory --check.
+- `node plugins/cursorclaw/scripts/test.mjs` skill-catalog, visualize-inspection; inventory --check.
 
 ## 하지 않는 것
 

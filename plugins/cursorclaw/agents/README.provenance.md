@@ -27,7 +27,7 @@ cannot register these TOML files as live roles. Unregistered installs automatica
 cxc subagents register executor
 ```
 
-This creates `$CODEX_HOME/agents/executor.toml` (default `~/.codex/agents/executor.toml`)
+This creates `$CURSOR_HOME/agents/executor.toml` (default `~/.cursor/agents/executor.toml`)
 from the shipped executor prompt, omitting the plugin's `model = "default"` sentinel.
 The installed role does not override model, effort, sandbox or approval policy.
 Registration marks the prompt with a content hash. Repeating this command updates an
@@ -74,7 +74,7 @@ replaces the inline template, not the registered native developer instructions.
 
 ## Model / prompt override status
 
-The shipped TOML `model = "default"` is a plugin sentinel, not a native model name. The `.codexclaw/subagents.json`
+The shipped TOML `model = "default"` is a plugin sentinel, not a native model name. The `.cursorclaw/subagents.json`
 store, MCP/GUI roundtrip, and `resolveSpawnConfig(cwd, role)` resolver are shipped; S8/S10
 tests prove persistence and resolver behavior. The store also carries a per-role `effort`
 override (codex wire values low/medium/high/xhigh; null = inherit).
@@ -102,8 +102,8 @@ context reuse, changed-decision rechecks and failure handling are owned by
 ## Explicit native role registration
 
 Run `cxc subagents register architect` only when installation is authorized. It
-publishes the canonical role to `$CODEX_HOME/agents/architect.toml` (default
-`~/.codex/agents/architect.toml`), removes the `model = "default"` sentinel, and
+publishes the canonical role to `$CURSOR_HOME/agents/architect.toml` (default
+`~/.cursor/agents/architect.toml`), removes the `model = "default"` sentinel, and
 retains read-only sandbox settings. Models and effort stay owned by architect's
 CXC settings and existing explicit caller overrides; registration pins neither.
 The shared command also supports `register executor` for compatibility.

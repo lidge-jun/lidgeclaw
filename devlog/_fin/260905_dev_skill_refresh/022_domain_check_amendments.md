@@ -2,7 +2,7 @@
 
 Russell found non-blocking residuals in architecture private/in-process rows, API envelope reference, and compact debugging summary. All are accepted and corrected below. Main additionally preserves existing assurance targets and corrects the ASVS reference table to avoid accidental security-policy weakening.
 
-## MODIFY plugins/codexclaw/skills/dev-architecture/SKILL.md
+## MODIFY plugins/cursorclaw/skills/dev-architecture/SKILL.md
 
 Before:
 
@@ -16,7 +16,7 @@ After:
 | **Private method args** | No repeated shape parsing; invariants may apply | Types do not prove every valid state | Enforce the private method's real domain constraints |
 `````
 
-## MODIFY plugins/codexclaw/skills/dev-architecture/SKILL.md
+## MODIFY plugins/cursorclaw/skills/dev-architecture/SKILL.md
 
 Before:
 
@@ -30,7 +30,7 @@ After:
 | **Service-to-service in same process** | No repeated trusted shape parsing; enforce domain/security rules | In-process is not a waiver for invariants or authorization | Validate the actual boundary/constraint |
 `````
 
-## MODIFY plugins/codexclaw/skills/dev-backend/references/core/api-design.md
+## MODIFY plugins/cursorclaw/skills/dev-backend/references/core/api-design.md
 
 Before:
 
@@ -46,7 +46,7 @@ Preserve existing contracts and protocol-native GraphQL/gRPC/SSE responses; do n
 wrap them in this REST sample. Responses such as HTTP 204 have no JSON body.
 `````
 
-## MODIFY plugins/codexclaw/skills/dev-debugging/SKILL.md
+## MODIFY plugins/cursorclaw/skills/dev-debugging/SKILL.md
 
 Before:
 
@@ -60,7 +60,7 @@ After:
 (2) Core principle — RCA before permanent repair; preauthorized reversible incident mitigation may come first,
 `````
 
-## MODIFY plugins/codexclaw/skills/dev-security/SKILL.md
+## MODIFY plugins/cursorclaw/skills/dev-security/SKILL.md
 
 Before:
 
@@ -74,7 +74,7 @@ After:
 | `references/asvs-checklist.md` | Before deploy or release | Local release checklist; formal ASVS 5.0.0 assessment requires full applicable requirement-level evidence |
 `````
 
-## MODIFY plugins/codexclaw/skills/dev-security/references/asvs-checklist.md
+## MODIFY plugins/cursorclaw/skills/dev-security/references/asvs-checklist.md
 
 Before:
 

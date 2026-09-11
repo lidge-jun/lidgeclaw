@@ -25,7 +25,7 @@ The scoping rule for this sweep comes straight from 002 B9. Not all 29 sites are
 
 ## MODIFY / NEW / DELETE map
 
-### 1. NEW plugins/codexclaw/components/cxc-ops/src/text-lines.ts
+### 1. NEW plugins/cursorclaw/components/cxc-ops/src/text-lines.ts
 
 ```ts
 /**
@@ -71,8 +71,8 @@ export function withEol(text: string, eol: "\r\n" | "\n"): string {
 
 #### 2a. TOML parsers - the two duplicated copies
 
-`plugins/codexclaw/components/config-guard/src/multi-agent-v2.ts:56` parses the user's
-`~/.codex/config.toml`.
+`plugins/cursorclaw/components/config-guard/src/multi-agent-v2.ts:56` parses the user's
+`~/.cursor/config.toml`.
 
 BEFORE
 ```ts
@@ -89,14 +89,14 @@ AFTER
 to eat the `\r`. The real smell is that the same package's `activate.ts:63` already
 handles `\r?\n` deliberately, so the file disagrees with its neighbor.
 
-`plugins/codexclaw/components/pabcd-state/src/review-round-cli.ts:30` is the same parser,
+`plugins/cursorclaw/components/pabcd-state/src/review-round-cli.ts:30` is the same parser,
 duplicated. Same substitution. (Deduplicating the two parsers is a separate refactor -
 not in scope, and worth filing.)
 
 #### 2b. `where` / subprocess stdout
 
-`plugins/codexclaw/components/messenger-bridge/src/api-compat.ts:38` and
-`plugins/codexclaw/gui/src/server/middleware.ts:61`:
+`plugins/cursorclaw/components/messenger-bridge/src/api-compat.ts:38` and
+`plugins/cursorclaw/gui/src/server/middleware.ts:61`:
 
 BEFORE
 ```ts
@@ -114,8 +114,8 @@ single-element array and got `""`, but any future `filter` would make it `undefi
 
 #### 2c. apply_patch payload parsing (the highest-impact instance)
 
-`plugins/codexclaw/components/pabcd-state/src/comment-lint.ts:54` and
-`plugins/codexclaw/components/pabcd-state/src/edit-shape.ts:83` split a `patchText` that
+`plugins/cursorclaw/components/pabcd-state/src/comment-lint.ts:54` and
+`plugins/cursorclaw/components/pabcd-state/src/edit-shape.ts:83` split a `patchText` that
 arrives from a tool payload, not from disk.
 
 BEFORE (`edit-shape.ts:83`)
@@ -155,7 +155,7 @@ records an offset or a length. If it does, it keeps `splitLinesByteExact` with a
 naming why (001 4.5). `rollout.ts` is the one to inspect closely - it reads codex rollout
 files it did not write.
 
-### 4. MODIFY plugins/codexclaw/components/recall/src/memory-search.ts
+### 4. MODIFY plugins/cursorclaw/components/recall/src/memory-search.ts
 
 BEFORE (:202)
 ```ts
@@ -170,7 +170,7 @@ AFTER
 Correct before and after; folding it in leaves one idiom instead of a hand-rolled
 workaround in exactly one file (002 B10).
 
-### 5. MODIFY plugins/codexclaw/scripts/hook-bench.mjs - defect #14
+### 5. MODIFY plugins/cursorclaw/scripts/hook-bench.mjs - defect #14
 
 BEFORE (:60-65, :77-88)
 ```js
@@ -184,7 +184,7 @@ function fixturePayload(event) {
   const result = spawnSync("node", cleanParts, {
     input: payload,
     timeout: 15000,
-    env: { ...process.env, HOME: tmpHome, CODEX_HOME: join(tmpHome, ".codex"), CODEX_SQLITE_HOME: join(tmpHome, ".codex") },
+    env: { ...process.env, HOME: tmpHome, CURSOR_HOME: join(tmpHome, ".codex"), CODEX_SQLITE_HOME: join(tmpHome, ".codex") },
     cwd: "/tmp",
     stdio: ["pipe", "pipe", "pipe"],
     maxBuffer: 1024 * 1024,
@@ -211,7 +211,7 @@ function invokeHook(command, payload, tmpHome, benchCwd) {
       // Windows resolves the home from USERPROFILE, so HOME alone left the hook
       // reading the REAL user home during a benchmark meant to be hermetic.
       USERPROFILE: tmpHome,
-      CODEX_HOME: join(tmpHome, ".codex"),
+      CURSOR_HOME: join(tmpHome, ".codex"),
       CODEX_SQLITE_HOME: join(tmpHome, ".codex"),
     },
     // /tmp does not exist on Windows, and spawnSync throws ENOENT on a missing
@@ -253,12 +253,12 @@ AFTER
 
 # Fixtures whose bytes are the test subject. Normalizing a CRLF fixture to LF
 # would make the CRLF tests pass vacuously.
-plugins/codexclaw/**/test/fixtures/**/*.crlf.* -text
+plugins/cursorclaw/**/test/fixtures/**/*.crlf.* -text
 ```
 
 002 B9's closing note is the reason this matters and also the reason it is not
 sufficient: `.gitattributes` protects checked-in files but does nothing for runtime state
-under `.codexclaw/` or for the user's `config.toml`. The parser fixes above are the
+under `.cursorclaw/` or for the user's `config.toml`. The parser fixes above are the
 actual protection; this is defense in depth.
 
 ### 7. Package wiring (SHARED-HELPER-01)
@@ -316,7 +316,7 @@ The A-phase reviewer should reject any diff in this phase that adds a `../../` i
 
 ## TESTS
 
-NEW `plugins/codexclaw/components/cxc-ops/test/text-lines.test.ts`
+NEW `plugins/cursorclaw/components/cxc-ops/test/text-lines.test.ts`
 
 1. "splitLines handles LF, CRLF, and mixed" - `"a\r\nb\nc"` -> `["a","b","c"]`.
 2. "splitLines leaves a lone CR alone" - `"a\rb"` is one line. Old-Mac line endings are
@@ -347,7 +347,7 @@ NEW fixture-driven cases
 13. Ledger readers: for each of the seven, "a CRLF-rewritten ledger reads identically" -
     one parameterized test over the list, so the sweep is provably complete.
 
-NEW cases in `plugins/codexclaw/test/`
+NEW cases in `plugins/cursorclaw/test/`
 
 14. "hook-bench builds no path under /tmp on win32" - import `fixturePayload` and assert
     the payload `cwd` starts with `tmpdir()`.
@@ -358,19 +358,19 @@ NEW cases in `plugins/codexclaw/test/`
 Run from the repo root; each command must exit 0.
 
 ```powershell
-node --test --test-concurrency=1 "plugins/codexclaw/components/cxc-ops/test/text-lines.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/config-guard/test/*.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/pabcd-state/test/edit-shape.test.ts" "plugins/codexclaw/components/pabcd-state/test/comment-lint.test.ts"
-node --test --test-concurrency=1 "plugins/codexclaw/components/recall/test/*.test.ts" "plugins/codexclaw/gui/test/*.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/cxc-ops/test/text-lines.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/config-guard/test/*.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/pabcd-state/test/edit-shape.test.ts" "plugins/cursorclaw/components/pabcd-state/test/comment-lint.test.ts"
+node --test --test-concurrency=1 "plugins/cursorclaw/components/recall/test/*.test.ts" "plugins/cursorclaw/gui/test/*.test.ts"
 npm test
-node plugins/codexclaw/scripts/gate.mjs
+node plugins/cursorclaw/scripts/gate.mjs
 ```
 
 The bench must now RUN on Windows - this is the defect #14 acceptance and the
 precondition for wp10:
 
 ```powershell
-node plugins/codexclaw/scripts/hook-bench.mjs --iterations 3 --json
+node plugins/cursorclaw/scripts/hook-bench.mjs --iterations 3 --json
 ```
 
 Expected: JSON with per-hook timings and no ENOENT on `/tmp`.
@@ -379,7 +379,7 @@ Sweep completeness check. Every remaining bare `split("\n")` must be either
 `splitLinesByteExact` or on the 002 B17 do-not-touch list:
 
 ```powershell
-rg -n 'split\("' plugins/codexclaw/components --glob "!**/dist/**" --glob "!**/test/**" | rg '\\n'
+rg -n 'split\("' plugins/cursorclaw/components --glob "!**/dist/**" --glob "!**/test/**" | rg '\\n'
 ```
 
 Review each remaining hit by hand against section 3's byte-accounting exception; the
@@ -388,7 +388,7 @@ A-phase reviewer should be shown this output.
 The gitattributes change needs a re-checkout to take effect, so verify it directly:
 
 ```powershell
-git check-attr text eol -- plugins/codexclaw/components/messenger-bridge/src/runner.ts
+git check-attr text eol -- plugins/cursorclaw/components/messenger-bridge/src/runner.ts
 git check-attr text eol -- some-generated.cmd
 ```
 
@@ -397,7 +397,7 @@ Expected: `eol: lf` for the `.ts` file, `eol: crlf` for the `.cmd`.
 WSL parity, expected exit 0 - and specifically proving the LF branch did not regress:
 
 ```bash
-wsl -d Ubuntu -- bash -lc "cd ~/codexclaw-wsl-checkout && npm test && node plugins/codexclaw/scripts/hook-bench.mjs --iterations 3 --json > /dev/null"
+wsl -d Ubuntu -- bash -lc "cd ~/codexclaw-wsl-checkout && npm test && node plugins/cursorclaw/scripts/hook-bench.mjs --iterations 3 --json > /dev/null"
 ```
 
 Record the C>D receipt with `cxc receipt test -- npm test` per CHECK-BINDING-01.

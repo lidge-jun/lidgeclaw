@@ -75,7 +75,7 @@ export function decideKeyRestore(
   fileDrifted: boolean,
   backupValue: string | null | undefined,
 ): { action: "restore" } | { action: "skip"; reason: SkipReason } {
-  if (!rec.setByCodexclaw) return { action: "skip", reason: "changed" };
+  if (!rec.setByCursorclaw) return { action: "skip", reason: "changed" };
   if (liveValue === null) return { action: "skip", reason: "missing" };
   if (liveValue !== rec.appliedValue) return { action: "skip", reason: "changed" };
   // Destructive case: we would DELETE the line. One bit of value equality is not
@@ -175,7 +175,7 @@ export function deactivate(deps: DeactivateDeps): DeactivateResult {
       skippedPreExisting.push(key);
       continue;
     }
-    if (!rec.enabledByCodexclaw) continue; // never actually enabled (e.g. a failed soft flag)
+    if (!rec.enabledByCursorclaw) continue; // never actually enabled (e.g. a failed soft flag)
     if (liveFlags && liveFlags.get(key) === false) {
       // The user already turned it off; calling disable again would be noise.
       skippedExternal.push({ target: key, reason: "missing" });

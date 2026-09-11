@@ -54,7 +54,7 @@ export function parseOcxModels(stdout: string): CatalogEntry[] {
 
 function sourceKey(env: NodeJS.ProcessEnv): string {
   return createHash("sha256").update(JSON.stringify([
-    env.CODEX_HOME ?? "", env.CODEX_MODELS_CACHE_PATH ?? "", env.PATH ?? env.Path ?? "", env.OPENCODEX_HOME ?? "",
+    env.CURSOR_HOME ?? "", env.CODEX_MODELS_CACHE_PATH ?? "", env.PATH ?? env.Path ?? "", env.OPENCURSOR_HOME ?? "",
   ])).digest("hex");
 }
 function cachedCatalog(path: string, key: string, now: number): LiveCatalog | null {

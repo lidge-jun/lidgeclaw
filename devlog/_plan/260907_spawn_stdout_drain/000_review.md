@@ -9,7 +9,7 @@ One cohesive work-phase: review+merge conflict resolution+release packaging.
 Verifier: source/dist real spawn-hook pipe test with model/effort/message preservation;
 mutation-red old process.exit, focused80 suite, final exact-head platform/WSL/packed
 CI; installed compiled-pipe smoke on each host. End after release/install proof.
-Artifacts here and .codexclaw/evidence/pr80. No user token/time bound.
+Artifacts here and .cursorclaw/evidence/pr80. No user token/time bound.
 
 Original contributor7f18db0416b186ca83bf72803e21c621e815e3db bythisisjun786.
 Changed code: src/spawn-attach-hook.ts main ends natural exit via exitCode0;

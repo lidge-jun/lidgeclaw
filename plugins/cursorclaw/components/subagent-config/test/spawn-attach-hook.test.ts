@@ -372,7 +372,7 @@ test("mention normalization: link-unsafe skill roots use the plugin-prefixed tok
 });
 
 test("mention normalization: plugin prefix is pinned to plugin.json name", () => {
-  const manifest = JSON.parse(readFileSync(resolve(SKILLS_DIR, "..", ".codex-plugin", "plugin.json"), "utf8"));
+  const manifest = JSON.parse(readFileSync(resolve(SKILLS_DIR, "..", ".cursor-plugin", "plugin.json"), "utf8"));
   assert.equal(manifest.name, "codexclaw");
   assert.equal(
     normalizeSkillMentions(`$${manifest.name}:cxc-dev`, SKILLS_DIR),

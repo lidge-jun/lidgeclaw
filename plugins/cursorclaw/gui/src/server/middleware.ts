@@ -30,11 +30,11 @@ import {
 
 /**
  * Resolve the PROJECT root whose `.cursorclaw/` this dashboard manages. The vite dev
- * server runs from `plugins/codexclaw/gui/`, so bare `process.cwd()` would silently
+ * server runs from `plugins/cursorclaw/gui/`, so bare `process.cwd()` would silently
  * read/write `gui/.cursorclaw/` — a store no spawn-time hook ever looks at (the hook
  * resolves against the codex session cwd). Resolution order: CODEXCLAW_ROOT override,
  * else the nearest ancestor with `.git/` (the real project boundary — hook-state
- * `.cursorclaw/` dirs can appear at incidental depths, e.g. plugins/codexclaw/, and
+ * `.cursorclaw/` dirs can appear at incidental depths, e.g. plugins/cursorclaw/, and
  * must not capture the walk), else the nearest ancestor with `.cursorclaw/`, else the
  * start dir.
  */

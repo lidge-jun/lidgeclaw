@@ -10,7 +10,7 @@
   "후속까지 완료해줘 (sol/medium 무제한)". Mode: HITL 체이닝(명시 위임).
 - Goal: (1) 훅 파일 수정→trusted_hash 불일치→조용한 비활성화 사고를 `cxc doctor`
   가 탐지하고 `cxc hooks retrust`로 복구 가능하게; (2) 네이티브 V2(암호화)
-  스폰에서도 자식이 $cxc-* 스킬을 스스로 로드할 수 있는 평문 어포던스 제공.
+  스폰에서도 자식이 $crc-* 스킬을 스스로 로드할 수 있는 평문 어포던스 제공.
 - Non-goals: codex-rs 수정, TUI hooks 브라우저 대체, 자식 SessionStart 신규 훅
   (어포던스는 기존 spawn 훅의 평문 prepend가 이미 실증된 채널이므로 그걸 사용),
   goal DB, @personal 잔존 항목 청소(무해).
@@ -43,12 +43,12 @@
 
 ## Scope boundary
 
-IN: plugins/codexclaw/components/cxc-ops/{src,test,dist} (doctor + 신규
+IN: plugins/cursorclaw/components/cxc-ops/{src,test,dist} (doctor + 신규
   hook-trust 모듈 + retrust verb), bin/codexclaw.mjs (verb 배선 + help),
-  plugins/codexclaw/components/subagent-config/{src,test,dist} (어포던스 블록),
-  plugins/codexclaw/test/hook-e2e.test.mjs (어포던스 e2e),
+  plugins/cursorclaw/components/subagent-config/{src,test,dist} (어포던스 블록),
+  plugins/cursorclaw/test/hook-e2e.test.mjs (어포던스 e2e),
   skills/structure/docs-site의 관련 서술 갱신, 이 devlog 유닛.
-OUT: codex-rs, ~/.codex/config.toml 직접 커밋(런타임 파일 — retrust가 쓰되
+OUT: codex-rs, ~/.cursor/config.toml 직접 커밋(런타임 파일 — retrust가 쓰되
   테스트는 fixture로), gui, goal 로직.
 
 ## Accept criteria
@@ -63,11 +63,11 @@ OUT: codex-rs, ~/.codex/config.toml 직접 커밋(런타임 파일 — retrust�
   (기존 키 교체 / 신설 append 두 경로 각각 테스트), 중복 헤더·해시 라인 거부,
   무관 바이트/enabled 보존 단언, 검증 실패 시 백업 자동 롤백, 사후 검증 =
   doctor 재실행 + `codex features list` 파스 성공.
-  (A-r1 F5) 설치 키 계약: CODEX_HOME 존중; config의 enabled `[plugins."<name>@…"]`
+  (A-r1 F5) 설치 키 계약: CURSOR_HOME 존중; config의 enabled `[plugins."<name>@…"]`
   키가 정확히 1개일 때만 자동 선택, 0개/2개+면 fail-closed로 후보를 나열하고
   `--key <plugin@marketplace>` 명시 요구.
 - cr3 어포던스: V2-shape 스폰에서 인라인이 아무 본문도 못 붙였을 때(암호문
-  포함) `[CXC-SKILL-AFFORDANCE]` 평문 블록이 message에 부착 — 자식에게 "$cxc-*
+  포함) `[CXC-SKILL-AFFORDANCE]` 평문 블록이 message에 부착 — 자식에게 "$crc-*
   멘션을 보면 <skillsDir>/<folder>/SKILL.md를 읽어 로드하라" 지시. 마커 dedupe,
   플레인 v1 경로에는 미부착. 유닛 + e2e.
   (A-r1 F4, r2 정정) V2 exact-equal 단언(spawn-attach-hook.test.ts:401,468,476)
@@ -77,7 +77,7 @@ OUT: codex-rs, ~/.codex/config.toml 직접 커밋(런타임 파일 — retrust�
   dedupe/guard-어포던스 순서 + V1 미부착.
 - cr4 라이브: 네이티브 sol 세션 스폰 자식의 수신문 파일 덤프에 어포던스 블록
   바이트 확인. drift 왕복(수정→FAIL→retrust→PASS)의 **자동 검증은 fixture
-  CODEX_HOME 전용**(실컨피그 불변); 실컨피그 최종 스모크는 훅 파일+config
+  CURSOR_HOME 전용**(실컨피그 불변); 실컨피그 최종 스모크는 훅 파일+config
   바이트 스냅샷 → finally 복원 → 복원 후 doctor PASS 증명까지 포함 (A-r1 B3).
 - cr5 스위트/문서: 전체 테스트+gate 그린, dist 리빌드, "fork 상속에 의존" 서술을
   "어포던스 채널" 반영으로 갱신 (Bohr가 넣은 문구 11곳 + INDEX).

@@ -40,7 +40,7 @@ export function isolatedEnv(root) {
     ? Object.fromEntries(Object.entries(process.env).filter(([key]) => /^(SystemRoot|WINDIR|ComSpec|PATHEXT)$/i.test(key)))
     : {};
   return { ...system, PATH: [dirname(process.execPath), "/usr/bin", "/bin"].join(delimiter),
-    HOME: home, USERPROFILE: home, CODEX_HOME: join(home, ".codex"),
+    HOME: home, USERPROFILE: home, CURSOR_HOME: join(home, ".codex"),
     CODEX_SQLITE_HOME: join(home, ".codex"), TMPDIR: join(home, "tmp"), TEMP: join(home, "tmp"), TMP: join(home, "tmp"), LANG: "en_US.UTF-8" };
 }
 

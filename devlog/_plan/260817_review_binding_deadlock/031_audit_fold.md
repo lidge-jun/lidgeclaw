@@ -3,7 +3,7 @@ created: 2026-08-17
 status: design
 workPhase: wp4
 supersedes: [030_stuck_round_recovery.md]
-tags: [codexclaw, recovery, round-selection]
+tags: [cursorclaw, recovery, round-selection]
 ---
 
 # 031 — 감사 반영: 정지 경로가 하나가 아니었다

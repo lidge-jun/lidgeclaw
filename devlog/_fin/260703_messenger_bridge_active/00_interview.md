@@ -55,7 +55,7 @@ security slice (remote full-permission exec + token/allowlist) is C4
 - codexclaw philosophy: no own agent harness, no external orchestrator server
   (README.md). exec-spawn per message fits; a resident bot process is still
   required and `cxc serve` is that (accepted deviation, scoped to the bridge).
-- `codex exec resume <session_id>` shares the `~/.codex` rollout store with
+- `codex exec resume <session_id>` shares the `~/.cursor` rollout store with
   interactive codex — "rich context" continuity comes free; recall component
   already reads these rollouts.
 - Same-thread turns cannot run concurrently → per-chat serialization + busy

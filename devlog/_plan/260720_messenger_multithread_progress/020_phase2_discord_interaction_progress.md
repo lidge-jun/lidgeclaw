@@ -31,7 +31,7 @@ Status: P (design) · class C3 · implementation not started
 
 Add a dedicated interaction progress controller, adapted from
 `createProgressWindow()` in
-`plugins/codexclaw/components/messenger-bridge/src/discord-adapter.ts:334-377`.
+`plugins/cursorclaw/components/messenger-bridge/src/discord-adapter.ts:334-377`.
 It starts on the already-deferred original interaction response, renders
 runner events there, and owns one pre-expiry handoff timer.
 
@@ -52,9 +52,9 @@ normally notifying channel message through `sendFormattedDiscordOutput()`.
 
 Every Discord API result is checked. This closes the current silent failure in
 `deferReply()` and `editDeferredReply()`
-(`plugins/codexclaw/components/messenger-bridge/src/discord-interactions.ts:96-107`)
+(`plugins/cursorclaw/components/messenger-bridge/src/discord-interactions.ts:96-107`)
 as well as unchecked original-response edits in `runTurnFromInteraction()`
-(`plugins/codexclaw/components/messenger-bridge/src/discord-commands.ts:246-264`).
+(`plugins/cursorclaw/components/messenger-bridge/src/discord-commands.ts:246-264`).
 
 ### Phase 3 mode-gating seam
 
@@ -71,7 +71,7 @@ with the agent's `tool_progress` policy; no controller rewrite is required.
 
 ## Diff-level change map
 
-### NEW `plugins/codexclaw/components/messenger-bridge/src/discord-interaction-progress.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/src/discord-interaction-progress.ts`
 
 Own interaction-original rendering, token-expiry handoff, and terminal cleanup.
 
@@ -123,7 +123,7 @@ After: interaction progress has one owner with a deterministic pre-expiry
 transition from webhook-authenticated original edits to bot-authenticated
 channel edits.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-commands.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-commands.ts`
 
 Functions: `runTurnFromInteraction()` and its `/ask` and `/review` callers at
 `discord-commands.ts:43-60`.
@@ -147,7 +147,7 @@ After:
   and cancellation results, so the handoff timer and pending edits cannot leak.
 - Do not attempt interaction webhook followups after handoff or expiry.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-interactions.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-interactions.ts`
 
 Functions: `handleInteraction()`, `deferReply()`, `editDeferredReply()`, and
 `handleComponentInteraction()` retry branch.
@@ -170,7 +170,7 @@ After:
 - In command/component catch blocks, check the attempted error edit. If that
   edit also fails, log both failures; do not recurse or send a webhook followup.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/discord-adapter.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/discord-adapter.ts`
 
 Functions: `deferNativeInteraction()` (:149-152), `rejectInteraction()`, and
 the private `progressFromEvent()`/stage-embed renderer (:544-565).
@@ -190,7 +190,7 @@ After:
 - Regression coverage: a failed-defer case in
   `test/discord-adapter.test.ts` (extend :662-707) proves no turn executes.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/src/output-formatter.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/src/output-formatter.ts`
 
 Function: `sendFormattedDiscordOutput()` (:100-116).
 
@@ -203,7 +203,7 @@ keep working (the value is ignorable); `runTurnFromInteraction()` consumes it
 as the delivery override in its single real-outcome variable. Covered by a
 formatter contract test (success aggregate, first-failure aggregate).
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/discord-commands.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/discord-commands.test.ts`
 
 Before: `/ask` asserts only the initial/final original edits and fresh answer.
 
@@ -214,7 +214,7 @@ events and terminal state use `editMessage`, and no webhook operation occurs
 after handoff. Cover failed handoff send, failed pointer edit, thrown turn, and
 failed final delivery without timer leakage.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/discord-interactions.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/discord-interactions.test.ts`
 
 Before: interaction tests assume all callback/defer/edit calls succeed; retry
 checks only prompt replay and final answer.
@@ -224,7 +224,7 @@ logs without recursion, and component retry carries `onEvent` through the same
 pre-expiry/handoff lifecycle as slash commands. Use fake timers; no wall-clock
 14-minute test waits.
 
-### NEW `plugins/codexclaw/components/messenger-bridge/test/discord-interaction-progress.test.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/test/discord-interaction-progress.test.ts`
 
 Unit-test the controller independently: `progressFilter` modes — `full`
 (default, all stages render), `summary` per kind (status/thinking → stage
@@ -236,7 +236,7 @@ target switch, post-handoff edits, success/error finish, concurrent finish and
 in-flight handoff (join semantics, exactly one terminal edit), result checking,
 and timer cleanup.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/discord-adapter.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/discord-adapter.test.ts`
 
 Before: native-interaction defer path assumes successful callbacks.
 
@@ -244,7 +244,7 @@ After: add a failed-defer regression (extend :662-707) proving no turn
 executes after a failed `createInteractionResponse()`; existing textual
 `!cxc retry` tests (:513-619) stay unchanged.
 
-### MODIFY `plugins/codexclaw/components/messenger-bridge/test/output-formatter.test.ts`
+### MODIFY `plugins/cursorclaw/components/messenger-bridge/test/output-formatter.test.ts`
 
 Before: Discord formatted-output delivery results are unobservable.
 

@@ -2,7 +2,7 @@
 
 ## B: files + authorship
 
-- `plugins/codexclaw/skills/remote/SKILL.md` — MAIN session. Front-matter per
+- `plugins/cursorclaw/skills/remote/SKILL.md` — MAIN session. Front-matter per
   sibling convention (name cxc-remote, EN+KO triggers, last-verified
   2026-07-07, short-description). Body: guard-header contract
   (content-type + x-codexclaw-local, 403 otherwise), 6-step ladder
@@ -77,7 +77,7 @@ synthesis + diff summary per reviewer-reuse doctrine.
 
 1. BLOCKER: implicit-visible skill set is CANONICAL — dev/SKILL.md:173 defines
    {dev, search, interview, pabcd, recall, loop} and
-   plugins/codexclaw/test/manifest-policy.test.mjs:49 hard-codes it; remote
+   plugins/cursorclaw/test/manifest-policy.test.mjs:49 hard-codes it; remote
    with allow_implicit_invocation:true broke the test (implicit set mismatch).
    DECISION: respect the policy, do not expand it — remote becomes on-demand
    like the dev-* routers (openai.yaml -> false; README entry reworded).
@@ -86,7 +86,7 @@ synthesis + diff summary per reviewer-reuse doctrine.
    was also outside the declared wp write scope.
 2. ADVISORY: {"open":true,"allowlistCount":<baseline>} examples were invalid
    JSON inside ```json fences -> switched to ```text fences (both refs).
-   Verified: node --test plugins/codexclaw/test/manifest-policy.test.mjs ->
+   Verified: node --test plugins/cursorclaw/test/manifest-policy.test.mjs ->
    pass 6 / fail 0.
 
 ## C-gate round 3 (Mendel) — PASS, findings: none
@@ -94,12 +94,12 @@ synthesis + diff summary per reviewer-reuse doctrine.
 Reviewer confirmed openai.yaml:6 false, README on-demand wording, text fences,
 manifest test 6/0. WP1 deliverables final:
 
-- plugins/codexclaw/skills/remote/SKILL.md (front-matter + 6-step ladder)
-- plugins/codexclaw/skills/remote/references/telegram.md (124 lines)
-- plugins/codexclaw/skills/remote/references/discord.md (128 lines)
-- plugins/codexclaw/skills/remote/references/troubleshooting.md (138+ lines)
-- plugins/codexclaw/skills/remote/agents/openai.yaml (implicit false)
-- plugins/codexclaw/skills/README.md (remote/ entry)
+- plugins/cursorclaw/skills/remote/SKILL.md (front-matter + 6-step ladder)
+- plugins/cursorclaw/skills/remote/references/telegram.md (124 lines)
+- plugins/cursorclaw/skills/remote/references/discord.md (128 lines)
+- plugins/cursorclaw/skills/remote/references/troubleshooting.md (138+ lines)
+- plugins/cursorclaw/skills/remote/agents/openai.yaml (implicit false)
+- plugins/cursorclaw/skills/README.md (remote/ entry)
 
 Evidence for c1: Mendel round-1 checked-surface table (60+ claims, all OK
 after repairs), round-3 PASS, manifest-policy 6/0, reviewer pre-scan bridge

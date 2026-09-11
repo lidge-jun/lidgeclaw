@@ -2,7 +2,7 @@
 
 Status: DONE (impl shipped + tested) · 2026-06-30 · mvp_hard loop L2 · class C3 (persistence + cross-session FSM contract)
 
-> Prereq for L3 (the `$cxc-orchestrate` wire). The wire is only safe once the FSM
+> Prereq for L3 (the `$crc-orchestrate` wire). The wire is only safe once the FSM
 > refuses illegal jumps and the attest gate covers all four forward edges.
 
 ## Goal
@@ -22,12 +22,12 @@ Bring codexclaw's pure FSM to cli-jaw parity on two axes:
 - cli-jaw `VALID_TRANSITIONS` ([state-machine.ts](/Users/jun/Developer/new/700_projects/cli-jaw/src/orchestrator/state-machine.ts:600)):
   `IDLE:[I,P] · I:[P,IDLE] · P:[I,A] · A:[I,B] · B:[I,C] · C:[I,D,B,P] · D:[I,IDLE]`.
 - cli-jaw gated transitions `P>A, A>B, B>C, C>D` ([attestation.ts](/Users/jun/Developer/new/700_projects/cli-jaw/src/orchestrator/attestation.ts:36)).
-- codexclaw current `canEnter` (A/C open) ([fsm.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/fsm.ts:8)).
-- codexclaw current `GATED_TRANSITIONS = {A>B, C>D}` ([attest.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/codexclaw/components/pabcd-state/src/attest.ts:30)).
+- codexclaw current `canEnter` (A/C open) ([fsm.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/fsm.ts:8)).
+- codexclaw current `GATED_TRANSITIONS = {A>B, C>D}` ([attest.ts](/Users/jun/Developer/new/700_projects/codexclaw/plugins/cursorclaw/components/pabcd-state/src/attest.ts:30)).
 
 ## File change map (IN scope)
 
-1. `plugins/codexclaw/components/pabcd-state/src/fsm.ts`
+1. `plugins/cursorclaw/components/pabcd-state/src/fsm.ts`
    - Add `export const VALID_TRANSITIONS: Readonly<Record<Phase, readonly Phase[]>>`
      mirroring the cli-jaw table above.
    - Add `export function isLegalEdge(from: Phase, to: Phase): boolean`.
@@ -38,7 +38,7 @@ Bring codexclaw's pure FSM to cli-jaw parity on two axes:
      is unchanged.
    - `transition()` is unchanged in shape — it already calls `canEnter` after the
      attest gate; the adjacency check rides inside `canEnter`.
-2. `plugins/codexclaw/components/pabcd-state/src/attest.ts`
+2. `plugins/cursorclaw/components/pabcd-state/src/attest.ts`
    - `GATED_TRANSITIONS` becomes `{P>A, A>B, B>C, C>D}`.
    - `validateAttest` unchanged otherwise (C>D still the only one needing checkOutput).
 3. Tests:
@@ -51,7 +51,7 @@ Bring codexclaw's pure FSM to cli-jaw parity on two axes:
 ## Scope boundary
 
 - IN: `fsm.ts`, `attest.ts`, their tests.
-- OUT (later loops): the `$cxc-orchestrate` parser + hook wire (L3), the CLI (L4),
+- OUT (later loops): the `$crc-orchestrate` parser + hook wire (L3), the CLI (L4),
   the human-vs-agent actor split / free-pass bypass (L3), ledger-on-transition (L5),
   Stop-continuation (L6), goalplan/loop (L7). L2 does NOT change `transition()`'s
   public signature and does NOT add an actor parameter.

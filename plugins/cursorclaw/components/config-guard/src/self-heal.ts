@@ -77,8 +77,8 @@ export function selfHealMarkerPath(codexHome: string): string {
  * Record a self-healed flag as codexclaw-owned in the install manifest, so `crc disable`
  * reverts it.
  *
- * Without this, a flag that failed at activation (enabledByCodexclaw:false) and later
- * succeeded here would be skipped by deactivate.ts's `if (!rec.enabledByCodexclaw) continue`,
+ * Without this, a flag that failed at activation (enabledByCursorclaw:false) and later
+ * succeeded here would be skipped by deactivate.ts's `if (!rec.enabledByCursorclaw) continue`,
  * leaving it on forever while the opt-out marker blocked any later correction. The manifest
  * is the ownership ledger, and a heal is an enable, so it belongs there.
  *
@@ -100,8 +100,8 @@ export function recordHealInManifest(
   for (const key of keys) {
     const rec = manifest.flags[key];
     if (rec === undefined) continue;
-    if (rec.enabledByCodexclaw && !rec.enableFailed) continue;
-    rec.enabledByCodexclaw = true;
+    if (rec.enabledByCursorclaw && !rec.enableFailed) continue;
+    rec.enabledByCursorclaw = true;
     rec.enableFailed = false;
     delete rec.failure;
     changed = true;

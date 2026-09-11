@@ -1,6 +1,6 @@
 # wp3 — independent review and merge of PR 91/92/93 (diff-level)
 
-Depends on wp1. Lands changes under `plugins/codexclaw/` through GitHub merges, not local patches.
+Depends on wp1. Lands changes under `plugins/cursorclaw/` through GitHub merges, not local patches.
 
 ## Inventory at plan time
 
@@ -46,7 +46,7 @@ Merge smallest-risk first so a failure is attributable:
 
 1. **92 FIRST, and this is mandatory rather than merely lowest-risk.** PR 92 bumps the test-count
    badge from 2,670 to 2,671, and CI's inventory step fails when the published count does not match
-   the measured suite total (`plugins/codexclaw/scripts/inventory.mjs`). 2,671 is correct only
+   the measured suite total (`plugins/cursorclaw/scripts/inventory.mjs`). 2,671 is correct only
    while `dev` still measures 2,670. If 91 or 93 lands first, 92's badge is stale on arrival and
    the inventory check reds `dev` itself. Merging 92 first keeps each badge correct at its own
    merge point; any residual drift after 91 and 93 is repaired by re-running the badge sync in wp4.

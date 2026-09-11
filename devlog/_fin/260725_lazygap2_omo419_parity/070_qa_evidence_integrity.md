@@ -5,8 +5,8 @@
 ## 문제
 
 codexclaw의 시각 검증 규율은 viewport·DOM·runtime 증거에서 이미 강하다
-(`plugins/codexclaw/skills/qa/references/visual-qa.md:23-42,57-83`;
-`plugins/codexclaw/skills/dev-frontend/references/core/visual-verification.md:5-28`).
+(`plugins/cursorclaw/skills/qa/references/visual-qa.md:23-42,57-83`;
+`plugins/cursorclaw/skills/dev-frontend/references/core/visual-verification.md:5-28`).
 빠진 것은 세 가지다.
 
 1. **freshness** — 이 스크린샷이 현재 소스의 것인가. 고치고 나서 이전 캡처로 PASS를 주장할 수 있다.
@@ -21,10 +21,10 @@ upstream이 이 세 가지를 규정했다
 
 | 파일 | 변경 유형 |
 | --- | --- |
-| `plugins/codexclaw/skills/qa/references/visual-qa.md` | 규칙 3개 추가 |
-| `plugins/codexclaw/skills/qa/SKILL.md` | `verdict.json` 필드 추가 (`:73-75`, 표면별 조건부) |
-| `plugins/codexclaw/skills/qa/scripts/validate-evidence.mjs` | 신규 (선택적, 의존성 없음) |
-| `plugins/codexclaw/test/qa-validate-evidence.test.mjs` | 신규 — `npm test` glob이 잡는 위치 |
+| `plugins/cursorclaw/skills/qa/references/visual-qa.md` | 규칙 3개 추가 |
+| `plugins/cursorclaw/skills/qa/SKILL.md` | `verdict.json` 필드 추가 (`:73-75`, 표면별 조건부) |
+| `plugins/cursorclaw/skills/qa/scripts/validate-evidence.mjs` | 신규 (선택적, 의존성 없음) |
+| `plugins/cursorclaw/test/qa-validate-evidence.test.mjs` | 신규 — `npm test` glob이 잡는 위치 |
 
 ## before → after
 
@@ -47,7 +47,7 @@ upstream이 이 세 가지를 규정했다
 
 ### `qa/SKILL.md` — `verdict.json` 필드
 
-before (`plugins/codexclaw/skills/qa/SKILL.md:73-75` — WP13 P 실측 정정): 현행 스키마는
+before (`plugins/cursorclaw/skills/qa/SKILL.md:73-75` — WP13 P 실측 정정): 현행 스키마는
 `scenario`, `criterion`, `surface`, `verdict`, `artifactRefs`, `note` 여섯 필드다.
 
 **WP13 P 실측 — `verdict.json`은 5표면 공용이다.** `surface`가
@@ -107,10 +107,10 @@ captureChecks: {
 쓰지 않는다 — 시나리오마다 하나씩 있는데 `qaReceiptPath`는 **하나**만 가리키기 때문이다.
 
 ```
-node validate-evidence.mjs .codexclaw/evidence/<sessionId>/qa/ --emit-receipt
+node validate-evidence.mjs .cursorclaw/evidence/<sessionId>/qa/ --emit-receipt
   → 1. 기존 qa-receipt.json이 있으면 **먼저 삭제한다**
   → 2. 모든 verdict.json을 검사
-  → 3. 전부 통과하면 .codexclaw/evidence/<sessionId>/qa-receipt.json 생성:
+  → 3. 전부 통과하면 .cursorclaw/evidence/<sessionId>/qa-receipt.json 생성:
        { "kind": "qa", "sourceIdentity": <공통 sourceSnapshotAt>, "createdAt": <now>,
          "command": "validate-evidence.mjs", "exitCode": 0 }
   → 4. 하나라도 실패하면 영수증이 없는 상태로 끝난다
@@ -165,7 +165,7 @@ node validate-evidence.mjs .codexclaw/evidence/<sessionId>/qa/ --emit-receipt
 영수증에 넣는 `sourceIdentity`는 **첫 verdict의 값**을 쓴다 (전부 같음이 확인된 뒤이므로
 어느 것을 써도 무방하지만 결정성을 위해 고정한다).
 
-영수증 경로는 `.codexclaw/evidence/` 아래이므로 `hasValidReceipt`의 다섯 가드도
+영수증 경로는 `.cursorclaw/evidence/` 아래이므로 `hasValidReceipt`의 다섯 가드도
 그대로 통과한다.
 
 이로써 스크립트는 "아무도 안 부르는 lint"가 아니라 **QA 영수증의 정직한 생성 경로**가
@@ -178,9 +178,9 @@ CLI가 온 뒤에야 "v2 gate를 지나려면 돌려야 한다"가 참이 된다
 계획 문서에만 명령을 적어두면 실제 QA 수행자는 기존대로 `verdict.json`만 만들고 끝낸다.
 `qa/SKILL.md`의 증거 계약 절(`:68-90`)과 C 결박 절(`:144`)에 다음을 추가한다:
 
-- 모든 시나리오를 마친 뒤 `node plugins/codexclaw/skills/qa/scripts/validate-evidence.mjs
-  .codexclaw/evidence/<sessionId>/qa/ --emit-receipt`를 실행한다.
-- canonical 출력 경로는 `.codexclaw/evidence/<sessionId>/qa-receipt.json`이다.
+- 모든 시나리오를 마친 뒤 `node plugins/cursorclaw/skills/qa/scripts/validate-evidence.mjs
+  .cursorclaw/evidence/<sessionId>/qa/ --emit-receipt`를 실행한다.
+- canonical 출력 경로는 `.cursorclaw/evidence/<sessionId>/qa-receipt.json`이다.
 - **현재 한계:** 최종 gate는 이 파일을 자동으로 집어가지 않는다. lifecycle CLI가
   들어오기 전에는 `finalGate.qaReceiptPath`에 그 경로를 직접 적어야 한다.
   이 문장은 lifecycle 조각이 완료되면 지운다.
@@ -249,7 +249,7 @@ PNG 크기는 IHDR 청크에서 읽는다 (디코딩 없이 가능).
 ### 검증 명령 (PLAN-VERIFIER-REAL-01)
 
 - `npm test` — baseline 실측 exit 0, **1,346 pass**. 사슬: `package.json:24`의 glob이
-  `test/*.test.mjs`를 포함하므로, 신규 테스트를 **`plugins/codexclaw/test/`가 아니라
+  `test/*.test.mjs`를 포함하므로, 신규 테스트를 **`plugins/cursorclaw/test/`가 아니라
   `skills/qa/scripts/test/`에 두면 잡히지 않는다.** → 아래 참조.
 - `node --test <신규 테스트 경로>` — 직접 실행은 언제나 가능하다.
 - `npm run gate` — **이 슬라이스의 산문 부분은 관측한다.** `walkSkillMds`가 `SKILL.md`를
@@ -257,7 +257,7 @@ PNG 크기는 IHDR 청크에서 읽는다 (디코딩 없이 가능).
   읽지 않는다(WP1~WP6에서 반복 확인). 현재 exit 0, WARN 2.
 
 **테스트 배치 결정:** `npm test` glob이 잡도록 신규 테스트를
-`plugins/codexclaw/test/qa-validate-evidence.test.mjs`에 둔다. 스크립트 자체는 계획대로
+`plugins/cursorclaw/test/qa-validate-evidence.test.mjs`에 둔다. 스크립트 자체는 계획대로
 `skills/qa/scripts/validate-evidence.mjs`에 두되, 테스트만 수집 경로로 옮긴다 —
 `npm test`가 관측하지 못하는 테스트는 회귀를 막지 못한다.
 
@@ -278,7 +278,7 @@ PNG 크기는 IHDR 청크에서 읽는다 (디코딩 없이 가능).
 | --- | --- | --- | --- | --- |
 | `capturedAt` | QA를 수행한 에이전트 | `verdict.json` | `validate-evidence.mjs`의 파싱 | 스크립트의 형식 검사, 사람 리뷰 |
 | `sourceSnapshotAt` | 같음 — `020`의 `captureSourceIdentity` 출력을 그대로 적는다 | `verdict.json` | 스크립트가 파싱 | 스크립트가 (a) 형식을 검사하고 (b) 모든 verdict에서 동일한지 확인한 뒤 (c) `qa-receipt.json`의 최상위 `sourceIdentity`로 **복사**한다 |
-| `qa-receipt.json` | `validate-evidence.mjs --emit-receipt` | `.codexclaw/evidence/<sessionId>/qa-receipt.json` | `030`의 `parseSourceBoundReceipt(path, cwd, "qa")` | `validateGoalplan` v2 규칙 7·8 — 현재 트리와 대조 |
+| `qa-receipt.json` | `validate-evidence.mjs --emit-receipt` | `.cursorclaw/evidence/<sessionId>/qa-receipt.json` | `030`의 `parseSourceBoundReceipt(path, cwd, "qa")` | `validateGoalplan` v2 규칙 7·8 — 현재 트리와 대조 |
 | `captureChecks` | 같음 (web/gui에서만) | 같음 | 같음 | 스크립트가 전부 true인지 확인 |
 
 ## 범위 밖

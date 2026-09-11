@@ -50,14 +50,14 @@ gate OK; live smoke: health/static/subagents-parity/404/db-600/SIGINT-clean)
 
 `cxc serve` becomes a real command: it boots one HTTP port that serves the GUI
 build statically and exposes `/api/health`. Underneath it opens
-`<cwd>/.codexclaw/bridge.db` (node:sqlite) with schema v1 — channels (telegram/
+`<cwd>/.cursorclaw/bridge.db` (node:sqlite) with schema v1 — channels (telegram/
 discord rows, token, single-active flag), allowlist (handshaked chat ids),
 bindings (chat ↔ codex thread), jobs (run log). Everything later phases need to
 persist already has a home, and restarting serve loses nothing.
 
 ## Part 2 — diff-level
 
-### NEW `plugins/codexclaw/components/messenger-bridge/package.json`
+### NEW `plugins/cursorclaw/components/messenger-bridge/package.json`
 
 ```json
 {
@@ -70,10 +70,10 @@ persist already has a home, and restarting serve loses nothing.
 }
 ```
 
-### NEW `plugins/codexclaw/components/messenger-bridge/src/db.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/src/db.ts`
 
-- `openBridgeDb(cwd: string): BridgeDb` — mkdir `.codexclaw/`, open
-  `DatabaseSync` at `.codexclaw/bridge.db`, `chmod 600`, run migrations gated
+- `openBridgeDb(cwd: string): BridgeDb` — mkdir `.cursorclaw/`, open
+  `DatabaseSync` at `.cursorclaw/bridge.db`, `chmod 600`, run migrations gated
   by `PRAGMA user_version` (v1 creates channels/allowlist/bindings/jobs as in
   00_plan Contracts; bindings UNIQUE(channel_kind, chat_id)).
 - `BridgeDb` methods (all synchronous, prepared statements):
@@ -88,7 +88,7 @@ persist already has a home, and restarting serve loses nothing.
 - Types exported for later phases: `ChannelKind = "telegram" | "discord"`,
   `ChannelRow`, `BindingRow`, `JobRow`.
 
-### NEW `plugins/codexclaw/components/messenger-bridge/src/server.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/src/server.ts`
 
 - `createBridgeServer(opts: { cwd; guiDir; version }): { server: http.Server; routes }`
   — node:http. Routing:
@@ -97,12 +97,12 @@ persist already has a home, and restarting serve loses nothing.
   - Static: resolve under `guiDir` ONLY (path-traversal guard: resolved path
     must start with guiDir), content-type map (html/js/css/svg/png/json/ico),
     SPA fallback → `index.html`; if guiDir/index.html missing → 200 plain page
-    "GUI build missing — run: npm run build in plugins/codexclaw/gui".
+    "GUI build missing — run: npm run build in plugins/cursorclaw/gui".
 - Extensibility seam for later phases: exported `ApiRoute` registry
   (`method`, `path` prefix, handler(req, url, ctx) → {status, body}) so Phase 5
   adds connect/manage endpoints without rewriting the server.
 
-### NEW `plugins/codexclaw/components/messenger-bridge/src/cli.ts`
+### NEW `plugins/cursorclaw/components/messenger-bridge/src/cli.ts`
 
 - Pattern-copy of `cxc-ops/src/cli.ts` (main(argv, metaUrl), direct-exec
   guard). Subcommand `serve [--port <n>] [--cwd <path>]`:
@@ -112,7 +112,7 @@ persist already has a home, and restarting serve loses nothing.
   graceful close of http + db). Binds 127.0.0.1 ONLY (loopback; remote access
   is the messengers' job, not the HTTP port's).
 
-### NEW tests `plugins/codexclaw/components/messenger-bridge/test/db.test.ts`, `test/server.test.ts`
+### NEW tests `plugins/cursorclaw/components/messenger-bridge/test/db.test.ts`, `test/server.test.ts`
 
 - db: schema creates once + user_version=1; token set/get; single-active
   invariant (activating discord deactivates telegram); allowlist add/check;
@@ -122,7 +122,7 @@ persist already has a home, and restarting serve loses nothing.
   guiDir; traversal `GET /../../etc/passwd` stays inside guiDir (404/SPA);
   missing guiDir → degraded message. Ephemeral port (listen 0).
 
-### MODIFY `plugins/codexclaw/scripts/build.mjs`
+### MODIFY `plugins/cursorclaw/scripts/build.mjs`
 
 ```diff
 -export const COMPONENTS = ["pabcd-state", "config-guard", "provider-bridge", "subagent-config", "cxc-ops", "recall"];
@@ -139,14 +139,14 @@ persist already has a home, and restarting serve loses nothing.
 
 ### MODIFY root `package.json`
 
-- test script: append `"plugins/codexclaw/components/messenger-bridge/test/*.test.ts"` glob.
+- test script: append `"plugins/cursorclaw/components/messenger-bridge/test/*.test.ts"` glob.
 
 ## Verification (C gate)
 
 - `npm run build` → messenger-bridge compiles, layout validation OK.
-- `node --test plugins/codexclaw/components/messenger-bridge/test/*.test.ts` → green.
+- `node --test plugins/cursorclaw/components/messenger-bridge/test/*.test.ts` → green.
 - Live: `node bin/codexclaw.mjs serve --port 7717` → curl health 200; curl
-  static; Ctrl-C clean exit; `.codexclaw/bridge.db` mode 600.
+  static; Ctrl-C clean exit; `.cursorclaw/bridge.db` mode 600.
 
 ## Notes / accepted quirks
 

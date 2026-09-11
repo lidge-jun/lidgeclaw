@@ -1,6 +1,6 @@
 ---
 created: 2026-06-30
-tags: [codexclaw, philosophy, sot, design-principles]
+tags: [cursorclaw, philosophy, sot, design-principles]
 aliases: [Codexclaw Implementation Philosophy, codexclaw 구현 철학, philosophy sot]
 ---
 
@@ -64,16 +64,16 @@ This is the single most common source of "false DONE" in this repo. Treat any
 - codexclaw is **loaded by Codex**; it does not patch or replace Codex binaries.
 - Hooks **append context or deny tool calls**; they never swallow or rewrite the
   user's prompt.
-- State is **project-local `.codexclaw/`** files only — no jaw-style server, no shared
+- State is **project-local `.cursorclaw/`** files only — no jaw-style server, no shared
   database, no network service. One scoped exception (owner directive 2026-07-02,
   `devlog/_fin/260702_codex_recall/`): user-level **rebuildable derived caches** under
-  `~/.codexclaw` (recall's FTS index; ast-grep runtime precedent). A cache is never a
+  `~/.cursorclaw` (recall's FTS index; ast-grep runtime precedent). A cache is never a
   source of truth — deleting it only costs a rebuild — and durable state stays
   project-local.
 - The messenger bridge is a **second scoped exception** (owner-approved plan,
   2026-07-03, `devlog/_fin/260703_messenger_bridge_active/`): `cxc serve` runs an
   opt-in, loopback-only (`127.0.0.1`) bridge process with a project-local
-  `.codexclaw/bridge.db` (`node:sqlite`) for channel/binding/job state. It is not a
+  `.cursorclaw/bridge.db` (`node:sqlite`) for channel/binding/job state. It is not a
   jaw-style orchestrator: it never dispatches subagents, never writes the goal DB,
   and nothing else in codexclaw depends on it running. The no-server invariant
   still bans *required*, *non-loopback*, or *orchestration* servers.
@@ -81,8 +81,8 @@ This is the single most common source of "false DONE" in this repo. Treat any
   `create_goal`; codexclaw reads `thread_goals` to gate behavior, never writes it.
 - The provider bridge is **detect-only**. codexclaw observes whether `ocx` is present;
   it never runs `ocx ensure`/`ocx sync` or mutates provider state.
-- `$cxc-*` are **skill mentions / autocomplete**, not slash commands. Native plugin
-  mentions render as `$codexclaw:cxc-*`; bare `$cxc-*` is a hook-parsed shorthand.
+- `$crc-*` are **skill mentions / autocomplete**, not slash commands. Native plugin
+  mentions render as `$codexclaw:cxc-*`; bare `$crc-*` is a hook-parsed shorthand.
 - `cxc` is a **local CLI alias** for plugin ops, not a server API.
 
 If a feature needs to break one of these, it is no longer codexclaw — it is a
@@ -141,7 +141,7 @@ contract). Recording that dropped idea here keeps a future maintainer from
   time (the "B-opt2" pattern), mapped onto the two built-in agent types codex offers:
   `explorer` (read-only) and `worker` (scoped write).
 - **The store owns the model; the TOML owns the prompt.** `model = "default"` is an
-  inherit sentinel. The durable per-role model lives in `.codexclaw/subagents.json`;
+  inherit sentinel. The durable per-role model lives in `.cursorclaw/subagents.json`;
   default mode omits the `model` key so the subagent inherits the main model, and an
   explicit `promptOverride` replaces the TOML body.
 - **Routing should travel as an attachment, not a hope.** When a subagent is dispatched

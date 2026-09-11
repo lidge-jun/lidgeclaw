@@ -1,6 +1,6 @@
 ---
 created: 2026-07-12
-tags: [codexclaw, skill-size, research, modularization]
+tags: [cursorclaw, skill-size, research, modularization]
 ---
 
 # Skill Size Research — Findings + Final Decision

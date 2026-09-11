@@ -6,7 +6,7 @@ Source-of-record: 260629_codexclaw_mvp/032_subagent_config_store.md, 030_phase2_
 
 ## Goal (one slice)
 Persist per-role subagent model and prompt override settings in
-`.codexclaw/subagents.json`, and make spawned explorer/reviewer/executor
+`.cursorclaw/subagents.json`, and make spawned explorer/reviewer/executor
 subagents honor that file.
 
 ## Why now / dependencies
@@ -17,14 +17,14 @@ subagents honor that file.
 
 ## Scope (decision-complete)
 - Files to add/edit:
-  - `plugins/codexclaw/components/subagent-config/src/mcp.ts`
-  - `plugins/codexclaw/components/subagent-config/src/store.ts`
-  - `plugins/codexclaw/components/subagent-config/test/store.test.ts`
-  - `plugins/codexclaw/components/subagent-config/test/mcp.test.ts`
+  - `plugins/cursorclaw/components/subagent-config/src/mcp.ts`
+  - `plugins/cursorclaw/components/subagent-config/src/store.ts`
+  - `plugins/cursorclaw/components/subagent-config/test/store.test.ts`
+  - `plugins/cursorclaw/components/subagent-config/test/mcp.test.ts`
   - generated `dist/` output for the subagent-config component
   - role spawn integration at the smallest existing Phase-1 subagent boundary
 - Store shape:
-  - `.codexclaw/subagents.json`
+  - `.cursorclaw/subagents.json`
   - `roles.explorer`, `roles.reviewer`, and `roles.executor`
   - each role has `mode`, `model`, and `promptOverride`
   - `mode` is `default` or `model`
@@ -54,7 +54,7 @@ subagents honor that file.
   and role prompt override is applied on spawn.
 
 ## Acceptance (1-3 testable criteria)
-1. Missing `.codexclaw/subagents.json` resolves explorer/reviewer/executor to
+1. Missing `.cursorclaw/subagents.json` resolves explorer/reviewer/executor to
    `mode: default`, `model: null`, and `promptOverride: null`.
 2. Updating reviewer to `mode: model` with a selected model persists to disk and
    is read back exactly.
@@ -62,9 +62,9 @@ subagents honor that file.
    default-mode roles continue to use the main model.
 
 ## QA channel (node:test path / CLI stdout / tmux / data dump)
-- node:test path: `plugins/codexclaw/components/subagent-config/test/store.test.ts`
-- node:test path: `plugins/codexclaw/components/subagent-config/test/mcp.test.ts`
-- Data dump: normalized `.codexclaw/subagents.json` before and after update.
+- node:test path: `plugins/cursorclaw/components/subagent-config/test/store.test.ts`
+- node:test path: `plugins/cursorclaw/components/subagent-config/test/mcp.test.ts`
+- Data dump: normalized `.cursorclaw/subagents.json` before and after update.
 
 ## Commit unit (one atomic conventional commit)
 `feat(subagents): persist per-role model and prompt config`
@@ -77,7 +77,7 @@ models L25 may offer.
 - 260629_codexclaw_mvp/032_subagent_config_store.md
 - 260629_codexclaw_mvp/030_phase2_overview.md (S8, S10)
 - 260629_codexclaw_mvp/000_research.md (ocx-free users still get default-model subagents)
-- plugins/codexclaw/components/subagent-config/src/mcp.ts
-- plugins/codexclaw/agents/explorer.toml
-- plugins/codexclaw/agents/reviewer.toml
-- plugins/codexclaw/agents/executor.toml
+- plugins/cursorclaw/components/subagent-config/src/mcp.ts
+- plugins/cursorclaw/agents/explorer.toml
+- plugins/cursorclaw/agents/reviewer.toml
+- plugins/cursorclaw/agents/executor.toml

@@ -41,13 +41,13 @@ Write this file only when the fresh Phase 3 probe runs. It is not scaffolded dur
 
 Redact full thread IDs to a stable suffix, remove auth/capability tokens, omit environment dumps, and record only the probe command/process. The file moves with the unit to `_fin/` after all work phases close.
 
-### NEW `plugins/codexclaw/test/background-terminal-doc-sync.test.mjs`
+### NEW `plugins/cursorclaw/test/background-terminal-doc-sync.test.mjs`
 
 Use the existing Node text-contract test style. Read:
 
 - `structure/60_native_capabilities.md`
-- `plugins/codexclaw/skills/dev/SKILL.md`
-- `plugins/codexclaw/skills/dev/references/background-terminals.md`
+- `plugins/cursorclaw/skills/dev/SKILL.md`
+- `plugins/cursorclaw/skills/dev/references/background-terminals.md`
 
 Assertions:
 
@@ -116,7 +116,7 @@ Use the bounded one-minute heartbeat from `001_codex_rs_runtime_guide.md`, alway
 ## Verification
 
 ```bash
-node --test plugins/codexclaw/test/background-terminal-doc-sync.test.mjs
+node --test plugins/cursorclaw/test/background-terminal-doc-sync.test.mjs
 npm run build
 npm test
 git diff --check

@@ -1,7 +1,7 @@
 # 020 — WP2 Patch Notes: dev-uiux-design
 
 Per 010_plan.md §WP2 under the 5 binding constraints. Paths relative to
-`plugins/codexclaw/skills/dev-uiux-design/`.
+`plugins/cursorclaw/skills/dev-uiux-design/`.
 
 ### SKILL.md — UX-DEFAULT-ISM-01 + reconciliation
 - **Changes**: §1 UX-INTENT-01 step 3 now routes expressive-surface

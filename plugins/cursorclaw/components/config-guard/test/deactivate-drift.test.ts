@@ -68,7 +68,7 @@ const ours = (priorValue: string | null): TableKeyRecord => ({
   key: "dedicated_tools",
   priorValue,
   appliedValue: "true",
-  setByCodexclaw: true,
+  setByCursorclaw: true,
 });
 
 test("scenario 1: an unrelated line added before our key does not stop the revert", () => {
@@ -148,10 +148,10 @@ test("scenario 6: a v1 manifest with no tableKeys is handled without error", () 
   assert.equal(readFileSync(configPath, "utf8"), CONFIG_BASE);
 });
 
-test("scenario 7: setByCodexclaw=false means we never touch the key", () => {
+test("scenario 7: setByCursorclaw=false means we never touch the key", () => {
   const { home, configPath } = setup();
   writeManifest(home, configPath, {
-    "memories.dedicated_tools": { ...ours(null), setByCodexclaw: false },
+    "memories.dedicated_tools": { ...ours(null), setByCursorclaw: false },
   });
   const { run } = makeRunner();
   const r = deactivate({ run, codexHome: home, configPath });
@@ -168,7 +168,7 @@ test("blocker 1: a flag revert and a key revert in one call both survive", () =>
     configPath,
     backupPath: null,
     postActivateHash: hash,
-    flags: { goals: { priorEnabled: false, enabledByCodexclaw: true, enableFailed: false } },
+    flags: { goals: { priorEnabled: false, enabledByCursorclaw: true, enableFailed: false } },
     tableKeys: { "memories.dedicated_tools": ours(null) },
   };
   writeFileSync(manifestPath(home), JSON.stringify(manifest, null, 2), "utf8");
@@ -214,7 +214,7 @@ test("blocker 6: parseInstallManifest rejects bad shapes and accepts v1/v2", () 
   assert.equal(parseInstallManifest('{"version":3,"configPath":"/x","flags":{}}'), null);
   assert.equal(parseInstallManifest('{"version":2,"flags":{}}'), null, "configPath is required");
   assert.equal(parseInstallManifest('{"version":2,"configPath":"/x"}'), null, "flags is required");
-  const v1 = parseInstallManifest('{"version":1,"configPath":"/x","flags":{"goals":{"priorEnabled":false,"enabledByCodexclaw":true,"enableFailed":false}}}');
+  const v1 = parseInstallManifest('{"version":1,"configPath":"/x","flags":{"goals":{"priorEnabled":false,"enabledByCursorclaw":true,"enableFailed":false}}}');
   assert.ok(v1);
   assert.equal(v1?.version, 1);
   assert.deepEqual(v1?.tableKeys, {}, "a v1 manifest reads as having no table keys");
@@ -224,7 +224,7 @@ test("blocker 6: parseInstallManifest rejects bad shapes and accepts v1/v2", () 
 
 test("decideKeyRestore: the decision table, without touching a filesystem", () => {
   // not ours
-  assert.deepEqual(decideKeyRestore({ ...ours(null), setByCodexclaw: false }, "true", false, null), {
+  assert.deepEqual(decideKeyRestore({ ...ours(null), setByCursorclaw: false }, "true", false, null), {
     action: "skip",
     reason: "changed",
   });

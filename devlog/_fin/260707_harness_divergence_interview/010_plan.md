@@ -96,7 +96,7 @@ unit's archive; the collapse owner schedules rounds and owns the collapse.
 
 ### R4. codexclaw
 
-- MODIFY `plugins/codexclaw/skills/loop/SKILL.md`: in "When divergence is ON",
+- MODIFY `plugins/cursorclaw/skills/loop/SKILL.md`: in "When divergence is ON",
   add tier discipline. Tier-1 candidate authors are native EXPLORER subagents
   (never minds - minds are interview-time contradiction lenses, F4 fix).
   Front-matter lives in the candidate DOC file; `cxc divergence candidate add`

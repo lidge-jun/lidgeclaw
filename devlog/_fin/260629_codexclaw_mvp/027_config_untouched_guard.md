@@ -3,7 +3,7 @@
 Status: TODO  ·  Phase 1  ·  REVISED (see 022.2)
 
 ## Goal
-Define exactly what codexclaw may write to `~/.codex/config.toml`, and guarantee nothing else
+Define exactly what codexclaw may write to `~/.cursor/config.toml`, and guarantee nothing else
 changes.
 
 ## Revised policy (was "never touch config")

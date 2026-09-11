@@ -28,7 +28,7 @@ Status: CANONICAL INDEX (decades 010-080 SHIPPED) · 2026-07-01 · follows `../l
 ## Constraints (LOCKED — inherited from philosophy + mvp_hard)
 
 - No codex-rs fork. No server / daemon. No new subagent roles (skill attachment instead).
-- No goal-DB writes. All new state is project-local under `.codexclaw/`.
+- No goal-DB writes. All new state is project-local under `.cursorclaw/`.
 - Every new hook must FAIL-OPEN (or fail-closed only where R-9 already mandates it): a hook
   error must never trap a session or break a spawn it cannot rewrite.
 - A-phase of every loop MUST dispatch a gpt-5.4 explorer for contradiction/blocker review.
@@ -52,7 +52,7 @@ stamps a distinguishing marker the gate reads. Decide jointly before either loop
 | --- | --- | --- | --- | --- | --- | --- |
 | 010 | 010 | SubagentStop evidence-receipt gate (7th hook) | `lazygap/002` + `010` | SubagentStop | E1 | DONE |
 | 020 | 020 | Skill-attached base-role dispatch (`items` + role×intent map + E3 hook) | `lazygap/008` + `010` | PreToolUse `^spawn_agent$` (v1) / E5 builder | E3+E5 | DONE |
-| 030 | 030 | Goalplan/cxc-loop substrate (`.codexclaw/goalplans/<slug>/` + `cxc goalplan` CLI + validate gate + reset scope) | `lazygap/001` | local artifact / CLI (E7+E8) | E2+E8 | DONE |
+| 030 | 030 | Goalplan/cxc-loop substrate (`.cursorclaw/goalplans/<slug>/` + `cxc goalplan` CLI + validate gate + reset scope) | `lazygap/001` | local artifact / CLI (E7+E8) | E2+E8 | DONE |
 | 040 | 040 | Work-aware Stop continuation (goalplan-enriched block reason + session-bound slug 030.3) | `lazygap/003` | Stop (E2) | E2 | DONE |
 | 050 | 050 | PostCompact recovery hook (9th hook; reset re-inject cursor after compaction) | `lazygap/006` | PostCompact (E4) | E4 | DONE |
 | 060 | 060 | Rule injector (SessionStart) + apply_patch comment-lint (PreToolUse, fail-open) | `lazygap/004` | SessionStart + PreToolUse | E4+E1 | DONE |
@@ -73,8 +73,8 @@ This folder is complete and may move from `_plan` to `_fin` only when these gate
   - `2236323` — agbrowse Tier-2 proof helper and ultraresearch skill.
   - `a279cd4` — friction ledger, path-hint, and seed ontology.
 - Doc closeout evidence exists: `4117b13` marks 010-080 shipped and `07fed4d` reconciles the active roadmap.
-- Runtime files are present under `plugins/codexclaw/hooks/`, `plugins/codexclaw/components/*/src/`,
-  and `plugins/codexclaw/skills/`; source/dist/test coverage was included in the feature commits.
+- Runtime files are present under `plugins/cursorclaw/hooks/`, `plugins/cursorclaw/components/*/src/`,
+  and `plugins/cursorclaw/skills/`; source/dist/test coverage was included in the feature commits.
 - The active worktree was clean before this archival pass, and this folder has no remaining
   PROPOSED-only implementation row.
 
@@ -97,5 +97,5 @@ This folder is complete and may move from `_plan` to `_fin` only when these gate
   not start from zero. See `structure/10_subagent_skill_routing.md`.
 - The pabcd-state CLI hook dispatcher (`components/pabcd-state/src/cli.ts`) is the pattern for
   adding a new `hook subagent-stop` event branch.
-- `.codexclaw/` evidence/ledger conventions exist (`freeze.ts`, interview ledger); 010 reuses
+- `.cursorclaw/` evidence/ledger conventions exist (`freeze.ts`, interview ledger); 010 reuses
   the `--evidence` convention rather than inventing a new one.

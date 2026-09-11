@@ -29,7 +29,7 @@ W2·`dedicated_tools` 활성화 항목을 이 사이클이 실제 구현으로 �
 ## 작업 등급
 
 C4 구현 사이클. work-phase 여섯 개이고 각각이 하나의 완결된 PABCD 사이클이다. 프로덕션 코드
-(`plugins/codexclaw/components/**`), 훅 매니페스트, 커밋된 `dist/`, 개수 결합 문서를 바꾼다.
+(`plugins/cursorclaw/components/**`), 훅 매니페스트, 커밋된 `dist/`, 개수 결합 문서를 바꾼다.
 wp0(이 문서)만 문서 전용이다.
 
 ## 정찰이 뒤집은 전제 네 가지
@@ -107,7 +107,7 @@ CWD로 세션을 직접 열거할 수 있다. 실측 1.2ms(12,745파일 / 1,214,
 
 ## 범위
 
-- W2 승인 게이트 훅 — 승인 없는 `~/.codex/memories` 쓰기 차단. 대상은 두 표면이다: 메모리 쓰기 툴
+- W2 승인 게이트 훅 — 승인 없는 `~/.cursor/memories` 쓰기 차단. 대상은 두 표면이다: 메모리 쓰기 툴
   (T2의 이름)과 `apply_patch`/`Write`/`Edit`/셸을 통한 직접 파일 편집.
 - `memories.dedicated_tools` 자동 활성화 — `cxc enable`이 켜고 `cxc disable`이 원복한다. W2와 한 쌍이며
   W2 없이 단독 활성화하지 않는다.
@@ -123,7 +123,7 @@ CWD로 세션을 직접 열거할 수 있다. 실측 1.2ms(12,745파일 / 1,214,
 
 ## 범위 밖
 
-- `~/.codex` 전체 쓰기. 읽기 전용으로만 다룬다. 예외는 `cxc config set`의 매니페스트 경로를 통한
+- `~/.cursor` 전체 쓰기. 읽기 전용으로만 다룬다. 예외는 `cxc config set`의 매니페스트 경로를 통한
   `config.toml` 관리 키 하나뿐이고, 그것도 `cxc disable`이 원복을 보장한다.
 - 임베딩 도입. `research/08` §5.1의 근거를 그대로 유지한다.
 - 백그라운드 통합/dreaming 패스. `research/08` §5.2.
@@ -175,34 +175,34 @@ rg -n 'wp[0-5]' devlog/_plan/260909_memory-upgrade-l0/020_roadmap.md | head
 
 대상 파일 — A:
 
-- `plugins/codexclaw/components/pabcd-state/src/memory-write-gate.ts` (신규)
-- `plugins/codexclaw/components/pabcd-state/src/state.ts` (플래그 1개)
-- `plugins/codexclaw/components/pabcd-state/src/hook.ts` (프롬프트 의도 감지)
-- `plugins/codexclaw/components/pabcd-state/src/cli.ts` (새 event-slug 분기)
-- `plugins/codexclaw/hooks/pre-tool-use-guarding-memory-write.json` (신규)
-- `plugins/codexclaw/.codex-plugin/plugin.json` (hooks 배열)
-- `plugins/codexclaw/components/pabcd-state/test/memory-write-gate.test.ts` (신규)
-- 개수 결합 6표면: `plugins/codexclaw/test/hook-e2e.test.mjs:132`, `README.md`/`README.ko.md`/
-  `README.zh.md` 배지, `plugins/codexclaw/inventory.json`, `docs-site/src/content/docs/reference/hooks.md`
-- `plugins/codexclaw/test/manifest-policy.test.mjs` (matcher 고정)
+- `plugins/cursorclaw/components/pabcd-state/src/memory-write-gate.ts` (신규)
+- `plugins/cursorclaw/components/pabcd-state/src/state.ts` (플래그 1개)
+- `plugins/cursorclaw/components/pabcd-state/src/hook.ts` (프롬프트 의도 감지)
+- `plugins/cursorclaw/components/pabcd-state/src/cli.ts` (새 event-slug 분기)
+- `plugins/cursorclaw/hooks/pre-tool-use-guarding-memory-write.json` (신규)
+- `plugins/cursorclaw/.cursor-plugin/plugin.json` (hooks 배열)
+- `plugins/cursorclaw/components/pabcd-state/test/memory-write-gate.test.ts` (신규)
+- 개수 결합 6표면: `plugins/cursorclaw/test/hook-e2e.test.mjs:132`, `README.md`/`README.ko.md`/
+  `README.zh.md` 배지, `plugins/cursorclaw/inventory.json`, `docs-site/src/content/docs/reference/hooks.md`
+- `plugins/cursorclaw/test/manifest-policy.test.mjs` (matcher 고정)
 - 해당 `dist/*.js`
 
 대상 파일 — B:
 
-- `plugins/codexclaw/components/config-guard/src/managed-keys.ts`
-- `plugins/codexclaw/components/config-guard/src/activate.ts`
-- `plugins/codexclaw/components/config-guard/src/cli.ts`, `features.ts` (경계 주석 정정)
-- `plugins/codexclaw/components/config-guard/test/activate.test.ts`
+- `plugins/cursorclaw/components/config-guard/src/managed-keys.ts`
+- `plugins/cursorclaw/components/config-guard/src/activate.ts`
+- `plugins/cursorclaw/components/config-guard/src/cli.ts`, `features.ts` (경계 주석 정정)
+- `plugins/cursorclaw/components/config-guard/test/activate.test.ts`
 - `docs-site/src/content/docs/guides/*`, `reference/commands.md`
 
 검증:
 
 ```
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/components/pabcd-state/test/*.test.ts"
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/components/config-guard/test/*.test.ts"
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/test/hook-e2e.test.mjs"
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/test/manifest-policy.test.mjs"
-node plugins/codexclaw/scripts/inventory.mjs --check
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/components/pabcd-state/test/*.test.ts"
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/components/config-guard/test/*.test.ts"
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/test/hook-e2e.test.mjs"
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/test/manifest-policy.test.mjs"
+node plugins/cursorclaw/scripts/inventory.mjs --check
 npm run gate
 ```
 
@@ -218,13 +218,13 @@ B 페이즈 첫 항목은 **T2 실측**이다. matcher를 확정하기 전에 �
 검증:
 
 ```
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/components/recall/test/*.test.ts"
-node plugins/codexclaw/components/recall/dist/cli.js memory search "LSP" --limit 5
-node plugins/codexclaw/components/recall/dist/cli.js memory search "opencodex 릴리즈" --limit 5
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/test/dist-freshness.test.mjs"
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/components/recall/test/*.test.ts"
+node plugins/cursorclaw/components/recall/dist/cli.js memory search "LSP" --limit 5
+node plugins/cursorclaw/components/recall/dist/cli.js memory search "opencodex 릴리즈" --limit 5
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/test/dist-freshness.test.mjs"
 ```
 
-실행 검증 두 줄은 읽기 전용이고 `~/.codex`를 건드리지 않는다.
+실행 검증 두 줄은 읽기 전용이고 `~/.cursor`를 건드리지 않는다.
 
 ### wp3 — P1-1 스코핑 + R5 chat 보완
 
@@ -234,9 +234,9 @@ node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/test/dist-freshness.t
 검증:
 
 ```
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/components/recall/test/*.test.ts"
-node plugins/codexclaw/components/recall/dist/cli.js memory search "배포" --cwd "$PWD" --limit 5
-node plugins/codexclaw/components/recall/dist/cli.js memory search "배포" --cwd-only "$PWD" --limit 5
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/components/recall/test/*.test.ts"
+node plugins/cursorclaw/components/recall/dist/cli.js memory search "배포" --cwd "$PWD" --limit 5
+node plugins/cursorclaw/components/recall/dist/cli.js memory search "배포" --cwd-only "$PWD" --limit 5
 ```
 
 `--cwd`는 부스트, `--cwd-only`는 하드 필터다. 히트 0일 때 빈 결과가 아닌지가 c-6의 핵심이고,
@@ -250,13 +250,13 @@ node plugins/codexclaw/components/recall/dist/cli.js memory search "배포" --cw
 검증:
 
 ```
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/components/recall/test/*.test.ts"
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/components/recall/test/*.test.ts"
 printf '%s' '{"hook_event_name":"SessionStart","source":"startup","cwd":"'"$PWD"'"}' \
-  | node plugins/codexclaw/components/recall/dist/cli.js hook session-start | wc -c
+  | node plugins/cursorclaw/components/recall/dist/cli.js hook session-start | wc -c
 printf '%s' '{"hook_event_name":"SessionStart","source":"compact","cwd":"'"$PWD"'"}' \
-  | node plugins/codexclaw/components/recall/dist/cli.js hook session-start | wc -c
+  | node plugins/cursorclaw/components/recall/dist/cli.js hook session-start | wc -c
 printf '%s' '{"hook_event_name":"PostCompact","cwd":"'"$PWD"'"}' \
-  | node plugins/codexclaw/components/recall/dist/cli.js hook post-compact | wc -c
+  | node plugins/cursorclaw/components/recall/dist/cli.js hook post-compact | wc -c
 ```
 
 두 SessionStart의 바이트 비교가 c-8을 대체 검증하고, PostCompact가 0바이트를 내는지가 T1 수정의
@@ -271,10 +271,10 @@ printf '%s' '{"hook_event_name":"PostCompact","cwd":"'"$PWD"'"}' \
 검증:
 
 ```
-node plugins/codexclaw/scripts/test.mjs "plugins/codexclaw/components/recall/test/*.test.ts"
-rg -n 'INDEX_SCHEMA_VERSION' plugins/codexclaw/components/recall/src/index-db.ts
-git diff origin/dev -- plugins/codexclaw/components/recall/src/index-db.ts | rg 'INDEX_SCHEMA_VERSION'
-node plugins/codexclaw/components/recall/dist/cli.js chat search "opencodex release" --limit 5 --no-refresh
+node plugins/cursorclaw/scripts/test.mjs "plugins/cursorclaw/components/recall/test/*.test.ts"
+rg -n 'INDEX_SCHEMA_VERSION' plugins/cursorclaw/components/recall/src/index-db.ts
+git diff origin/dev -- plugins/cursorclaw/components/recall/src/index-db.ts | rg 'INDEX_SCHEMA_VERSION'
+node plugins/cursorclaw/components/recall/dist/cli.js chat search "opencodex release" --limit 5 --no-refresh
 ```
 
 세 번째 줄이 비어야 한다 — 스키마 버전 상수가 diff에 등장하면 12GB 재빌드를 유발한다.
@@ -296,7 +296,7 @@ node plugins/codexclaw/components/recall/dist/cli.js chat search "opencodex rele
 | c-11 | chat search가 BM25+trigram RRF+recency를 쓰고 `msgs_fts`가 실제 쿼리됨 | wp5 | `index-rank.test.ts` |
 | c-12 | hit-count 감점이 자동 주입에만 적용, 명시 검색은 결정론적 | wp5 | `hook.test.ts` |
 | c-13 | 전 work-phase가 스택 PR로 올라가고 각 최종 head CI 통과 | 전체 | GitHub Actions `ci.yml` |
-| c-14 | 임베딩·dreaming·네이티브 재구현 없음, `~/.codex`는 쓰기 대상 아님 | 전체 | 최종 diff 검토 |
+| c-14 | 임베딩·dreaming·네이티브 재구현 없음, `~/.cursor`는 쓰기 대상 아님 | 전체 | 최종 diff 검토 |
 
 두 기준은 문면을 고쳐 읽어야 한다.
 

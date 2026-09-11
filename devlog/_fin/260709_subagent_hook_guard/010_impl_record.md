@@ -2,7 +2,7 @@
 
 Cycle: I (user chose Full guard) → P (000_plan.md) → A (gpt-5.5 reviewer FAIL →
 plan amended with fail-closed e2e pair) → B → C → D. Incident forensics:
-`jawcode/.codexclaw/evidence/20260709_*attempt/retry*.md` (child retry loop).
+`jawcode/.cursorclaw/evidence/20260709_*attempt/retry*.md` (child retry loop).
 
 ### `components/pabcd-state/src/parse.ts` — subagent payload predicate
 - **Changes**: added `isSubagentHookPayload(raw)` — true when stdin JSON carries
@@ -24,9 +24,9 @@ plan amended with fail-closed e2e pair) → B → C → D. Incident forensics:
   `request_user_input`).
 - **Impact**: all registered pabcd-state hooks; `SubagentStop` evidence gate
   and `subagent-config` spawn-attach hook deliberately untouched.
-- **Verification**: e2e in `plugins/codexclaw/test/hook-e2e.test.mjs` —
+- **Verification**: e2e in `plugins/cursorclaw/test/hook-e2e.test.mjs` —
   (1) UserPromptSubmit + agent fields + trigger prompt → exit 0, empty stdout,
-  no `.codexclaw/sessions/` write; (2) discriminating pair with ACTIVE
+  no `.cursorclaw/sessions/` write; (2) discriminating pair with ACTIVE
   `goals_1.sqlite`: root `request_user_input` → DENY envelope, agent-fields
   payload → silent skip.
 

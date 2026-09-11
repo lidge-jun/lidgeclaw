@@ -3,8 +3,8 @@
 The attest fix tells Windows users to do this:
 
 ```powershell
-'<json>' | Set-Content -Encoding utf8 .codexclaw/attest.json
-cxc orchestrate <phase> --session <id> --attest-file .codexclaw/attest.json
+'<json>' | Set-Content -Encoding utf8 .cursorclaw/attest.json
+cxc orchestrate <phase> --session <id> --attest-file .cursorclaw/attest.json
 ```
 
 That recommendation was executed before it was written down, because the
