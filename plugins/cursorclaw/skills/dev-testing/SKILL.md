@@ -1,5 +1,5 @@
 ---
-name: cxc-dev-testing
+name: dev-testing
 description: "MUST USE for testing, QA, regression protection, and release verification — unit, integration, API, contract, Playwright E2E, CI, security-scan, coverage, and TDD strategy. Activates by change-surface when work adds features, fixes bugs, changes APIs, refactors behavior, or prepares a release. Triggers: 'write tests', 'regression test', 'Playwright', 'E2E', 'contract test', 'coverage', 'CI flake', 'TDD', '테스트', '회귀 테스트', '품질 게이트'."
 metadata:
   last-verified: "2026-07-02"
@@ -198,7 +198,7 @@ Follow [portable browser routing](../dev/references/browser-routing.md)
 drive built UI; no one optional tool is required. Inspect -> act -> re-inspect,
 exercise the promised interaction, and retain the state/result evidence.
 Repository-owned Playwright suites remain the deterministic regression path.
-Load `cxc-qa` for scenario matrices, adversarial/oracle passes, and teardown.
+Load `qa` for scenario matrices, adversarial/oracle passes, and teardown.
 Missing tool/access -> report the gap, never mark an unperformed check passed.
 
 ## 5. CI Pipeline Integration
@@ -433,7 +433,7 @@ worse than deletion:
 - Promoting the collapse doctrine the same way: there is no runtime branch that
   implements a collapse point, so there is no value to compare against.
 
-What that costs, stated plainly: the collapse-point doctrine, `cxc-search`'s ownership of
+What that costs, stated plainly: the collapse-point doctrine, `search`'s ownership of
 the divergence `strong-1`/`add-1` provenance, and the archived falsifiability SOT now have
 **no automated consistency check**. They are human-review items. The activation contract is
 unaffected — `hook-continuation.test.ts` owns it and always did.

@@ -1,12 +1,12 @@
 /**
- * orchestrate-grammar.ts — pure parser for the explicit `$cxc-orchestrate` command
+ * orchestrate-grammar.ts — pure parser for the explicit `$crc-orchestrate` command
  * (L3a / 030). Distinct from the loose `detectTrigger()` heuristic in hook.ts: this
  * recognizes a line-anchored command `orchestrate <verb> [--attest <json>]` and is
  * the AUTHORITATIVE parse surface that L3b wires to `transition()`.
  *
  * Grammar (mirrors `jaw orchestrate <phase>`):
  *   [<prefix>] orchestrate <I|P|A|B|C|D|status|reset> [--attest <json>]
- * where <prefix> is one of: `$codexclaw:cxc-`, `$cxc-`, `cxc `, `/`, or empty.
+ * where <prefix> is one of: `$cursorclaw:`, `$crc-`, `crc `, `/`, or empty.
  *
  * Line-anchored: the command must be its own (trimmed) line, so a phase word buried
  * in prose ("please orchestrate proper testing") does NOT parse — that stays the job
@@ -40,7 +40,7 @@ const VERB_TOKENS: Readonly<Record<string, OrchestrateVerb>> = {
 };
 
 // Optional leading prefix the composer / shorthand may insert before `orchestrate`.
-const PREFIX = /^(?:\$codexclaw:cxc-|\$cxc-|cxc\s+|\/)?/;
+const PREFIX = /^(?:\$cursorclaw:|\$crc-|cxc\s+|\/)?/;
 // `orchestrate <verb>` at line start, capturing the verb token and the rest.
 const COMMAND = /^orchestrate\s+([A-Za-z]+)\s*(.*)$/i;
 

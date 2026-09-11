@@ -1,5 +1,5 @@
 /**
- * help-verbs.test.ts — issue #47: `cxc orchestrate --help` worked while every
+ * help-verbs.test.ts — issue #47: `crc orchestrate --help` worked while every
  * sibling reported `--help` as an unknown verb and exited non-zero. The top-level
  * help points at those commands, so an agent that followed the pointer hit a brick
  * wall and had to learn each flag from a rejection.

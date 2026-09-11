@@ -37,7 +37,7 @@ export interface SourceBoundReceipt {
   checkEpoch?: string;
   /**
    * #49 wiring (260829): paths the check command was DECLARED to regenerate
-   * (`cxc receipt test --generated <path>`). The writer already records them, but
+   * (`crc receipt test --generated <path>`). The writer already records them, but
    * before this they were never read back, so the C->D gate re-captured the tree
    * WITHOUT the exclusion the receipt was captured WITH. Any declared path that
    * kept changing then made the edge structurally unpassable: excluded at capture,

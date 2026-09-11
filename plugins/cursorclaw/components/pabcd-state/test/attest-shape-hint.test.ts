@@ -78,7 +78,7 @@ test("an unresolvable session yields a status pointer instead of a fabricated ph
   assert.equal(r.code, 1);
   assert.match(r.output, /"to":"B"/);
   // Never invent a `from`: say so and name the command that reveals it.
-  assert.match(r.output, /cxc orchestrate status --session/);
+  assert.match(r.output, /crc orchestrate status --session/);
   assert.match(r.output, /auditOutput/);
 });
 

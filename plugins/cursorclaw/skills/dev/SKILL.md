@@ -1,5 +1,5 @@
 ---
-name: cxc-dev
+name: dev
 description: "MUST USE for coding, PR creation/review/merge, dependent branches, scaffolding, and QA. Classify C0-C5, preserve safety and fresh proof, and load the matching surface owner. Triggers: develop, fix, refactor, test, review, docs, browse, QA, stacked PR, 개발, 수정, 검토, 스택 PR."
 metadata:
   last-verified: "2026-07-02"
@@ -104,11 +104,11 @@ goal mode (`create_goal`, evidence-backed checkpoints) · subagent
 findings only) · docs-only work (no code gates, docs consistency checks instead).
 
 PABCD, goal, divergence, and repeated work-phase mechanics are canonical in
-`pabcd` and `cxc-loop`. Load those skills when the selected process requires
+`pabcd` and `loop`. Load those skills when the selected process requires
 them; classify each work-phase independently.
 Multi-cycle loops (2+ work-phases) enter docs-first: the first work-phase is a
 docs-only PABCD that locks the diff-level roadmap before any implementation cycle
-(LOOP-DOCS-FIRST-01, `cxc-loop`).
+(LOOP-DOCS-FIRST-01, `loop`).
 
 **Production surface (shared definition):** a surface is production when it is deployed
 for real users beyond the author; prototypes, spikes, and internal demos are not. Skills
@@ -151,10 +151,10 @@ numbered, contiguous, non-overlapping chunks through EOF and verify no gaps.
 | Diagrams / charts / visual documents / reports / PDF composition | `dev-visualizer` | Available document-format owner for PDF/DOCX/Slides mechanics; `dev-frontend` and `dev-uiux-design` retain implementation/design ownership |
 
 ### Subagent Skill Injection (DEV-SKILL-INJECT-01)
-Attach `cxc-dev` and every relevant surface skill explicitly to governed subagents.
+Attach `dev` and every relevant surface skill explicitly to governed subagents.
 Prefer resolvable skill links; use plugin-native mentions or v1 `items` when needed.
 Hooks may normalize recognized plaintext mentions but never infer omitted skills.
-Attach `cxc-search` for search tasks; the same search policy binds delegated agents.
+Attach `search` for search tasks; the same search policy binds delegated agents.
 
 Surface-to-owner mappings live in `references/skill-ownership.md`; router trigger
 metadata remains canonical in each skill's `agents/openai.yaml`.
@@ -169,7 +169,7 @@ CI/merge collision, subject to host permissions and wake checks in
 unsolicited progress notifications or follow-ups. Authorized subagent work uses
 its own scoped delegation tools.
 Use `dev` plus repo tools for local facts; load `search`, `pabcd`, `loop`, `recall`,
-`cxc-qa`, or the matching `dev-*` owner for their named domains. `skill-hub` is deprecated.
+`qa`, or the matching `dev-*` owner for their named domains. `skill-hub` is deprecated.
 
 ### Native execution
 
@@ -236,14 +236,14 @@ wording (no Codex hook enforces skill text — `structure/00_philosophy.md` §1)
 | Need | Route |
 |---|---|
 | External library syntax or pinned-version behavior | Context7 `resolve-library-id` → `query-docs`; otherwise official docs |
-| Current versions, releases, CVEs, providers, or public evidence | Load `cxc-search` and follow its evidence rules |
-| HTTP-first URL proof | `agbrowse fetch <url> --json`; full ladder: `cxc-search` Tier 2 |
+| Current versions, releases, CVEs, providers, or public evidence | Load `search` and follow its evidence rules |
+| HTTP-first URL proof | `agbrowse fetch <url> --json`; full ladder: `search` Tier 2 |
 
 ### Recall Lookup Scope (DEV-RECALL-01, MUST)
 | Trigger | Route |
 |---|---|
-| Prior term/file/decision is unfamiliar or context was lost | `cxc chat search "<terms>" --days 0` and `cxc memory search "<topic>"` |
-| Both searches miss | Ask the user and report what was searched; full flags: `cxc-recall` |
+| Prior term/file/decision is unfamiliar or context was lost | `crc chat search "<terms>" --days 0` and `crc memory search "<topic>"` |
+| Both searches miss | Ask the user and report what was searched; full flags: `recall` |
 
 ---
 
@@ -277,7 +277,7 @@ Before any new abstraction, apply DEV-NECESSITY-01 and owner search in
 
 ## 2. Systematic Debugging
 
-For non-obvious defects or repeated failed repairs load cxc-dev-debugging.
+For non-obvious defects or repeated failed repairs load dev-debugging.
 DEV-FRICTION-01 and DEV-EDIT-SHAPE-01 remain in
 [Development practice](references/development-practice.md).
 
@@ -344,8 +344,8 @@ still governs its named log. Do not create an unrelated record to satisfy this s
 
 Anti-pattern detection (god class, long method, deep nesting, magic numbers, stringly
 typed, missing boundary error handling, floating promises, copy-paste) is canonically
-owned by `cxc-dev-code-reviewer` §3 — read it when writing or reviewing code.
-Thresholds mirror §1 hard limits; boundary-error placement follows `cxc-dev-architecture` §4.
+owned by `dev-code-reviewer` §3 — read it when writing or reviewing code.
+Thresholds mirror §1 hard limits; boundary-error placement follows `dev-architecture` §4.
 
 ---
 
@@ -376,6 +376,6 @@ its own active-skill context, so load only what the sub-task needs.
 ## 9. Skill Discovery (DEV-SKILL-DISCOVERY-01, DEFAULT)
 
 For uncovered capabilities, check `references/skill-catalog.md`, then run
-`cxc skill search <query>` (jaw first; `--source all` adds clawhub and hermes).
-Load only the needed result with `cxc skill show <id>`; its adapter preserves
-`cxc-dev` authority, and built-in codexclaw skills win name conflicts.
+`crc skill search <query>` (jaw first; `--source all` adds clawhub and hermes).
+Load only the needed result with `crc skill show <id>`; its adapter preserves
+`dev` authority, and built-in cursorclaw skills win name conflicts.

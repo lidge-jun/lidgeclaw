@@ -38,7 +38,7 @@ function repo(): string {
   return root;
 }
 
-/** Write a receipt the way `cxc receipt test` does, into the evidence root. */
+/** Write a receipt the way `crc receipt test` does, into the evidence root. */
 function writeReceipt(root: string, generatedPaths?: string[]): string {
   const dir = join(root, ".cursorclaw", "evidence", SESSION);
   mkdirSync(dir, { recursive: true });

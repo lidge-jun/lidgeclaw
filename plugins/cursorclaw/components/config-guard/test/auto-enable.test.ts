@@ -10,7 +10,7 @@ import { type CodexRunner } from "../src/features.ts";
 
 // wp1-B: installation turns `memories.dedicated_tools` on by itself. The whole safety
 // argument for doing that rests on the round trip — the key is recorded with its
-// PRE-INSTALL value, and `cxc disable` puts that value back. These tests are that
+// PRE-INSTALL value, and `crc disable` puts that value back. These tests are that
 // argument's proof, so each one asserts the manifest AND the file after deactivate.
 
 const KEY = "memories.dedicated_tools";

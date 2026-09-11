@@ -1,5 +1,5 @@
 /**
- * scan-cli.test.ts — `cxc scan record` writer (260724 WP1, A-round H4).
+ * scan-cli.test.ts — `crc scan record` writer (260724 WP1, A-round H4).
  *
  * The previously-phantom "cxc scan evidence" recorder: verifies arg parsing
  * failure modes, the null-tracker init path (fresh session → round 1), roundId

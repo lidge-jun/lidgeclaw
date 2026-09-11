@@ -1,7 +1,7 @@
 /**
- * map-affordance.ts — SessionStart `cxc map` discoverability injector.
+ * map-affordance.ts — SessionStart `crc map` discoverability injector.
  *
- * WHY: `cxc map` (the repo-map skill) is only routed from the `dev` skill's §1.5
+ * WHY: `crc map` (the repo-map skill) is only routed from the `dev` skill's §1.5
  * (DEV-MAP-FIRST-01), which is model-autonomous — the model only learns the tool
  * exists if it reads that skill. This hook uses one of the four real enforcement
  * surfaces (SessionStart additionalContext, philosophy §1) to make the tool's
@@ -26,7 +26,7 @@ import { createHash } from "node:crypto";
 import { cxcInvocation } from "./cxc-resolve.ts";
 
 /**
- * Resolve backtick-anchored `` `cxc `` COMMAND prefixes to the invocation that
+ * Resolve backtick-anchored `` `crc `` COMMAND prefixes to the invocation that
  * actually exists on this machine (cxc-resolve ladder). Called at RENDER time so
  * the env seam (CODEXCLAW_CXC) and per-machine PATH state are honored per emit,
  * not frozen at import.
@@ -34,13 +34,13 @@ import { cxcInvocation } from "./cxc-resolve.ts";
  * WHY backtick-anchored only (H1, 260724 fresh-install): noun phrases
  * ("owns cxc orchestration"), skill names (`cxc-loop`), and chat commands
  * (`!cxc start`) must keep the literal word — only command mentions rendered as
- * `` `cxc <verb> ...` `` code spans are rewritten.
+ * `` `crc <verb> ...` `` code spans are rewritten.
  */
 export function resolveCxcCommands(
   text: string,
   env: Record<string, string | undefined> = process.env,
 ): string {
-  return text.replace(/`cxc ([^\s`]+)/g,
+  return text.replace(/`crc ([^\s`]+)/g,
     (_prefix: string, command: string) => `\`${cxcInvocation(import.meta.url, env, command)} ${command}`);
 }
 
@@ -103,12 +103,12 @@ export function countSourceFiles(root: string): number {
 export function renderMapAffordance(fileCount: number): string {
   const size = fileCount >= COUNT_CAP ? `${COUNT_CAP}+` : String(fileCount);
   return resolveCxcCommands([
-    `[codexclaw] This workspace has ${size} source files. A ranked structure map is`,
-    "available on demand: run `cxc map <dir>` (tree-sitter symbols + PageRank) to see",
+    `[cursorclaw] This workspace has ${size} source files. A ranked structure map is`,
+    "available on demand: run `crc map <dir>` (tree-sitter symbols + PageRank) to see",
     "which files own which symbols BEFORE deep rg dives into unfamiliar territory.",
     "It is a stateless one-shot tool — use it when you need the shape of code you do",
     "not yet know. Keep rg for byte/text search, and use ast-grep (skill:",
-    "$cxc-ast-grep) for syntax-shape search and deterministic codemods.",
+    "$crc-ast-grep) for syntax-shape search and deterministic codemods.",
   ].join(" "));
 }
 
@@ -120,11 +120,11 @@ export function renderMapAffordance(fileCount: number): string {
  */
 export function renderSkillSearchAffordance(): string {
   return resolveCxcCommands([
-    "[codexclaw] External skill catalogs are searchable on demand.",
+    "[cursorclaw] External skill catalogs are searchable on demand.",
     "Priority: jaw (cli-jaw-skills, 1st-class, default) > clawhub (2nd) > hermes (3rd, sparse).",
     "When a task needs a capability you do not have loaded,",
     "browse `dev/references/skill-catalog.md` for the full jaw catalog first,",
-    "or run `cxc skill search <query>` then `cxc skill show <id>` to load it",
+    "or run `crc skill search <query>` then `crc skill show <id>` to load it",
     "(adapter preamble applies; cxc-dev discipline wins on conflict).",
   ].join(" "));
 }
@@ -133,22 +133,22 @@ export function renderSkillSearchAffordance(): string {
  * Universal Korean-prose polishing affordance (pointer-not-payload, always on
  * like the skill-search line): when the session writes Korean prose, the
  * baseline discipline is stated in one sentence and the full protocol lives in
- * the $cxc-kwrite skill. Deliberately genre-free — platform-specific writing
+ * the $crc-kwrite skill. Deliberately genre-free — platform-specific writing
  * is out of scope here.
  */
 export function renderKwriteAffordance(): string {
   return [
-    "[codexclaw] When writing Korean prose for the user (docs, answers,",
+    "[cursorclaw] When writing Korean prose for the user (docs, answers,",
     "announcements), keep it human: no translationese (~에 대해/~를 통해/~함으로써),",
     "no AI idioms (시사하는 바가 크다/결론적으로/기대된다 endings), no 첫째/둘째",
     "enumeration, one consistent register throughout. For explicit 윤문/polish",
-    "requests or long-form Korean output, load the $cxc-kwrite skill for the",
+    "requests or long-form Korean output, load the $crc-kwrite skill for the",
     "full revision protocol.",
   ].join(" ");
 }
 
 /**
- * Session-id binding line (G3, 260707 fork-FSM fix). Mutating `cxc orchestrate`
+ * Session-id binding line (G3, 260707 fork-FSM fix). Mutating `crc orchestrate`
  * verbs require an explicit --session; this line tells the agent ITS OWN id at
  * SessionStart, so a /fork-ed session (which replays the parent's orchestrate
  * context but receives a NEW id here) targets its own FSM instead of the
@@ -156,14 +156,14 @@ export function renderKwriteAffordance(): string {
  */
 export function renderSessionBinding(sessionId: string): string {
   return resolveCxcCommands([
-    `[codexclaw] This session's id is \`${sessionId}\`. Every mutating`,
-    "`cxc orchestrate` command (I/P/A/B/C/D/reset) MUST pass",
+    `[cursorclaw] This session's id is \`${sessionId}\`. Every mutating`,
+    "`crc orchestrate` command (I/P/A/B/C/D/reset) MUST pass",
     `\`--session ${sessionId}\` — the implicit latest-session fallback is`,
     "disabled for writes, which prevents ACCIDENTAL implicit-fallback",
     "collisions between concurrent/forked sessions.",
     "IDENTITY RULE: use the MOST RECENT SessionStart binding line, never a parent/history id.",
-    "With native CODEX_THREAD_ID, verify via `cxc session current` before mutation.",
-    "Missing/inherited/conflicting binding: use `cxc session current`, then `cxc session bind` in its verified cwd.",
+    "With native CODEX_THREAD_ID, verify via `crc session current` before mutation.",
+    "Missing/inherited/conflicting binding: use `crc session current`, then `crc session bind` in its verified cwd.",
     "Never set the environment id. Binding does not verify hooks or arm Stop-continuation.",
   ].join(" "));
 }
@@ -178,10 +178,10 @@ export function renderSessionBinding(sessionId: string): string {
  */
 export function renderLoopAffordance(): string {
   return resolveCxcCommands([
-    "[codexclaw] Loop contract: for actual loop work load $codexclaw:cxc-loop + $codexclaw:cxc-pabcd.",
+    "[cursorclaw] Loop contract: for actual loop work load $cursorclaw:loop + $cursorclaw:pabcd.",
     "Bare cxc-loop means scoped HOTL; a mention alone grants no authority.",
     "Exact user limits and separately allowed actions scope this pointer and its owners. No-delegation means no dispatch.",
-    "Read-only inspection remains allowed under no-goal/no-FSM; for actual loop work inspect `cxc orchestrate status --session <your id>` first.",
+    "Read-only inspection remains allowed under no-goal/no-FSM; for actual loop work inspect `crc orchestrate status --session <your id>` first.",
     "No-tests does not forbid an explicitly allowed build. One work-phase = one full PABCD cycle.",
     "No extra external permissions; do not bypass guards or invent evidence.",
   ].join(" "));
@@ -190,7 +190,7 @@ export function renderLoopAffordance(): string {
 /** Global discovery only; the agent verifies membership and CI on demand. */
 export function renderStackedPrAffordance(): string {
   return [
-    "[codexclaw] For PR work or dependent branches, read $codexclaw:cxc-dev references/stacked-prs.md (DEV-STACK-06/07).",
+    "[cursorclaw] For PR work or dependent branches, read $cursorclaw:dev references/stacked-prs.md (DEV-STACK-06/07).",
     "Use ordinary PRs/manual chains by default.",
     "Do not suggest or create GitHub native stacks unless the user clearly and strongly requests them for this task.",
     "Inspect existing membership and CI separately; a parent base or Can Stack banner is not opt-in.",
@@ -206,7 +206,7 @@ export function renderStackedPrAffordance(): string {
  */
 export function renderBackgroundTerminalAffordance(): string {
   return [
-    "[codexclaw] Long-running or collision-risky commands (dev servers, builds, test",
+    "[cursorclaw] Long-running or collision-risky commands (dev servers, builds, test",
     "suites, 5min+ probes) SHOULD use managed background execution: `exec_command`",
     "with short `yield_time_ms` → get `session_id` → end turn or continue other work",
     "→ poll later with `write_stdin` (empty chars = poll, no typing). Do NOT block the",
@@ -220,12 +220,12 @@ export function renderBackgroundTerminalAffordance(): string {
 /** Question transport guidance only; does not expose tools or change permissions. */
 function renderQuestionAffordance(): string {
   return [
-    "[codexclaw] User questions: main agents may leave useful questions during work, including active goals.",
+    "[cursorclaw] User questions: main agents may leave useful questions during work, including active goals.",
     "Outside Interview, prefer exposed and host-allowed `request_user_input_async`; do not expect replies or wait.",
     "Continue authorized work with reasonable assumptions, incorporate later replies, and ask distinct useful questions without reminders.",
-    "Interview uses `request_user_input` only; see $codexclaw:cxc-interview.",
+    "Interview uses `request_user_input` only; see $cursorclaw:interview.",
     "Absent tools stay absent; silence grants no approval. Subagents send question candidates to main.",
-    "Details: $codexclaw:cxc-dev references/async-questions.md.",
+    "Details: $cursorclaw:dev references/async-questions.md.",
   ].join(" ");
 }
 
@@ -328,7 +328,7 @@ export function runMapAffordanceSessionStart(stdin: string, fallbackCwd: string)
   const cxc = cxcInvocation(import.meta.url);
   if (cxc !== "cxc") {
     lines.push(
-      `[codexclaw] \`cxc\` is not on PATH here; wherever docs say \`cxc\`, run: ${cxc}`,
+      `[cursorclaw] \`cxc\` is not on PATH here; wherever docs say \`cxc\`, run: ${cxc}`,
     );
   }
   const envelope = {

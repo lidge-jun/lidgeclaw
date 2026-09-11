@@ -5,7 +5,7 @@
  * via UserPromptSubmit is HUMAN-driven and gets a free-pass — forward transitions
  * advance WITHOUT requiring an attestation. The L2 adjacency invariant still holds
  * (illegal edges are refused); only the attest *evidence* requirement is waived for
- * the human. The agent path (L4 `cxc orchestrate` CLI) keeps the un-weakened
+ * the human. The agent path (L4 `crc orchestrate` CLI) keeps the un-weakened
  * `transition()` with `validateAttest`, so this helper never touches `transition()`.
  *
  * Pure: returns the next State + an optional LedgerEntry for the caller to persist.

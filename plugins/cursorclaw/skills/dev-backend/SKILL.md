@@ -1,5 +1,5 @@
 ---
-name: cxc-dev-backend
+name: dev-backend
 description: "MUST USE for backend, API, server, or database work — API design, architecture, database optimization, security hardening, error handling, middleware, observability, queues, and long-lived connections. Triggers: 'backend', 'API', 'REST', 'GraphQL', 'schema', 'migration', 'query optimization', 'middleware', 'OTel', 'caching', 'Result pattern', 'server', '백엔드', 'API 작업', '마이그레이션', '쿼리 최적화'."
 metadata:
   last-verified: "2026-07-02"

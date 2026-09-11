@@ -63,7 +63,7 @@ const DEFAULT_TIMEOUT_MS = 600_000;
 export const SIGKILL_GRACE_MS = 3_000;
 export const MAX_RUNNER_OUTPUT_BYTES = 8 * 1024 * 1024;
 export const MAX_EXEC_EVENT_LINE_BYTES = 8 * 1024 * 1024;
-const OUTPUT_TRUNCATED = "\n\n[codexclaw: output truncated at 8 MiB to protect bridge memory]";
+const OUTPUT_TRUNCATED = "\n\n[cursorclaw: output truncated at 8 MiB to protect bridge memory]";
 // Missing-rollout / bad-session-id signatures for the resume re-seed fallback.
 const RESUME_LOST_RE = /no rollout found|thread\/resume failed|no such (thread|session)|not found/i;
 
@@ -434,7 +434,7 @@ function spawnOnce(argv: string[], opts: RunTurnOptions, stdinPrompt: string | n
             text = appended.text;
             outputTruncated = appended.truncated;
             if (appended.truncated) {
-              streamedEvent = { kind: "message", text: "[codexclaw: output truncated at 8 MiB]" };
+              streamedEvent = { kind: "message", text: "[cursorclaw: output truncated at 8 MiB]" };
             }
           } else {
             streamedEvent = null;
@@ -513,7 +513,7 @@ function spawnOnce(argv: string[], opts: RunTurnOptions, stdinPrompt: string | n
     });
     child.on("close", (code) => {
       if (sawOversizedEvent) {
-        const noted = appendBoundedOutput(text, "[codexclaw: oversized Codex event discarded]");
+        const noted = appendBoundedOutput(text, "[cursorclaw: oversized Codex event discarded]");
         text = noted.text;
         outputTruncated ||= noted.truncated;
       }

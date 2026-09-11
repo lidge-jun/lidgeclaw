@@ -1,5 +1,5 @@
 ---
-name: cxc-dev-devops
+name: dev-devops
 description: "MUST USE for DevOps, infrastructure, or delivery work — container builds, deploy pipelines, stacked-PR CI diagnosis, Kubernetes, Infrastructure as Code, SRE foundations, edge/serverless, ML infrastructure, repository bootstrap, agent-PR intake policy, and repository branch/worktree lifecycle hygiene. Triggers: 'Dockerfile', 'container build', 'deploy', 'CI/CD', 'stacked PR CI', 'duplicate CI', 'Kubernetes', 'K8s', 'Terraform', 'Pulumi', 'Helm', 'SRE', 'SLI', 'SLO', 'error budget', 'serverless', 'edge', 'stale branch', 'branch cleanup', 'delete merged branches', 'delete_branch_on_merge', 'worktree cleanup', 'repo bootstrap', 'branch protection', 'ruleset', 'PR limits', 'agent PR', 'agent PRs', 'AI PR policy', 'superseded PR', 'worktree gc', '스택 PR CI', '배포', '인프라', '쿠버네티스', '브랜치 정리', '브랜치 삭제', '워크트리 정리', '저장소 세팅', '브랜치 보호', '에이전트 PR', 'PR 정책'."
 metadata:
   last-verified: "2026-09-09"
@@ -41,7 +41,7 @@ proof remain mandatory; architecture/tool preferences need project-specific just
 | `references/branch-lifecycle.md` | Branch/worktree cleanup | Closed-PR branch automation, per-branch deletion evidence, worktree dirty audit, stacked-PR safety |
 | `references/repo-bootstrap.md` | New or under-configured repository; branch protection, rulesets, auto-delete, PR limits | Ruleset-first setup, merge-setting fields, closed-PR job values, PR limits, labels/template, read-only bootstrap check |
 | `references/agent-pr-intake.md` | Many agent-authored PRs/issues; intake policy; superseded PRs | Identity tiers, agent convention table, draft-first, supersede procedure, weak/medium/strong policy options with sources |
-| `references/local-gc.md` | Local worktree/branch garbage collection; scheduled local cleanup | PR-state merge truth, candidate classes, worktree exclusions, config hygiene, dry-run schedule, `cxc worktree gc` contract |
+| `references/local-gc.md` | Local worktree/branch garbage collection; scheduled local cleanup | PR-state merge truth, candidate classes, worktree exclusions, config hygiene, dry-run schedule, `crc worktree gc` contract |
 | `references/iac.md` | Infrastructure code | OpenTofu/Terraform modules, Pulumi, state encryption, blast radius isolation |
 | `references/sre-foundations.md` | Operations/incidents | SLO/SLI/error budget, burn-rate alerting, incident response, blameless postmortem |
 | `references/edge-serverless.md` | Edge/serverless work | Edge request shaping, auth at edge, Cloudflare Workers, Vercel Edge, edge AI triage |
@@ -110,7 +110,7 @@ policy.
 
 **Stacked-PR CI preflight (DEFAULT).** For stack sizing, repeated runs or missing
 checks, follow `DEV-STACK-03/06/07` in
-[`cxc-dev`'s canonical stack reference](../dev/references/stacked-prs.md).
+[`dev`'s canonical stack reference](../dev/references/stacked-prs.md).
 Stack recognition also applies without this DevOps router; the global `dev` entry
 owns it. Ordinary PRs/manual chains are the default. Do not suggest or adopt GitHub
 native stacks without the user's clear, strong request for that feature in this task

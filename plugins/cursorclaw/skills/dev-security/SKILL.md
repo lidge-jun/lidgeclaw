@@ -1,5 +1,5 @@
 ---
-name: cxc-dev-security
+name: dev-security
 description: "MUST USE for security guidance covering XSS, CSRF, SQL injection, JWT, OAuth, secrets, OWASP, auth hardening, supply chain, and threat model work. Activates for security-sensitive code, trust boundaries, PII, uploads, payments, CI integrity, tool-using agents, or security/threat_model task tags."
 metadata:
   last-verified: "2026-07-02"

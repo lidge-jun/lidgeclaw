@@ -89,7 +89,7 @@ function readStdin(): StdinRead {
 }
 
 function oversizedHookOutput(event: string | undefined): string {
-  const reason = `[codexclaw] hook input exceeded ${MAX_STDIN_BYTES} bytes; refusing to bypass policy enforcement`;
+  const reason = `[cursorclaw] hook input exceeded ${MAX_STDIN_BYTES} bytes; refusing to bypass policy enforcement`;
   if (event?.startsWith("pre-tool-use")) {
     return `${JSON.stringify({
       hookSpecificOutput: {
@@ -243,7 +243,7 @@ async function main(): Promise<void> {
   }
 
   // `scan` command path (260724 WP1): record an interview contradiction-scan
-  // round — the previously-phantom `cxc scan evidence` writer. Double write:
+  // round — the previously-phantom `crc scan evidence` writer. Double write:
   // interview ledger event + tracker scanRounds/lastScanRoundId via writeState.
   // `review-round` command path (060): open and inspect plan-audit rounds. There
   // is no close verb — the SubagentStop observer writes the verdict.
@@ -276,7 +276,7 @@ async function main(): Promise<void> {
   }
 
   // `memory allow-write` (MEMORY-WRITE-GATE-01): the operator grant the PreToolUse
-  // memory gate consumes. Only this verb belongs here — `cxc memory search` is
+  // memory gate consumes. Only this verb belongs here — `crc memory search` is
   // recall's, and the bins split the two the same way they split `config interview`.
   if (kind === "memory") {
     const { MEMORY_USAGE, parseMemoryCliArgs, runMemoryCli } = await import("./memory-cli.ts");
@@ -363,7 +363,7 @@ async function main(): Promise<void> {
   // worktree-guard-pretool above, and placed ABOVE the subagent early-exit for the
   // same reason: a delegated child must not be the way around the gate. A child has
   // no UserPromptSubmit of its own (the marker cannot exist), so it is denied unless
-  // the parent recorded an explicit `cxc memory allow-write` grant.
+  // the parent recorded an explicit `crc memory allow-write` grant.
   if (event === "pre-tool-use-memory-write") {
     try {
       process.stdout.write(handleMemoryWriteGate(raw));
@@ -445,7 +445,7 @@ async function main(): Promise<void> {
       if (payload) output = handleBashFrictionCapture(payload);
     } else if (event === "post-tool-use-edit-shape") {
       // astgrep_active 00: repeated same-shaped edit advisory (matcher ^apply_patch$).
-      // FAIL-OPEN capture + one-time additionalContext nudge toward $cxc-ast-grep.
+      // FAIL-OPEN capture + one-time additionalContext nudge toward $crc-ast-grep.
       // Also records render-artifact file modifications for C-RENDER-GROUNDING-01.
       const payload = parsePostToolUse(raw);
       if (payload) {

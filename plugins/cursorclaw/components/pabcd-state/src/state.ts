@@ -161,7 +161,7 @@ export interface State {
   // turn id. The gate refuses a marker stamped with a DIFFERENT turn: without it a
   // request made ten turns ago would still be spendable.
   memoryWriteTurn: string | null;
-  // An operator grant from `cxc memory allow-write`. Outranks the idiom marker and is
+  // An operator grant from `crc memory allow-write`. Outranks the idiom marker and is
   // spent by the same single write, which is what makes automation reproducible
   // without leaving the surface permanently open.
   memoryWriteGrant: boolean;

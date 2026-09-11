@@ -1,5 +1,5 @@
 ---
-name: cxc-dev-uiux-design
+name: dev-uiux-design
 description: "MUST USE for UI/UX direction and design judgment — vague visual briefs, onboarding, empty/error/loading states, layout vocabulary, typography breaks, favicons, logos, and brand identity choices. Pairs with cxc-dev-frontend: this skill decides the design direction, then load cxc-dev-frontend to implement it. Triggers: make it look good, modern, clean, aesthetic, onboarding, empty state, error state, favicon, logo, design system, 깔끔하게, 모던하게, 감성적으로."
 metadata:
   last-verified: "2026-07-14"
@@ -180,7 +180,7 @@ Before generating ANY frontend code, produce a Design Read. If the project has a
 
 Inspect provided visual references with `view_image` before writing the Design
 Read. Asset production and rendered-requirement definition are owned by `dev-frontend`;
-QA protocol and verification proof execution are owned by `cxc-dev-testing`.
+QA protocol and verification proof execution are owned by `dev-testing`.
 
 ### Output format (mini DESIGN.md)
 

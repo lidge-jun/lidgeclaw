@@ -1,7 +1,7 @@
 /**
  * goalplan.ts — project-local durable goalplan substrate (lazygap_impl 030).
  *
- * `$cxc-loop` is a prose contract today: "work-phase = one PABCD cycle, D closes to
+ * `$crc-loop` is a prose contract today: "work-phase = one PABCD cycle, D closes to
  * IDLE, the agent self-advances." Nothing durable records WHAT the work-phases are,
  * which criteria gate completion, or what evidence each produced. This module gives
  * that prose a backbone: a slug-namespaced plan artifact + an append-only ledger.
@@ -1469,7 +1469,7 @@ export function validateGoalplan(plan: Goalplan, ctx?: GoalplanValidationCtx): G
   );
   if (plan.workPhases.length === 0 && plan.criteria.length === 0) {
     reasons.push(
-      "plan is empty: no workPhases[] and no criteria[] registered — fill the goalplan (schema in $cxc-loop) before the E8 gate can certify completion",
+      "plan is empty: no workPhases[] and no criteria[] registered — fill the goalplan (schema in $crc-loop) before the E8 gate can certify completion",
     );
   }
   for (const c of plan.criteria) {

@@ -58,7 +58,7 @@ const [, , kind, event] = process.argv;
 if (kind === "hook" && event === "session-start") {
   process.exit(runSessionStartHook());
 }
-// Allow `provider-bridge detect` for cxc doctor / manual probes.
+// Allow `provider-bridge detect` for crc doctor / manual probes.
 if (kind === "detect") {
   process.exit(runBridge());
 }

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-// Pin the cxc-resolve seam (B1): assertions below expect literal `cxc ...`
+// Pin the cxc-resolve seam (B1): assertions below expect literal `crc ...`
 // command lines, which would otherwise depend on the runner's PATH.
 process.env.CODEXCLAW_CXC = "cxc";
 import {
@@ -45,7 +45,7 @@ test("recall intent: neutral prompts and self-recalling prompts stay silent", ()
     "add a --json flag to the status command",
     "빌드 돌리고 테스트 고쳐줘",
     "run cxc chat search \"trigram\" --days 0 and summarize",
-    "use $cxc-recall on this",
+    "use $crc-recall on this",
     "",
   ]) {
     assert.equal(detectRecallIntent(p), false, `should NOT trigger: ${p}`);
@@ -60,7 +60,7 @@ test("handler emits the pabcd-parity envelope only for recall intents", () => {
   const parsed = JSON.parse(out);
   assert.equal(parsed.hookSpecificOutput.hookEventName, "UserPromptSubmit");
   assert.match(parsed.hookSpecificOutput.additionalContext, /cxc chat search/);
-  assert.match(parsed.hookSpecificOutput.additionalContext, /cxc memory search/);
+  assert.match(parsed.hookSpecificOutput.additionalContext, /crc memory search/);
   assert.ok(out.endsWith("\n"));
 
   assert.equal(handleUserPromptSubmit({ hook_event_name: "UserPromptSubmit", prompt: "hi" }), "");
@@ -74,7 +74,7 @@ test("session-start advertises recall with and without index status", () => {
   assert.match(withStatus.hookSpecificOutput.additionalContext, /cxc chat search/);
   assert.match(withStatus.hookSpecificOutput.additionalContext, /Index: 1769 files/);
   const bare = JSON.parse(handleSessionStart(""));
-  assert.match(bare.hookSpecificOutput.additionalContext, /\$cxc-recall/);
+  assert.match(bare.hookSpecificOutput.additionalContext, /\$crc-recall/);
   assert.ok(!bare.hookSpecificOutput.additionalContext.includes("Index:"));
 });
 
@@ -92,7 +92,7 @@ test("session-start carries the recovery directive when the source is a compacti
   const text = compacted.hookSpecificOutput.additionalContext;
   assert.match(text, /compacted/);
   assert.match(text, /cxc chat search/);
-  assert.match(text, /cxc memory search/);
+  assert.match(text, /crc memory search/);
 
   // A normal start keeps the availability wording and must not claim a compaction.
   for (const source of [undefined, "startup", "resume", "clear"]) {

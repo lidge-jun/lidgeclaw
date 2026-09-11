@@ -3,7 +3,7 @@
  *
  * The recording is not bookkeeping, it is the whole point. `deactivate` reverts only
  * keys present in the install manifest's `tableKeys`, so a write that skipped the
- * manifest would be permanently unrevertable — `cxc disable` could never undo it and
+ * manifest would be permanently unrevertable — `crc disable` could never undo it and
  * the user would be left with a switch they cannot turn off through codexclaw.
  * Backup, write and record therefore live in one function instead of at call sites.
  *
@@ -158,7 +158,7 @@ export function applyManagedKey(
   return { ok: true, changed: res.changed, entry, priorValue, appliedValue, backupPath };
 }
 
-/** Current live value of every managed key, for `cxc config list`. */
+/** Current live value of every managed key, for `crc config list`. */
 export function readManagedState(configPath: string): { entry: ManagedKey; value: string | null }[] {
   const content = existsSync(configPath) ? readFileSync(configPath, "utf8") : "";
   return CONFIG_MANAGED_KEYS.map((entry) => ({

@@ -35,7 +35,7 @@ export function handleFrictionPreToolUse(raw: string): string {
         hookEventName: "PreToolUse",
         permissionDecision: "allow",
         permissionDecisionReason:
-          "[codexclaw friction] A shell failure has recurred to the stop threshold. Review .cursorclaw/friction.jsonl and change approach before re-running the same command.",
+          "[cursorclaw friction] A shell failure has recurred to the stop threshold. Review .cursorclaw/friction.jsonl and change approach before re-running the same command.",
       },
     })}\n`;
   } catch {

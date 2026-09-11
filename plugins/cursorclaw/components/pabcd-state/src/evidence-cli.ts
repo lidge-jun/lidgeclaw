@@ -1,5 +1,5 @@
 /**
- * evidence-cli.ts — `cxc evidence resolve` (EVIDENCE-TERMINAL-01, 260826).
+ * evidence-cli.ts — `crc evidence resolve` (EVIDENCE-TERMINAL-01, 260826).
  *
  * When a delegated worker exhausts its evidence-verification budget, the SubagentStop
  * gate releases it (a child that cannot write the receipt gains nothing from being

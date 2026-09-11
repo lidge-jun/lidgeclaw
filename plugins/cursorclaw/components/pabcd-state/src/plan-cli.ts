@@ -1,5 +1,5 @@
 /**
- * plan-cli.ts — `cxc plan init <slug> [--phases N] [--cwd <path>]` (260714 wp2).
+ * plan-cli.ts — `crc plan init <slug> [--phases N] [--cwd <path>]` (260714 wp2).
  *
  * Scaffolds the devlog/_plan/YYMMDD_slug/ implementation unit that the P>A
  * plan-gate (plan-gate.ts) verifies: 000_plan.md plus one decade doc per

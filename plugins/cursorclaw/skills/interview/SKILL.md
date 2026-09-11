@@ -1,15 +1,15 @@
 ---
-name: cxc-interview
+name: interview
 description: "Use for Codexclaw Interview mode: persistent IPABCD I-phase requirements discovery, contradiction hunting, focused user questions, question/answer evidence recording, and readiness gating before Plan. Triggers: interview, 인터뷰, requirements clarification, ambiguity, contradiction scan, ask me questions, I phase, cxc-interview."
 metadata:
   short-description: "Persistent I-phase clarification with contradiction tracking."
 ---
 
-# cxc-interview
+# interview
 
 Use this skill for Interview work within the user's scope. Loading it or receiving
 a natural-language I hint does not enter the phase. Actual entry uses an explicit
-user command or authorized `cxc orchestrate I --session <id>` with the current
+user command or authorized `crc orchestrate I --session <id>` with the current
 SessionStart binding. No-FSM requests remain advisory without a transition.
 
 ## Contract
@@ -28,7 +28,7 @@ SessionStart binding. No-FSM requests remain advisory without a transition.
 - Record medium/low unresolved items as OPEN ASSUMPTIONS before leaving Interview.
 - When Interview reveals work that will span 2+ PABCD cycles, flag the unit as
   multi-cycle so that the first work-phase enters as a docs-only roadmap cycle
-  (LOOP-DOCS-FIRST-01, `cxc-loop`). Interview settles unit residence
+  (LOOP-DOCS-FIRST-01, `loop`). Interview settles unit residence
   (UNIT-RESIDENCE-01) but does not write decade docs — that is the roadmap
   cycle's job.
 
@@ -65,14 +65,14 @@ no accumulated knowns and no recorded gaps comes out vague no matter how the pro
 The loop that prevents it:
 
 1. Answers are captured automatically by the `PostToolUse` hook into
-   `.codexclaw/interviews/<sessionId>.jsonl`.
+   `.cursorclaw/interviews/<sessionId>.jsonl`.
 2. Fold them into the tracker before asking again:
-   `cxc scan record --session <id> --derive --map <questionId>=<goal|constraint|success|ontology>`.
+   `crc scan record --session <id> --derive --map <questionId>=<goal|constraint|success|ontology>`.
    Each answered question becomes a `known[]` fact on its dimension; each asked-but-unanswered
    one becomes an explicit `unknown[]` gap, and answering it later retires the gap.
    Unmapped questions are skipped rather than guessed, so pass `--map` for every question that
    should count.
-3. Read `.codexclaw/sessions/<id>.json` back and let the weakest dimension choose the next
+3. Read `.cursorclaw/sessions/<id>.json` back and let the weakest dimension choose the next
    question. This is also what makes Mind routing adaptive: `selectMinds` ranks by dimension
    level, so with an empty tracker all four tie and it degrades to a fixed order.
 
@@ -92,14 +92,14 @@ understates what you know. It deliberately cannot set `max`: that level bypasses
 check entirely, so it stays out of the writer's reach.
 
 When the interview genuinely is not complete, the sanctioned way past the gate is the attested
-`cxc orchestrate P --attest-file <path>` carrying
+`crc orchestrate P --attest-file <path>` carrying
 `{"from":"I","to":"P","did":"<why the interview is complete>","override":true}`,
 which leaves a ledger row. It is the exception now, not the only door — until 260825 the gate
 demanded a level no writer could produce, so every interview spent an override and the row
 stopped distinguishing anything. (The file flag is required on Windows: PowerShell cannot pass
 inline JSON as a single argument.) `from`/`to` are not optional here — the parser
 coerces them before the override is ever read, so `{"override":true}` alone is
-refused (ATTEST-SHAPE-01 in `cxc-pabcd`).
+refused (ATTEST-SHAPE-01 in `pabcd`).
 
 ## Show the state before asking (INTERVIEW-RENDER-01)
 
@@ -117,7 +117,7 @@ Pick by the user's knowledge level:
   structure goals, constraints, success criteria.
 - **Catalog Discovery** — the user names a vague domain but no features ("사주 앱 만들고
   싶어", "뭘 만들지 모르겠어"); present the option ontology from
-  `$cxc-pabcd` `references/catalog-discovery.yaml`. See below.
+  `$crc-pabcd` `references/catalog-discovery.yaml`. See below.
 - **Configurator** — compile the selections into a spec (PRD sections, MVP cut, risk
   register, PABCD plan seed).
 
@@ -127,7 +127,7 @@ Catalog Discovery; explicit user request -> honor it.
 ## Catalog Discovery — design/UX LEADS (CATALOG-DESIGN-FIRST-01)
 
 The user cannot choose from options they have never seen (strong form of INTERVIEW-TEACH-01).
-Present the option ontology in `references/catalog-discovery.yaml` (under `$cxc-pabcd`).
+Present the option ontology in `references/catalog-discovery.yaml` (under `$crc-pabcd`).
 
 **Hard barrier:** iterate `axis_order` by ascending `stage`; do NOT present a stage until
 every `required` entry of all earlier stages is answered. Stage 1 is design (6 dials: mood,
@@ -166,7 +166,7 @@ work-phase (loop-engineering §11.4).
   question that was asked, answered, and attributed with `--map`. `max` needs no ledger backing
   because no writer can produce it.
 - The practical consequence: `--known` alone never opens I -> P. Ask the question, let the
-  `PostToolUse` hook capture the answer, then `cxc scan record --derive --map <qid>=<dimension>`.
+  `PostToolUse` hook capture the answer, then `crc scan record --derive --map <qid>=<dimension>`.
 - Treat readiness as a coverage claim on top of that: each dimension has concrete knowns, no
   unresolved unknown changes scope, and every contradiction has exited into an answer or a
   recorded assumption. Summarize the remaining OPEN ASSUMPTIONS before claiming I -> P readiness.
@@ -187,16 +187,16 @@ equivalent ledger transparency (`from`/`to` are coerced before the override is
 read, so `{"override":true}` alone is refused — ATTEST-SHAPE-01).
 `proceed` means "advance to Plan", not permission to implement; the evolving
 plan/devlog stay draft interview artifacts until then.
-A chosen `proceed` executes as a real transition — `cxc orchestrate P --session <id>` (or the
+A chosen `proceed` executes as a real transition — `crc orchestrate P --session <id>` (or the
 chat free-pass `orchestrate p`) — never as narration alone: a "moving to Plan" sentence without
-the persisted I->P edge is not Plan entry (ORCH-MANDATE-01, canonical in `cxc-loop`).
+the persisted I->P edge is not Plan entry (ORCH-MANDATE-01, canonical in `loop`).
 
 ## Runtime Status (shipped)
 
 The interview runtime is shipped, not planned:
 
 - `PostToolUse` auto-capture for `request_user_input` records each question/answer
-  round to `.codexclaw/interviews/<sessionId>.jsonl` (`handlePostToolUse`,
+  round to `.cursorclaw/interviews/<sessionId>.jsonl` (`handlePostToolUse`,
   `captureInterviewAnswers`).
 - L18: after each captured answer, the same PostToolUse hook REINJECTS the rescan
   directive as `additionalContext` (`RESCAN_REINJECT_DIRECTIVE`) when the session is
@@ -212,7 +212,7 @@ The interview runtime is shipped, not planned:
   It preserves read-only lens roles, non-full forks, snapshot and settings contracts
   while adapting argument fields and returned handles to the live native schema.
 - Readiness gating requires recorded scan evidence (`scanRounds >= 1`) before I -> P.
-- Agent I→P override: when the agent CLI path (`cxc orchestrate P --session <id>
+- Agent I→P override: when the agent CLI path (`crc orchestrate P --session <id>
   --attest-file <path>`, carrying
   `{"from":"I","to":"P","did":"<reason>","override":true}`) encounters
   an unready interview tracker, it bypasses the readiness gate — mirroring the

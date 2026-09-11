@@ -1,5 +1,5 @@
 ---
-name: cxc-remote
+name: remote
 description: "MUST USE for messenger-bridge remote setup and channel onboarding — connecting Telegram or Discord to codexclaw, pairing a chat, validating bot tokens, registering agents, webhook mode, and remote-control troubleshooting. The agent performs setup end-to-end; the user only supplies tokens and taps pairing triggers. Triggers: remote, bridge setup, messenger, pairing, connect telegram, connect discord, 텔레그램 연결, 디스코드 연결, 메신저 연결, 봇 연결, 원격, 페어링."
 metadata:
   last-verified: "2026-07-07"
@@ -8,7 +8,7 @@ metadata:
 
 # remote — Messenger Bridge Setup Ladder
 
-Use this skill when the user wants codexclaw reachable from Telegram or
+Use this skill when the user wants cursorclaw reachable from Telegram or
 Discord ("텔레그램 연결해줘", "connect discord", "set up remote"). The agent
 runs every step below itself and verifies each one; the user is only needed
 for the two steps a bot platform requires a human for (creating the bot and
@@ -18,17 +18,17 @@ All API calls target the local bridge at `http://127.0.0.1:7717`. Every
 mutating request MUST send BOTH headers, or the server answers 403:
 
 ```bash
--H 'content-type: application/json' -H 'x-codexclaw-local: 1'
+-H 'content-type: application/json' -H 'x-cursorclaw-local: 1'
 ```
 
 ## Ladder (both platforms)
 
 1. **Preflight — is the bridge up?**
    `curl -s http://127.0.0.1:7717/api/health` -> `{"ok":true,...}`.
-   Not running? Foreground: `cxc serve --port 7717 --cwd <project>`.
+   Not running? Foreground: `crc serve --port 7717 --cwd <project>`.
    Daemon (macOS launchd): `cd <project>` FIRST (install binds the current
-   working directory as `--cwd`), then `cxc service install --port 7717`.
-   Check with `cxc service status`; logs at `~/.codexclaw/serve.{out,err}.log`.
+   working directory as `--cwd`), then `crc service install --port 7717`.
+   Check with `crc service status`; logs at `~/.cursorclaw/serve.{out,err}.log`.
    There is no `serve status` subcommand.
    On Linux, use systemd user units. On Windows, use Task Scheduler. See
    platform-specific sections in `references/telegram.md` and `references/discord.md`.
@@ -90,4 +90,4 @@ Human-facing overview: the bridge README (served at
   stores the token as a side effect); teach and use the `/api/agents/*`
   surface.
 - This skill configures the bridge only. Bridge behavior changes (commands,
-  adapters, gates) are `cxc-dev` territory, not setup.
+  adapters, gates) are `dev` territory, not setup.

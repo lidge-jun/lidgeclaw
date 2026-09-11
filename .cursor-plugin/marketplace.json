@@ -5,16 +5,16 @@
     "email": "plugins@lidge.dev"
   },
   "metadata": {
-    "description": "Cursor-native fork of codexclaw — PABCD discipline, skill routers, and multi-model subagent guidance.",
-    "version": "0.1.0",
+    "description": "Cursor-native fork of codexclaw \u2014 PABCD discipline, skill routers, and multi-model subagent guidance.",
+    "version": "0.2.0",
     "pluginRoot": "plugins"
   },
   "plugins": [
     {
       "name": "cursorclaw",
       "source": "cursorclaw",
-      "description": "Development discipline + PABCD workflow for the Cursor agent runtime.",
-      "version": "0.1.0",
+      "description": "Full Cursor port of codexclaw \u2014 skills, hooks, PABCD, agents, commands.",
+      "version": "0.2.0",
       "keywords": [
         "cursor",
         "cursor-plugin",

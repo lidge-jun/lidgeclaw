@@ -4,7 +4,7 @@
  * Watches successful `apply_patch` calls, fingerprints each touched file's changed
  * lines into a normalized "edit shape" signature, and when the SAME shape has landed
  * in >= EDIT_SHAPE_ADVICE_THRESHOLD distinct files, injects a one-time additionalContext
- * nudge to switch to a deterministic ast-grep codemod ($cxc-ast-grep) instead of
+ * nudge to switch to a deterministic ast-grep codemod ($crc-ast-grep) instead of
  * hand-repeating the edit. ADVISORY ONLY: no decision:"block", never denies anything.
  *
  * Honest limits (same class as comment-lint 060.2 / friction 080.1):
@@ -173,8 +173,8 @@ function appendRow(cwd: string, row: EditShapeRow): void {
 function adviceText(count: number, files: string[]): string {
   const sample = files.slice(0, 5).join(", ");
   return (
-    `[codexclaw edit-shape] The same-shaped edit has now landed in ${count} distinct files ` +
-    `(${sample}). If more call sites remain, stop hand-editing: load the $cxc-ast-grep skill and run ` +
+    `[cursorclaw edit-shape] The same-shaped edit has now landed in ${count} distinct files ` +
+    `(${sample}). If more call sites remain, stop hand-editing: load the $crc-ast-grep skill and run ` +
     `a deterministic codemod (ast_grep_helper.py replace PATTERN REWRITE --lang <lang>; preview first, then --apply). ` +
     `See skills/ast-grep/references/patterns.md for verified patterns.`
   );

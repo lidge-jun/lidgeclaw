@@ -1,5 +1,5 @@
 ---
-name: cxc-search
+name: search
 description: "MUST USE for external, current, real-time, or public-web lookups — latest releases/versions, news, prices, docs, status, X/Twitter, and deep research with a cited report. Routes Korean and English lookup verbs to a codex-native search ladder, never an accidental repository grep. Triggers: search, look up, latest, current, news, real-time, X, Twitter, deep research, deep-research, 검색, 검색해, 찾아봐, 찾아줘, 알아봐, 웹검색, 딥리서치, 심층 조사."
 metadata:
   last-verified: "2026-09-08"
@@ -40,7 +40,7 @@ archive:
   claims may be cited only after this proof step.
 - `add-1`: at least Tier 1 discovered, with candidate URL recorded. Promote to
   Tier 2 before using detailed claims from it.
-- Record provenance URLs with `cxc divergence candidate add ... --source <url>`.
+- Record provenance URLs with `crc divergence candidate add ... --source <url>`.
   The archive enforces non-empty source URLs; it does not certify the search tier.
   The agent must state Tier 1/Tier 2 evidence in the rationale or phase notes.
 
@@ -127,7 +127,7 @@ supplies the search discipline underneath it.
   nothing auto-loads or auto-runs it.
 
 ### Subagent Skill Attachment (SEARCH-ATTACH-01)
-Any search subagent — Tier 3 deep-research explorers, `$cxc-lunasearch` lanes,
+Any search subagent — Tier 3 deep-research explorers, `$crc-lunasearch` lanes,
 or ad-hoc research spawns — should receive THIS skill as a real skill
 attachment, not a hand-written tool directive in the message. The subagent
 auto-loads the skill at launch and follows its Tier 1/2 tool guidance
@@ -137,23 +137,23 @@ the spawn message.
 
 PABCD A-gate audit/reviewer dispatches are in scope too: a plan auditor must
 verify references and external/current claims, so the audit dispatch packet
-explicitly names `$codexclaw:cxc-search` alongside
-`$codexclaw:cxc-dev-code-reviewer` (AUDIT-LOOP-01). The spawn wrapper's
+explicitly names `$cursorclaw:search` alongside
+`$cursorclaw:dev-code-reviewer` (AUDIT-LOOP-01). The spawn wrapper's
 `ROLE_BASE_SKILLS.reviewer` resolves the same pair when that builder is used.
 
 The shared payload form is a **link-form mention in the spawn message**. On V1 the
 child's first turn parses the mention and injects the full SKILL.md body. When a
-V2-shaped spawn message reaches the codexclaw hook as plaintext (non-encrypted
+V2-shaped spawn message reaches the cursorclaw hook as plaintext (non-encrypted
 provider/proxy paths), the hook recognizes the same mention and inlines the full body.
 Native ChatGPT-backend V2 sends the hook ciphertext, so mention normalization and body
 inlining are no-ops there; when no body can be inlined, a plaintext
-`[CXC-SKILL-AFFORDANCE]` block tells the child to self-load any `$cxc-<folder>` /
-`$codexclaw:cxc-<folder>` mention from `<skillsDir>/<folder>/SKILL.md`; fork inheritance
+`[CXC-SKILL-AFFORDANCE]` block tells the child to self-load any `$crc-<folder>` /
+`$cursorclaw:cxc-<folder>` mention from `<skillsDir>/<folder>/SKILL.md`; fork inheritance
 remains a secondary channel. If the path is not link-safe, use the plugin-native
-`$codexclaw:cxc-search` fallback instead:
+`$cursorclaw:search` fallback instead:
 
 ```text
-message: "[$cxc-search](skill://<this skill's SKILL.md absolute path>)
+message: "[$crc-search](skill://<this skill's SKILL.md absolute path>)
 TASK: <lane / query family>"
 ```
 
@@ -163,14 +163,14 @@ spawn-wrapper builder:
 
 ```text
 items: [
-  { type: "skill", name: "cxc-search", path: "<this skill's SKILL.md absolute path>" },
+  { type: "skill", name: "search", path: "<this skill's SKILL.md absolute path>" },
   { type: "text",  text: "TASK: <lane / query family>" }
 ]
 ```
 
 (v2 `deny_unknown_fields` rejects `items`; plaintext V2 paths use the recognized
 mention plus the hook-inlined body. The always-on spawn-attach hook never adds
-`cxc-search` when the dispatcher omits it.)
+`search` when the dispatcher omits it.)
 
 Do not write a long inline TOOLS block in either path — the skill already says
 "web_search for discovery, then open the source; snippets lie; the page is the
@@ -178,16 +178,16 @@ evidence." A subagent that cannot open pages must flag every finding as
 `candidate — unverified snippet` in its return.
 
 ### lunasearch (dependent tool)
-`$cxc-lunasearch` is a dependent discovery lane that rides on this skill's proof
+`$crc-lunasearch` is a dependent discovery lane that rides on this skill's proof
 ladder. It fans out cheap `gpt-5.6-luna` subagents for wide discovery,
 then hands every candidate back here for Tier 2 source-proof. lunasearch
-discovers; cxc-search proves. lunasearch names THIS skill (`cxc-search`) in each
+discovers; search proves. lunasearch names THIS skill (`search`) in each
 spawn message; V1 parses the mention, while plaintext V2 paths use hook inlining as
-qualified above. Manual V1 callers may instead use `items`. See the `$cxc-lunasearch` skill for its hardcoded
+qualified above. Manual V1 callers may instead use `items`. See the `$crc-lunasearch` skill for its hardcoded
 spawn path and swarm shape.
 
 ### Removed cli-jaw tiers (non-goals — do not re-add)
-codexclaw has no server runtime, so the cli-jaw 4-tier ladder does not carry over.
+cursorclaw has no server runtime, so the cli-jaw 4-tier ladder does not carry over.
 Do **not** reintroduce any of these removed backends as available: a progrok tier, a hosted web-AI wait (Grok Expert / GPT Pro), or an Exa / Tavily / Perplexity / Brave provider promise.
 There is no codex-native equivalent and J-10 removed them deliberately.
 
@@ -236,6 +236,6 @@ spend Tier 3 subagents on a question Tier 1+2 already settled.
 - A host-exposed deep-research skill (for example `deep-research-work`) owns plan
   tracking and artifact mechanics; `references/deep-research.md` supplies the search
   discipline underneath it and aligns its steps with that skill.
-- `$cxc-lunasearch` is a dependent tool, not a tier. It hardcodes the Luna
+- `$crc-lunasearch` is a dependent tool, not a tier. It hardcodes the Luna
   model and skips catalog probing; its error fallback is serial dispatch
   (re-spawn without the model field), not a probe round-trip.

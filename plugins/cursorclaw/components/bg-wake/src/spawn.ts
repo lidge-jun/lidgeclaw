@@ -85,7 +85,7 @@ export function buildShell(command: string[], out: string, exit: string, helperP
   const joined = command.map(shellQuotePosix).join(" ");
   // tmp + mv so a reader never sees a half-written exit code.
   const tmp = shellQuotePosix(exit + ".tmp");
-  // A SUBSHELL, not a brace group: 'cxc bg run -- exit 3' inside { } would exit the
+  // A SUBSHELL, not a brace group: 'crc bg run -- exit 3' inside { } would exit the
   // wrapper itself and the exit code would never be written.
   const script =
     "( " + joined + " ) > " + shellQuotePosix(out) + " 2>&1; printf %s $? > " + tmp + " && mv " + tmp + " " + shellQuotePosix(exit);

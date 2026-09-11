@@ -71,7 +71,7 @@ export function runSessionCli(argv: string[], cwd: string, env: NodeJS.ProcessEn
     ? (flags.length === 1 || (flags.length === 2 && flags[1] === "--json")) && !flags[0].startsWith("--")
     : flags.length === 0 || (flags.length === 1 && flags[0] === "--json");
   if (!["current", "bind", "source"].includes(command) || !validFlags) {
-    return fail("Usage: cxc session current [--json] | cxc session bind [--json] | cxc session source <absolute-worktree> [--json]");
+    return fail("Usage: crc session current [--json] | crc session bind [--json] | crc session source <absolute-worktree> [--json]");
   }
   const identity = resolveNativeSession(cwd, env);
   if (!identity.ok) return fail(identity.error);

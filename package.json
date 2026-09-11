@@ -1,6 +1,6 @@
 {
   "name": "cursorclaw",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "cli-jaw-style dev discipline + multi-model subagents for the Cursor agent runtime (fork of codexclaw).",
   "type": "module",

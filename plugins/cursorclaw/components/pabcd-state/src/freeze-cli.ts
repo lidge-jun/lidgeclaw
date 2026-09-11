@@ -58,7 +58,7 @@ export function parseFreezeArgs(argv: string[]): FreezeCliArgs {
     cwd: get("--cwd") ?? process.cwd(),
     sessionId: get("--session") ?? "default",
     dryRun: argv.includes("--dry-run"),
-    // 260825 wp1: `cxc freeze --help` used to fall straight through to runFreeze,
+    // 260825 wp1: `crc freeze --help` used to fall straight through to runFreeze,
     // which WROTE .cursorclaw/interview/freeze.json and exited 0 — a workspace
     // mutation behind a read-only-looking flag, with nothing in the output to
     // signal it. Help is now parsed, and runFreeze returns before any IO.
@@ -120,7 +120,7 @@ export function runFreeze(args: FreezeCliArgs): string {
   }
 
   const lines = [
-    `[codexclaw freeze${args.dryRun ? " --dry-run" : ""}]`,
+    `[cursorclaw freeze${args.dryRun ? " --dry-run" : ""}]`,
     `manifest: ${manifestPath}`,
     `slug: ${slug}`,
     `planFiles: ${planFiles.length}`,
@@ -132,7 +132,7 @@ export function runFreeze(args: FreezeCliArgs): string {
   // L14.2: when the interview is ready, surface the goal-activation handoff so the
   // MAIN session knows to call create_goal (codexclaw stays read-only on the goal DB).
   // This is the production consumer of GOAL_ACTIVATION_DIRECTIVE — it is emitted to
-  // freeze stdout, which `cxc freeze` exposes to the operator/main session.
+  // freeze stdout, which `crc freeze` exposes to the operator/main session.
   if (ready) {
     lines.push("", GOAL_ACTIVATION_DIRECTIVE);
   }

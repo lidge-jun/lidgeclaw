@@ -1,5 +1,5 @@
 /**
- * receipt-cli.ts — `cxc receipt test` (075).
+ * receipt-cli.ts — `crc receipt test` (075).
  *
  * Runs a command and records what happened. The point is that the agent does not
  * choose the numbers: exitCode and command are observed here rather than typed
@@ -98,7 +98,7 @@ export function runReceiptCli(args: ReceiptCliArgs): ReceiptCliResult {
   const session = (args.session ?? "").trim();
   if (session.length === 0) return { output: "receipt test: --session <id> is required", code: 1 };
   if (args.command.length === 0) {
-    return { output: "receipt test: a command is required after `--`, e.g. `cxc receipt test --session <id> -- npm test`", code: 1 };
+    return { output: "receipt test: a command is required after `--`, e.g. `crc receipt test --session <id> -- npm test`", code: 1 };
   }
   const state = readState(args.cwd, session);
   if (state.phase !== "C") {
@@ -106,7 +106,7 @@ export function runReceiptCli(args: ReceiptCliArgs): ReceiptCliResult {
   }
   if (!state.checkEpoch) {
     return {
-      output: "receipt test: no check binding on this session. Step back with `cxc orchestrate B` and re-enter `cxc orchestrate C` to mint one (this cycle predates CHECK-BINDING-01).",
+      output: "receipt test: no check binding on this session. Step back with `crc orchestrate B` and re-enter `crc orchestrate C` to mint one (this cycle predates CHECK-BINDING-01).",
       code: 1,
     };
   }

@@ -28,7 +28,7 @@
  * upstream separator cannot silently reopen the surface.
  *
  * Authorization, checked in order — the first hit allows:
- *  1. a CLI grant (`cxc memory allow-write --session <id>`), consumed on use;
+ *  1. a CLI grant (`crc memory allow-write --session <id>`), consumed on use;
  *  2. the session marker set when UserPromptSubmit saw a remember idiom
  *     (state.memoryWriteRequested, hook.ts/detectMemoryWriteRequest), consumed
  *     per turn so one "기억해" does not authorize a session's worth of writes.
@@ -208,7 +208,7 @@ export function classifyMemoryWrite(
     const command = typeof toolInput.command === "string" ? toolInput.command : "";
     if (command === "") return { surface: "", target: "" };
     // A read is not a write. Only commands that can CREATE or MUTATE bytes are gated,
-    // so `cat`/`rg` over memories (what cxc-recall does constantly) stays free.
+    // so `cat`/`rg` over memories (what recall does constantly) stays free.
     if (!/>>?|\btee\b|\bsed\b|\bcp\b|\bmv\b|\brm\b|\btouch\b|\bmkdir\b|\bdd\b|\bteee?\b|\bwrite\b|\binstall\b/.test(command)) {
       return { surface: "", target: "" };
     }
@@ -226,10 +226,10 @@ export function denyReason(attempt: MemoryWriteAttempt, sessionId: string): stri
       ? `a memory note (${attempt.target})`
       : `a file under the Codex memories directory (${attempt.target})`;
   return [
-    `[codexclaw MEMORY-WRITE-GATE] Blocked a write of ${what}: this session has no explicit user request to remember anything.`,
+    `[cursorclaw MEMORY-WRITE-GATE] Blocked a write of ${what}: this session has no explicit user request to remember anything.`,
     "Memory notes outlive codexclaw and reach every later session, so they are written only when the user asks.",
     "Two ways forward: ask the user to confirm they want this remembered (a prompt such as \"기억해둬\" or \"remember this\" authorizes the next write),",
-    `or record an explicit grant with \`cxc memory allow-write --session ${sessionId || "<id>"}\`.`,
+    `or record an explicit grant with \`crc memory allow-write --session ${sessionId || "<id>"}\`.`,
     "If the user did ask, say so and retry — the request must appear in their own message, not in yours.",
   ].join(" ");
 }

@@ -88,7 +88,7 @@ async function runServe(argv: string[], metaUrl: string): Promise<number> {
       discordSweep.start();
     })
     .catch((err: unknown) => {
-      process.stderr.write(`cxc serve: adapter start failed: ${(err as Error).message}\n`);
+      process.stderr.write(`crc serve: adapter start failed: ${(err as Error).message}\n`);
     });
 
   return new Promise<number>((resolvePromise) => {
@@ -111,14 +111,14 @@ async function runServe(argv: string[], metaUrl: string): Promise<number> {
     server.listen(args.port, "127.0.0.1", () => {
       const address = server.address();
       const port = typeof address === "object" && address ? address.port : args.port;
-      process.stdout.write(`cxc serve: listening on http://127.0.0.1:${port} (cwd: ${args.cwd})\n`);
+      process.stdout.write(`crc serve: listening on http://127.0.0.1:${port} (cwd: ${args.cwd})\n`);
       const active = db.getActiveChannel();
       if (active?.token) {
-        process.stdout.write(`cxc serve: ${active.kind} channel active\n`);
+        process.stdout.write(`crc serve: ${active.kind} channel active\n`);
       }
     });
     server.on("error", (err) => {
-      process.stderr.write(`cxc serve error: ${err.message}\n`);
+      process.stderr.write(`crc serve error: ${err.message}\n`);
       db.close();
       resolvePromise(1);
     });

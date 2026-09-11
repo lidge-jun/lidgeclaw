@@ -49,7 +49,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const SKILLS_DIR = resolve(here, "..", "..", "..", "skills");
 
 function canonicalSkillMention(folder: string): string {
-  return `[$cxc-${folder}](skill://${join(SKILLS_DIR, folder, "SKILL.md")})`;
+  return `[$crc-${folder}](skill://${join(SKILLS_DIR, folder, "SKILL.md")})`;
 }
 
 function tempCwd(prefix = "cxc-spawn-"): string {
@@ -103,79 +103,79 @@ function updatedInputOf(out: string): Record<string, unknown> {
 
 test("mention normalization: bare and plugin-prefixed known skills become canonical links", () => {
   const expected = canonicalSkillMention("dev");
-  assert.equal(normalizeSkillMentions("use $cxc-dev now", SKILLS_DIR), `use ${expected} now`);
-  assert.equal(normalizeSkillMentions("use $codexclaw:cxc-dev now", SKILLS_DIR), `use ${expected} now`);
+  assert.equal(normalizeSkillMentions("use $crc-dev now", SKILLS_DIR), `use ${expected} now`);
+  assert.equal(normalizeSkillMentions("use $cursorclaw:dev now", SKILLS_DIR), `use ${expected} now`);
 });
 
 test("mention normalization: unknown, boundary-extended, and mixed-case tokens stay verbatim", () => {
-  for (const message of ["$cxc-not-a-real-skill", "$cxc-dev_extra", "$cxc-Dev", "$CXC-dev"]) {
+  for (const message of ["$crc-not-a-real-skill", "$crc-dev_extra", "$crc-Dev", "$CXC-dev"]) {
     assert.equal(normalizeSkillMentions(message, SKILLS_DIR), message);
   }
 });
 
 test("mention normalization: complete links, inline code, and fenced code are protected", () => {
   const message = [
-    "[label $cxc-dev](/target/$cxc-search)",
-    "`$cxc-dev`",
-    "```ts\n$cxc-dev\n```",
-    "~~~text\n$codexclaw:cxc-dev\n~~~",
+    "[label $crc-dev](/target/$crc-search)",
+    "`$crc-dev`",
+    "```ts\n$crc-dev\n```",
+    "~~~text\n$cursorclaw:dev\n~~~",
   ].join("\n");
   assert.equal(normalizeSkillMentions(message, SKILLS_DIR), message);
 });
 
 test("mention normalization: an inline delimiter inside a fence body does not close the fence", () => {
   // C-gate B2: only a line-anchored run >= the opening length closes a fence.
-  const closed = "```\nbody with ``` inline\n$cxc-search must stay bare\n```\nafter $cxc-dev";
+  const closed = "```\nbody with ``` inline\n$crc-search must stay bare\n```\nafter $crc-dev";
   assert.equal(
     normalizeSkillMentions(closed, SKILLS_DIR),
-    `\`\`\`\nbody with \`\`\` inline\n$cxc-search must stay bare\n\`\`\`\nafter ${canonicalSkillMention("dev")}`,
+    `\`\`\`\nbody with \`\`\` inline\n$crc-search must stay bare\n\`\`\`\nafter ${canonicalSkillMention("dev")}`,
   );
 
-  const unclosed = "```\nstill protected ``` here\n$cxc-dev";
+  const unclosed = "```\nstill protected ``` here\n$crc-dev";
   assert.equal(normalizeSkillMentions(unclosed, SKILLS_DIR), unclosed);
 });
 
 test("mention normalization: a close-run line with trailing text does not close the fence", () => {
   // C-gate r2: the closing fence may carry ONLY spaces until end of line.
-  const message = "```\n``` not a close\n$cxc-search protected\n```\nafter $cxc-dev";
+  const message = "```\n``` not a close\n$crc-search protected\n```\nafter $crc-dev";
   assert.equal(
     normalizeSkillMentions(message, SKILLS_DIR),
-    `\`\`\`\n\`\`\` not a close\n$cxc-search protected\n\`\`\`\nafter ${canonicalSkillMention("dev")}`,
+    `\`\`\`\n\`\`\` not a close\n$crc-search protected\n\`\`\`\nafter ${canonicalSkillMention("dev")}`,
   );
 });
 
 test("mention normalization: indented fences close on the same prefix; drift protects to EOM", () => {
   // C-gate r5 B1 contract: the close must byte-match the opener's container
   // prefix. Same-prefix closes; "   " vs "  " drift leaves the fence open.
-  const matched = "   ```\n$cxc-search protected\n   ```\nafter $cxc-dev";
+  const matched = "   ```\n$crc-search protected\n   ```\nafter $crc-dev";
   assert.equal(
     normalizeSkillMentions(matched, SKILLS_DIR),
-    `   \`\`\`\n$cxc-search protected\n   \`\`\`\nafter ${canonicalSkillMention("dev")}`,
+    `   \`\`\`\n$crc-search protected\n   \`\`\`\nafter ${canonicalSkillMention("dev")}`,
   );
-  const drifted = "   ```\n$cxc-search protected\n  ```\nafter $cxc-dev";
+  const drifted = "   ```\n$crc-search protected\n  ```\nafter $crc-dev";
   assert.equal(normalizeSkillMentions(drifted, SKILLS_DIR), drifted);
 });
 
 test("mention normalization: a block-quoted fence with an inline delimiter protects its body", () => {
   // C-gate r3: fence detection strips one container prefix level before the marker check.
-  const message = "> ```\n> body ``` inline\n> $cxc-search stays\n> ```\nafter $cxc-dev";
+  const message = "> ```\n> body ``` inline\n> $crc-search stays\n> ```\nafter $crc-dev";
   assert.equal(
     normalizeSkillMentions(message, SKILLS_DIR),
-    `> \`\`\`\n> body \`\`\` inline\n> $cxc-search stays\n> \`\`\`\nafter ${canonicalSkillMention("dev")}`,
+    `> \`\`\`\n> body \`\`\` inline\n> $crc-search stays\n> \`\`\`\nafter ${canonicalSkillMention("dev")}`,
   );
 });
 
 test("mention normalization: CRLF fences close so mentions after the fence still normalize", () => {
-  const message = "```\r\n$cxc-search protected\r\n```\r\nafter $cxc-dev";
+  const message = "```\r\n$crc-search protected\r\n```\r\nafter $crc-dev";
   assert.equal(
     normalizeSkillMentions(message, SKILLS_DIR),
-    `\`\`\`\r\n$cxc-search protected\r\n\`\`\`\r\nafter ${canonicalSkillMention("dev")}`,
+    `\`\`\`\r\n$crc-search protected\r\n\`\`\`\r\nafter ${canonicalSkillMention("dev")}`,
   );
 });
 
 test("mention normalization: an escaped backtick is not an inline-code opener", () => {
   // C-gate r3: the scanner consumes \x pairs; no code-span state bleeds to EOM.
-  const message = "escaped \\` backtick here\nthen $cxc-dev";
+  const message = "escaped \\` backtick here\nthen $crc-dev";
   assert.equal(
     normalizeSkillMentions(message, SKILLS_DIR),
     `escaped \\\` backtick here\nthen ${canonicalSkillMention("dev")}`,
@@ -184,12 +184,12 @@ test("mention normalization: an escaped backtick is not an inline-code opener", 
 
 test("mention normalization: broken known-skill links are atomically repaired", () => {
   const expected = canonicalSkillMention("dev");
-  assert.equal(normalizeSkillMentions("[$cxc-dev](/tmp/not-a-skill.txt)", SKILLS_DIR), expected);
+  assert.equal(normalizeSkillMentions("[$crc-dev](/tmp/not-a-skill.txt)", SKILLS_DIR), expected);
   assert.equal(
-    normalizeSkillMentions("[$codexclaw:cxc-dev](skill:///missing/dev/SKILL.md)", SKILLS_DIR),
+    normalizeSkillMentions("[$cursorclaw:dev](skill:///missing/dev/SKILL.md)", SKILLS_DIR),
     expected,
   );
-  const unknown = "[$cxc-not-a-real-skill](/tmp/broken)";
+  const unknown = "[$crc-not-a-real-skill](/tmp/broken)";
   assert.equal(normalizeSkillMentions(unknown, SKILLS_DIR), unknown);
 });
 
@@ -202,8 +202,8 @@ test("mention normalization: canonical and alternate existing SKILL.md targets s
   mkdirSync(dirname(alternatePath), { recursive: true });
   writeFileSync(alternatePath, "# alternate dev\n");
   try {
-    const skillUri = `[$cxc-dev](skill://${alternatePath})`;
-    const plainPath = `[$codexclaw:cxc-dev](${alternatePath})`;
+    const skillUri = `[$crc-dev](skill://${alternatePath})`;
+    const plainPath = `[$cursorclaw:dev](${alternatePath})`;
     assert.equal(normalizeSkillMentions(skillUri, SKILLS_DIR), skillUri);
     assert.equal(normalizeSkillMentions(plainPath, SKILLS_DIR), plainPath);
   } finally {
@@ -216,11 +216,11 @@ test("mention normalization: angle-bracket and titled destinations are not the s
   // even when broken (previously repaired).
   const devPath = join(SKILLS_DIR, "dev", "SKILL.md");
   const untouched = [
-    `[$cxc-dev](<${devPath}>)`,
-    `[$cxc-dev](${devPath} "Dev skill")`,
-    `[$cxc-dev](<skill://${devPath}> 'Dev skill')`,
-    "[$cxc-dev](</missing/dev/SKILL.md>)",
-    '[$cxc-dev](/missing/dev.txt "broken")',
+    `[$crc-dev](<${devPath}>)`,
+    `[$crc-dev](${devPath} "Dev skill")`,
+    `[$crc-dev](<skill://${devPath}> 'Dev skill')`,
+    "[$crc-dev](</missing/dev/SKILL.md>)",
+    '[$crc-dev](/missing/dev.txt "broken")',
   ];
   for (const link of untouched) {
     assert.equal(normalizeSkillMentions(link, SKILLS_DIR), link);
@@ -228,13 +228,13 @@ test("mention normalization: angle-bracket and titled destinations are not the s
 });
 
 test("mention normalization: a quoted-title link keeps its whole line protected", () => {
-  // C-gate r2/r4: [$cxc-dev](<existing path> "(") is not the standalone shape;
+  // C-gate r2/r4: [$crc-dev](<existing path> "(") is not the standalone shape;
   // 090 contract change: the mixed line is protected whole, so the trailing
   // bare mention stays bare (previously rewritten).
   const devPath = join(SKILLS_DIR, "dev", "SKILL.md");
-  const link = `[$cxc-dev](${devPath} "(")`;
+  const link = `[$crc-dev](${devPath} "(")`;
   assert.equal(normalizeSkillMentions(link, SKILLS_DIR), link);
-  const mixed = `before ${link} after $cxc-dev`;
+  const mixed = `before ${link} after $crc-dev`;
   assert.equal(normalizeSkillMentions(mixed, SKILLS_DIR), mixed);
 });
 
@@ -243,64 +243,64 @@ test("mention normalization: a huge quoted-title link stays byte-identical, neve
   // line is simply not the standalone shape. 090 contract change: the mixed
   // line's trailing bare mention also stays bare (previously rewritten).
   const devPath = join(SKILLS_DIR, "dev", "SKILL.md");
-  const link = `[$cxc-dev](${devPath} "${"t".repeat(1200)}")`;
+  const link = `[$crc-dev](${devPath} "${"t".repeat(1200)}")`;
   assert.equal(normalizeSkillMentions(link, SKILLS_DIR), link);
-  const mixed = `${link} then $cxc-dev`;
+  const mixed = `${link} then $crc-dev`;
   assert.equal(normalizeSkillMentions(mixed, SKILLS_DIR), mixed);
 });
 
 test("mention normalization: nested block-quote fences protect their body", () => {
   // r4 blocker: container tokens strip before the fence toggle.
-  const message = "> > ```\n> > $cxc-search inside\n> > ```\nafter $cxc-dev";
+  const message = "> > ```\n> > $crc-search inside\n> > ```\nafter $crc-dev";
   assert.equal(
     normalizeSkillMentions(message, SKILLS_DIR),
-    `> > \`\`\`\n> > $cxc-search inside\n> > \`\`\`\nafter ${canonicalSkillMention("dev")}`,
+    `> > \`\`\`\n> > $crc-search inside\n> > \`\`\`\nafter ${canonicalSkillMention("dev")}`,
   );
 });
 
 test("mention normalization: a literal quoted fence line inside a top-level fence does not close it", () => {
   // C-gate r5 B1: "> ```" has a different container prefix than the "" opener.
-  const message = "```\n> ```\n$cxc-search still fenced\n```\nafter $cxc-dev";
+  const message = "```\n> ```\n$crc-search still fenced\n```\nafter $crc-dev";
   assert.equal(
     normalizeSkillMentions(message, SKILLS_DIR),
-    `\`\`\`\n> \`\`\`\n$cxc-search still fenced\n\`\`\`\nafter ${canonicalSkillMention("dev")}`,
+    `\`\`\`\n> \`\`\`\n$crc-search still fenced\n\`\`\`\nafter ${canonicalSkillMention("dev")}`,
   );
 
   // A genuine "> ```"-opened fence still closes on "> ```".
-  const quoted = "> ```\n> $cxc-search fenced\n> ```\nafter $cxc-dev";
+  const quoted = "> ```\n> $crc-search fenced\n> ```\nafter $crc-dev";
   assert.equal(
     normalizeSkillMentions(quoted, SKILLS_DIR),
-    `> \`\`\`\n> $cxc-search fenced\n> \`\`\`\nafter ${canonicalSkillMention("dev")}`,
+    `> \`\`\`\n> $crc-search fenced\n> \`\`\`\nafter ${canonicalSkillMention("dev")}`,
   );
 });
 
 test("mention normalization: deep container nesting still opens fence protection", () => {
   // C-gate r5 B2: the fence-toggle container strip has no token cap, so five
   // quote levels cannot leak backtick-free body lines to bare normalization.
-  const message = "> > > > > ```\n> > > > > $cxc-search body\nplain $cxc-search body\n> > > > > ```\nafter $cxc-dev";
+  const message = "> > > > > ```\n> > > > > $crc-search body\nplain $crc-search body\n> > > > > ```\nafter $crc-dev";
   assert.equal(
     normalizeSkillMentions(message, SKILLS_DIR),
-    `> > > > > \`\`\`\n> > > > > $cxc-search body\nplain $cxc-search body\n> > > > > \`\`\`\nafter ${canonicalSkillMention("dev")}`,
+    `> > > > > \`\`\`\n> > > > > $crc-search body\nplain $crc-search body\n> > > > > \`\`\`\nafter ${canonicalSkillMention("dev")}`,
   );
 });
 
 test("mention normalization: an escaped destination is not the standalone shape and stays verbatim", () => {
   // r4 blocker: backslashes in targets are never unescaped-and-checked.
-  const link = "[$cxc-dev](/tmp/pa\\th/SKILL.md)";
+  const link = "[$crc-dev](/tmp/pa\\th/SKILL.md)";
   assert.equal(normalizeSkillMentions(link, SKILLS_DIR), link);
 });
 
 test("mention normalization: a bare mention sharing a line with any link stays bare", () => {
   // 090 contract: lines containing brackets are never bare-token rewritten.
-  const message = "see [docs](https://example.com) and $cxc-dev";
+  const message = "see [docs](https://example.com) and $crc-dev";
   assert.equal(normalizeSkillMentions(message, SKILLS_DIR), message);
 });
 
 test("mention normalization: container-prefixed standalone link lines are handled", () => {
   const canonical = canonicalSkillMention("dev");
   assert.equal(normalizeSkillMentions(`- ${canonical}`, SKILLS_DIR), `- ${canonical}`);
-  assert.equal(normalizeSkillMentions("- [$cxc-dev](skill:///missing/dev/SKILL.md)", SKILLS_DIR), `- ${canonical}`);
-  assert.equal(normalizeSkillMentions("> 1. [$cxc-dev](/tmp/broken.txt)\t", SKILLS_DIR), `> 1. ${canonical}\t`);
+  assert.equal(normalizeSkillMentions("- [$crc-dev](skill:///missing/dev/SKILL.md)", SKILLS_DIR), `- ${canonical}`);
+  assert.equal(normalizeSkillMentions("> 1. [$crc-dev](/tmp/broken.txt)\t", SKILLS_DIR), `> 1. ${canonical}\t`);
 });
 
 test("mention normalization: adversarial floods stay linear-time", () => {
@@ -322,8 +322,8 @@ test("mention normalization: adversarial floods stay linear-time", () => {
   }
   const budgetMs = 1000 * fsFactor;
   const KIB_128 = 128 * 1024;
-  const parenTitleUnit = '[$cxc-dev](/x "(") ';
-  const repairUnit = "[$cxc-dev](/x)\n";
+  const parenTitleUnit = '[$crc-dev](/x "(") ';
+  const repairUnit = "[$crc-dev](/x)\n";
   const cases: Array<{ name: string; message: string; identity: boolean }> = [
     { name: 'unmatched "[" flood', message: "[".repeat(KIB_128), identity: true },
     { name: 'mid-line "~" flood', message: `x ${"~".repeat(KIB_128)}`, identity: true },
@@ -356,7 +356,7 @@ test("mention normalization: adversarial floods stay linear-time", () => {
 });
 
 test("mention normalization: messages over 256 KiB pass through untouched", () => {
-  const message = `$cxc-dev ${"x".repeat(256 * 1024)}`;
+  const message = `$crc-dev ${"x".repeat(256 * 1024)}`;
   assert.equal(normalizeSkillMentions(message, SKILLS_DIR), message);
 });
 
@@ -365,7 +365,7 @@ test("mention normalization: link-unsafe skill roots use the plugin-prefixed tok
   mkdirSync(join(skillsDir, "dev"), { recursive: true });
   writeFileSync(join(skillsDir, "dev", "SKILL.md"), "# dev\n");
   try {
-    assert.equal(normalizeSkillMentions("$cxc-dev", skillsDir), "$codexclaw:cxc-dev");
+    assert.equal(normalizeSkillMentions("$crc-dev", skillsDir), "$cursorclaw:dev");
   } finally {
     rmSync(skillsDir, { recursive: true, force: true });
   }
@@ -386,7 +386,7 @@ test("leaf guard text does not contain the literal recursion token name", () => 
 });
 
 test("v2 leaf guard: subagent-issued spawn is denied without the token", () => {
-  const out = runSpawnAttachHook(subagentSpawnPayload({ task_name: "child", message: "spawn with $cxc-dev" }));
+  const out = runSpawnAttachHook(subagentSpawnPayload({ task_name: "child", message: "spawn with $crc-dev" }));
   const parsed = JSON.parse(out);
   assert.equal(parsed.hookSpecificOutput.permissionDecision, "deny");
   assert.match(parsed.hookSpecificOutput.permissionDecisionReason, /LEAF-TOPOLOGY-01/);
@@ -534,7 +534,7 @@ test("root recursion request mints a capability and keeps coordinator scope cons
   assert.ok(String(ui.message).startsWith(LEAF_GUARD_BLOCK_COORDINATOR));
   assert.match(String(ui.message), /CXC-SUBSPAWN-GRANT:[a-f0-9]{64}/);
   assert.ok(!String(ui.message).includes(SUBSPAWN_TOKEN));
-  assert.match(ui.message as string, /Do NOT run cxc orchestrate, cxc loop, or goal commands/);
+  assert.match(ui.message as string, /Do NOT run crc orchestrate, cxc loop, or goal commands/);
   assert.match(ui.message as string, /Stay inside the task's stated\nfile\/write scope/);
   assert.doesNotMatch(ui.message as string, /Do NOT spawn/);
 });
@@ -543,20 +543,20 @@ test("v2 mention normalization emits an allow envelope even when the guard is al
   // 090 contract change: the marker line contains brackets and is protected,
   // so the mention now sits on its own line to be repairable.
   const out = runSpawnAttachHook(
-    spawnPayload({ task_name: "t", message: `${LEAF_GUARD_MARKER} guarded\nuse $cxc-dev`, trace_id: "keep-me" }),
+    spawnPayload({ task_name: "t", message: `${LEAF_GUARD_MARKER} guarded\nuse $crc-dev`, trace_id: "keep-me" }),
   );
   const ui = updatedInputOf(out);
   assert.equal(ui.trace_id, "keep-me");
   assert.ok(String(ui.message).startsWith(`${LEAF_GUARD_BLOCK}\n\n`));
-  assert.match(ui.message as string, /\[CXC-LEAF-GUARD\] guarded\nuse \[\$cxc-dev\]\(skill:\/\//);
+  assert.match(ui.message as string, /\[CXC-LEAF-GUARD\] guarded\nuse \[\$crc-dev\]\(skill:\/\//);
   assert.equal((ui.message as string).match(/\[CXC-LEAF-GUARD\]/g)?.length, 2);
 });
 
 test("v2 mention normalization composes with a newly prepended leaf guard", () => {
-  const out = runSpawnAttachHook(spawnPayload({ task_name: "t", fork_turns: "none", message: "use $cxc-dev" }));
+  const out = runSpawnAttachHook(spawnPayload({ task_name: "t", fork_turns: "none", message: "use $crc-dev" }));
   const ui = updatedInputOf(out);
   assert.ok((ui.message as string).startsWith(`${LEAF_GUARD_BLOCK}\n\n`));
-  assert.match(ui.message as string, /\[\$cxc-dev\]\(skill:\/\/.*[\\/]dev[\\/]SKILL\.md\)/);
+  assert.match(ui.message as string, /\[\$crc-dev\]\(skill:\/\/.*[\\/]dev[\\/]SKILL\.md\)/);
 });
 
 test("v1 mention normalization composes with guard, model routing, and effort", () => {
@@ -564,12 +564,12 @@ test("v1 mention normalization composes with guard, model routing, and effort", 
     explorer: { mode: "model", model: "kiro/claude-opus-4.6", effort: "high", promptOverride: null },
   });
   const out = runSpawnAttachHook(
-    spawnPayloadAt(cwd, { message: "$cxc-dev map the frontend codebase", agent_type: "explorer", trace_id: "keep" }),
+    spawnPayloadAt(cwd, { message: "$crc-dev map the frontend codebase", agent_type: "explorer", trace_id: "keep" }),
   );
   const ui = updatedInputOf(out);
   assert.equal(ui.model, "kiro/claude-opus-4.6");
   assert.ok((ui.message as string).startsWith(`${V1_SCOPE_BLOCK}\n\n`));
-  assert.match(ui.message as string, /\[\$cxc-dev\]\(skill:\/\//);
+  assert.match(ui.message as string, /\[\$crc-dev\]\(skill:\/\//);
   // 260818: the skill BODY is now inlined on v1 too, so the caller's text is no
   // longer the tail of the message — it is followed by the attached SKILL.md.
   assert.match(ui.message as string, / map the frontend codebase/);
@@ -803,7 +803,7 @@ test("isV2SpawnInput and isFullHistoryFork classify spawn shapes", () => {
 
 test("mentionedFolders recognizes all supported mention shapes", () => {
   const found = mentionedFolders(
-    "$cxc-dev and $codexclaw:cxc-dev-testing and [$cxc-search](skill:///x/skills/search/SKILL.md)",
+    "$crc-dev and $cursorclaw:dev-testing and [$crc-search](skill:///x/skills/search/SKILL.md)",
   );
   assert.deepEqual([...found].sort(), ["dev", "dev-testing", "search"]);
 });
@@ -824,7 +824,7 @@ test("collaboration hook name is treated as V2: inline + guard on a marker-less 
       hook_event_name: "PreToolUse",
       tool_name: "collaborationspawn_agent",
       cwd: tempCwd("cxc-collab-"),
-      tool_input: { task_name: "t", fork_turns: "none", message: "use $cxc-dev for this" },
+      tool_input: { task_name: "t", fork_turns: "none", message: "use $crc-dev for this" },
     }),
   );
   const ui = updatedInputOf(out);
@@ -833,7 +833,7 @@ test("collaboration hook name is treated as V2: inline + guard on a marker-less 
 });
 
 test("inlineSkillBodies: appends one block per recognized folder, dedupes repeats", () => {
-  const msg = "load $cxc-dev then $cxc-dev again";
+  const msg = "load $crc-dev then $crc-dev again";
   const out = inlineSkillBodies(msg, SKILLS_DIR);
   assert.ok(out.startsWith(msg));
   assert.equal(out.split(`${INLINE_SKILL_OPEN}dev">`).length - 1, 1);
@@ -851,7 +851,7 @@ test("v1 spawn (no V2 markers) inlines the mentioned SKILL.md body", () => {
       hook_event_name: "PreToolUse",
       tool_name: "spawn_agent",
       cwd: tempCwd("cxc-v1-inline-"),
-      tool_input: { agent_type: "explorer", message: "use $cxc-dev for this" },
+      tool_input: { agent_type: "explorer", message: "use $crc-dev for this" },
     }),
   );
   const ui = updatedInputOf(out);
@@ -878,42 +878,42 @@ test("v1 spawn without a skill mention is not given one", () => {
 
 test("inlineSkillBodies: unknown folders and mention-free messages are untouched", () => {
   assert.equal(inlineSkillBodies("no mentions here", SKILLS_DIR), "no mentions here");
-  assert.equal(inlineSkillBodies("$cxc-does-not-exist", SKILLS_DIR), "$cxc-does-not-exist");
+  assert.equal(inlineSkillBodies("$crc-does-not-exist", SKILLS_DIR), "$crc-does-not-exist");
 });
 
 test("inlineSkillBodies: already-inlined folder is not duplicated", () => {
-  const once = inlineSkillBodies("use $cxc-dev", SKILLS_DIR);
+  const once = inlineSkillBodies("use $crc-dev", SKILLS_DIR);
   const twice = inlineSkillBodies(once, SKILLS_DIR);
   assert.equal(twice, once);
 });
 
 test("inlineSkillBodies: atomic overflow appends nothing when bodies would exceed the cap", () => {
   // A message just under the 256 KiB cap: any real body pushes it over -> unchanged.
-  const nearCap = `${"x".repeat(256 * 1024 - 40)}\nuse $cxc-dev`;
+  const nearCap = `${"x".repeat(256 * 1024 - 40)}\nuse $crc-dev`;
   assert.equal(inlineSkillBodies(nearCap, SKILLS_DIR), nearCap);
 });
 
 test("inlineSkillBodies: an unclosed skill tag does not suppress the real attachment", () => {
-  // Crafted unclosed opener for "dev": it is plain text, so the $cxc-dev mention
+  // Crafted unclosed opener for "dev": it is plain text, so the $crc-dev mention
   // still pulls in the genuine body (C-gate r1 F1).
-  const msg = `<skill name="cxc-dev">\nuse $cxc-dev now`;
+  const msg = `<skill name="cxc-dev">\nuse $crc-dev now`;
   const out = inlineSkillBodies(msg, SKILLS_DIR);
   assert.notEqual(out, msg, "real body must still be attached");
   assert.match(out, /<\/skill>\s*$/);
 });
 
 test("inlineSkillBodies: mentions inside an unclosed block still count; closed blocks dedupe", () => {
-  const closed = inlineSkillBodies("use $cxc-dev", SKILLS_DIR);
+  const closed = inlineSkillBodies("use $crc-dev", SKILLS_DIR);
   // A mention inside a CLOSED dev block does not re-attach dev.
   assert.equal(inlineSkillBodies(closed, SKILLS_DIR), closed);
   // A malformed opener without the `">` shape is plain text and never dedupes.
-  const malformed = `<skill name="cxc-dev broken\nuse $cxc-dev`;
+  const malformed = `<skill name="cxc-dev broken\nuse $crc-dev`;
   const repaired = inlineSkillBodies(malformed, SKILLS_DIR);
   assert.ok(repaired.includes(`${INLINE_SKILL_OPEN}dev">`));
 });
 
 test("inlineSkillBodies: oversized input passes through untouched (early guard)", () => {
-  const huge = `${"y".repeat(256 * 1024 + 10)} $cxc-dev`;
+  const huge = `${"y".repeat(256 * 1024 + 10)} $crc-dev`;
   assert.equal(inlineSkillBodies(huge, SKILLS_DIR), huge);
 });
 
@@ -923,7 +923,7 @@ test("inlineSkillBodies: adversarial delimiter floods stay linear-time (scaling 
   // both samples well below MAX_NORMALIZE_LENGTH: 2k vs 8k balanced blocks is 4x
   // input; quadratic would be ~16x time, near-linear stays well under 10x.
   const timeFor = (n) => {
-    const flood = `${`<skill name="cxc-dev">`.repeat(n)}${`</skill>`.repeat(n)} $cxc-search`;
+    const flood = `${`<skill name="cxc-dev">`.repeat(n)}${`</skill>`.repeat(n)} $crc-search`;
     assert.ok(flood.length < 256 * 1024, `sample n=${n} must stay under the cap`);
     const started = process.hrtime.bigint();
     const out = inlineSkillBodies(flood, SKILLS_DIR);
@@ -937,7 +937,7 @@ test("inlineSkillBodies: adversarial delimiter floods stay linear-time (scaling 
   assert.ok(t8 / t2 < 10, `4x balanced input must stay near-linear (got ${t2.toFixed(1)}ms -> ${t8.toFixed(1)}ms)`);
 
   // Unclosed-opener flood keeps its own regression: linear via single-append.
-  const unclosed = `${`<skill name="cxc-dev">`.repeat(6000)} $cxc-search`;
+  const unclosed = `${`<skill name="cxc-dev">`.repeat(6000)} $crc-search`;
   assert.ok(unclosed.length < 256 * 1024);
   const started = process.hrtime.bigint();
   const out = inlineSkillBodies(unclosed, SKILLS_DIR);
@@ -948,14 +948,14 @@ test("inlineSkillBodies: adversarial delimiter floods stay linear-time (scaling 
 
 test("inlineSkillBodies: nested closed blocks hide their whole interior from scanning", () => {
   // A closed dev block CONTAINING a nested closed block whose interior mentions
-  // $cxc-loop: nothing inside the outer block may trigger an attachment.
+  // $crc-loop: nothing inside the outer block may trigger an attachment.
   const nested = [
     `${INLINE_SKILL_OPEN}dev">`,
     `outer body`,
     `${INLINE_SKILL_OPEN}search">`,
-    `inner body mentioning $cxc-loop`,
+    `inner body mentioning $crc-loop`,
     `</skill>`,
-    `outer tail also mentioning $cxc-loop`,
+    `outer tail also mentioning $crc-loop`,
     `</skill>`,
     `no outside mentions`,
   ].join("\n");
@@ -966,7 +966,7 @@ test("same-intent v1/v2 spawns produce surface-appropriate effective payloads", 
   const cwd = workspaceWithConfig({
     explorer: { mode: "model", model: "kiro/claude-opus-4.6", effort: "high", promptOverride: null },
   });
-  const intent = "map the frontend codebase with $cxc-dev";
+  const intent = "map the frontend codebase with $crc-dev";
   const v1 = updatedInputOf(
     runSpawnAttachHook(spawnPayloadAt(cwd, { message: intent, agent_type: "explorer" })),
   );
@@ -981,7 +981,7 @@ test("same-intent v1/v2 spawns produce surface-appropriate effective payloads", 
   assert.ok((v2.message as string).startsWith(`${LEAF_GUARD_BLOCK}\n\n`));
   // Skill delivery: v1 keeps the parseable mention link (upstream injects); v2
   // additionally inlines the body (upstream never parses v2 spawn messages).
-  assert.match(v1.message as string, /\[\$cxc-dev\]\(skill:\/\//);
+  assert.match(v1.message as string, /\[\$crc-dev\]\(skill:\/\//);
   assert.ok((v2.message as string).includes(`${INLINE_SKILL_OPEN}dev">`));
 });
 
@@ -991,7 +991,7 @@ test("v2 affordance: appended only when inlining attached nothing", () => {
   const affordanceOpening = skillAffordanceBlock(SKILLS_DIR).split("\n")[0];
   // Mentions inlined -> no affordance.
   const inlined = updatedInputOf(
-    runSpawnAttachHook(spawnPayload({ task_name: "t", fork_turns: "none", message: "use $cxc-dev" })),
+    runSpawnAttachHook(spawnPayload({ task_name: "t", fork_turns: "none", message: "use $crc-dev" })),
   );
   assert.ok((inlined.message as string).includes(`${INLINE_SKILL_OPEN}dev">`));
   assert.ok(!(inlined.message as string).includes(affordanceOpening));
@@ -1028,7 +1028,7 @@ test("skillAffordanceBlock names the skills dir and the mention forms", () => {
   const block = skillAffordanceBlock(SKILLS_DIR);
   assert.ok(block.startsWith(SKILL_AFFORDANCE_MARKER));
   assert.ok(block.includes(`${SKILLS_DIR}/<name>/SKILL.md`));
-  assert.ok(block.includes("$codexclaw:cxc-<name>"));
+  assert.ok(block.includes("$cursorclaw:<name>"));
 });
 
 test("concise dev metadata remains readable by the real leaf catalog", () => {
@@ -1046,7 +1046,7 @@ test("concise dev metadata remains readable by the real leaf catalog", () => {
 
 test("concise entrypoint is delivered once without recursively inlining its refs", () => {
   const md = readFileSync(join(SKILLS_DIR, "dev", "SKILL.md"), "utf8").trim();
-  const first = inlineSkillBodies("use $cxc-dev", SKILLS_DIR);
+  const first = inlineSkillBodies("use $crc-dev", SKILLS_DIR);
   assert.ok(first.includes(md));
   assert.equal(first.indexOf(md), first.lastIndexOf(md));
   assert.equal(inlineSkillBodies(first, SKILLS_DIR), first);

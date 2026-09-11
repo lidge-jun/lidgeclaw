@@ -1,5 +1,5 @@
 /**
- * receipt-spawn.test.ts - issue #40: `cxc receipt test -- npm test` on Windows.
+ * receipt-spawn.test.ts - issue #40: `crc receipt test -- npm test` on Windows.
  *
  * The receipt runner used to hand its argv straight to a shell-less spawnSync,
  * which cannot start the command people actually pass. Bare `npm` skips PATHEXT

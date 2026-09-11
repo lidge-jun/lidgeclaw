@@ -1,5 +1,5 @@
 /**
- * cli.test.ts — L9.3 `cxc subagents` operator surface.
+ * cli.test.ts — L9.3 `crc subagents` operator surface.
  *
  * Proves the parse + run over the SAME store the MCP/GUI use: list/get/set
  * roundtrip, validation surfaced as errors, prompt set/clear, and help.

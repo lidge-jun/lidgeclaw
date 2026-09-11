@@ -14,9 +14,9 @@ test("parses control verbs status / reset", () => {
 });
 
 test("accepts namespaced + shorthand prefixes", () => {
-  assert.equal(parseOrchestrateCommand("$codexclaw:cxc-orchestrate P")?.verb, "P");
-  assert.equal(parseOrchestrateCommand("$cxc-orchestrate p")?.verb, "P");
-  assert.equal(parseOrchestrateCommand("cxc orchestrate a")?.verb, "A");
+  assert.equal(parseOrchestrateCommand("$cursorclaw:orchestrate P")?.verb, "P");
+  assert.equal(parseOrchestrateCommand("$crc-orchestrate p")?.verb, "P");
+  assert.equal(parseOrchestrateCommand("crc orchestrate a")?.verb, "A");
   assert.equal(parseOrchestrateCommand("/orchestrate c")?.verb, "C");
 });
 

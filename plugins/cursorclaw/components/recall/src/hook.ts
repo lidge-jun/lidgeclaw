@@ -8,7 +8,7 @@
  *
  * UserPromptSubmit: when the user's prompt references past work (Korean or English
  * recall idioms) and no recall command is already present, inject a short directive
- * pointing at `cxc chat search` / `cxc memory search`.
+ * pointing at `crc chat search` / `crc memory search`.
  *
  * FAIL-OPEN: any parse/shape problem yields empty output (no injection).
  * Envelope parity with pabcd-state buildContextOutput (CRLF normalize, trim,
@@ -53,7 +53,7 @@ function cxcInvocation(moduleUrl: string): string {
  * import time) so the CODEXCLAW_CXC test seam and per-machine PATH state apply
  * per envelope. Recall injections emit BARE (un-backticked) command-block lines,
  * so only lines built through this helper are rewritten — prose mentions of the
- * word `cxc` (e.g. "$cxc-recall") keep the literal (H1, 260724 fresh-install).
+ * word `cxc` (e.g. "$crc-recall") keep the literal (H1, 260724 fresh-install).
  */
 const CXC = (): string => cxcInvocation(import.meta.url);
 
@@ -98,7 +98,7 @@ const RECALL_PATTERNS: readonly RegExp[] = [
  * or an explicit skill mention.
  */
 const ALREADY_RECALLING =
-  /\bcxc\s+(chat|memory)\s+(search|index)\b|\bcodexclaw(\.mjs)?\s+(chat|memory)\s+(search|index)\b|\b(chat|memory)\s+search\s+["']|\$cxc-recall\b/;
+  /\bcxc\s+(chat|memory)\s+(search|index)\b|\bcodexclaw(\.mjs)?\s+(chat|memory)\s+(search|index)\b|\b(chat|memory)\s+search\s+["']|\$crc-recall\b/;
 
 export function detectRecallIntent(prompt: string): boolean {
   if (prompt.trim() === "") return false;
@@ -114,7 +114,7 @@ function buildDirective(): string {
     "search prior sessions (read-only):",
     `  ${cxc} chat search "<distinctive terms>" --days 0   # full-history FTS over ~/.codex`,
     `  ${cxc} memory search "<topic>"                      # durable per-thread summaries`,
-    "Add --context 2 to read around a hit, --cwd <repo> to scope. Details: $cxc-recall.",
+    "Add --context 2 to read around a hit, --cwd <repo> to scope. Details: $crc-recall.",
   ].join("\n");
 }
 
@@ -194,7 +194,7 @@ export function hitCountPenalty(count: number): number {
 
 /**
  * Injection-history store for the auto-inject path. Kept behind an interface so
- * the penalty is reachable ONLY from here: explicit `cxc chat/memory search`
+ * the penalty is reachable ONLY from here: explicit `crc chat/memory search`
  * must answer the same query the same way every time, and the surest guarantee
  * of that is that the search core has no way to reach this code at all.
  */
@@ -523,8 +523,8 @@ export function handleSessionStart(status: string, cwd?: string, source?: string
         "about prior work \u2014 unfamiliar terms, lost context, \"\uadf8\ub54c/\uc9c0\ub09c\ubc88/last time\" \u2014 run:",
         `  ${cxc} chat search "<terms>" --days 0   |   ${cxc} memory search "<topic>"`,
       ];
-  if (status !== "") notice.push(`Index: ${status}. Details: $cxc-recall.`);
-  else notice.push("Details: $cxc-recall.");
+  if (status !== "") notice.push(`Index: ${status}. Details: $crc-recall.`);
+  else notice.push("Details: $crc-recall.");
   parts.push(notice.join("\n"));
 
   return buildContextOutput("SessionStart", parts.join("\n\n"));

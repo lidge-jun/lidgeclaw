@@ -95,7 +95,7 @@ function detectCodexVersion(runner: typeof spawnSync): string | undefined {
 /**
  * Are the codex feature flags codexclaw declares actually on?
  *
- * The two one-shot surfaces that report this (`cxc enable`'s warning and the SessionStart
+ * The two one-shot surfaces that report this (`crc enable`'s warning and the SessionStart
  * self-heal context) both speak once and are gone. Without a standing surface, a user asking
  * "why is the question-choice UI missing" has nothing to read.
  *
@@ -129,7 +129,7 @@ export function buildDeclaredFeaturesCheck(res: { status: number | null; stdout:
       name: "features",
       severity: "WARN",
       evidence: `could not read 'codex features list'${res.status === null ? "" : ` (exit ${res.status})`}${res.stderr.trim() ? `: ${res.stderr.trim().slice(0, 160)}` : ""}`,
-      repair: "ensure the `codex` binary is on PATH, then re-run `cxc doctor`",
+      repair: "ensure the `codex` binary is on PATH, then re-run `crc doctor`",
     };
   }
   const state = parseDoctorFeatures(res.stdout);
@@ -466,7 +466,7 @@ export function runHookTrustCheck(pluginRoot: string, options: DoctorOptions = {
         ? undefined
         : neverTrusted.length === failed.length
         ? `${failed.length} hook(s) have no trust entry in ${join(codexHome, "config.toml")}; only Codex itself writes those on hook approval. Approve this plugin's hooks in Codex, or record them explicitly with: cxc hooks retrust --key ${pluginKey} --codex-home ${codexHome} --bootstrap-ok`
-        : `cxc hooks retrust --key ${pluginKey} --codex-home ${codexHome}`;
+        : `crc hooks retrust --key ${pluginKey} --codex-home ${codexHome}`;
     return {
       name: "hook-trust",
       // An EMPTY result set is not a pass. `diagnoseHookTrust` skips a handler it

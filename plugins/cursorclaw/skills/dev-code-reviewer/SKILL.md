@@ -1,5 +1,5 @@
 ---
-name: cxc-dev-code-reviewer
+name: dev-code-reviewer
 description: "MUST USE for code review and review-readiness — review process, quality thresholds, antipattern detection, review verdicts, and giving/receiving feedback. Activates by change-surface for PR review, diff review, pre-merge checks, refactor audits, and high-risk changes. Triggers: 'review this', 'code review', 'PR review', 'check my diff', 'before merge', 'antipattern', '리뷰', '코드 리뷰', '머지 전에 확인'."
 metadata:
   last-verified: "2026-07-02"
@@ -92,7 +92,7 @@ machine-scannable: end the reply with a final line `VERDICT: PASS`,
 `VERDICT: GO-WITH-FIXES (blockers=N)`, or `VERDICT: FAIL` (mapping:
 Approve -> PASS; Approve-with-suggestions -> GO-WITH-FIXES; Request-changes /
 Block -> FAIL). The dispatching agent's exit rule is AUDIT-LOOP-01
-(`cxc-pabcd` §A): FAIL always triggers another round.
+(`pabcd` §A): FAIL always triggers another round.
 Every finding carries a concrete `trigger`, `impact`, and `path:line` (FAMILY-CITE-01) — no
 finding on a hunch. Do not file pre-existing debt unless the patch worsened it. When a change
 introduces a value/type/message crossing a module boundary, trace the consumer side before
@@ -123,7 +123,7 @@ implementation, and scope-drift abstractions added beyond the request.
 - Tests pass.
 - The change explains what changed and why.
 - The diff is small and structured enough to review.
-- If the PR is one layer of a stack, follow `DEV-STACK-05` in `cxc-dev`
+- If the PR is one layer of a stack, follow `DEV-STACK-05` in `dev`
   `references/stacked-prs.md` — review scope, standalone judgment, base-ref and
   force-push checks, and the merge boundary all live there.
 
@@ -377,11 +377,11 @@ for removed search backends creeping back in as if they were available: `progrok
 `web-AI`, `Grok Expert`, `GPT Pro`, `Exa`, `Tavily`, `Perplexity`, `Brave`. These names may
 appear only in non-goal or historical framing.
 
-There is no automated check, and there cannot be a useful one: codexclaw owns no registry
+There is no automated check, and there cannot be a useful one: cursorclaw owns no registry
 of available backends to compare the prose against — `web_search` is host-provided. The
 scan that used to guard this read one prose file for phrase existence, broke on rewording,
 and proved nothing, so it was deleted with the protection routed here on purpose
-(`plugins/codexclaw/test/manifest-policy.test.mjs`, the TEST-PROMPT-SEAM-01 comment). This
+(`plugins/cursorclaw/test/manifest-policy.test.mjs`, the TEST-PROMPT-SEAM-01 comment). This
 is a reviewer's read, not a contract. If a backend registry ever lands in code, revisit
 whether a real two-source check is possible.
 

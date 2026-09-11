@@ -1,5 +1,5 @@
 ---
-name: cxc-repo-map
+name: repo-map
 description: "Use RepoMap for codebase overview, structure maps, symbol overview, and architecture map exploration. Triggers: repo map, codebase overview, structure map, 와꾸, project structure, unfamiliar codebase exploration, symbol overview, architecture map."
 metadata:
   short-description: "One-shot tree-sitter symbol map with PageRank for unfamiliar codebase exploration."
@@ -22,7 +22,7 @@ gravity, and the likely architectural center of a subtree.
 Use `rg` for text, filenames, comments, literal strings, and byte-level regex
 searches.
 
-Use `cxc-ast-grep` for shape search and deterministic rewrites: function/call
+Use `ast-grep` for shape search and deterministic rewrites: function/call
 patterns, imports, syntax-aware migrations, and codemods.
 
 Use this skill for an overview map, not for exact search. The map is a guide for
@@ -41,22 +41,22 @@ where to inspect next, not proof that a symbol is absent.
 Preferred:
 
 ```bash
-cxc map .
-cxc map src/ --budget 2048
+crc map .
+crc map src/ --budget 2048
 ```
 
 Direct script:
 
 ```bash
-python3 plugins/codexclaw/skills/repo-map/scripts/repomap.py .
-python3 plugins/codexclaw/skills/repo-map/scripts/repomap.py src/ --budget 2048
+python3 plugins/cursorclaw/skills/repo-map/scripts/repomap.py .
+python3 plugins/cursorclaw/skills/repo-map/scripts/repomap.py src/ --budget 2048
 ```
 
 Useful flags:
 
 Note: compiled-output dirs (`dist`, `build`, `target`, `out`, `coverage`) are
 skipped during directory expansion. If a repo's real sources live there, pass
-the path explicitly (e.g. `cxc map dist/`) to map it anyway.
+the path explicitly (e.g. `crc map dist/`) to map it anyway.
 
 ```bash
 --map-tokens N      # token budget; default 4096
@@ -68,23 +68,23 @@ the path explicitly (e.g. `cxc map dist/`) to map it anyway.
 
 ## Dependencies
 
-`cxc map` resolves its Python dependencies through a bootstrap ladder, so in most
+`crc map` resolves its Python dependencies through a bootstrap ladder, so in most
 environments no manual install is needed:
 
-1. `CODEXCLAW_PYTHON` env override — that interpreter is used verbatim.
+1. `CURSORCLAW_PYTHON` env override — that interpreter is used verbatim.
 2. `uv` on PATH — the script runs via `uv run --with-requirements`, and deps
    resolve into uv's own rebuildable cache automatically (first run pays a short
    resolve; later runs are warm).
-3. An existing venv at `$CODEXCLAW_HOME|~/.codexclaw/venvs/repomap` — a user-level
+3. An existing venv at `$CURSORCLAW_HOME|~/.cursorclaw/venvs/repomap` — a user-level
    rebuildable derived cache (philosophy §2). Auto-created only when
-   `CODEXCLAW_MAP_BOOTSTRAP=1` is set (opt-in network install).
+   `CURSORCLAW_MAP_BOOTSTRAP=1` is set (opt-in network install).
 4. Bare `python3` — works when deps are already installed; otherwise degrades to
    the install hint below.
 
 Manual install (rung 4 environments):
 
 ```bash
-python3 -m pip install -r plugins/codexclaw/skills/repo-map/scripts/requirements.txt
+python3 -m pip install -r plugins/cursorclaw/skills/repo-map/scripts/requirements.txt
 ```
 
 The CLI degrades cleanly when dependencies are missing. `--help` works with only
@@ -99,11 +99,11 @@ The pinned parser stack matters: `tree-sitter-language-pack==0.9.0` and
 RepoMap stores derived tag cache data under:
 
 ```text
-.codexclaw/cache/repomap/tags.v1
+.cursorclaw/cache/repomap/tags.v1
 ```
 
-Set `CODEXCLAW_REPOMAP_CACHE` to override the location. The cache is rebuildable
-derived data. It is wiped only by `cxc reset --all`.
+Set `CURSORCLAW_REPOMAP_CACHE` to override the location. The cache is rebuildable
+derived data. It is wiped only by `crc reset --all`.
 
 ## Verification tiers
 
@@ -118,7 +118,7 @@ surface.
 - On-demand skill (`allow_implicit_invocation: false`); reached by trigger or
   explicit use.
 - Discoverability: a SessionStart hook
-  (`hooks/session-start-announcing-map-affordance.json`, cxc-ops) announces this
+  (`hooks/session-start-announcing-map-affordance.json`, ops) announces this
   tool's existence once per session when the repo clears a source-file size gate.
   That is a POINTER only — the map body is never session-injected (on-demand stays
   the rule). This is the runtime companion to the `dev` §1.5 DEV-MAP-FIRST-01

@@ -1,5 +1,5 @@
 /**
- * cli.ts — `cxc bg` entry. Both dispatchers strip the leading command word, so the
+ * cli.ts — `crc bg` entry. Both dispatchers strip the leading command word, so the
  * argv this CLI receives is [<verb>, ...rest] — same shape skill-search gets.
  *
  * Two callers with opposite failure rules:
@@ -25,13 +25,13 @@ import { atomicWrite, appendLedger, disabledPath, enabledAtPath, ensureDir, outP
 import { removalText } from "./removal.ts";
 
 const USAGE = [
-  "cxc bg run [--note \"...\"] -- <command...>   백그라운드로 실행하고 id를 반환",
-  "cxc bg list [--json]                        이 디렉터리의 백그라운드 작업",
-  "cxc bg get <id> [--tail N]                  상태와 출력 꼬리",
-  "cxc bg cancel <id>                          중지",
-  "cxc bg off | on | status                    완료 웨이크 스위치 (이 워크트리)",
-  "cxc bg drain --session <id> [--json]        미전달 완료를 받아가고 전달 표시",
-  "cxc bg removal                              제거 체크리스트",
+  "crc bg run [--note \"...\"] -- <command...>   백그라운드로 실행하고 id를 반환",
+  "crc bg list [--json]                        이 디렉터리의 백그라운드 작업",
+  "crc bg get <id> [--tail N]                  상태와 출력 꼬리",
+  "crc bg cancel <id>                          중지",
+  "crc bg off | on | status                    완료 웨이크 스위치 (이 워크트리)",
+  "crc bg drain --session <id> [--json]        미전달 완료를 받아가고 전달 표시",
+  "crc bg removal                              제거 체크리스트",
 ].join("\n");
 
 const MAX_STDIN_BYTES = 1024 * 1024;
@@ -136,7 +136,7 @@ export function run(argv: string[], cwd: string): { out: string; code: number } 
     ensureDir(cwd);
     atomicWrite(disabledPath(cwd), new Date().toISOString() + "\n");
     appendLedger(cwd, { event: "disabled" });
-    return { out: "bg wake OFF (이 워크트리). 다시 켜려면: cxc bg on", code: 0 };
+    return { out: "bg wake OFF (이 워크트리). 다시 켜려면: crc bg on", code: 0 };
   }
 
   if (verb === "on") {
@@ -149,7 +149,7 @@ export function run(argv: string[], cwd: string): { out: string; code: number } 
     // stampede the next Stop (contract 010, wake condition 4).
     atomicWrite(enabledAtPath(cwd), new Date().toISOString() + "\n");
     appendLedger(cwd, { event: "enabled" });
-    return { out: "bg wake ON. 꺼져 있는 동안 끝난 작업은 웨이크하지 않고 cxc bg list 에만 남습니다.", code: 0 };
+    return { out: "bg wake ON. 꺼져 있는 동안 끝난 작업은 웨이크하지 않고 crc bg list 에만 남습니다.", code: 0 };
   }
 
   if (verb === "status") {

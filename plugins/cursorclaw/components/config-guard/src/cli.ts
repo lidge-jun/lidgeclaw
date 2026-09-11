@@ -31,7 +31,7 @@ const CONFIG_USAGE = [
   "ones marked auto-enable in managed-keys.ts, records the pre-install value, and 'cxc",
   "disable' restores it; the rest stay an explicit choice. (Separate vocabulary: the",
   "[features] flags codexclaw needs to run ARE turned on by install and by SessionStart",
-  "self-heal; see cxc doctor's `features` check.)",
+  "self-heal; see crc doctor's `features` check.)",
 ].join("\n");
 
 function runConfig(argv: readonly string[], codexHome: string): number {
@@ -180,7 +180,7 @@ function main(argv: readonly string[]): number {
         .filter(([, r]) => r.enableFailed)
         .map(([k]) => k);
       // Keys installation wrote itself. Printed with their caution because the user did
-      // not type this write: `cxc config set` shows the side effect before asking, and an
+      // not type this write: `crc config set` shows the side effect before asking, and an
       // auto-enabled key owes the same disclosure after the fact.
       const keysSet = Object.entries(m.tableKeys ?? {})
         .filter(([, r]) => r.setByCodexclaw)

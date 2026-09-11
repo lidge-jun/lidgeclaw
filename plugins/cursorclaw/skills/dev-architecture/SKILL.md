@@ -1,5 +1,5 @@
 ---
-name: cxc-dev-architecture
+name: dev-architecture
 description: "MUST USE for module boundary work, circular dependency detection, coupling review, barrel or re-export changes, and validation placement decisions. Triggers: circular import, module split, layer violation, dependency direction, utils growth, barrel file, re-export, boundary review, architecture refactor, 모듈 경계, 순환 참조."
 metadata:
   last-verified: "2026-07-02"
@@ -377,7 +377,7 @@ Source: sol research (wednesday-solutions/ai-agent-skills AST dependency graph).
 Instead of reconstructing a module map for every task, maintain a lightweight
 structural index that agents can query:
 
-- Use `cxc map <dir>` for on-demand symbol-level maps (already shipped).
+- Use `crc map <dir>` for on-demand symbol-level maps (already shipped).
 - For larger repos, consider a persistent dependency graph artifact (e.g.,
   `dependency-cruiser` JSON, Nx project graph, or a custom SQLite index).
 - The index should track: module → exports, module → imports, symbol → callers.

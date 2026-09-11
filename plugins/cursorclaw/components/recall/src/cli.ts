@@ -27,7 +27,7 @@ const USAGE = [
   "                           [--limit N] [--context N] [--any] [--all] [--no-tools]",
   "                           [--recent] [--scan] [--no-refresh] [--json]",
   "cxc chat index [--rebuild] [--status] [--json]",
-  "cxc memory search \"<query>\" [--days N] [--limit N] [--any] [--no-synonyms]",
+  "crc memory search \"<query>\" [--days N] [--limit N] [--any] [--no-synonyms]",
   "                             [--cwd PATH] [--cwd-only PATH] [--no-chat] [--json]",
   "",
   `  --days N     restrict to the last N days (chat default ${DEFAULT_DAYS}, 0 = full history)`,

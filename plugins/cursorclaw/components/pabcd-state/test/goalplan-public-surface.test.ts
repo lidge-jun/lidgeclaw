@@ -399,7 +399,7 @@ test("help lists repeated dependency syntax and required outcome", () => {
   // 18에서 19로 바뀌어 §검증의 1087·2262까지 흔들리므로 단언만 더한다.
   // mutating verb 셋은 세션 바인딩 slug만 읽으므로 usage 줄에 --slug가 없어야 한다.
   for (const verb of ["steer", "add-work-phase", "add-criterion"]) {
-    const line = help.split("\n").find((row) => row.includes(`cxc loop ${verb} `));
+    const line = help.split("\n").find((row) => row.includes(`crc loop ${verb} `));
     assert.ok(line, `usage line missing for ${verb}`);
     assert.equal(line!.includes("--slug"), false, line!);
   }

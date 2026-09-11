@@ -778,8 +778,8 @@ test("CLI output uses loop label, not goalplan", () => {
   assert.ok(!("error" in args));
   const result = runGoalplanCli(args as any);
   assert.equal(result.code, 0);
-  assert.match(result.output, /\[codexclaw loop:/);
-  assert.ok(!result.output.includes("[codexclaw goalplan:"));
+  assert.match(result.output, /\[cursorclaw loop:/);
+  assert.ok(!result.output.includes("[cursorclaw goalplan:"));
 });
 
 test("wp4: nextOpenTask excludes a task whose direct dependency is not done", () => {
@@ -994,7 +994,7 @@ test("wp7 preservation: show renders the write lock path and age", () => {
 
     // 기존 요약 줄은 두 경우 모두 그대로다. 새 줄이 기존 출력을 밀어내지 않는다.
     for (const out of [absent.output, present.output]) {
-      assert.match(out, /^\[codexclaw loop: /m);
+      assert.match(out, /^\[cursorclaw loop: /m);
       assert.match(out, /^criteria: 0 \(unmet 0\)$/m);
       assert.match(out, /^complete: /m);
     }

@@ -1,5 +1,5 @@
 /**
- * goalplan-cli.ts — `cxc goalplan <init|show|validate>` terminal surface (lazygap_impl 030.2).
+ * goalplan-cli.ts — `crc goalplan <init|show|validate>` terminal surface (lazygap_impl 030.2).
  *
  * The no-interview local-loop entry: `init --objective "<text>"` captures a REAL objective
  * directly (not a slug placeholder) and seeds a project-local goalplan under
@@ -125,14 +125,14 @@ const VERBS: ReadonlySet<string> = new Set<GoalplanVerb>([
 export function parseGoalplanCliArgs(argv: string[], cwd: string): GoalplanCliArgs | GoalplanCliParseError {
   const verb = (argv[0] ?? "").toLowerCase();
   // #47: `--help` on a sibling command used to be reported as an unknown verb, so an
-  // agent that followed `cxc --help`'s own pointer hit a non-zero exit and had to
+  // agent that followed `crc --help`'s own pointer hit a non-zero exit and had to
   // discover every flag one rejection at a time. Same contract as orchestrate.
   if (verb === "help" || verb === "--help" || verb === "-h") {
     return { verb: "help", cwd, criteria: [] };
   }
   if (!VERBS.has(verb)) {
     return {
-      error: `unknown loop verb '${argv[0] ?? ""}' (expected init|show|validate|steer|add-criterion|add-work-phase|ready|add-task|complete-task|meet-criterion); run cxc loop --help`,
+      error: `unknown loop verb '${argv[0] ?? ""}' (expected init|show|validate|steer|add-criterion|add-work-phase|ready|add-task|complete-task|meet-criterion); run crc loop --help`,
     };
   }
   const out: GoalplanCliArgs = { verb: verb as GoalplanVerb, cwd, criteria: [], dependsOn: [] };
@@ -208,7 +208,7 @@ function describeReadFailure(read: GoalplanReadResult, verb: string, slug: strin
   const d = read.diagnostic;
   const detail =
     d?.kind === "absent"
-      ? `no plan found at slug '${slug}' (${d.path} does not exist) - run \`cxc loop init --objective "..."\``
+      ? `no plan found at slug '${slug}' (${d.path} does not exist) - run \`crc loop init --objective "..."\``
       : d?.kind === "invalid-json"
         ? `the plan at ${d.path} is not valid JSON: ${d.detail}`
         : d?.kind === "invalid-shape"
@@ -254,7 +254,7 @@ function runSteer(args: GoalplanCliArgs): GoalplanCliResult {
 
   const slug = readState(args.cwd, session).slug;
   if (!slug) {
-    return { output: `loop steer: session '${session}' has no bound goalplan — run \`cxc loop init --session ${session}\` first`, code: 1 };
+    return { output: `loop steer: session '${session}' has no bound goalplan — run \`crc loop init --session ${session}\` first`, code: 1 };
   }
 
   const result = applySteeringBatch(args.cwd, slug, batch);
@@ -296,7 +296,7 @@ function runAddOp(args: GoalplanCliArgs): GoalplanCliResult {
   const slug = readState(args.cwd, session).slug;
   if (!slug) {
     return {
-      output: `loop ${args.verb}: session '${session}' has no bound goalplan - run \`cxc loop init --session ${session}\` first`,
+      output: `loop ${args.verb}: session '${session}' has no bound goalplan - run \`crc loop init --session ${session}\` first`,
       code: 1,
     };
   }
@@ -333,7 +333,7 @@ function runAddOp(args: GoalplanCliArgs): GoalplanCliResult {
   const key = `${args.verb}-${createHash("sha256").update(summary).digest("hex").slice(0, 12)}`;
   const result = applySteeringBatch(args.cwd, slug, {
     idempotencyKey: key,
-    rationale: `cxc loop ${args.verb}`,
+    rationale: `crc loop ${args.verb}`,
     evidence: summary,
     ops: [op],
   });
@@ -393,7 +393,7 @@ function runReady(args: GoalplanCliArgs, plan: Goalplan): GoalplanCliResult {
     };
   }
 
-  const lines = [`[codexclaw loop ready: ${plan.slug}]`];
+  const lines = [`[cursorclaw loop ready: ${plan.slug}]`];
   lines.push(phases.length > 0
     ? `readyWorkPhases: ${phases.map((wp) => `${wp.id} (${wp.title})`).join("; ")}`
     : "readyWorkPhases: none");
@@ -425,7 +425,7 @@ function runLifecycle(args: GoalplanCliArgs): GoalplanCliResult {
   const slug = readState(args.cwd, session).slug;
   if (!slug) {
     return {
-      output: `loop ${args.verb}: session '${session}' has no bound goalplan - run \`cxc loop init --session ${session}\` first`,
+      output: `loop ${args.verb}: session '${session}' has no bound goalplan - run \`crc loop init --session ${session}\` first`,
       code: 1,
     };
   }
@@ -523,7 +523,7 @@ function runLifecycle(args: GoalplanCliArgs): GoalplanCliResult {
 
 function renderPlanLines(plan: Goalplan, lock?: GoalplanWriteLockStatus): string {
   const lines = [
-    `[codexclaw loop: ${plan.slug}]`,
+    `[cursorclaw loop: ${plan.slug}]`,
     `objective: ${plan.objective}`,
     `host: armed=${plan.host.armed} source=${plan.host.source}`,
     `workPhases: ${plan.workPhases.length} (remaining ${remainingWorkPhases(plan).length})`,
@@ -553,24 +553,24 @@ function renderPlanLines(plan: Goalplan, lock?: GoalplanWriteLockStatus): string
  */
 export function renderGoalplanHelp(): string {
   return [
-    "cxc loop — durable goalplan for a multi-cycle PABCD loop",
+    "crc loop — durable goalplan for a multi-cycle PABCD loop",
     "",
     "Usage:",
-    "  cxc loop init --objective <text> --session <id> [--criterion <text>]... [--schema-version <n>] [--cwd <path>]",
-    "  cxc loop show (--slug <slug> | --objective <text>) [--cwd <path>]",
-    "  cxc loop validate --slug <slug> [--cwd <path>]",
+    "  crc loop init --objective <text> --session <id> [--criterion <text>]... [--schema-version <n>] [--cwd <path>]",
+    "  crc loop show (--slug <slug> | --objective <text>) [--cwd <path>]",
+    "  crc loop validate --slug <slug> [--cwd <path>]",
     // 060 wp6: --slug is GONE from the three mutating usage lines. `runSteer()` and
     // `runAddOp()` read `readState(cwd, session).slug` and ignore `args.slug`, so those
     // lines advertised syntax that never ran. The read-only verbs keep it because
     // `resolveSlug()` actually consumes the argument.
-    "  cxc loop steer --session <id> --batch-json <path-or-json> [--cwd <path>]",
-    "  cxc loop add-work-phase --session <id> --id <id> --title <text> [--depends-on <id>]... [--cwd <path>]",
-    "  cxc loop add-criterion --session <id> --criterion <text> [--surface logic|web|tui] [--cwd <path>]",
-    "  cxc loop ready (--slug <slug> | --objective <text> | --session <id>) [--json] [--cwd <path>]",
-    "  cxc loop add-task --session <id> --work-phase <id> --id <id> --title <text> [--depends-on <task-id>]... [--cwd <path>]",
-    "  cxc loop complete-task --session <id> --work-phase <id> --id <id> --outcome <text> [--cwd <path>]",
-    "  cxc loop meet-criterion --session <id> --id <id> --evidence <text> [--cwd <path>]",
-    "  cxc loop --help",
+    "  crc loop steer --session <id> --batch-json <path-or-json> [--cwd <path>]",
+    "  crc loop add-work-phase --session <id> --id <id> --title <text> [--depends-on <id>]... [--cwd <path>]",
+    "  crc loop add-criterion --session <id> --criterion <text> [--surface logic|web|tui] [--cwd <path>]",
+    "  crc loop ready (--slug <slug> | --objective <text> | --session <id>) [--json] [--cwd <path>]",
+    "  crc loop add-task --session <id> --work-phase <id> --id <id> --title <text> [--depends-on <task-id>]... [--cwd <path>]",
+    "  crc loop complete-task --session <id> --work-phase <id> --id <id> --outcome <text> [--cwd <path>]",
+    "  crc loop meet-criterion --session <id> --id <id> --evidence <text> [--cwd <path>]",
+    "  crc loop --help",
     "",
     "Notes:",
     "  Mutating verbs require --session <id>; show, validate, and ready are read-only.",
@@ -681,10 +681,10 @@ export function runGoalplanCli(args: GoalplanCliArgs): GoalplanCliResult {
   };
   const v = validateGoalplan(plan, ctx);
   if (v.ok) {
-    return { output: `[codexclaw loop validate: ${slug}] OK — complete + all met criteria carry evidence`, code: 0 };
+    return { output: `[cursorclaw loop validate: ${slug}] OK — complete + all met criteria carry evidence`, code: 0 };
   }
   return {
-    output: [`[codexclaw loop validate: ${slug}] FAIL`, ...v.reasons.map((r) => `  - ${r}`)].join("\n"),
+    output: [`[cursorclaw loop validate: ${slug}] FAIL`, ...v.reasons.map((r) => `  - ${r}`)].join("\n"),
     code: 1,
   };
 }

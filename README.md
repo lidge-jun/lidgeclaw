@@ -21,7 +21,7 @@
 
 cursorclaw packages the same cli-jaw-style discipline as codexclaw — **dev skill routers**, **PABCD**, and **role-based subagent guidance** — as a **Cursor plugin** (skills, rules, agents, commands, hooks) instead of a Codex plugin.
 
-This repository is an early **0.1.0 scaffold**. Skill bodies and component CLIs are carried forward from upstream; Codex-only hooks live under `plugins/cursorclaw/hooks/codex-legacy/` while Cursor `hooks/hooks.json` is rewired. See [PORTING.md](PORTING.md) and [UPSTREAM.lock](UPSTREAM.lock).
+**0.2.0** ships full Cursor packaging: all skills, Codex-parity hook fan-out (`cursor-bridge.mjs`), agents, commands, dogfood `.cursor/` wiring, and the `crc` CLI. Codex hook JSON is kept under `hooks/codex-legacy/` for provenance. See [PORTING.md](PORTING.md).
 
 Workflow inspiration remains [OMO / oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent). Credits and pinned sources: [NOTICE.md](NOTICE.md).
 

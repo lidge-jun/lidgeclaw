@@ -122,7 +122,7 @@ export function checkStale(manifest: FreezeManifest, currentFiles: PlanFileHash[
 
 /** R-7 activation directive: plugin can't call create_goal, so it instructs the main session. */
 export const GOAL_ACTIVATION_DIRECTIVE = [
-  "[codexclaw: FREEZE -> goal handoff]",
+  "[cursorclaw: FREEZE -> goal handoff]",
   "Interview is ready and the plan is frozen. To start execution under a native goal:",
   "1. Call get_goal to confirm no goal is already active for this thread.",
   "2. Call create_goal with objective ONLY (no token_budget — the L3 gate denies budgeted goals).",

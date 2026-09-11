@@ -82,7 +82,7 @@ const CONTENT_TYPES: Record<string, string> = {
 };
 
 const GUI_MISSING_PAGE =
-  "codexclaw serve: GUI build missing.\nRun: npm run build (in plugins/codexclaw/gui), then reload.\n";
+  "codexclaw serve: GUI build missing.\nRun: npm run build (in plugins/cursorclaw/gui), then reload.\n";
 
 function healthRoute(): ApiRoute {
   return {

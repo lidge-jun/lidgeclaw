@@ -30,7 +30,7 @@ test("IDLE-EDIT-ADVISORY-01: IDLE + loopArmSeen -> allow envelope with additiona
     assert.equal(parsed.hookSpecificOutput.hookEventName, "PreToolUse");
     assert.equal(parsed.hookSpecificOutput.permissionDecision, "allow");
     assert.match(parsed.hookSpecificOutput.additionalContext, /IDLE-EDIT/);
-    assert.match(parsed.hookSpecificOutput.additionalContext, /cxc orchestrate status --session s1/);
+    assert.match(parsed.hookSpecificOutput.additionalContext, /crc orchestrate status --session s1/);
     assert.match(parsed.hookSpecificOutput.additionalContext, /UNIT-RESIDENCE-01/);
     assert.match(parsed.hookSpecificOutput.additionalContext, /C0.*no automatic devlog/);
     assert.match(parsed.hookSpecificOutput.additionalContext, /C1.*only.*existing owning unit/);

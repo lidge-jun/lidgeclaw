@@ -1,5 +1,5 @@
 ---
-name: cxc-ast-grep
+name: ast-grep
 description: "Use ast-grep (sg) for AST-aware code search and rewrite across 25 languages. Trigger for structural code matching or deterministic codemods: find every function/call/class/import shaped like X, rewrite console.log to logger.info, strip `as any`, migrate require() to import, find empty catch blocks or missing await, and scan/apply YAML rules. Prefer this over rg/grep when the target is syntax shape rather than text; use rg for string contents, comments, filenames, or regex-style byte searches."
 metadata:
   short-description: "AST-aware structural search + deterministic codemods (ast-grep/sg) across 25 languages."
@@ -25,7 +25,7 @@ Plain filename, literal text, regex, comment, and simple callsite searches use
 bytes?" Tree → ast-grep. Bytes → `rg`.
 
 For a whole-repo structure OVERVIEW (which files own which symbols, ranked), use
-`cxc map` (repo-map skill) instead; ast-grep is for shape SEARCH within known scope.
+`crc map` (repo-map skill) instead; ast-grep is for shape SEARCH within known scope.
 
 ## When to use this skill
 
@@ -88,9 +88,9 @@ catch, bare except, relational YAML rules) and the reproduced pitfall table live
 
 ## Binary resolution + lazy provisioning
 
-The helper resolves `sg` in priority order: `CODEXCLAW_AST_GREP_SG_PATH`
-override (`OMO_AST_GREP_SG_PATH` fallback) → codexclaw runtime
-(`$CODEX_HOME/runtime/ast-grep` or `~/.codexclaw/runtime/ast-grep`) → a cached
+The helper resolves `sg` in priority order: `CURSORCLAW_AST_GREP_SG_PATH`
+override (`OMO_AST_GREP_SG_PATH` fallback) → cursorclaw runtime
+(`$CODEX_HOME/runtime/ast-grep` or `~/.cursorclaw/runtime/ast-grep`) → a cached
 binary under the skill `bin/` → `PATH` → Homebrew defaults. When `sg` is missing,
 `doctor`/`install` exit with a clear install hint rather than crashing. See
 `references/install.md`. Provisioning is lazy, evidence-bound, and idempotent.

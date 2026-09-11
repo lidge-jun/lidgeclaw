@@ -8,7 +8,7 @@
  *     because no persisted CLI setter exists for them.
  *
  * 260829 정정 — 불변식의 범위를 좁힌다. 초고는 근거를 "사용자가 소유한 부수효과 있는
- * 스위치를 절대 대신 켜지 않는다"로 적었는데, 그 서술은 실제 동작과 모순이다. `cxc enable`
+ * 스위치를 절대 대신 켜지 않는다"로 적었는데, 그 서술은 실제 동작과 모순이다. `crc enable`
  * 은 [features] boolean 네 개를 켜고, SessionStart self-heal 도 그중 소프트 플래그를 켠다.
  * 두 어휘를 가르는 기준은 TOML 테이블 이름이 아니라 이것이다 — codexclaw 없이도 의미가
  * 있는 스위치인가.
@@ -32,7 +32,7 @@
  * 들어간다. 그래서 아래 caution 이 "명시 요청 없는 쓰기를 막는 장치를 먼저 확인하라"를
  * 전제조건으로 못박았다. wp1-A 가 그 장치를 만들었다 —
  * pabcd-state/src/memory-write-gate.ts 의 PreToolUse 게이트는 사용자가 그 턴에 실제로
- * 요청했다는 근거(remember 관용구, 또는 `cxc memory allow-write`)가 없으면 메모리 쓰기를
+ * 요청했다는 근거(remember 관용구, 또는 `crc memory allow-write`)가 없으면 메모리 쓰기를
  * 거부하고, 도구 호출과 memories 경로를 향한 일반 파일 쓰기 양쪽을 모두 덮는다. 전제조건이
  * 충족됐으므로 caution 이 요구하던 확인이 끝났고, 남는 것은 읽기 도구 세 개와 게이트가
  * 지키는 쓰기 도구 하나다.
@@ -41,7 +41,7 @@
  * 즉 "게이트 있으니 켜도 된다"가 게이트 없는 상태를 만들어낼 수 있다. 답은 매니페스트
  * 원복이다. 설치가 켠 키는 activate.ts 가 `tableKeys` 에 설치 이전 값과 함께 기록하고,
  * deactivate.ts:129-157 이 그 값으로 되돌린다(없던 키는 줄째로 지운다). 게이트와 키는 같은
- * `cxc disable` 로 함께 사라진다. 정직한 한계: 원복은 `cxc disable` 을 거쳐야 하고,
+ * `crc disable` 로 함께 사라진다. 정직한 한계: 원복은 `crc disable` 을 거쳐야 하고,
  * 플러그인 디렉터리를 그냥 지우면 키만 남는다. 그건 이 목록의 모든 항목과 [features] 플래그
  * 네 개가 이미 공유하는 한계이지 이 키가 새로 만든 위험이 아니다.
  */
@@ -50,14 +50,14 @@ export interface ManagedKey {
   table: string;
   key: string;
   /**
-   * True when `cxc enable` may write this key itself. Decided per ENTRY, never for the
+   * True when `crc enable` may write this key itself. Decided per ENTRY, never for the
    * list as a whole: membership here still means "the effect reaches past codexclaw",
    * so each key has to earn auto-enable on its own evidence (see the 260909 note above).
    */
   autoEnable: boolean;
   /**
-   * The side effect, in the user's view. Printed before an explicit `cxc config set`
-   * write, and printed by `cxc enable` for a key installation turned on by itself.
+   * The side effect, in the user's view. Printed before an explicit `crc config set`
+   * write, and printed by `crc enable` for a key installation turned on by itself.
    */
   caution: string;
 }

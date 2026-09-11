@@ -1,5 +1,5 @@
 ---
-name: cxc-pabcd
+name: pabcd
 description: "Use for class-scaled Plan-Audit-Build-Check-Done work. Explicit explanation, interview, plan-only, and read-only limits win; loading the skill does not activate a loop. Triggers: PABCD, plan this, 기획, 단계별로, 요구사항 정리."
 metadata:
   last-verified: "2026-07-02"
@@ -8,7 +8,7 @@ metadata:
 
 # PABCD Workflow
 
-A Codex-native reimplementation of the IPABCD development loop (Interview + Plan / Audit / Build / Check / Done). There is no external orchestrator server. State lives in `.codexclaw/sessions/<sessionId>.json` plus `.codexclaw/ledger.jsonl`; transitions are driven by the `pabcd-state` hook component, the chat-side `cxc-orchestrate` surface (human free-pass), and the live `cxc orchestrate` terminal CLI (agent-gated).
+A Cursor-native reimplementation of the IPABCD development loop (Interview + Plan / Audit / Build / Check / Done). There is no external orchestrator server. State lives in `.cursorclaw/sessions/<sessionId>.json` plus `.cursorclaw/ledger.jsonl`; transitions are driven by the `pabcd-state` hook component, the chat-side `orchestrate` surface (human free-pass), and the live `crc orchestrate` terminal CLI (agent-gated).
 
 > **C0/C1 work (small in-place patches):** See `dev` §0.0 Work Classifier and §0.1 Patch Fast-Path first — full PABCD is mandatory for C4 and conditional for C3, never the baseline for every task.
 
@@ -16,9 +16,9 @@ A Codex-native reimplementation of the IPABCD development loop (Interview + Plan
 
 Loading this skill is not authority to execute phases. Explanation, review,
 interview-only, plan-only, read-only, no-goal, no-FSM, and no-delegation limits win.
-Use the requested method only within that scope. An operative bare cxc-loop
-request selects scoped HOTL through cxc-loop; ordinary PABCD use does not.
-cxc-dev is canonical for work class, C0/C1 fast-path, proof, and safety.
+Use the requested method only within that scope. An operative bare loop
+request selects scoped HOTL through loop; ordinary PABCD use does not.
+dev is canonical for work class, C0/C1 fast-path, proof, and safety.
 
 ## Interview Trigger
 
@@ -29,11 +29,11 @@ Two distinct things, do not conflate them:
   hints never enter or advance a phase. A line-anchored `orchestrate i` command
   instead takes the existing explicit-command parser path.
 - **Agent judgment (broad):** for unclear requirements phrased otherwise, select
-  `cxc-interview` and its applicable references. Loading a skill is not a state
-  transition. When phase entry is authorized, use `cxc orchestrate I --session <id>`
+  `interview` and its applicable references. Loading a skill is not a state
+  transition. When phase entry is authorized, use `crc orchestrate I --session <id>`
   with the current SessionStart binding; explicit user commands are also supported.
 
-**I — Interview**: HITL-only requirements discovery. Canonical rules (four dimensions, contradiction scanning, readiness gating, Q/A capture) live in `cxc-interview`; PABCD owns the phase edge I->P and the return-to-Interview affordance from any phase.
+**I — Interview**: HITL-only requirements discovery. Canonical rules (four dimensions, contradiction scanning, readiness gating, Q/A capture) live in `interview`; PABCD owns the phase edge I->P and the return-to-Interview affordance from any phase.
 
 ## How It Works
 
@@ -46,7 +46,7 @@ IDLE ──→ P ──→ A ──→ B ──→ C ──→ D ──→ IDLE
          └──────┴──────┴────→ I (Interview, context preserved)
 ```
 
-You can return to Interview (I) from any phase to clarify requirements; the plan and audit context are preserved. Phases P, A, B pause for confirmation in interactive use; C and D proceed once their work is genuinely done. In goal mode the agent must explicitly run `cxc orchestrate P --session <id>` to start each PABCD cycle; nothing self-advances into P automatically, but the P->D sequence is never skipped. Goal mode is PABCD-only: while a goal is active the Interview NEVER fires — entry is suppressed and `request_user_input` is hard-denied, so the Interview is HITL-only and runs only with no active goal.
+You can return to Interview (I) from any phase to clarify requirements; the plan and audit context are preserved. Phases P, A, B pause for confirmation in interactive use; C and D proceed once their work is genuinely done. In goal mode the agent must explicitly run `crc orchestrate P --session <id>` to start each PABCD cycle; nothing self-advances into P automatically, but the P->D sequence is never skipped. Goal mode is PABCD-only: while a goal is active the Interview NEVER fires — entry is suppressed and `request_user_input` is hard-denied, so the Interview is HITL-only and runs only with no active goal.
 
 ## Phase Control / Orchestrate
 
@@ -55,7 +55,7 @@ Before an authorized state-control action read
 SESSION-IDENTITY-01, ORCH-ARTIFACT-01, ATTEST-SHAPE-01, Windows attest-file usage,
 and every edge's required keys. Entry edges are not the four gated work edges.
 Do not claim a phase from narration; do its work and record the real transition.
-Goal activation and scoped continuation are owned by [cxc-loop](../loop/SKILL.md).
+Goal activation and scoped continuation are owned by [loop](../loop/SKILL.md).
 
 ## Phases
 
@@ -68,7 +68,7 @@ link is a conditional routing edge, not a command to preload the entire graph.
 
 | Phase / trigger | Mandatory owner before work |
 |---|---|
-| I | cxc-interview; no active host goal |
+| I | interview; no active host goal |
 | P, including plan-only | [Plan phase](references/phase-plan.md); C2+ plans also read [Plan output](references/plan-output.md) |
 | A, if authorized | [Audit phase](references/phase-audit.md) |
 | C | [Check phase](references/phase-check.md) |
@@ -80,17 +80,17 @@ or justified near-pass exits. C requires fresh relevant proof and SoT sync;
 passing unrelated checks is not evidence. Explicit execution restrictions are not
 overridden by a reference asking to run a verifier or dispatch a reviewer.
 
-3. **B — Build**: Implement the audited plan in small atomic commits (DEV-GIT-COMMIT-01). Verify as you go. Stay inside the plan's scope boundary; surface deviations instead of silently expanding scope. Never push to a remote without explicit user approval (DEV-GIT-PUSH-01, ESCALATE). When P declared a stack, follow `DEV-STACK-02` in `cxc-dev` `references/stacked-prs.md`.
+3. **B — Build**: Implement the audited plan in small atomic commits (DEV-GIT-COMMIT-01). Verify as you go. Stay inside the plan's scope boundary; surface deviations instead of silently expanding scope. Never push to a remote without explicit user approval (DEV-GIT-PUSH-01, ESCALATE). When P declared a stack, follow `DEV-STACK-02` in `dev` `references/stacked-prs.md`.
 5. **D — Done**: Summarize what was checked with evidence, update STATUS/devlog, commit (local only — pushing remains gated by DEV-GIT-PUSH-01), and confirm no pending work remains for this work-phase before returning to idle. The D summary is written for a reader who was not in the loop — conclusion, what changed, evidence pointers — per [Reader documents](../dev/references/reader-documents.md) READER-DOC-02/04. For loop/multi-pass work, **LOOP-PESSIMIST-01 (DEFAULT)** also records what did not improve, which hypothesis died, and what evidence would show the current direction is wrong; D -> IDLE -> P is a context/bias-flush boundary, so the next cycle resumes from disk artifacts rather than transcript momentum.
 
 ## Work-Phase Loop (multi-pass tasks)
 
-**Terminology**: a *work-phase* is one outcome slice of the goal (e.g. "Phase 3: Management API"); a *PABCD-phase* is one letter P/A/B/C/D of a single cycle. They are not the same. Work-phases need not be slices of one feature: successive cycles in the SAME session may target completely different features or plans under the same goal (LOOP-UNIT-CHAIN-01, `cxc-loop`).
+**Terminology**: a *work-phase* is one outcome slice of the goal (e.g. "Phase 3: Management API"); a *PABCD-phase* is one letter P/A/B/C/D of a single cycle. They are not the same. Work-phases need not be slices of one feature: successive cycles in the SAME session may target completely different features or plans under the same goal (LOOP-UNIT-CHAIN-01, `loop`).
 
 **Invariant — one work-phase = one full PABCD cycle.** Run P→A→B→C→D for a work-phase, close D (state → IDLE), then start the next work-phase at P. Do NOT run B for several work-phases back-to-back, and do NOT commit a work-phase straight out of B without passing C and D.
 
 Faithful execution: perform each phase's actual work; the state transition is not
-its artifact. C0/C1 keeps cxc-dev's fast-path; a real loop still cannot skip phases.
+its artifact. C0/C1 keeps dev's fast-path; a real loop still cannot skip phases.
 LOOP-CONTINUITY-01: P quotes the previous D conclusion/direction, with a reason
 for changing it. PLAN-TRACK-01: when available, the native update_plan surface
 mirrors progress; the durable plan remains the source of truth.
@@ -101,7 +101,7 @@ Before C2+ unit planning or any multi-phase roadmap, read
 [Implementation units](references/implementation-units.md).
 It owns DIFFLEVEL-ROADMAP-01, PHASE-SPLIT-01 linkage, LEXICO-SPLIT-01,
 UNIT-RESIDENCE-01, numbering, and docs-first document contents.
-cxc-dev §0.1 owns C0/C1 record exemptions. cxc-loop owns when docs-first begins.
+dev §0.1 owns C0/C1 record exemptions. loop owns when docs-first begins.
 
 ### Optimization-Loop Meta-Rules (plateau discipline)
 
@@ -114,7 +114,7 @@ preload optimization material.
 
 | Class | Plan (P) | Audit (A) | Build (B) | Check (C) | Record (D) |
 |-------|----------|-----------|-----------|-----------|------------|
-| C0-C1 | None/inline | Optional | Direct fix | Smallest proof | cxc-dev §0.1: C0 exempt; C1 records only in an existing owning unit |
+| C0-C1 | None/inline | Optional | Direct fix | Smallest proof | dev §0.1: C0 exempt; C1 records only in an existing owning unit |
 | C2 | Compact plan | Micro-audit | Implement + focused tests | Targeted gate | Summary |
 | C3 | Compact or full plan depending on persistence/risk | Required when public contract, architecture, persistence, or cross-session risk exists; otherwise focused audit | Implement; use a reviewer subagent when useful | Affected suite + docs consistency when contracts changed | Summary + evidence; durable record only when state must persist |
 | C4 | Full PABCD plan (mandatory) | Required, independent reviewer | Implement; independent verification | Full relevant gates | Durable risk/approval/evidence record |
@@ -147,15 +147,15 @@ while its goal is active.
 
 ## Catalog Discovery routing
 
-Interview sub-modes and Catalog Discovery rules live in `$cxc-interview`
+Interview sub-modes and Catalog Discovery rules live in `$crc-interview`
 (INTERVIEW-CATALOG-01, CATALOG-DESIGN-FIRST-01). The option ontology YAML lives at
 `references/catalog-discovery.yaml` in this skill directory.
 
 ## State
 
-- `.codexclaw/sessions/<sessionId>.json` — current phase (IDLE/I/P/A/B/C/D), derived flags, injection dedupe, and bounded interview tracker.
-- `.codexclaw/ledger.jsonl` — append-only audit trail of transitions.
-- `.codexclaw/interviews/<sessionId>.jsonl` — shipped append-only Interview Q/A capture (and scan-evidence) ledger, written by the PostToolUse `request_user_input` hook.
+- `.cursorclaw/sessions/<sessionId>.json` — current phase (IDLE/I/P/A/B/C/D), derived flags, injection dedupe, and bounded interview tracker.
+- `.cursorclaw/ledger.jsonl` — append-only audit trail of transitions.
+- `.cursorclaw/interviews/<sessionId>.jsonl` — shipped append-only Interview Q/A capture (and scan-evidence) ledger, written by the PostToolUse `request_user_input` hook.
 
 ## Repository Root
 

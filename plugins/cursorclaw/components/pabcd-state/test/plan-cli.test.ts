@@ -14,7 +14,7 @@ function planRoot(cwd: string): string {
 }
 
 test("plan-cli parse: init requires slug; --phases bounds enforced; slug normalized", () => {
-  // 260825 wp1: a bare `cxc plan` is now help, not an error — the top-level help
+  // 260825 wp1: a bare `crc plan` is now help, not an error — the top-level help
   // points agents at `<cmd> --help` and that pointer used to hit a rejection.
   // An unknown verb is still an error; empty argv is not.
   assert.equal((parsePlanCliArgs([], "/tmp") as { verb: string }).verb, "help");

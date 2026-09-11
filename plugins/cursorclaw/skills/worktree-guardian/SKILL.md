@@ -1,5 +1,5 @@
 ---
-name: cxc-worktree-guardian
+name: worktree-guardian
 description: "MUST USE when working inside or renaming Codex-app managed worktrees — hash-named dirs under ~/.codex/worktrees, detached-HEAD checkouts, thread-bound workspaces. Prevents delete-and-recreate: adopt in place with git switch -c / branch -m; git worktree move only for other inactive worktrees. Triggers: worktree, 워크트리, 워크트리 이름, rename worktree, 새 워크트리, 브랜치랑 워크트리, detached HEAD worktree, ~/.codex/worktrees."
 metadata:
   short-description: "Managed-worktree identity safety: never delete/recreate; adopt in place."
@@ -26,8 +26,8 @@ name the branch in place and tell the user to rename the thread in the app.
 ## 2. Managed-worktree facts (WG-FACTS-01)
 
 - Root: `$CODEX_HOME/worktrees` (default `~/.codex/worktrees`); the app setting can
-  move it (Settings → Worktrees) — codexclaw detection then needs
-  `CODEXCLAW_WORKTREE_ROOTS` (WG-LIMIT-01).
+  move it (Settings → Worktrees) — cursorclaw detection then needs
+  `CURSORCLAW_WORKTREE_ROOTS` (WG-LIMIT-01).
 - Managed worktrees are per-chat disposable; the app retains the latest N (15 by
   default) and **auto-deletes the worktree when the chat is archived** (a snapshot
   is kept for restore). Commit early.
@@ -38,7 +38,7 @@ name the branch in place and tell the user to rename the thread in the app.
 ## 3. Never-list (WG-NEVER-01)
 
 - Never `git worktree remove` or `rm -rf` the session's OWN worktree, slot dir, or
-  any ancestor of cwd — not even to "start clean". codexclaw's PreToolUse guard
+  any ancestor of cwd — not even to "start clean". cursorclaw's PreToolUse guard
   (WORKTREE-GUARD-03) denies it; do not try to bypass the deny.
 - Never copy the work elsewhere and delete the original — that loses the app
   binding and any uncommitted state you missed.
@@ -65,7 +65,7 @@ session's cwd (next command: ENOENT) and app rebinding is undocumented — don't
 `git worktree remove <path>` — never `rm -rf`. A directory deleted without
 `git worktree remove` leaves admin state under `.git/worktrees/`; recover with
 `git worktree prune` (dry-run first).
-Automated or bulk cleanup of other worktrees follows `cxc-dev-devops`
+Automated or bulk cleanup of other worktrees follows `dev-devops`
 `references/local-gc.md` (DEVOPS-LOCAL-GC-01); the never-list above still wins.
 
 ## 5. Defense-in-depth limits (WG-LIMIT-01)
@@ -73,7 +73,7 @@ Automated or bulk cleanup of other worktrees follows `cxc-dev-devops`
 - The PreToolUse guard matches literal paths. Pure variable/glob indirection that
   never mentions the slot path is out of scope — treat the deny as a seatbelt, not
   a sandbox.
-- Detection covers the default root + `CODEX_HOME` + `CODEXCLAW_WORKTREE_ROOTS`
+- Detection covers the default root + `CODEX_HOME` + `CURSORCLAW_WORKTREE_ROOTS`
   (path.delimiter-separated). A custom app-side root needs that env.
 
 ## 6. Hook interplay (WG-HOOK-01)
@@ -87,7 +87,7 @@ Automated or bulk cleanup of other worktrees follows `cxc-dev-devops`
 
 ## 7. AGENTS.md snippet (WG-AGENTS-01)
 
-For repos where codexclaw hooks are not installed:
+For repos where cursorclaw hooks are not installed:
 
 ```md
 ## Worktree safety

@@ -1,11 +1,11 @@
 ---
-name: cxc-qa
+name: qa
 description: "MUST USE after building or changing any user-facing surface (web UI, TUI, CLI, HTTP API) before claiming done — manual, surface-driving QA: real invocations on real surfaces, captured artifacts, adversarial classes, and teardown receipts feeding the PABCD C gate. Automated suites are dev-testing's job; this skill proves the surface actually works when driven. Triggers: manual QA, QA this, does it actually work, drive the UI, smoke test, visual QA, screenshot check, TUI alignment, CJK clipping, 수동 QA, 실제로 되는지 확인, 동작 확인, 직접 돌려봐."
 metadata:
   short-description: "Manual surface-driving QA gate: faithful channels, evidence matrix, adversarial classes, teardown receipts."
 ---
 
-# cxc-qa — Manual Surface QA Gate
+# qa — Manual Surface QA Gate
 
 Prove a built surface works by DRIVING it, not by inferring from green tests.
 No scenario closes on a status string; it closes on a captured artifact from a
@@ -13,7 +13,7 @@ real surface, an adversarial pass, and a teardown receipt. Everything in this
 skill is E7 discipline (agent-followed, not hook-enforced); the one shipped E2
 touchpoint is noted in §7. Lineage: lazycodex `visual-qa` / `review-work` /
 `lazycodex-qa-executor` (vendored at `devlog/.lazycodex/`), translated to
-codexclaw's no-server, Codex-native-tool model.
+cursorclaw's no-server, Cursor-native-tool model.
 
 ## Modular References
 
@@ -29,10 +29,10 @@ Aside, agbrowse and native browser capabilities may drive built UI; none is requ
 
 ## 0. Scope split (single ownership)
 
-- `cxc-dev-testing` owns AUTOMATED verification: unit, contract, E2E,
+- `dev-testing` owns AUTOMATED verification: unit, contract, E2E,
   Playwright suites and CI gates. Browser selection lives in the shared dev policy;
   `dev-testing` §4.7 connects that policy to exploratory tests.
-- `cxc-qa` (this skill) owns the manual QA PROCEDURE: scenario matrix,
+- `qa` (this skill) owns the manual QA PROCEDURE: scenario matrix,
   faithful channels, evidence contract, adversarial classes, oracle passes,
   teardown receipts.
 - Both feed PABCD C. Neither replaces the other: a green suite without a
@@ -66,7 +66,7 @@ may use parsed CLI/data output as its channel.
 
 ## 3. Evidence contract
 
-Artifacts live under `.codexclaw/evidence/<sessionId>/qa/<scenario-id>/`:
+Artifacts live under `.cursorclaw/evidence/<sessionId>/qa/<scenario-id>/`:
 
 - `invocation.txt` — the exact command(s)/steps, copy-pasteable.
 - the artifact(s) — capture, screenshot, response, transcript.
@@ -93,7 +93,7 @@ Rules:
 - `NA` is legal only when the class structurally cannot apply to the surface
   (e.g. viewport class on a headless API), always with a recorded reason.
 - This directory is shared with the SubagentStop receipt gate's root
-  (`.codexclaw/evidence/`); main-session QA artifacts do not interact with
+  (`.cursorclaw/evidence/`); main-session QA artifacts do not interact with
   worker receipts (the gate validates only the worker's own
   `EVIDENCE_RECORDED:` marker path).
 - A worker that CANNOT write there was dispatched wrong, not gated wrong: read-only
@@ -104,12 +104,12 @@ Rules:
 After every scenario is done, emit the aggregate receipt:
 
 ```
-node plugins/codexclaw/skills/qa/scripts/validate-evidence.mjs \
-  .codexclaw/evidence/<sessionId>/qa/ --emit-receipt
+node plugins/cursorclaw/skills/qa/scripts/validate-evidence.mjs \
+  .cursorclaw/evidence/<sessionId>/qa/ --emit-receipt
 ```
 
 It validates every `verdict.json`, confirms they all describe the same tree,
-and writes `.codexclaw/evidence/<sessionId>/qa-receipt.json`. Any failure
+and writes `.cursorclaw/evidence/<sessionId>/qa-receipt.json`. Any failure
 leaves no receipt behind, including deleting one an earlier run produced —
 a receipt that outlives the QA it attests to is worse than none.
 
@@ -141,9 +141,9 @@ Surface-specialized class details: `http-api-qa.md` (wire), `cli-tui-qa.md`
   passes (`spawn_agent`, explorer role, DISPATCH-TASK-01 packet; paste the
   captures/screenshot paths + script/tool observations into each prompt —
   do not make the oracle re-derive context):
-  Both passes are rubric-bound: attach `cxc-dev-frontend` (anti-slop +
+  Both passes are rubric-bound: attach `dev-frontend` (anti-slop +
   visual-verification checklist ARE the rubric) and, for design-direction
-  judgments only, `cxc-dev-uiux-design`; every PASS cites the rule ids it
+  judgments only, `dev-uiux-design`; every PASS cites the rule ids it
   checked (QA-VISUAL-COMPANION-01, `references/visual-qa.md`). Capture the
   objective evidence layer FIRST (viewport matrix, DOM text extraction for
   text/CJK claims, console errors — QA-VISUAL-METRIC-01).
@@ -177,7 +177,7 @@ claim until repaired (LOOP-REPAIR-01 counts apply) or the criterion is
 re-scoped through a P-phase amendment, never silently. This is E7 discipline:
 no hook reads verdict.json. The E2 touchpoint: QA delegated to a registered `executor`
 subagent rides the existing SubagentStop receipt gate (legacy `worker` also supported) — the executor cannot
-finish without a non-empty receipt under `.codexclaw/evidence/`.
+finish without a non-empty receipt under `.cursorclaw/evidence/`.
 
 ## v2 candidates (deliberately not shipped)
 

@@ -55,7 +55,7 @@ test("run without -- prints usage and fails", () => {
   const cwd = workspace();
   const res = run(["run", "echo", "hi"], cwd);
   assert.equal(res.code, 1);
-  assert.match(res.out, /cxc bg run/);
+  assert.match(res.out, /crc bg run/);
 });
 
 test("cancel of a missing id is not an error", () => {
@@ -186,7 +186,7 @@ test("the windows helper preserves arguments byte-for-byte", async () => {
 test("an unknown verb prints usage without failing", () => {
   const res = run(["nope"], workspace());
   assert.equal(res.code, 0);
-  assert.match(res.out, /cxc bg run/);
+  assert.match(res.out, /crc bg run/);
 });
 
 

@@ -331,7 +331,7 @@ export function evaluateInterviewGate(
   if (unbacked.length > 0) {
     warnings.push(
       `${unbacked.join(", ")} reached "high" without an answered question in the interview ledger — ` +
-        `ask and record one per dimension (\`cxc scan record --derive --map <questionId>=<dimension>\`), ` +
+        `ask and record one per dimension (\`crc scan record --derive --map <questionId>=<dimension>\`), ` +
         `or assert the level deliberately`,
     );
   }

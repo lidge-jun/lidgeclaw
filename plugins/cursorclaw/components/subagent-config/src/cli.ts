@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * cli.ts — `cxc subagents` operator surface (L9.3 / 093).
+ * cli.ts — `crc subagents` operator surface (L9.3 / 093).
  *
  * Read/write the SAME `.cursorclaw/subagents.json` store the MCP server and GUI use,
  * so the terminal, the dashboard, and MCP all roundtrip one source of truth. Pure

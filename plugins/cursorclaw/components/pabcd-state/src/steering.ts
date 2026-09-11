@@ -1,7 +1,7 @@
 /**
  * steering.ts — transactional steering batches (WP14 / plan 090).
  *
- * `$cxc-loop` promises that steering decisions are recorded with rationale and
+ * `$crc-loop` promises that steering decisions are recorded with rationale and
  * evidence, and that steering weakening completion criteria is refused. A batch
  * either applies whole or not at all, and the fact of it is durable.
  *

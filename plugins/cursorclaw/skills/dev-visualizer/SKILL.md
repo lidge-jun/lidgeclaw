@@ -1,5 +1,5 @@
 ---
-name: cxc-dev-visualizer
+name: dev-visualizer
 description: "Create well-composed visual documents, HTML reports, SVG diagrams, charts, interactive explainers and PDF deliverables. Use for visualize, visual explanations, architecture diagrams, comparison reports, infographics, document creation, 시각화, 그려줘, 문서 만들어줘, 보고서, PDF 생성. Preserve explicit formats and templates; text-only requests and ordinary code changes do not need a visual."
 metadata:
   last-verified: "2026-09-09"
@@ -10,7 +10,7 @@ metadata:
 # Visual documents — compose, render, deliver
 
 Turn the reader's question and supplied facts into a useful visual artifact.
-`cxc-dev-visualizer` is the entrypoint; the former `cxc-dev-diagram-viewer`
+`dev-visualizer` is the entrypoint; the former `dev-diagram-viewer`
 name redirects here. Use `dev`
 for scope, work class and verification; a document request does not automatically
 require a development loop. This skill owns artifact composition and delivery.

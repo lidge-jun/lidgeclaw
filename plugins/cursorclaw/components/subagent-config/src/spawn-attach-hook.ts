@@ -7,7 +7,7 @@
  * the `collaboration` namespace and the child name without punctuation; only plain/V1
  * names canonicalize to `spawn_agent` — registry.rs:713, hook_names.rs:41).
  *
- * Every valid spawn message first gets conservative LINE-BASED cxc skill-mention
+ * Every valid spawn message first gets conservative LINE-BASED crc skill-mention
  * normalization (090 escalation): protection is the default, rewriting the exception.
  * The hook repairs known bare/prefixed mentions on unambiguous lines and broken
  * known-skill standalone link lines; it never invents a skill mention that the
@@ -128,8 +128,8 @@ function skillPath(skillsDir: string, folder: string): string | null {
 }
 
 function canonicalMention(skillsDir: string, folder: string, path: string): string {
-  if (/[\s()]/.test(skillsDir)) return `$codexclaw:cxc-${folder}`;
-  return `[$cxc-${folder}](skill://${path})`;
+  if (/[\s()]/.test(skillsDir)) return `$cursorclaw:${folder}`;
+  return `[$crc-${folder}](skill://${path})`;
 }
 
 /**
@@ -157,7 +157,7 @@ function repairedStandaloneLink(body: string, match: RegExpExecArray, skillsDir:
 }
 
 function mentionAt(message: string, start: number, skillsDir: string): { end: number; text: string } | null {
-  for (const prefix of ["$codexclaw:cxc-", "$cxc-"]) {
+  for (const prefix of ["$cursorclaw:", "$crc-"]) {
     if (!message.startsWith(prefix, start)) continue;
     const folderStart = start + prefix.length;
     let end = folderStart;
@@ -287,7 +287,7 @@ export const LEAF_GUARD_BLOCK = [
   `CONSTRAINTS from your dispatcher: (1) Do NOT spawn`,
   `sub-agents (no spawn_agent calls, no delegation chains). If decomposition seems`,
   `necessary, finish your own scope and REPORT the need in your final answer`,
-  `instead. (2) Do NOT run cxc orchestrate, cxc loop, or goal commands - the`,
+  `instead. (2) Do NOT run crc orchestrate, crc loop, or goal commands - the`,
   `parent session owns all FSM/goal state. (3) Stay inside the task's stated`,
   `file/write scope. These dispatcher constraints are enforced by a spawn hook (a`,
   `recursive spawn without a grant is DENIED at the tool boundary, regardless of`,
@@ -300,7 +300,7 @@ export const LEAF_GUARD_BLOCK = [
 export const LEAF_GUARD_BLOCK_COORDINATOR = [
   `${LEAF_GUARD_MARKER} You are a COORDINATOR agent with a single bounded task. HARD`,
   `CONSTRAINTS from your dispatcher:`,
-  `(1) Recursion is authorized for this task. (2) Do NOT run cxc orchestrate, cxc loop, or goal commands - the`,
+  `(1) Recursion is authorized for this task. (2) Do NOT run crc orchestrate, crc loop, or goal commands - the`,
   `parent session owns all FSM/goal state. (3) Stay inside the task's stated`,
   `file/write scope. All remaining constraints still apply.`,
 ].join("\n");
@@ -589,7 +589,7 @@ export function skillAffordanceBlock(skillsDir: string): string {
   const catalog = buildLeafSkillCatalog(skillsDir);
   const lines = [
     `${SKILL_AFFORDANCE_MARKER} Skill mentions in this task (tokens like`,
-    `$cxc-<name> or $codexclaw:cxc-<name>, or [$cxc-<name>](skill://...) links)`,
+    `$crc-<name> or $cursorclaw:<name>, or [$crc-<name>](skill://...) links)`,
     `are NOT auto-loaded on this surface. Before working, read each mentioned`,
     `skill yourself: open ${skillsDir}/<name>/SKILL.md with your file tools and`,
     `follow it. If a mentioned skill file does not exist there, note that in`,
@@ -739,7 +739,7 @@ export function inlineSkillBodies(message: string, skillsDir: string): string {
 
 /**
  * Skill FOLDERS already mentioned in the outgoing message, in any of the three
- * recognized shapes: plain `$cxc-<folder>`, plugin-native `$codexclaw:cxc-<folder>`,
+ * recognized shapes: plain `$crc-<folder>`, plugin-native `$cursorclaw:<folder>`,
  * or a link-form `skill://.../<folder>/SKILL.md` target path.
  */
 export function mentionedFolders(message: string): Set<string> {
@@ -942,7 +942,7 @@ export function runSpawnAttachHook(raw: string): string {
     if (!gateCheck.ok) return denyEnvelope(gateCheck.reason ?? "final gate prerequisites are missing");
 
     const fallbackNotice = !managed && readConfig(cwd).roles[role].fallback
-      ? `[codexclaw] This direct spawn is not managed by first-fallback tracking. For subsequent tasks: ${DISPATCH_GUIDANCE}` : null;
+      ? `[cursorclaw] This direct spawn is not managed by first-fallback tracking. For subsequent tasks: ${DISPATCH_GUIDANCE}` : null;
     if (!managed && !fallbackNotice && !messageChanged && injectedModel === null && injectedEffort === null) return "";
 
     // Full replacement: echo every original key; change only message/model/effort.

@@ -1,5 +1,5 @@
 /**
- * cli.ts — `cxc skill <search|show>` entry (WP3 / 040).
+ * cli.ts — `crc skill <search|show>` entry (WP3 / 040).
  *
  * Remote-first: no local vendoring. Sources: jaw (default; cli-jaw-skills
  * registry raw), hermes (bundled-skills catalog raw), clawhub (single tree API
@@ -19,7 +19,7 @@ import type { FetchText, ScoredRow, SkillRow } from "./types.ts";
 import { commandInvocation } from "./win-exec.ts";
 
 const USAGE =
-  "cxc skill <search <query...> [--source jaw|hermes|clawhub|gh|all] [--limit N] [--json] [--refresh] | show <id> [--source ...]>";
+  "crc skill <search <query...> [--source jaw|hermes|clawhub|gh|all] [--limit N] [--json] [--refresh] | show <id> [--source ...]>";
 
 interface Flags {
   source: string;

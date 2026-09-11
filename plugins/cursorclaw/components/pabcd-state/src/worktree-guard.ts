@@ -144,7 +144,7 @@ export function buildSessionStartContext(id: WorktreeIdentity, cwd: string): str
     ? "- To name things, ADOPT IN PLACE: stay here; `git switch -c <name>` (detached) or\n  `git branch -m <name>` names the branch; commit early. The app thread title is\n  renamed by the user in the app sidebar — agents cannot rename it."
     : "- Stay here and commit early. The app thread title is renamed by the user in\n  the app sidebar — agents cannot rename it.";
   return [
-    "[codexclaw: MANAGED WORKTREE — identity guard (WORKTREE-GUARD-01)]",
+    "[cursorclaw: MANAGED WORKTREE — identity guard (WORKTREE-GUARD-01)]",
     `This session runs inside a Codex-app-managed worktree: ${checkout}`,
     `(cwd: ${cwd}; slot: ${id.slotRoot}; worktrees root: ${id.worktreesDir}).`,
     "- This thread is BOUND to this worktree. NEVER delete, recreate, or \"start fresh\"",
@@ -157,13 +157,13 @@ export function buildSessionStartContext(id: WorktreeIdentity, cwd: string): str
     "- The app may auto-delete this worktree on chat archive (snapshot kept) and",
     "  retains only the latest N managed worktrees: commit early, push on approval.",
     "- Detection covers the default root + CODEXCLAW_WORKTREE_ROOTS; a custom app",
-    "  worktree root needs that env. Full procedures: $codexclaw:cxc-worktree-guardian.",
+    "  worktree root needs that env. Full procedures: $cursorclaw:worktree-guardian.",
   ].join("\n");
 }
 
 export function buildRenameGuidance(id: WorktreeIdentity): string {
   return [
-    "[codexclaw: MANAGED WORKTREE — rename/adopt guidance (WORKTREE-GUARD-02)]",
+    "[cursorclaw: MANAGED WORKTREE — rename/adopt guidance (WORKTREE-GUARD-02)]",
     "Rename request on a managed worktree. ADOPT IN PLACE — do not delete/recreate:",
     "1. Stay in this worktree. It is bound to the app thread; recreating breaks that.",
     "2. Name the BRANCH: `git switch -c <name>` (detached HEAD) or `git branch -m <name>`.",
@@ -485,13 +485,13 @@ export function evaluateCommand(
 
 function denyReason(what: string, id: WorktreeIdentity): string {
   return [
-    `[codexclaw: WORKTREE-GUARD-03] blocked \`${what}\`: it deletes this session's`,
+    `[cursorclaw: WORKTREE-GUARD-03] blocked \`${what}\`: it deletes this session's`,
     `own Codex-app-managed worktree (slot: ${id.slotRoot ?? "unknown"}). This thread`,
     "is bound to that worktree; deletion destroys uncommitted work.",
     "Remedies: finish and commit here; rename in place (git switch -c / branch -m);",
     "teardown of THIS session's worktree is done by the user (archive the thread in",
     "the app — snapshot preserved — or remove it from OUTSIDE this session).",
-    "See $codexclaw:cxc-worktree-guardian.",
+    "See $cursorclaw:worktree-guardian.",
   ].join(" ");
 }
 

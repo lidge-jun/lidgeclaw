@@ -83,7 +83,7 @@ export function renderMetricHelp(): string {
     "",
     "Notes:",
     "  Two non-improving rows on the same metric switch the Stop block to",
-    "  \"step back and re-plan with divergence\" (cxc-loop objective plateau).",
+    "  \"step back and re-plan with divergence\" (loop objective plateau).",
     "  --source records HOW the number was obtained; an operator-entered value and",
     "  an evaluate.sh value are not interchangeable evidence.",
   ].join("\n");

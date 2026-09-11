@@ -1,7 +1,7 @@
 /**
  * doctor-features.test.ts — wp4 of 260829_request-user-input-autopilot.
  *
- * The two surfaces that report a missing feature flag both speak exactly once: `cxc enable`
+ * The two surfaces that report a missing feature flag both speak exactly once: `crc enable`
  * warns at install time, and the SessionStart self-heal emits context for one turn. This
  * check is the standing surface, so its severity split is the contract worth pinning.
  */

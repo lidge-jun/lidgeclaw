@@ -1,8 +1,8 @@
 /**
- * map-affordance.test.ts — SessionStart `cxc map` discoverability injector.
+ * map-affordance.test.ts — SessionStart `crc map` discoverability injector.
  *
  * Verifies: (1) the size gate (silent below threshold, affordance at/above);
- * (2) the affordance names `cxc map` and stays a POINTER (no map body / no
+ * (2) the affordance names `crc map` and stays a POINTER (no map body / no
  * whole-repo preload); (3) cwd comes from the stdin payload, falling back safely;
  * (4) malformed/empty stdin never throws; (5) the SessionStart hook JSON is wired
  * to the cxc-ops dist entry.
@@ -10,7 +10,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-// Pin the cxc-resolve seam (B1): these tests assert literal `cxc ...` command
+// Pin the cxc-resolve seam (B1): these tests assert literal `crc ...` command
 // mentions, which would otherwise depend on whether the runner's PATH has cxc.
 process.env.CODEXCLAW_CXC = "cxc";
 import { mkdtempSync, mkdirSync, writeFileSync, existsSync, readFileSync, rmSync } from "node:fs";
@@ -102,7 +102,7 @@ test("skill-search affordance is a POINTER: names both commands, stays short", (
   assert.ok(text.length < 600, "affordance must stay a one-liner-ish pointer");
 });
 
-test("kwrite affordance: always on, genre-free pointer to $cxc-kwrite", () => {
+test("kwrite affordance: always on, genre-free pointer to $crc-kwrite", () => {
   const text = renderKwriteAffordance();
   assert.match(text, /cxc-kwrite/);
   assert.match(text, /윤문/);
@@ -118,7 +118,7 @@ test("kwrite affordance: always on, genre-free pointer to $cxc-kwrite", () => {
 test("critical loop and stack guidance survives SessionStart and PostCompact without intent triggers", () => {
   const text = renderLoopAffordance();
   assert.match(text, /Loop contract:/);
-  assert.match(text, /cxc orchestrate status/);
+  assert.match(text, /crc orchestrate status/);
   assert.match(text, /one full PABCD cycle/i);
   assert.match(text, /cxc-loop/);
   assert.match(text, /Bare cxc-loop means scoped HOTL/);
@@ -145,7 +145,7 @@ test("wp3: SessionStart and deferred compact recovery emit the same scoped loop 
       const envelope = JSON.parse(out).hookSpecificOutput;
       assert.equal(envelope.hookEventName, event);
       const ctx = envelope.additionalContext as string;
-      const pointer = ctx.split("\n\n").find(line => line.startsWith("[codexclaw] Loop contract:"));
+      const pointer = ctx.split("\n\n").find(line => line.startsWith("[cursorclaw] Loop contract:"));
       assert.ok(pointer);
       assert.match(pointer, /Bare cxc-loop means scoped HOTL; a mention alone grants no authority/);
       assert.match(pointer, /Exact user limits and separately allowed actions scope this pointer and its owners/);
@@ -155,7 +155,7 @@ test("wp3: SessionStart and deferred compact recovery emit the same scoped loop 
       assert.match(pointer, /One work-phase = one full PABCD cycle/);
       assert.match(pointer, /No extra external permissions/);
       assert.ok(pointer.length < 600);
-      const questions = ctx.split("\n\n").filter(line => line.startsWith("[codexclaw] User questions:"));
+      const questions = ctx.split("\n\n").filter(line => line.startsWith("[cursorclaw] User questions:"));
       assert.equal(questions.length, 1, `${event} must surface the question policy exactly once`);
       assert.match(questions[0], /including active goals/);
       assert.match(questions[0], /Outside Interview.*request_user_input_async/);
@@ -180,14 +180,14 @@ test("wp3: SessionStart and deferred compact recovery emit the same scoped loop 
 test("wp3: SessionStart preserves the complete binding literal for each session", () => {
   for (const id of ["parent-session", "child-session"]) {
     const expected = [
-      `[codexclaw] This session's id is \`${id}\`. Every mutating`,
-      "`cxc orchestrate` command (I/P/A/B/C/D/reset) MUST pass",
+      `[cursorclaw] This session's id is \`${id}\`. Every mutating`,
+      "`crc orchestrate` command (I/P/A/B/C/D/reset) MUST pass",
       `\`--session ${id}\` — the implicit latest-session fallback is`,
       "disabled for writes, which prevents ACCIDENTAL implicit-fallback",
       "collisions between concurrent/forked sessions.",
       "IDENTITY RULE: use the MOST RECENT SessionStart binding line, never a parent/history id.",
-      "With native CODEX_THREAD_ID, verify via `cxc session current` before mutation.",
-      "Missing/inherited/conflicting binding: use `cxc session current`, then `cxc session bind` in its verified cwd.",
+      "With native CODEX_THREAD_ID, verify via `crc session current` before mutation.",
+      "Missing/inherited/conflicting binding: use `crc session current`, then `crc session bind` in its verified cwd.",
       "Never set the environment id. Binding does not verify hooks or arm Stop-continuation.",
     ].join(" ");
     const cwd = tmp();
@@ -285,7 +285,7 @@ test("degraded mode: no CODEXCLAW_CXC + cxc-free PATH falls back to the payload 
   assert.match(invocation, /^node "/, "fallback must be runnable via node");
 
   // Command mentions resolve...
-  const rewritten = resolveCxcCommands("run `cxc map src` now", env);
+  const rewritten = resolveCxcCommands("run `crc map src` now", env);
   assert.ok(rewritten.includes(`\`${invocation} map src\``), "backticked command must resolve");
 
   const staleBin = tmp();
@@ -297,15 +297,15 @@ test("degraded mode: no CODEXCLAW_CXC + cxc-free PATH falls back to the payload 
     assert.equal(cxcInvocation(import.meta.url, staleEnv, "map"), "cxc");
     assert.equal(cxcInvocation(import.meta.url, staleEnv, "gui"), "cxc");
     assert.equal(cxcInvocation(import.meta.url, { ...staleEnv, CODEXCLAW_CXC: "chosen-cxc" }, "session"), "chosen-cxc");
-    const mixed = resolveCxcCommands("`cxc session current` and `cxc map src`", staleEnv);
-    assert.equal(mixed, `\`${owned} session current\` and \`cxc map src\``);
+    const mixed = resolveCxcCommands("`crc session current` and `crc map src`", staleEnv);
+    assert.equal(mixed, `\`${owned} session current\` and \`crc map src\``);
     const absent = pathToFileURL(join(staleBin, "absent", "components", "cxc-ops", "src", "cxc-resolve.ts")).href;
     assert.equal(cxcInvocation(absent, staleEnv, "session"), "cxc");
   } finally { rmSync(staleBin, { recursive: true, force: true }); }
 
   // ...but noun phrases, skill names, and chat commands are byte-identical (H1).
   for (const untouchable of [
-    "load $codexclaw:cxc-loop for the discipline",
+    "load $cursorclaw:loop for the discipline",
     "send !cxc start in the channel",
     "the parent owns cxc orchestration and goal state",
   ]) {

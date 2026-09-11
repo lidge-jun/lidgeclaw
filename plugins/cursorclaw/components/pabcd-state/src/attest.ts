@@ -50,7 +50,7 @@ export interface Attestation {
    *  bound goalplan's effective active work-phase (LOOP-UNIT-CHAIN-01 binding). */
   workPhaseId?: string;
   /** C>D (075): path to a test receipt under .cursorclaw/evidence, produced by
-   *  `cxc receipt test`. Verified by check-gate.ts — attest stays IO-free. */
+   *  `crc receipt test`. Verified by check-gate.ts — attest stays IO-free. */
   testReceiptPath?: string;
 }
 
@@ -225,7 +225,7 @@ export function validateAttest(from: Phase, to: Phase, att: Attestation | null):
     // The nag rides along only when the executor is already going back to fill in a
     // missing field, so it never turns a one-reason failure into two.
     if (missingFields > 0 && !att.testReceiptPath) {
-      reasons.push(`C -> D on a goalplan-bound session ALSO requires "testReceiptPath" (CHECK-BINDING-01), produced by \`cxc receipt test -- <command>\`. Supplying it now avoids another round trip.`);
+      reasons.push(`C -> D on a goalplan-bound session ALSO requires "testReceiptPath" (CHECK-BINDING-01), produced by \`crc receipt test -- <command>\`. Supplying it now avoids another round trip.`);
     }
   }
   return reasons.length === 0 ? { ok: true } : failAttest(reasons);

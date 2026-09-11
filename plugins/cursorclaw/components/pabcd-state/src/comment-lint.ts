@@ -104,7 +104,7 @@ export function handleApplyPatchLint(raw: string): string {
       hookSpecificOutput: {
         hookEventName: "PreToolUse",
         permissionDecision: "deny",
-        permissionDecisionReason: `[codexclaw comment-lint] ${result.reason}`,
+        permissionDecisionReason: `[cursorclaw comment-lint] ${result.reason}`,
       },
     })}\n`;
   } catch {

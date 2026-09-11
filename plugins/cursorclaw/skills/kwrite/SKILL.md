@@ -1,5 +1,5 @@
 ---
-name: cxc-kwrite
+name: kwrite
 description: "MUST USE for Korean prose polishing (윤문) — revising existing Korean text to read like a person wrote it: removing translationese and AI idioms, fixing register/tone breaks, varying rhythm, replacing abstract endings, while preserving meaning exactly. Applies to docs, articles, announcements, READMEs, UI copy, and any Korean output the agent writes. Triggers: 윤문, 다듬어, 다듬어줘, 자연스럽게, 매끄럽게, 교정, 고쳐줘, AI투, 번역투, Korean polish, kwrite, proofread Korean."
 metadata:
   last-verified: "2026-07-07"

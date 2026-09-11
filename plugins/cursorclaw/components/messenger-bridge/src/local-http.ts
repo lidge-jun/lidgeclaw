@@ -1,4 +1,4 @@
-/** Shared loopback API boundary used by both `cxc serve` and the Vite dev server. */
+/** Shared loopback API boundary used by both `crc serve` and the Vite dev server. */
 import type { IncomingMessage } from "node:http";
 
 export const MAX_LOCAL_JSON_BYTES = 1_000_000;

@@ -153,7 +153,7 @@ export function checkFinalGatePrereqs(
         current = sourceCwd === cwd ? captured : { ...captured, sourceRoot: sourceCwd };
       } else current = source.captureSessionSourceIdentity(cwd, sessionId);
     } catch {
-      return { ok: false, reason: "[codexclaw — final gate] SOURCE-ROOT: source identity is unavailable; inspect the binding and installed modules before review." };
+      return { ok: false, reason: "[cursorclaw — final gate] SOURCE-ROOT: source identity is unavailable; inspect the binding and installed modules before review." };
     }
 
     for (const slot of slots) {
@@ -177,7 +177,7 @@ export function checkFinalGatePrereqs(
     return {
       ok: false,
       reason: [
-        "[codexclaw — final gate] This spawn is marked as the final gate, but its prerequisites are not in place:",
+        "[cursorclaw — final gate] This spawn is marked as the final gate, but its prerequisites are not in place:",
         ...missing.map((m) => `  - ${m}`),
         ...stale.map((s) => `  - ${s}`),
         "Run the checks, record their receipts under .cursorclaw/evidence/, then dispatch the gate reviewer.",

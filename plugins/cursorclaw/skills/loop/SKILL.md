@@ -1,23 +1,23 @@
 ---
-name: cxc-loop
+name: loop
 description: "Use for scoped PABCD completion loops. Bare cxc-loop means HOTL; explicit explanation, interview, plan-only, read-only, or HITL limits win. Triggers: cxc-loop, continue until done, HOTL, repeated PABCD, 루프 돌려, 끝까지 해줘, docs-first."
 metadata:
   short-description: "Agent-led scoped completion with durable plans and evidence."
 ---
 
-# cxc-loop — Scoped completion
+# loop — Scoped completion
 
 ## Intent before activation
 
 Apply the current request's authority before choosing a mode:
 
-- An explanation, review, or quoted mention of cxc-loop is not an execution request.
+- An explanation, review, or quoted mention of loop is not an execution request.
   Do not create a goal, mutate the FSM, or start implementation merely to explain it.
 - Explicit interview-only, plan-only, read-only, no-writes, no-commits, no-goal,
   no-FSM, no-tests, and no-delegation limits take precedence when actually stated.
   Do only the authorized work. A plan-only
   request is not permission for A/B/C/D; an interview is not permission to leave I.
-- An operative bare cxc-loop request means HOTL completion of all plans within the
+- An operative bare loop request means HOTL completion of all plans within the
   agreed objective. An explicit HITL request instead preserves human P/A/B pauses.
   Ordinary development requests do not become HOTL because this skill was loaded.
 - HOTL changes persistence, not permissions. It does not authorize unrelated work,
@@ -61,9 +61,9 @@ preflight failure: resolve it or report the limitation before the governed actio
 
 | Condition | Read before the governed action |
 |---|---|
-| Development or governed review | [cxc-dev](../dev/SKILL.md), then its matching surface routers |
+| Development or governed review | [dev](../dev/SKILL.md), then its matching surface routers |
 | Tool composition, response projection, or in-context JS computation | [Native execution](../dev/references/native-execution.md); prefer exposed Code Mode, not a forced runtime |
-| Real PABCD work or a PABCD plan | [cxc-pabcd](../pabcd/SKILL.md), then only the current phase references it selects |
+| Real PABCD work or a PABCD plan | [pabcd](../pabcd/SKILL.md), then only the current phase references it selects |
 | Start/resume HOTL or diagnose its continuation/completion | [Runtime lifecycle](references/runtime-lifecycle.md) |
 | Create, register, amend, or inspect durable goalplan schema/CLI | [Durable goalplan](references/durable-goalplan.md) |
 | Two or more work-phases, including scope discovered later | [Implementation units](../pabcd/references/implementation-units.md) |
@@ -73,7 +73,7 @@ preflight failure: resolve it or report the limitation before the governed actio
 | Dispatch is authorized and needed | [Delegation](../pabcd/references/delegation.md) |
 | Waiting on dispatched work or long external processes, HITL or HOTL | [Waiting on work](references/waiting.md) |
 
-The installed skill listing and owner routers are the discovery path. cxc skill
+The installed skill listing and owner routers are the discovery path. crc skill
 search searches external catalogs; it is not the native installed-skill loader.
 Keep explicit-only skills and leaf-safe delivery restrictions intact.
 
@@ -82,13 +82,13 @@ Keep explicit-only skills and leaf-safe delivery restrictions intact.
 - ORCH-MANDATE-01 (STRICT): a claimed active loop needs real persisted FSM evidence,
   not narrated phase names. Read actual session state before entry or re-entry.
   SESSION-IDENTITY-01 uses your current SessionStart binding, corroborated with
-  `cxc session current` when native CODEX_THREAD_ID is available. For a missing,
-  inherited or conflicting line, use `cxc session current` then explicit
-  `cxc session bind` in the verified native cwd. Never set that environment ID,
+  `crc session current` when native CODEX_THREAD_ID is available. For a missing,
+  inherited or conflicting line, use `crc session current` then explicit
+  `crc session bind` in the verified native cwd. Never set that environment ID,
   replay hook JSON or borrow a parent's/history ID. Binding does not verify hooks.
   If PATH resolves an older development CLI, invoke this installed plugin's
   `node "<pluginRoot>/bin/cxc.mjs"` for these commands; preserve the development checkout.
-  Phase-control details belong to cxc-pabcd.
+  Phase-control details belong to pabcd.
 - HOTL needs both an ACTIVE host goal and an in-flight PABCD cycle; HITL needs no
   host goal. If a required capability or binding is absent, report the preflight
   failure rather than claiming Stop-continuation is armed.
@@ -101,11 +101,11 @@ Keep explicit-only skills and leaf-safe delivery restrictions intact.
   goal (LOOP-UNIT-CHAIN-01), not an excuse to stop or permission for unrelated work.
 - LOOP-CONTINUITY-01: the next P quotes the previous D conclusion and direction;
   changing that direction requires a reason. Resume from durable evidence, not
-  transcript momentum. Completion follows cxc-dev's fresh-proof gate.
-- LOOP-GIT-01 points to cxc-dev §5: checkpoint authorized implementation locally;
+  transcript momentum. Completion follows dev's fresh-proof gate.
+- LOOP-GIT-01 points to dev §5: checkpoint authorized implementation locally;
   external writes still require explicit permission. For a declared PR stack,
-  read cxc-dev references/stacked-prs.md. Planning-only work does not authorize
-  implementation or publication; local documentation checkpoints follow cxc-dev
+  read dev references/stacked-prs.md. Planning-only work does not authorize
+  implementation or publication; local documentation checkpoints follow dev
   scope and git rules.
 
 ## Docs-first multi-cycle entry
@@ -116,11 +116,11 @@ PABCD cycle. Its D locks the roadmap; implementation begins in the next cycle.
 Each later work-phase consumes one pre-written decade doc and revalidates it at P.
 If multi-cycle scope is discovered later, the next P first pays the roadmap debt.
 No production patches, deploys, or implementation-complete claims in that cycle.
-A genuine single-cycle task skips this extra cycle; cxc-dev's C0/C1 fast-path remains.
+A genuine single-cycle task skips this extra cycle; dev's C0/C1 fast-path remains.
 
 LOOP-READS-PABCD-01 (STRICT): before multi-cycle execution read the implementation
-units reference. cxc-loop owns WHEN; cxc-pabcd owns DIFFLEVEL-ROADMAP-01,
-PHASE-SPLIT-01, LEXICO-SPLIT-01, and UNIT-RESIDENCE-01. cxc-dev owns the C0/C1
+units reference. loop owns WHEN; pabcd owns DIFFLEVEL-ROADMAP-01,
+PHASE-SPLIT-01, LEXICO-SPLIT-01, and UNIT-RESIDENCE-01. dev owns the C0/C1
 fast-path exception. Neither a skeleton nor empty decade docs satisfy the roadmap.
 
 ## Completion and recovery

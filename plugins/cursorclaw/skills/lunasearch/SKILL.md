@@ -1,15 +1,15 @@
 ---
-name: cxc-lunasearch
+name: lunasearch
 description: "Codexclaw Luna search lane: cheap parallel public-web discovery via hardcoded gpt-5.6-luna explorer subagents, then hand verified synthesis back to the main model and cxc-search proof discipline. Depends on cxc-search for proof. Use when the user explicitly asks for Luna search, cheap/broad web discovery, parallel research, many source sweeps, 루나검색, 루나 서치, 병렬 웹검색, or 싸게 많이 찾아봐."
 ---
 
-# lunasearch — Cheap Parallel Discovery Lane (depends on cxc-search)
+# lunasearch — Cheap Parallel Discovery Lane (depends on search)
 
-`cxc-lunasearch` is a **dependent tool of `cxc-search`**, not a standalone
+`lunasearch` is a **dependent tool of `search`**, not a standalone
 search skill. It fans out cheap Luna-model subagents for wide discovery, then
-hands every candidate back to the main agent, which runs the `cxc-search` proof
+hands every candidate back to the main agent, which runs the `search` proof
 ladder (Tier 1 discover, Tier 2 open-the-source) to settle claims. Luna
-discovers; `cxc-search` proves; the main model synthesizes. Never use
+discovers; `search` proves; the main model synthesizes. Never use
 lunasearch without this handoff — Luna snippets are leads, not evidence.
 
 ## Hardcoded Spawn Path (no catalog probe)
@@ -43,26 +43,26 @@ recovery.
 
 Default reasoning_effort is "low" — Luna lanes are cheap discovery, not deep reasoning. Keep final judgment in the main session regardless.
 
-## Subagent Skill Attachment (attach cxc-search, not prose)
+## Subagent Skill Attachment (attach search, not prose)
 
-Do not hand-write a tool directive in the spawn message. Attach `cxc-search`
-through the preferred `[$cxc-search](skill://<abs SKILL.md path>)` form, or the
-plugin-native `$codexclaw:cxc-search` fallback when the path is not link-safe,
+Do not hand-write a tool directive in the spawn message. Attach `search`
+through the preferred `[$crc-search](skill://<abs SKILL.md path>)` form, or the
+plugin-native `$cursorclaw:search` fallback when the path is not link-safe,
 so each Luna subagent can load the proof ladder where the surface delivers the skill (Tier 1
 `web_search` + Tier 2 open-the-source) at launch. The skill body is the single
 source of truth for the tool list; this skill only adds the lane assignment and
 the Luna model.
 
 The shared payload form is a **link-form mention in the spawn message**. V1 parses it on
-the child's first turn. On plaintext V2 provider/proxy paths, the codexclaw spawn hook
+the child's first turn. On plaintext V2 provider/proxy paths, the cursorclaw spawn hook
 inlines the recognized skill's full SKILL.md body; native ChatGPT-backend V2 gives the
 hook ciphertext, so normalization and inlining are no-ops there. When no body can be
 inlined, the hook instead appends a plaintext `[CXC-SKILL-AFFORDANCE]` block telling the
-child to self-load any `$cxc-<folder>` / `$codexclaw:cxc-<folder>` mention from
+child to self-load any `$crc-<folder>` / `$cursorclaw:cxc-<folder>` mention from
 `<skillsDir>/<folder>/SKILL.md`; fork inheritance remains a secondary channel:
 
 ```text
-message: "[$cxc-search](skill://<cxc-search SKILL.md absolute path>)
+message: "[$crc-search](skill://<search SKILL.md absolute path>)
 TASK: one lane in a Luna search swarm. LANE: <source class / query family>. Run 5-10 distinct queries; open the source for every result that matters. Return 3-5 findings with URLs, dates, source type, primary-or-lead flag. No edits, no questions."
 ```
 
@@ -71,7 +71,7 @@ when routing through the spawn-wrapper builder:
 
 ```text
 items: [
-  { type: "skill", name: "cxc-search", path: "<cxc-search SKILL.md absolute path>" },
+  { type: "skill", name: "search", path: "<search SKILL.md absolute path>" },
   { type: "text",  text: "TASK: one lane in a Luna search swarm. LANE: <source class / query family>. Run 5-10 distinct queries; open the source for every result that matters. Return 3-5 findings with URLs, dates, source type, primary-or-lead flag. No edits, no questions." }
 ]
 ```
@@ -120,7 +120,7 @@ for sources in a specific language.
 
 ## Spawn Contract
 
-Each Luna subagent gets: (1) the `cxc-search` mention in its message and (2) a short
+Each Luna subagent gets: (1) the `search` mention in its message and (2) a short
 task naming its lane (see the attachment section above). V1 may use structured `items`
 when the caller supplies that channel manually. The skill carries the tool list and
 proof rules; the task carries only the lane assignment and return shape. No five-part
@@ -130,15 +130,15 @@ Spawn all lanes in one turn — parallel, not sequential. Report the spawned
 agent ids/nicknames to the user. The runtime may choose nicknames; do not claim
 manual naming unless the spawn tool supports it.
 
-## Proof Handoff (to cxc-search)
+## Proof Handoff (to search)
 
 Luna output is candidate evidence only. After the swarm returns, the main agent
-runs the `cxc-search` proof ladder on the strongest candidates:
+runs the `search` proof ladder on the strongest candidates:
 
 1. Build a compact claim ledger:
    - claim, source URL, date, source type, Luna lane, status
    - status: `candidate`, `verified`, `contradicted`, or `unreachable`
-2. Open primary sources (cxc-search Tier 2) before final synthesis. Prefer
+2. Open primary sources (search Tier 2) before final synthesis. Prefer
    official docs, release notes, source repositories, specs, and original
    announcements.
 3. When sources conflict, state which source wins and why. Do not average.
@@ -163,8 +163,8 @@ Never treat Luna snippets or subagent summaries as final proof.
 
 This skill is intentionally lighter than lazycodex `ultraresearch`. It does not
 run the EXPAND convergence loop, keep a session journal, verify by executing
-code, or generate reports — those belong to `cxc-search` Tier 3. lunasearch is
+code, or generate reports — those belong to `search` Tier 3. lunasearch is
 the cheap one-shot discovery fan-out; ultraresearch is the deep multi-wave
 research protocol. Use lunasearch when breadth-for-cost is the goal; escalate
-to `cxc-search` Tier 3 when the question needs iterative expansion and
+to `search` Tier 3 when the question needs iterative expansion and
 contested-claim verification.

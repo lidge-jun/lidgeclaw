@@ -1,5 +1,5 @@
 /**
- * review-round-cli.ts — `cxc review-round <open|show|abort>` (060).
+ * review-round-cli.ts — `crc review-round <open|show|abort>` (060).
  *
  * Opens and inspects plan-audit rounds. There is no `close`: approval is written
  * by the SubagentStop observer when a reviewer actually finishes, never by the
@@ -221,7 +221,7 @@ export function runReviewRoundCli(args: ReviewRoundCliArgs): ReviewRoundCliResul
     }
     if (!state.slug) return { output: "review-round open: this session has no bound goalplan", code: 1 };
     if (!state.planUnit || !state.planEpoch) {
-      return { output: "review-round open: no plan binding on this session — enter A through `cxc orchestrate A` so P>A records the unit it validated", code: 1 };
+      return { output: "review-round open: no plan binding on this session — enter A through `crc orchestrate A` so P>A records the unit it validated", code: 1 };
     }
     const collected = collectPlanFiles(args.cwd, state.planUnit, args.planPaths);
     if ("error" in collected) {

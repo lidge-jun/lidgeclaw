@@ -72,9 +72,9 @@ export function buildRulesContext(cwd: string): string {
     if (blocks.length === 0) return "";
     let body = concatRules(blocks);
     if (body.length > RULES_MAX_CHARS) {
-      body = `${body.slice(0, RULES_MAX_CHARS)}\n...[codexclaw rules truncated at ${RULES_MAX_CHARS} chars]`;
+      body = `${body.slice(0, RULES_MAX_CHARS)}\n...[cursorclaw rules truncated at ${RULES_MAX_CHARS} chars]`;
     }
-    const additionalContext = `[codexclaw project rules]\n${body}`;
+    const additionalContext = `[cursorclaw project rules]\n${body}`;
     return `${JSON.stringify({
       hookSpecificOutput: { hookEventName: "SessionStart", additionalContext },
     })}\n`;

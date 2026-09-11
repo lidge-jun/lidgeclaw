@@ -83,7 +83,7 @@ function xmlEscape(value: string): string {
     .replace(/>/g, "&gt;");
 }
 
-/** Pure: render the launchd plist XML for `cxc serve`. */
+/** Pure: render the launchd plist XML for `crc serve`. */
 export function buildPlist(input: PlistInput): string {
   const args = [input.nodePath, input.cliPath, "serve", "--port", String(input.port), "--cwd", input.workdir];
   const argXml = args.map((a) => `    <string>${xmlEscape(a)}</string>`).join("\n");
@@ -136,7 +136,7 @@ const launchdOps: ServiceOps = {
     if (load.code !== 0) {
       return { ok: false, message: `plist written but launchctl load failed: ${load.stderr.trim()}` };
     }
-    return { ok: true, message: `cxc service installed (launchd, label ${SERVICE_LABEL}).` };
+    return { ok: true, message: `crc service installed (launchd, label ${SERVICE_LABEL}).` };
   },
   uninstall(home?) {
     const paths = servicePaths(home);
@@ -149,7 +149,7 @@ const launchdOps: ServiceOps = {
     const paths = servicePaths(home);
     if (!existsSync(paths.plist)) return { ok: true, message: "cxc service: not installed." };
     const res = spawnSync("launchctl", ["list", SERVICE_LABEL], { encoding: "utf8" });
-    if ((res.status ?? 1) === 0) return { ok: true, message: `cxc service: loaded. Logs: ${paths.outLog}` };
+    if ((res.status ?? 1) === 0) return { ok: true, message: `crc service: loaded. Logs: ${paths.outLog}` };
     return { ok: true, message: "cxc service: installed but not loaded." };
   },
 };
@@ -202,7 +202,7 @@ const systemdOps: ServiceOps = {
     systemctl("enable", SYSTEMD_UNIT);
     const start = systemctl("start", SYSTEMD_UNIT);
     if (start.code !== 0) return { ok: false, message: `unit written but start failed: ${start.stderr.trim()}` };
-    return { ok: true, message: `cxc service installed (systemd user unit). For auto-start on boot: loginctl enable-linger $USER` };
+    return { ok: true, message: `crc service installed (systemd user unit). For auto-start on boot: loginctl enable-linger $USER` };
   },
   uninstall(home?) {
     const uPath = unitPath(home);
@@ -219,7 +219,7 @@ const systemdOps: ServiceOps = {
     if (!existsSync(uPath)) return { ok: true, message: "cxc service: not installed." };
     const res = spawnSync("systemctl", ["--user", "is-active", SYSTEMD_UNIT], { encoding: "utf8" });
     const state = (res.stdout ?? "").trim();
-    return { ok: true, message: `cxc service: ${state || "unknown"} (systemd).` };
+    return { ok: true, message: `crc service: ${state || "unknown"} (systemd).` };
   },
 };
 
@@ -268,7 +268,7 @@ const windowsOps: ServiceOps = {
     if (create.code !== 0) return { ok: false, message: `schtasks create failed: ${create.stderr.trim()}` };
     const run = schtasks(["/run", "/tn", TASK_NAME]);
     if (run.code !== 0) return { ok: false, message: `task created but run failed: ${run.stderr.trim()}` };
-    return { ok: true, message: `cxc service installed (Task Scheduler, task ${TASK_NAME}).` };
+    return { ok: true, message: `crc service installed (Task Scheduler, task ${TASK_NAME}).` };
   },
   uninstall(home?) {
     const res = schtasks(["/query", "/tn", TASK_NAME]);
@@ -283,7 +283,7 @@ const windowsOps: ServiceOps = {
     const res = schtasks(["/query", "/tn", TASK_NAME]);
     if (!res.stdout.includes(TASK_NAME)) return { ok: true, message: "cxc service: not installed." };
     const running = res.stdout.includes("Running");
-    return { ok: true, message: `cxc service: ${running ? "running" : "installed, not running"} (Task Scheduler).` };
+    return { ok: true, message: `crc service: ${running ? "running" : "installed, not running"} (Task Scheduler).` };
   },
 };
 
@@ -298,18 +298,18 @@ function platformOps(): ServiceOps | null {
 
 export function installService(opts: InstallOptions): ServiceResult {
   const ops = platformOps();
-  if (!ops) return { ok: false, message: `cxc service: unsupported on ${platform()}. Supports macOS (launchd), Linux (systemd), Windows (Task Scheduler).` };
+  if (!ops) return { ok: false, message: `crc service: unsupported on ${platform()}. Supports macOS (launchd), Linux (systemd), Windows (Task Scheduler).` };
   return ops.install(opts);
 }
 
 export function uninstallService(home?: string): ServiceResult {
   const ops = platformOps();
-  if (!ops) return { ok: false, message: `cxc service: unsupported on ${platform()}.` };
+  if (!ops) return { ok: false, message: `crc service: unsupported on ${platform()}.` };
   return ops.uninstall(home);
 }
 
 export function serviceStatus(home?: string): ServiceResult {
   const ops = platformOps();
-  if (!ops) return { ok: true, message: `cxc service: unsupported on ${platform()}.` };
+  if (!ops) return { ok: true, message: `crc service: unsupported on ${platform()}.` };
   return ops.status(home);
 }

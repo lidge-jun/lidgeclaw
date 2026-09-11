@@ -10,7 +10,7 @@ export function sessionFallbackNotice(cwd: string): string {
   const roles = readConfig(cwd).roles;
   const active = ROLES.filter(role => roles[role].fallback);
   if (!active.length) return "";
-  return JSON.stringify({ hookSpecificOutput: { hookEventName: "SessionStart", additionalContext: `[codexclaw] First fallback configured for ${active.join(", ")}. ${DISPATCH_GUIDANCE}` } }) + "\n";
+  return JSON.stringify({ hookSpecificOutput: { hookEventName: "SessionStart", additionalContext: `[cursorclaw] First fallback configured for ${active.join(", ")}. ${DISPATCH_GUIDANCE}` } }) + "\n";
 }
 function main(): void {
   const sessionStart = process.argv[2] === "session-start" || (process.argv[2] === "hook" && process.argv[3] === "session-start");

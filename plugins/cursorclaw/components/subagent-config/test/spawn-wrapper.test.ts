@@ -226,8 +226,8 @@ test("L15/dev2: resolveSpawnPayloadWithSkills prepends role and surface skill me
   assert.match(payload.message, /TASK: find the goal gate/);
   assert.ok(!("items" in payload), "v2-legal payload must not carry items");
   assert.match(payload.message, /^Load and follow/);
-  assert.match(payload.message, /\[\$cxc-dev\]\(skill:\/\//);
-  assert.match(payload.message, /\[\$cxc-dev-debugging\]\(skill:\/\//);
+  assert.match(payload.message, /\[\$crc-dev\]\(skill:\/\//);
+  assert.match(payload.message, /\[\$crc-dev-debugging\]\(skill:\/\//);
   // v2 required fields
   assert.equal(payload.fork_turns, "none");
   assert.match(payload.task_name, /^explorer_[a-z0-9_]+$/);
@@ -238,13 +238,13 @@ test("L15/dev2: resolveSpawnPayloadWithSkills prepends role and surface skill me
 test("WP1: skillMention renders link form for a link-safe path", async () => {
   const { skillMention } = await import("../src/spawn-wrapper.ts");
   const m = skillMention(SKILLS_DIR, "dev");
-  assert.equal(m, `[$cxc-dev](skill://${join(SKILLS_DIR, "dev", "SKILL.md")})`);
+  assert.equal(m, `[$crc-dev](skill://${join(SKILLS_DIR, "dev", "SKILL.md")})`);
 });
 
 test("WP1: skillMention uses the plugin-prefixed name when the path is not link-safe", async () => {
   const { skillMention } = await import("../src/spawn-wrapper.ts");
-  assert.equal(skillMention("/tmp/with space", "dev"), "$codexclaw:cxc-dev");
-  assert.equal(skillMention("/tmp/with(paren)", "dev"), "$codexclaw:cxc-dev");
+  assert.equal(skillMention("/tmp/with space", "dev"), "$cursorclaw:dev");
+  assert.equal(skillMention("/tmp/with(paren)", "dev"), "$cursorclaw:dev");
 });
 
 test("WP1: buildSkillMentionBlock renders role base + surfaces, existing-only", async () => {
@@ -256,10 +256,10 @@ test("WP1: buildSkillMentionBlock renders role base + surfaces, existing-only", 
     explicitSkillFolders: ["this-skill-does-not-exist"],
   });
   assert.match(block, /^Load and follow these codexclaw skills before working:/);
-  assert.match(block, /\[\$cxc-dev\]\(skill:\/\//);
-  assert.match(block, /\[\$cxc-dev-code-reviewer\]\(skill:\/\//);
-  assert.match(block, /\[\$cxc-search\]\(skill:\/\//);
-  assert.match(block, /\[\$cxc-dev-security\]\(skill:\/\//);
+  assert.match(block, /\[\$crc-dev\]\(skill:\/\//);
+  assert.match(block, /\[\$crc-dev-code-reviewer\]\(skill:\/\//);
+  assert.match(block, /\[\$crc-search\]\(skill:\/\//);
+  assert.match(block, /\[\$crc-dev-security\]\(skill:\/\//);
   assert.doesNotMatch(block, /this-skill-does-not-exist/, "dangling folder dropped");
 });
 
@@ -271,8 +271,8 @@ test("WP1: buildSkillMentionBlock dedupes excluded folders and empties out", asy
     surfaces: ["frontend"],
     excludeFolders: ["dev"],
   });
-  assert.doesNotMatch(partial, /\[\$cxc-dev\]\(/);
-  assert.match(partial, /\[\$cxc-dev-frontend\]\(/);
+  assert.doesNotMatch(partial, /\[\$crc-dev\]\(/);
+  assert.match(partial, /\[\$crc-dev-frontend\]\(/);
 
   const empty = buildSkillMentionBlock({
     role: "explorer",
@@ -319,8 +319,8 @@ test("020/dev2: routeDispatch('research') honors an explicit skill", async () =>
     skillsDir: SKILLS_DIR,
   });
   assert.equal(out.role, "explorer");
-  assert.ok(out.message.includes("$cxc-dev"));
-  assert.ok(out.message.includes("$cxc-search"));
+  assert.ok(out.message.includes("$crc-dev"));
+  assert.ok(out.message.includes("$crc-search"));
   assert.match(out.message, /TASK: investigate X$/);
 });
 
@@ -333,16 +333,16 @@ test("070: routeDispatch('research') auto-attaches cxc-search only", async () =>
     skillsDir: SKILLS_DIR,
   });
   assert.equal(out.role, "explorer");
-  assert.ok(out.message.includes("$cxc-dev"));
-  assert.ok(out.message.includes("$cxc-search"));
-  assert.ok(!out.message.includes("$cxc-ultraresearch"));
+  assert.ok(out.message.includes("$crc-dev"));
+  assert.ok(out.message.includes("$crc-search"));
+  assert.ok(!out.message.includes("$crc-ultraresearch"));
   assert.match(out.message, /TASK: survey the landscape$/);
 });
 
 test("070: non-research intents do NOT auto-attach ultraresearch", async () => {
   const { routeDispatch } = await import("../src/spawn-wrapper.ts");
   const out = routeDispatch({ intent: "review", task: "review the diff", skillsDir: SKILLS_DIR });
-  assert.ok(!out.message.includes("$cxc-ultraresearch"), "review must not attach ultraresearch");
+  assert.ok(!out.message.includes("$crc-ultraresearch"), "review must not attach ultraresearch");
 });
 
 test("080.2: buildPathHints resolves existing repo tokens + flags none-existent", async () => {

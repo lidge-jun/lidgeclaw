@@ -1,7 +1,7 @@
 /**
  * self-heal.ts — keep the declared SOFT codex feature flags on, whatever the install path.
  *
- * `cxc enable` can already turn them on, but nothing runs it on a marketplace install:
+ * `crc enable` can already turn them on, but nothing runs it on a marketplace install:
  * `codex plugin add` registers skills/hooks/MCP from plugin.json and there is no
  * install-time hook event, nor a postinstall in the repo. So the capability existed and
  * the call site did not. This module is that call site, driven from SessionStart.
@@ -25,7 +25,7 @@ import { INSTALL_MANIFEST, parseInstallManifest } from "./activate.ts";
 export const SELF_HEAL_MARKER = "codexclaw-self-heal.json";
 
 export interface SelfHealMarker {
-  /** True once the user ran `cxc disable`: a later session must not undo that choice. */
+  /** True once the user ran `crc disable`: a later session must not undo that choice. */
   optedOut?: boolean;
   optedOutAt?: string;
   /** config.toml mtime when the flags were last confirmed all-on. */
@@ -74,7 +74,7 @@ export function selfHealMarkerPath(codexHome: string): string {
 }
 
 /**
- * Record a self-healed flag as codexclaw-owned in the install manifest, so `cxc disable`
+ * Record a self-healed flag as codexclaw-owned in the install manifest, so `crc disable`
  * reverts it.
  *
  * Without this, a flag that failed at activation (enabledByCodexclaw:false) and later
@@ -140,7 +140,7 @@ export function parseSelfHealMarker(raw: string | null): SelfHealMarker | null {
 /**
  * The soft flags this module is allowed to turn on.
  *
- * Hard flags are deliberately excluded. A hard flag being off means `cxc enable` was never
+ * Hard flags are deliberately excluded. A hard flag being off means `crc enable` was never
  * run at all, which is a standing condition to report (the doctor `features` check), not
  * something a per-session hook should quietly paper over.
  */
@@ -212,7 +212,7 @@ export function selfHealDeclaredFeatures(deps: SelfHealDeps): SelfHealOutcome[] 
   // Re-stat: the enable calls just rewrote config.toml, so caching the pre-write mtime
   // would make the very next session miss the cache every time.
   const afterMtimeMs = statMtimeMs(join(codexHome, "config.toml"));
-  // Re-read before writing. Two sessions can start at once, and `cxc disable` may have set
+  // Re-read before writing. Two sessions can start at once, and `crc disable` may have set
   // optedOut while this round was probing. A blind whole-file write would drop that opt-out
   // and resurrect the round-trip the marker exists to prevent.
   const latest = parseSelfHealMarker(readFile(markerPath));
@@ -234,7 +234,7 @@ export function selfHealDeclaredFeatures(deps: SelfHealDeps): SelfHealOutcome[] 
  *
  * A quiet session gets no added context at all — the same restraint activation-trace.ts
  * states for ordinary sessions. `unavailable` is also silent: a session with no reachable
- * codex binary does not need that told to it mid-turn, and `cxc doctor` reports it standing.
+ * codex binary does not need that told to it mid-turn, and `crc doctor` reports it standing.
  */
 export function renderSelfHealContext(outcomes: readonly SelfHealOutcome[]): string {
   const healed = outcomes.filter((o) => o.action === "healed").map((o) => o.key);
@@ -243,7 +243,7 @@ export function renderSelfHealContext(outcomes: readonly SelfHealOutcome[]): str
   const lines: string[] = [];
   if (healed.length > 0) {
     lines.push(
-      `[codexclaw] Enabled the codex feature flag(s) codexclaw declares: ${healed.join(", ")}. ` +
+      `[cursorclaw] Enabled the codex feature flag(s) codexclaw declares: ${healed.join(", ")}. ` +
         `The tool list is fixed when a session starts, so anything they expose becomes available ` +
         `from the NEXT session, not this one.`,
     );
@@ -251,7 +251,7 @@ export function renderSelfHealContext(outcomes: readonly SelfHealOutcome[]): str
   for (const f of failed) {
     const impact = SOFT_FEATURE_IMPACT[f.key] ?? "이 플래그에 의존하는 기능이 비활성화된다.";
     lines.push(
-      `[codexclaw] Could not enable '${f.key}' (exit ${f.exitCode}). ${impact} ` +
+      `[cursorclaw] Could not enable '${f.key}' (exit ${f.exitCode}). ${impact} ` +
         `Recover with: codex features enable ${f.key}`,
     );
   }
@@ -279,14 +279,14 @@ export function writeSelfHealMarkerFile(codexHome: string, marker: SelfHealMarke
 
 /**
  * Record that the user turned codexclaw off, so no later session re-enables what
- * `cxc disable` just reverted. Merges rather than replaces: an existing cache stays intact.
+ * `crc disable` just reverted. Merges rather than replaces: an existing cache stays intact.
  */
 export function markSelfHealOptedOut(codexHome: string, at: string): void {
   const existing = readSelfHealMarkerFile(codexHome) ?? {};
   writeSelfHealMarkerFile(codexHome, { ...existing, optedOut: true, optedOutAt: at, allEnabled: false });
 }
 
-/** Clear the opt-out, so an explicit `cxc enable` resumes self-heal. */
+/** Clear the opt-out, so an explicit `crc enable` resumes self-heal. */
 export function clearSelfHealOptOut(codexHome: string): void {
   const existing = readSelfHealMarkerFile(codexHome);
   if (existing === null) return;

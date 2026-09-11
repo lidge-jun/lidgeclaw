@@ -1,5 +1,5 @@
 ---
-name: cxc-recall
+name: recall
 description: "MUST USE for past-session recall — when a term from prior work is unfamiliar, context feels lost after a compact/restart, or the user references earlier work (그때, 지난번, 저번 세션, 예전에 했던, 기억나?, last time, previous session, what did we do). Searches past Codex conversations and the Codex memory store from the CLI before asking the user. Triggers: recall, 리콜, past session, chat search, memory search, 지난 세션, 이전 작업, 뭐였지, 어떻게 했었지."
 metadata:
   short-description: "Read-only recall search over ~/.codex: past chats (FTS-indexed) + memory store."
@@ -30,7 +30,7 @@ cxc chat search "<query>" [--days N] [--cwd PATH] [--role r] [--source main|suba
                           [--limit N] [--context N] [--any] [--all] [--no-tools]
                           [--recent] [--scan] [--no-refresh] [--json]
 cxc chat index [--rebuild] [--status]
-cxc memory search "<query>" [--days N] [--limit N] [--any] [--no-synonyms]
+crc memory search "<query>" [--days N] [--limit N] [--any] [--no-synonyms]
                             [--cwd PATH] [--cwd-only PATH] [--no-chat] [--json]
 ```
 
@@ -51,7 +51,7 @@ Defaults that matter:
 
 ## How memory search reads your query
 
-`cxc memory search` judges each query word by its shape, so short symbols and
+`crc memory search` judges each query word by its shape, so short symbols and
 Korean prose can coexist in one query.
 
 Symbol-shaped words — uppercase acronyms (`CI`, `LSP`), one-to-three-letter
@@ -96,7 +96,7 @@ its `{cwd}` when one is known.
 ## When memory has nothing
 
 The memory store is consolidated on a delay, so a topic from an hour ago may
-have no summary yet. When `cxc memory search` finds no artifact, it answers
+have no summary yet. When `crc memory search` finds no artifact, it answers
 from the raw chat corpus instead: up to five session messages, labelled
 `(chat/chat)`, with a warning saying the result was substituted. Tool call and
 output text is excluded — it matches almost any query and drowns out what was
@@ -107,9 +107,9 @@ an ingest, and `--cwd-only` stays in force across it.
 
 ## Escalation ladder
 
-1. `cxc chat search "<distinctive terms>" --days 0` — find the conversation.
+1. `crc chat search "<distinctive terms>" --days 0` — find the conversation.
    Add `--context 2` to read around a hit; `--cwd <repo>` to scope to a project.
-2. `cxc memory search "<topic>"` — find the durable per-thread summary
+2. `crc memory search "<topic>"` — find the durable per-thread summary
    (`rollout_summaries`, MEMORY.md, stage1 outputs); hits carry `rollout_path` and
    thread ids for deep-dive.
 3. Open the winning rollout file directly (path is in every hit) for full detail.
@@ -131,9 +131,9 @@ alternate root covers the rare multi-root case without a registry or rerank laye
 
 ## Maintenance
 
-The sidecar index self-refreshes on every query (changed files only). `cxc chat index
+The sidecar index self-refreshes on every query (changed files only). `crc chat index
 --status` shows freshness; `--rebuild` drops and re-ingests after schema-level doubts.
-Deleting `~/.codexclaw/recall/index.sqlite` is always safe (rebuildable cache).
+Deleting `~/.cursorclaw/recall/index.sqlite` is always safe (rebuildable cache).
 
 ## Automatic session-start injection
 
@@ -143,6 +143,6 @@ session already injected several times is pushed back so a start sees something 
 not seen yet. Counts live in the same rebuildable sidecar, so deleting the index also
 resets the rotation to plain newest-first.
 
-The rotation applies to the automatic injection ALONE. `cxc chat search` and `cxc memory
+The rotation applies to the automatic injection ALONE. `crc chat search` and `crc memory
 search` never consult it: the same query returns the same ranking however many times you
 run it.

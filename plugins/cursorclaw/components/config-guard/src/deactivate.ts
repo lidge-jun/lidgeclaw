@@ -92,7 +92,7 @@ export function decideKeyRestore(
 export function deactivate(deps: DeactivateDeps): DeactivateResult {
   const { run, codexHome } = deps;
   // Opt out of self-heal on EVERY uninstall path, including the early returns below.
-  // `cxc disable` is the user saying they want codexclaw off; a later SessionStart must
+  // `crc disable` is the user saying they want codexclaw off; a later SessionStart must
   // not quietly re-enable the flag it just reverted. Placing this at the top rather than
   // before the final return covers the no-manifest and malformed-manifest exits too,
   // which are exactly the cases where someone disables an install that never completed.

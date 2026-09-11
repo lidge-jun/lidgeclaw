@@ -4,7 +4,7 @@
  * artifacts the check exists to rebuild.
  *
  * Reported consequence: the agent committed the generated files and ran
- * `cxc receipt test -- test -f ...`, a no-op existence check, to get past D. A
+ * `crc receipt test -- test -f ...`, a no-op existence check, to get past D. A
  * forged receipt is strictly worse than a loose one — it defeats CHECK-BINDING-01
  * while looking like it satisfied it.
  *

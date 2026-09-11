@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      { "command": "node plugins/cursorclaw/scripts/cursor-bridge.mjs session-start", "timeout": 30 }
+    ],
+    "beforeSubmitPrompt": [
+      { "command": "node plugins/cursorclaw/scripts/cursor-bridge.mjs beforeSubmitPrompt", "timeout": 20 }
+    ],
+    "preToolUse": [
+      { "command": "node plugins/cursorclaw/scripts/cursor-bridge.mjs preToolUse", "timeout": 20 }
+    ],
+    "postToolUse": [
+      { "command": "node plugins/cursorclaw/scripts/cursor-bridge.mjs postToolUse", "timeout": 20 }
+    ],
+    "preCompact": [
+      { "command": "node plugins/cursorclaw/scripts/cursor-bridge.mjs preCompact", "timeout": 20 }
+    ],
+    "stop": [
+      { "command": "node plugins/cursorclaw/scripts/cursor-bridge.mjs stop", "timeout": 20, "loop_limit": 8 }
+    ],
+    "subagentStop": [
+      { "command": "node plugins/cursorclaw/scripts/cursor-bridge.mjs subagentStop", "timeout": 20, "loop_limit": 8 }
+    ]
+  }
+}

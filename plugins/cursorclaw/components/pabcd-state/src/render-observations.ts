@@ -206,7 +206,7 @@ export function handleRenderArtifactCapture(payload: PostToolUsePayload): string
  */
 export function renderGroundingAdvisory(): string {
   return [
-    "[codexclaw advisory — C-RENDER-GROUNDING-01] Render-artifact files were modified",
+    "[cursorclaw advisory — C-RENDER-GROUNDING-01] Render-artifact files were modified",
     "during this cycle, but no render-observation tool call (view_image,",
     "browser:control-in-app-browser, chrome:control-chrome, computer-use:computer-use)",
     "was recorded. Before C->D, RUN the artifact in its execution environment, OBSERVE",

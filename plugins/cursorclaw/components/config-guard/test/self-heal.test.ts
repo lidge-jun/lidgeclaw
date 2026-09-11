@@ -1,10 +1,10 @@
 /**
  * self-heal.test.ts — wp3 of 260829_request-user-input-autopilot.
  *
- * The capability to enable the soft flag already existed in `cxc enable`; nothing ran it
+ * The capability to enable the soft flag already existed in `crc enable`; nothing ran it
  * on a marketplace install. These tests pin the SessionStart call site: idempotent via an
  * mtime cache, silent when there is nothing to say, never throwing, and never undoing an
- * explicit `cxc disable`.
+ * explicit `crc disable`.
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -282,7 +282,7 @@ test("a heal with no manifest is a silent no-op, not an error", () => {
 test("an opt-out that lands mid-round is not clobbered by the cache write", () => {
   const cfg = join("HOME", "config.toml");
   const h = harness({ mtimes: { [cfg]: 1000 } });
-  // Simulate `cxc disable` writing the opt-out while this round was probing: the dep
+  // Simulate `crc disable` writing the opt-out while this round was probing: the dep
   // readFile is consulted again before the write, so it must win.
   const originalRead = h.deps.readFile;
   let reads = 0;

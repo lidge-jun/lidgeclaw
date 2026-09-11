@@ -21,16 +21,16 @@
 import { getGoalActiveStatus } from "./goal-active.ts";
 import { readState, writeState } from "./state.ts";
 // Cross-component dist import (precedent: messenger-bridge/src/api-compat.ts:17).
-// 260724 WP1: the advisory names a `cxc orchestrate status` command; on a
+// 260724 WP1: the advisory names a `crc orchestrate status` command; on a
 // payload-only install (no `cxc` on PATH) that must render the resolvable
 // invocation instead. Emit-time only; the template below stays literal.
 // Cross-component dist import, LAZY + FAIL-OPEN (260724 WP1): the entry must keep
-// working when the cxc-ops sibling is absent (isolated dist snapshots in tests,
+// working when the ops sibling is absent (isolated dist snapshots in tests,
 // partial checkouts). A missing resolver degrades to the literal `cxc`.
 type CxcInvocationFn = (moduleUrl: string, env?: Record<string, string | undefined>) => string;
 let cxcInvocationFn: CxcInvocationFn | null = null;
 try {
-  ({ cxcInvocation: cxcInvocationFn } = (await import("../../cxc-ops/dist/cxc-resolve.js")) as {
+  ({ cxcInvocation: cxcInvocationFn } = (await import("../../ops/dist/resolve.js")) as {
     cxcInvocation: CxcInvocationFn;
   });
 } catch {
@@ -49,9 +49,9 @@ export function idleEditAdvisory(sessionId: string): string {
   // Safe backtick-anchored rewrite: the single cxc command below is backticked;
   // everything else is prose (no bare "cxc " outside backticks).
   const text = [
-    "[codexclaw IDLE-EDIT] You are editing files while the PABCD FSM is un-armed",
+    "[cursorclaw IDLE-EDIT] You are editing files while the PABCD FSM is un-armed",
     "but this session expects loop/goal work. If this edit belongs to the loop,",
-    `arm first: \`cxc orchestrate status --session ${sessionId}\` -> enter P ->`,
+    `arm first: \`crc orchestrate status --session ${sessionId}\` -> enter P ->`,
     "advance edges with --attest (one work-phase = one full PABCD cycle).",
     "C0 edits need no automatic devlog record. C1 edits record only in an existing owning unit.",
     "Do not create a unit just for a fast-path edit; explicit user/release record requirements remain controlling",
@@ -59,7 +59,7 @@ export function idleEditAdvisory(sessionId: string): string {
   ].join(" ");
   try {
     const inv = cxcInvocation(import.meta.url);
-    return inv === "cxc" ? text : text.replace(/`cxc /g, `\`${inv} `);
+    return inv === "cxc" ? text : text.replace(/`crc /g, `\`${inv} `);
   } catch {
     return text; // FAIL-OPEN: resolution errors never break the advisory
   }

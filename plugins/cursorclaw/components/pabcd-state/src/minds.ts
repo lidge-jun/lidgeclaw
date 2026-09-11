@@ -64,7 +64,7 @@ export const MIND_ROLE_PROMPTS: Record<Mind, string> = {
  * Interview reference. The hook remains a pointer, not a native tool adapter.
  */
 export const MIND_DISPATCH_DIRECTIVE = [
-  "[codexclaw: INTERVIEW — Mind dispatch]",
+  "[cursorclaw: INTERVIEW — Mind dispatch]",
   "You (the main session) OWN this interview loop: select Minds, dispatch contradiction workers,",
   "triage contradictions, ask the user if needed, edit the plan, update state, and re-question.",
   "The hook only injects directives — it does not coordinate worker returns or plan edits.",
@@ -72,7 +72,7 @@ export const MIND_DISPATCH_DIRECTIVE = [
   "dispatch is unavailable (no nested orchestration) — fall back to inline reasoning, do not nest.",
   "Each Mind is a read-only lens: it returns contradictions ONLY (never asks/edits/calls/writes).",
   `Choose Minds by lowest-scoring dimensions; concurrent cap ${MIND_CONCURRENCY_CAP}.`,
-  "MIND-SPAWN-SHAPE-01: only when Mind dispatch is authorized, fully read cxc-interview's",
+  "MIND-SPAWN-SHAPE-01: only when Mind dispatch is authorized, fully read the interview skill's",
   "references/mind-dispatch.md before dispatch. Use the live tool schema; never invent unsupported arguments.",
   "Keep read-only explorer intent, mind_<mindname> labels, NON-full-history tasks and explicit user settings.",
   "Minds are stateless: pack the lens prompt PLUS a compact interview snapshot (dimension scores,",

@@ -304,13 +304,13 @@ test("wp3: post-answer scope is independent, capture dedups and no readiness is 
     const envelope = JSON.parse(output).hookSpecificOutput;
     assert.equal(envelope.hookEventName, "PostToolUse");
     const ctx = envelope.additionalContext as string;
-    assert.match(ctx, /^\[codexclaw: INTERVIEW — post-answer rescan\]/);
+    assert.match(ctx, /^\[cursorclaw: INTERVIEW — post-answer rescan\]/);
     assert.match(ctx, /exact user limits and permissions\. No-delegation means no dispatch/);
     assert.match(ctx, /required work or tracker writes are forbidden, report them as unmet/);
     assert.match(ctx, /do not record a completed scan or claim readiness/);
     assert.match(ctx, /Only when dispatch is authorized/);
     assert.match(ctx, /Inline reasoning is not evidence that independent Minds ran/);
-    assert.match(ctx, /record only actual authorized work with `cxc scan record/);
+    assert.match(ctx, /record only actual authorized work with `crc scan record/);
     assert.match(ctx, /current plan\/tracker position; cap 3, lowest-scoring dimensions first/);
     assert.doesNotMatch(ctx, /rescan NOW|^- dispatch read-only Mind/m);
     const events = readQaEvents(cwd, "wp3-answer");

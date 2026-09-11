@@ -85,7 +85,7 @@ export function renderDivergenceHelp(): string {
     "",
     "Notes:",
     "  Collapse EARLY at P for satisfy-spec work; collapse LATE at D for",
-    "  maximize-metric work where the local metric can deceive (cxc-loop).",
+    "  maximize-metric work where the local metric can deceive (loop).",
     "  Turn divergence off once the plateau is broken — it is a mode, not a state.",
     "  Every candidate needs at least one --source: an unsourced candidate is a guess.",
   ].join("\n");

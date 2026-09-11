@@ -169,7 +169,7 @@ function projectTrustWarning(cwd: string, env: NodeJS.ProcessEnv): string | unde
   if (!isTrackedProjectConfig(cwd)) return undefined;
   const token = projectConfigTrustToken(cwd);
   if (token !== null && env.CODEXCLAW_TRUST_PROJECT_SUBAGENTS === token) return undefined;
-  return "ignored Git-tracked .cursorclaw/subagents.json; review it, then run `cxc subagents trust-token` and export the printed project-bound value";
+  return "ignored Git-tracked .cursorclaw/subagents.json; review it, then run `crc subagents trust-token` and export the printed project-bound value";
 }
 
 /** Resolve whole roles, preserving explicit null as original-session inheritance. */

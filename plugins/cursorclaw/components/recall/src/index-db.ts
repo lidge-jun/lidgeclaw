@@ -28,7 +28,7 @@ export function indexPath(env: Record<string, string | undefined> = process.env)
 
 /**
  * How often a thread has already been auto-injected into a session. Written and
- * read by the hook path ALONE (hook.ts) so explicit `cxc chat/memory search`
+ * read by the hook path ALONE (hook.ts) so explicit `crc chat/memory search`
  * stays deterministic; nothing in the search core touches this table.
  *
  * Appended to SCHEMA instead of bumping INDEX_SCHEMA_VERSION: a version bump

@@ -37,7 +37,7 @@ export const ROLE_AGENT_TYPE: Record<RoleName, "explorer" | "worker" | "architec
  * the discipline at launch instead of being merely told to read it in prose.
  *
  * Keys are coarse change-surfaces the dispatcher names; values are skill FOLDER names
- * under plugins/codexclaw/skills/. Only v1 spawn carries `items` (codex-rs
+ * under plugins/cursorclaw/skills/. Only v1 spawn carries `items` (codex-rs
  * multi_agents_spec: v1 has items, v2 deny_unknown_fields has none); the portable
  * v1+v2 channel is the message-borne mention block (buildSkillMentionBlock). The
  * spawn hook repairs existing cxc mentions when needed, but never invents baselines.
@@ -191,9 +191,9 @@ function linkSafePath(p: string): boolean {
 
 /**
  * WP1 — render one skill mention for a spawn MESSAGE. Link form
- * `[$cxc-<folder>](skill://<abs SKILL.md path>)` is preferred: the runtime resolves it
+ * `[$crc-<folder>](skill://<abs SKILL.md path>)` is preferred: the runtime resolves it
  * by exact path, immune to duplicate-name ambiguity. When the path is not link-safe,
- * degrade to `$codexclaw:cxc-<folder>`, which matches the plugin-registered name.
+ * degrade to `$cursorclaw:<folder>`, which matches the plugin-registered name.
  */
 export function skillMention(skillsDir: string, folder: string): string {
   const item = skillItem(skillsDir, folder);

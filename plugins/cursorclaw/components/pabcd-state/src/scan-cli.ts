@@ -1,5 +1,5 @@
 /**
- * scan-cli.ts — `cxc scan record` (260724 WP1, A-round H4).
+ * scan-cli.ts — `crc scan record` (260724 WP1, A-round H4).
  *
  * WHY: RESCAN_REINJECT_DIRECTIVE (hook.ts) has always instructed the model to
  * "record the scan round (cxc scan evidence)" — but no such subcommand ever
@@ -152,11 +152,11 @@ export function parseScanCliArgs(
           error:
             "scan record: --dim cannot set 'max'. To make a dimension count for I->P, ask a " +
             "question, record the answer, and attribute it: " +
-            "`cxc scan record --session <id> --derive --map <questionId>=<dimension>`. " +
+            "`crc scan record --session <id> --derive --map <questionId>=<dimension>`. " +
             "The gate re-reads the interview ledger, so a level with no answered question " +
             "behind it does not open P. If the interview genuinely is NOT complete, bypass it " +
             "deliberately: write {\"from\":\"I\",\"to\":\"P\",\"did\":\"<reason>\",\"override\":true} to a " +
-            "file and run `cxc orchestrate P --session <id> --attest-file <path>` (the file flag " +
+            "file and run `crc orchestrate P --session <id> --attest-file <path>` (the file flag " +
             "is required on Windows) so the bypass is attested and recorded.",
         };
       }

@@ -218,7 +218,7 @@ test("orchestrate help exits 0 and does not mutate state, ledger, or render ledg
     assert.ok("help" in parsed);
     const r = runOrchestrateCli(parsed);
     assert.equal(r.code, 0);
-    assert.match(r.output, /cxc orchestrate/);
+    assert.match(r.output, /crc orchestrate/);
     assert.equal(existsSync(join(empty, STATE_DIR, SESSIONS_SUBDIR)), false);
     assert.equal(existsSync(join(empty, STATE_DIR, LEDGER_FILE)), false);
     assert.equal(existsSync(join(empty, STATE_DIR, RENDER_OBS_FILE)), false);
@@ -507,7 +507,7 @@ test("parse error renderer includes phase for an explicit existing session", () 
     if (!("error" in parsed)) return;
     const out = renderOrchestrateParseError(parsed);
     assert.match(out, /current=P/);
-    assert.match(out, /run cxc orchestrate --help/);
+    assert.match(out, /run crc orchestrate --help/);
     assert.equal(readState(cwd, "s1").phase, "P");
     assert.deepEqual(ledgerLines(cwd), []);
   } finally { rmSync(cwd, { recursive: true, force: true }); }
@@ -561,7 +561,7 @@ test("dist cli: `cli.js orchestrate status` runs end-to-end", () => {
 test("dist cli: `cli.js orchestrate --help` exits 0", () => {
   const res = spawnSync(process.execPath, [distCli(), "orchestrate", "--help"], { encoding: "utf8" });
   assert.equal(res.status, 0);
-  assert.match(res.stdout, /cxc orchestrate/);
+  assert.match(res.stdout, /crc orchestrate/);
 });
 
 test("dist cli: unknown orchestrate verb reports current phase with explicit session", () => {
@@ -571,7 +571,7 @@ test("dist cli: unknown orchestrate verb reports current phase with explicit ses
     const res = spawnSync(process.execPath, [distCli(), "orchestrate", "wat", "--session", "binsess", "--cwd", cwd], { encoding: "utf8" });
     assert.equal(res.status, 1);
     assert.match(res.stderr, /current=P/);
-    assert.match(res.stderr, /cxc orchestrate --help/);
+    assert.match(res.stderr, /crc orchestrate --help/);
     assert.equal(readState(cwd, "binsess").phase, "P");
     assert.deepEqual(ledgerLines(cwd), []);
   } finally { rmSync(cwd, { recursive: true, force: true }); }
@@ -1671,7 +1671,7 @@ test("a marker naming its own target as successor points at reset, not at a plan
 
   assert.equal(result.code, 1);
   assert.match(result.output, /names that same work-phase as its successor/);
-  assert.match(result.output, new RegExp(`cxc orchestrate reset --session ${id}`));
+  assert.match(result.output, new RegExp(`crc orchestrate reset --session ${id}`));
   assert.doesNotMatch(result.output, /restore that work-phase/);
   assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.equal(readState(cwd, id).phase, "C");
@@ -2365,7 +2365,7 @@ test("recovery refuses when both the target and its recorded successor are gone"
 
   assert.equal(result.code, 1);
   assert.match(result.output, /the successor wp-2 it recorded is gone too/);
-  assert.match(result.output, new RegExp(`cxc orchestrate reset --session ${id}`));
+  assert.match(result.output, new RegExp(`crc orchestrate reset --session ${id}`));
   assert.equal(readFileSync(goalplanPath(cwd, slug), "utf8"), before);
   assert.equal(readState(cwd, id).dcloseRecovery?.closedWorkPhaseId, "wp-1");
   assert.deepEqual(goalplanLedgerRows(cwd, slug), []);

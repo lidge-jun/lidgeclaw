@@ -34,12 +34,12 @@ import {
 // relative .js specifiers survive the build's .ts->.js rewrite untouched and
 // resolve identically from src/ (tests) and dist/ (shipped hooks).
 // Cross-component dist import, LAZY + FAIL-OPEN (260724 WP1): the entry must keep
-// working when the cxc-ops sibling is absent (isolated dist snapshots in tests,
+// working when the ops sibling is absent (isolated dist snapshots in tests,
 // partial checkouts). A missing resolver degrades to the literal `cxc`.
 type CxcInvocationFn = (moduleUrl: string, env?: Record<string, string | undefined>, command?: string) => string;
 let cxcInvocationFn: CxcInvocationFn | null = null;
 try {
-  ({ cxcInvocation: cxcInvocationFn } = (await import("../../cxc-ops/dist/cxc-resolve.js")) as {
+  ({ cxcInvocation: cxcInvocationFn } = (await import("../../ops/dist/resolve.js")) as {
     cxcInvocation: CxcInvocationFn;
   });
 } catch {
@@ -210,20 +210,20 @@ export interface SubagentStopPayload {
 const MAX_CTX = 32_000;
 
 /**
- * 260724 WP1 (fresh-install RCA): rewrite backtick-anchored `cxc ` command
+ * 260724 WP1 (fresh-install RCA): rewrite backtick-anchored `crc ` command
  * prefixes in a directive to the invocation that actually resolves on this
  * machine (PATH `cxc`, or the payload dispatcher `node "<payload>/bin/cxc.mjs"`).
  * EMIT-TIME ONLY — exported directive constants are never mutated, so
  * constants-only tests stay byte-stable and the PATH check happens per-machine.
  *
- * SAFETY CONTRACT: the /`cxc /g anchor is safe ONLY for directive strings whose
+ * SAFETY CONTRACT: the /`crc /g anchor is safe ONLY for directive strings whose
  * cxc COMMANDS are all backticked. Every call site below was verified against
- * that claim (noun phrases like "cxc-loop" or "owns cxc orchestration" carry no
+ * that claim (noun phrases like "loop" or "owns cxc orchestration" carry no
  * backtick-space prefix and are untouched). Do not apply this to free text.
  */
 export function resolveCxcInDirective(text: string): string {
   try {
-    return text.replace(/`cxc ([^\s`]+)/g,
+    return text.replace(/`crc ([^\s`]+)/g,
       (_prefix: string, command: string) => `\`${cxcInvocation(import.meta.url, command)} ${command}`);
   } catch {
     return text; // FAIL-OPEN: a resolution error must not break directive emission
@@ -267,7 +267,7 @@ export function detectAgbrowseSearchRequest(prompt: string): boolean {
  * Detect an explicit loop/goalplan/continue-until-done request (ORCH-MANDATE-01).
  * HEURISTIC and deliberately curated: bare "loop"/"루프" are excluded (a `for` loop
  * bug report must not arm PABCD ceremony) — a loop word needs an action marker, and
- * the strongest signals are the cxc-loop/HOTL/goalplan tokens themselves.
+ * the strongest signals are the loop/HOTL/goalplan tokens themselves.
  */
 export function detectLoopArmRequest(prompt: string): boolean {
   const p = (prompt ?? "").toLowerCase();
@@ -291,43 +291,43 @@ export function detectLoopArmRequest(prompt: string): boolean {
 
 const PHASE_DIRECTIVES: Partial<Record<Phase, string>> = {
   I: [
-    "[codexclaw: INTERVIEW]",
+    "[cursorclaw: INTERVIEW]",
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
-    "This also scopes the Mind instructions below. Load $codexclaw:cxc-interview for dimensions, questions, loop classification and readiness. Do not implement.",
-    "INTERVIEW-GROUND-01: when tracker writes are authorized, `cxc scan record --session <id> --derive --map <questionId>=<dimension> ...`",
+    "This also scopes the Mind instructions below. Load $cursorclaw:interview for dimensions, questions, loop classification and readiness. Do not implement.",
+    "INTERVIEW-GROUND-01: when tracker writes are authorized, `crc scan record --session <id> --derive --map <questionId>=<dimension> ...`",
     "records known[]/unknown[]; read `.cursorclaw/sessions/<id>.json` before the next question. Report unmet actions, not false readiness.",
     "INTERVIEW-RENDER-01: show knowns, the weakest dimension and the answer's impact before the question.",
     "INTERVIEW-INDEPENDENT-01: batch only INDEPENDENT questions; independence governs, not a count.",
   ].join("\n"),
   P: [
-    "[codexclaw: PLAN]",
+    "[cursorclaw: PLAN]",
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
-    "Load $codexclaw:cxc-pabcd for P and C2+ plan-output; $codexclaw:cxc-dev selects class and relevant surfaces. No implementation yet.",
+    "Load $cursorclaw:pabcd for P and C2+ plan-output; $cursorclaw:dev selects class and relevant surfaces. No implementation yet.",
     "Plan-only ends with the plan. Forbidden checks: NOT RUN; naming an artifact grants no write permission.",
   ].join("\n"),
   A: [
-    "[codexclaw: AUDIT]",
+    "[cursorclaw: AUDIT]",
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
-    "Load $codexclaw:cxc-dev-code-reviewer for review and $codexclaw:cxc-dev for relevant surfaces; authorized PABCD A uses $codexclaw:cxc-pabcd's audit owner. Do not build yet.",
+    "Load $cursorclaw:dev-code-reviewer for review and $cursorclaw:dev for relevant surfaces; authorized PABCD A uses $cursorclaw:pabcd's audit owner. Do not build yet.",
     "Authorized dispatch follows the owner's named-skill, same-reviewer and verdict contracts; main synthesizes. Report unmet independent review; inline review is not its proof. Do not bypass gates.",
   ].join("\n"),
   B: [
-    "[codexclaw: BUILD]",
+    "[cursorclaw: BUILD]",
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
-    "Use $codexclaw:cxc-dev for class/surfaces; authorized PABCD B uses $codexclaw:cxc-pabcd. Implement only authorized scope.",
+    "Use $cursorclaw:dev for class/surfaces; authorized PABCD B uses $cursorclaw:pabcd. Implement only authorized scope.",
     "Forbidden checks: NOT RUN; no invented proof.",
   ].join("\n"),
   C: [
-    "[codexclaw: CHECK]",
+    "[cursorclaw: CHECK]",
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
-    "Use $codexclaw:cxc-dev and $codexclaw:cxc-dev-testing; authorized PABCD C uses $codexclaw:cxc-pabcd's check owner, including C-RENDER-GROUNDING-01.",
+    "Use $cursorclaw:dev and $cursorclaw:dev-testing; authorized PABCD C uses $cursorclaw:pabcd's check owner, including C-RENDER-GROUNDING-01.",
     "No-tests forbids tests, not separately authorized build/typecheck. No-goal/no-FSM restrict creation/mutations, not read-only inspection.",
     "Independent review needs owner applicability and dispatch permission. Report unmet review; inline review is not its proof. Forbidden checks: NOT RUN. No pass or gate bypass without real evidence.",
   ].join("\n"),
   D: [
-    "[codexclaw: DONE]",
+    "[cursorclaw: DONE]",
     "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
-    "For authorized D closure load $codexclaw:cxc-pabcd; report evidence and unmet work, then IDLE. Remaining authorized work follows $codexclaw:cxc-loop from disk.",
+    "For authorized D closure load $cursorclaw:pabcd; report evidence and unmet work, then IDLE. Remaining authorized work follows $cursorclaw:loop from disk.",
     "A header or budget/time stop is not completion; never fabricate attestations/receipts.",
   ].join("\n"),
 };
@@ -380,7 +380,7 @@ export function interviewDirective(): string {
   // Resolve backticked commands such as the I pointer's scan-record hint here,
   // at emit time; detailed Mind configuration examples live in its reference.
   // Safe per the resolveCxcInDirective contract: every cxc COMMAND in both parts is
-  // backticked; `$codexclaw:cxc-*` skill mentions carry no "`cxc " prefix.
+  // backticked; `$cursorclaw:*` skill mentions carry no "`crc " prefix.
   return resolveCxcInDirective(`${PHASE_DIRECTIVES.I}\n\n${MIND_DISPATCH_DIRECTIVE}`);
 }
 
@@ -392,7 +392,7 @@ export function interviewDirective(): string {
  * not the primary selector.
  */
 export const QUESTION_SHAPE_DIRECTIVE = [
-  "[codexclaw: INTERVIEW — user question]",
+  "[cursorclaw: INTERVIEW — user question]",
   "Ask via request_user_input only (not an assistant choice fence). Each question must include:",
   "- background: what is unresolved and why it matters,",
   "- where the answer changes the plan,",
@@ -403,9 +403,9 @@ export const QUESTION_SHAPE_DIRECTIVE = [
 ].join("\n");
 
 export const AGBROWSE_SEARCH_DIRECTIVE = [
-  "[codexclaw: SEARCH — agbrowse requested]",
+  "[cursorclaw: SEARCH — agbrowse requested]",
   "Honor the user's agbrowse preference when the required capability is available and authorized.",
-  "Load cxc-search and the shared dev/references/browser-routing.md policy when available.",
+  "Load search and the shared dev/references/browser-routing.md policy when available.",
   "agbrowse and Aside are optional tools; inspect the actual CLI/tool schema and session access.",
   "For a known public URL, prefer HTTP proof such as `agbrowse fetch \"<url>\" --json --browser never`.",
   "Discover candidate URLs with available hosted search first. Never use plain `agbrowse search \"<query>\"` as discovery.",
@@ -423,7 +423,7 @@ export const AGBROWSE_SEARCH_DIRECTIVE = [
  * Arming mandate injected when a loop/goalplan request arrives against an
  * UN-ARMED FSM (ORCH-MANDATE-01). This is the prompt-time companion to the
  * Stop hook's GOAL-IDLE-CONTINUE-01: together they close the "loop narrated
- * but never entered via cxc orchestrate" gap at both ends of the turn.
+ * but never entered via crc orchestrate" gap at both ends of the turn.
  */
 /**
  * TRIGGER-AUTHORITY-01 (040): appended when a natural-language trigger asked for a
@@ -431,12 +431,12 @@ export const AGBROWSE_SEARCH_DIRECTIVE = [
  * legitimate work — but the phase on disk is unchanged, and this says how to move it.
  */
 export const TRIGGER_AUTHORITY_NOTE = [
-  "[codexclaw: PHASE UNCHANGED — TRIGGER-AUTHORITY-01]",
+  "[cursorclaw: PHASE UNCHANGED — TRIGGER-AUTHORITY-01]",
   "A lexical phase hint is not execution authority. The phase on disk is unchanged;",
   "no-goal/no-FSM restrict creation/mutations, not read-only get_goal or orchestrate status.",
   "Do not start orchestration for ordinary work. Preserve adjacency, attestations and ledger checks.",
-  "Only if a phase transition is authorized, use the cxc-pabcd phase-control owner and",
-  "`cxc orchestrate <I|P|A|B|C|D> --session <id>` — work edges carry --attest.",
+  "Only if a phase transition is authorized, use the pabcd phase-control owner and",
+  "`crc orchestrate <I|P|A|B|C|D> --session <id>` — work edges carry --attest.",
 ].join(" ");
 
 /**
@@ -459,31 +459,31 @@ export function loopArmDirective(platform: NodeJS.Platform = process.platform): 
     ? [
         "4. Advance EVERY forward edge yourself. On Windows write the JSON first, then attest:",
         `   \`'${PA_ATTEST_EXAMPLE}' | Set-Content -Encoding utf8 .cursorclaw/attest.json\` then`,
-        "   `cxc orchestrate <phase> --session <id> --attest-file .cursorclaw/attest.json` —",
+        "   `crc orchestrate <phase> --session <id> --attest-file .cursorclaw/attest.json` —",
         "   inline --attest cannot survive PowerShell argument parsing (quotes are stripped,",
         "   and escaping them splits the value at its first space).",
       ]
     : [
-        "4. Advance EVERY forward edge yourself with `cxc orchestrate <phase> --attest <json>` —",
-        `   e.g. \`cxc orchestrate A --session <id> --attest '${PA_ATTEST_EXAMPLE}'\` —`,
+        "4. Advance EVERY forward edge yourself with `crc orchestrate <phase> --attest <json>` —",
+        `   e.g. \`crc orchestrate A --session <id> --attest '${PA_ATTEST_EXAMPLE}'\` —`,
       ];
   return [
-    "[codexclaw: LOOP — orchestrate arming mandate (ORCH-MANDATE-01)]",
-    "Scope first: explicit interview-only, plan-only, HITL, read-only, no-goal, no-FSM, no-tests and no-delegation limits override the bare cxc-loop default.",
+    "[cursorclaw: LOOP — orchestrate arming mandate (ORCH-MANDATE-01)]",
+    "Scope first: explicit interview-only, plan-only, HITL, read-only, no-goal, no-FSM, no-tests and no-delegation limits override the bare loop default.",
     "A mention or quoted example alone is not authorization. This pointer and its referenced procedures never override those limits.",
-    "Load $codexclaw:cxc-loop and $codexclaw:cxc-pabcd for an actual loop request; bare cxc-loop execution means scoped HOTL.",
+    "Load $cursorclaw:loop and $cursorclaw:pabcd for an actual loop request; bare loop execution means scoped HOTL.",
     "No-delegation means no dispatch. No-tests does not forbid separately authorized build/typecheck. Report required but forbidden actions as unmet.",
     "Only for authorized loop execution, apply steps 1-5 within scope. No-goal/no-FSM restrict creation/mutations, not read-only inspection. Narration is not persisted progress:",
-    "1. Session id: use the current SessionStart binding, corroborated by `cxc session current` when native CODEX_THREAD_ID is available.",
-    "   Missing/inherited/conflicting binding: use `cxc session current` then explicit `cxc session bind` in its verified cwd. Never set the environment id or replay hook JSON.",
+    "1. Session id: use the current SessionStart binding, corroborated by `crc session current` when native CODEX_THREAD_ID is available.",
+    "   Missing/inherited/conflicting binding: use `crc session current` then explicit `crc session bind` in its verified cwd. Never set the environment id or replay hook JSON.",
     "   SESSION-IDENTITY-01: never a parent/history id; binding alone does not verify hook execution or Stop-continuation.",
-    "2. `cxc orchestrate status --session <id>` — read the real phase first.",
+    "2. `crc orchestrate status --session <id>` — read the real phase first.",
     "3. Inspect the host goal with get_goal first. Resume a matching unfinished goal; do not duplicate it.",
     "   Only when no unfinished goal exists and new HOTL is authorized, create_goal with a detailed objective.",
     "   For a different unfinished goal or unsupported resume, report the conflict; do not replace it or fabricate active status.",
-    '   New loop setup: `cxc loop init --objective "<same text>" --session <id>` -> register',
+    '   New loop setup: `crc loop init --objective "<same text>" --session <id>` -> register',
     "   workPhases[] + criteria[]. On resume inspect/reuse the bound goalplan; do not reinitialize it.",
-    "   After status inspection, enter `cxc orchestrate P --session <id>` only when authorized and legal; an existing phase keeps its owner/edge contract.",
+    "   After status inspection, enter `crc orchestrate P --session <id>` only when authorized and legal; an existing phase keeps its owner/edge contract.",
     "   Explicit HITL keeps human pause points. Interview-only/plan-only stay at the requested stage without a goal or implementation; do not arm when state changes are forbidden.",
     ...advance,
     "   a phase without its persisted transition + artifact did not happen (ORCH-ARTIFACT-01).",
@@ -493,7 +493,7 @@ export function loopArmDirective(platform: NodeJS.Platform = process.platform): 
     "   (one work-phase = one full PABCD cycle).",
     "   Bound chat D-close requires workPhaseId as the fixed close target unless every work-phase is already done.",
     "5. After authorized D closes to IDLE with authorized work remaining under an active goal, re-enter",
-    "   with `cxc orchestrate P --session <id>` (LOOP-UNIT-CHAIN-01).",
+    "   with `crc orchestrate P --session <id>` (LOOP-UNIT-CHAIN-01).",
     "HOTL does not grant push, merge, release, deploy or external-message permission. Stop for missing authority.",
     "Preserve guards and real evidence; do not bypass a gate or fabricate an attestation/receipt to satisfy this advice.",
   ].join("\n");
@@ -510,7 +510,7 @@ const STAGE_LABELS: Partial<Record<Phase, string>> = {
 
 /** Short compaction-immune stage header (jwc pabcd-stage-header parity). */
 export function buildStageHeader(phase: Phase): string {
-  return `[codexclaw — ${phase}: ${STAGE_LABELS[phase] ?? phase}]`;
+  return `[cursorclaw — ${phase}: ${STAGE_LABELS[phase] ?? phase}]`;
 }
 
 /**
@@ -565,7 +565,7 @@ export function buildContextOutput(eventName: string, ctx: string): string {
 /**
  * Bootstrap the exact SessionStart-bound FSM before an agent can invoke the
  * explicit-session CLI. Context output remains owned by the existing provider and
- * cxc-ops SessionStart hooks, so this side-effect-only handler is always silent.
+ * ops SessionStart hooks, so this side-effect-only handler is always silent.
  */
 export function handleSessionStart(payload: SessionStartPayload): string {
   if (payload.hook_event_name !== "SessionStart") return "";
@@ -644,7 +644,7 @@ export function handleUserPromptSubmit(
       writeState(payload.cwd, { ...fresh, memoryWriteRequested: true, memoryWriteTurn: turn === "" ? null : turn });
     } catch {
       // A marker that cannot be persisted degrades to a deny the user can lift with
-      // `cxc memory allow-write`; it must never break prompt handling.
+      // `crc memory allow-write`; it must never break prompt handling.
     }
   }
   const state = readState(payload.cwd, payload.session_id);
@@ -704,7 +704,7 @@ export function handleUserPromptSubmit(
     const parts: string[] = [];
     // 260724 WP1: resolve the invocation at emit time (constant untouched). Safe
     // per resolveCxcInDirective: every cxc command in the arming directive is
-    // backticked; "cxc-loop"/"cxc-pabcd" skill nouns carry no "`cxc " prefix.
+    // backticked; "loop"/"pabcd" skill nouns carry no "`crc " prefix.
     parts.push(resolveCxcInDirective(loopArmDirective(platform)));
     if (agbrowseRequested) parts.push(AGBROWSE_SEARCH_DIRECTIVE);
     return buildContextOutput("UserPromptSubmit", parts.join("\n\n"));
@@ -809,7 +809,7 @@ export function handleUserPromptSubmit(
 /** L5 — one-line human status for the chat `orchestrate status` affordance. */
 export function renderStatusLine(phase: Phase, flags: { interview: boolean; auditPassed: boolean; checkPassed: boolean }): string {
   const label = STAGE_LABELS[phase] ?? phase;
-  return `[codexclaw status] IPABCD: ${phase} (${label}) · interview=${flags.interview} auditPassed=${flags.auditPassed} checkPassed=${flags.checkPassed}`;
+  return `[cursorclaw status] IPABCD: ${phase} (${label}) · interview=${flags.interview} auditPassed=${flags.auditPassed} checkPassed=${flags.checkPassed}`;
 }
 
 /**
@@ -832,7 +832,7 @@ function handleOrchestrateCommand(
 
   if (command.verb !== "status" && command.verb !== "reset") {
     try { resolveSessionSource(payload.cwd, payload.session_id); }
-    catch (err) { return buildContextOutput("UserPromptSubmit", `[codexclaw — refused: SOURCE-ROOT: ${err instanceof Error ? err.message : String(err)}]`); }
+    catch (err) { return buildContextOutput("UserPromptSubmit", `[cursorclaw — refused: SOURCE-ROOT: ${err instanceof Error ? err.message : String(err)}]`); }
   }
 
   const closePhaseId = command.verb === "D" ? command.attest?.workPhaseId?.trim() ?? "" : "";
@@ -856,7 +856,7 @@ function handleOrchestrateCommand(
     : applyHumanTransition(state, command.verb, command.attest);
   if (!result.ok) {
     // Refused (illegal adjacency): surface the reason, do not write state/ledger.
-    return buildContextOutput("UserPromptSubmit", `[codexclaw — refused: ${result.reason}]`);
+    return buildContextOutput("UserPromptSubmit", `[cursorclaw — refused: ${result.reason}]`);
   }
 
   // status: read-only, no state change, no ledger.
@@ -865,17 +865,17 @@ function handleOrchestrateCommand(
   // is the class of hole this unit exists to close.
   if (state.phase === "B" && command.verb === "C" && !state.phaseEntrySource
       && resolveSessionSource(payload.cwd, payload.session_id) !== payload.cwd) {
-    return buildContextOutput("UserPromptSubmit", "[codexclaw — refused: SOURCE-ROOT: bound source has no valid B baseline. Re-plan before continuing.]");
+    return buildContextOutput("UserPromptSubmit", "[cursorclaw — refused: SOURCE-ROOT: bound source has no valid B baseline. Re-plan before continuing.]");
   }
   if (state.phase === "B" && command.verb === "C" && state.phaseEntrySource) {
     const now = captureSessionSourceIdentity(payload.cwd, payload.session_id, { excludeCodexclawArtifacts: true });
     if (state.phaseEntrySource.sourceRoot !== now.sourceRoot) {
-      return buildContextOutput("UserPromptSubmit", "[codexclaw — refused: SOURCE-ROOT: source binding changed since B began. Re-plan and capture a new baseline; nothing was written.]");
+      return buildContextOutput("UserPromptSubmit", "[cursorclaw — refused: SOURCE-ROOT: source binding changed since B began. Re-plan and capture a new baseline; nothing was written.]");
     }
     if (compareSource(state.phaseEntrySource, now).kind === "same") {
       return buildContextOutput(
         "UserPromptSubmit",
-        `[codexclaw — refused: the source is unchanged since B began (${describeSource(now)}), so nothing was implemented in this B (SOURCE-DELTA-01). Nothing was written.]`,
+        `[cursorclaw — refused: the source is unchanged since B began (${describeSource(now)}), so nothing was implemented in this B (SOURCE-DELTA-01). Nothing was written.]`,
       );
     }
   }
@@ -887,7 +887,7 @@ function handleOrchestrateCommand(
 
   // reset-from-IDLE no-op: recognized but nothing to write.
   if (result.noop) {
-    return buildContextOutput("UserPromptSubmit", "[codexclaw — already IDLE]");
+    return buildContextOutput("UserPromptSubmit", "[cursorclaw — already IDLE]");
   }
 
   // State-changing command: persist phase + record the turn (same-turn dedup so a
@@ -910,7 +910,7 @@ function handleOrchestrateCommand(
     if (!recoveringDclose) {
       const receiptCheck = validateCheckReceipt(state, payload.session_id, command.attest?.testReceiptPath, payload.cwd);
       if (!receiptCheck.ok) {
-        return buildContextOutput("UserPromptSubmit", `[codexclaw — refused: ${receiptCheck.reason} Nothing was written.]`);
+        return buildContextOutput("UserPromptSubmit", `[cursorclaw — refused: ${receiptCheck.reason} Nothing was written.]`);
       }
     }
     const locked = withGoalplanWriteLock(payload.cwd, state.slug, (plan) => {
@@ -923,7 +923,7 @@ function handleOrchestrateCommand(
         return {
           output: buildContextOutput(
             "UserPromptSubmit",
-            `[codexclaw — refused: invalid goalplan: ${integrityReasons.join("; ")}. Nothing was written.]`,
+            `[cursorclaw — refused: invalid goalplan: ${integrityReasons.join("; ")}. Nothing was written.]`,
           ),
           advanced: null,
           allDone: false as const,
@@ -933,7 +933,7 @@ function handleOrchestrateCommand(
         return {
           output: buildContextOutput(
             "UserPromptSubmit",
-            `[codexclaw — refused: the bound goalplan "${state.slug}" has no active work-phase to close (CYCLE-COMPLETION-01). Nothing was written.]`,
+            `[cursorclaw — refused: the bound goalplan "${state.slug}" has no active work-phase to close (CYCLE-COMPLETION-01). Nothing was written.]`,
           ),
           advanced: null,
           allDone: false as const,
@@ -954,11 +954,11 @@ function handleOrchestrateCommand(
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              `[codexclaw — refused: the recovery marker for ${closePhaseId} predates the `
+              `[cursorclaw — refused: the recovery marker for ${closePhaseId} predates the `
                 + `successor field, so this retry cannot tell whether the plan commit `
                 + `landed. The marker was kept; inspect the goalplan, set the work-phase `
                 + `statuses and activeWorkPhaseId by hand, then run `
-                + `\`cxc orchestrate reset --session ${payload.session_id}\` to clear the `
+                + `\`crc orchestrate reset --session ${payload.session_id}\` to clear the `
                 + `marker. Nothing was written.]`,
             ),
             advanced: null,
@@ -987,12 +987,12 @@ function handleOrchestrateCommand(
             return {
               output: buildContextOutput(
                 "UserPromptSubmit",
-                `[codexclaw — refused: recovery target ${closePhaseId} is gone from the plan `
+                `[cursorclaw — refused: recovery target ${closePhaseId} is gone from the plan `
                   + `and the successor ${orphan.successorId} it recorded `
                   + `${absentSuccessorDetail(orphan.reason)}, so this retry cannot tell what `
                   + `to finish. The marker was kept; inspect the goalplan, set the work-phase `
                   + `statuses and activeWorkPhaseId by hand, then run `
-                  + `\`cxc orchestrate reset --session ${payload.session_id}\` to clear the `
+                  + `\`crc orchestrate reset --session ${payload.session_id}\` to clear the `
                   + `marker. Nothing was written.]`,
               ),
               advanced: null,
@@ -1017,7 +1017,7 @@ function handleOrchestrateCommand(
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              `[codexclaw — refused: recovery target ${closePhaseId} gained `
+              `[cursorclaw — refused: recovery target ${closePhaseId} gained `
                 + `${closed.pending.length} open task(s) after its marker was written `
                 + `(CYCLE-COMPLETION-01): ${open}. The recovery marker was kept; close those `
                 + `tasks and repeat the same D request. Nothing was written.]`,
@@ -1030,7 +1030,7 @@ function handleOrchestrateCommand(
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              `[codexclaw — refused: recovery target ${closePhaseId} is now ${closed.status} `
+              `[cursorclaw — refused: recovery target ${closePhaseId} is now ${closed.status} `
                 + `(CYCLE-COMPLETION-01). The recovery marker was kept; restore that work-phase `
                 + `and repeat the same D request. Nothing was written.]`,
             ),
@@ -1042,7 +1042,7 @@ function handleOrchestrateCommand(
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              `[codexclaw — refused: recovery target ${closePhaseId} now waits for `
+              `[cursorclaw — refused: recovery target ${closePhaseId} now waits for `
                 + `${closed.unmet.join(", ")} (CYCLE-COMPLETION-01). The recovery marker was kept; `
                 + `satisfy those work-phases and repeat the same D request. Nothing was written.]`,
             ),
@@ -1057,11 +1057,11 @@ function handleOrchestrateCommand(
             return {
               output: buildContextOutput(
                 "UserPromptSubmit",
-                `[codexclaw — refused: the recovery marker for ${closePhaseId} names that `
+                `[cursorclaw — refused: the recovery marker for ${closePhaseId} names that `
                   + `same work-phase as its successor, which no close can produce, so this `
                   + `retry cannot tell what to finish. The marker was kept; inspect the `
                   + `goalplan, set the work-phase statuses and activeWorkPhaseId by hand, `
-                  + `then run \`cxc orchestrate reset --session ${payload.session_id}\` to `
+                  + `then run \`crc orchestrate reset --session ${payload.session_id}\` to `
                   + `clear the marker. Nothing was written.]`,
               ),
               advanced: null,
@@ -1076,7 +1076,7 @@ function handleOrchestrateCommand(
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              `[codexclaw — refused: recovery target ${closePhaseId} was closed with `
+              `[cursorclaw — refused: recovery target ${closePhaseId} was closed with `
                 + `successor ${closed.successorId}, which ${detail} (CYCLE-COMPLETION-01). `
                 + `The recovery marker was kept; restore that work-phase and repeat the `
                 + `same D request. Nothing was written.]`,
@@ -1117,7 +1117,7 @@ function handleOrchestrateCommand(
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              "[codexclaw — refused: bound chat D-close requires attest.workPhaseId. Nothing was written.]",
+              "[cursorclaw — refused: bound chat D-close requires attest.workPhaseId. Nothing was written.]",
             ),
             advanced: null,
             allDone: false as const,
@@ -1128,7 +1128,7 @@ function handleOrchestrateCommand(
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              `[codexclaw — refused: work-phase ${closePhaseId} is not in the bound goalplan. Nothing was written.]`,
+              `[cursorclaw — refused: work-phase ${closePhaseId} is not in the bound goalplan. Nothing was written.]`,
             ),
             advanced: null,
             allDone: false as const,
@@ -1142,7 +1142,7 @@ function handleOrchestrateCommand(
         return {
           output: buildContextOutput(
             "UserPromptSubmit",
-            `[codexclaw — refused: work-phase ${closeResult.workPhaseId} still has `
+            `[cursorclaw — refused: work-phase ${closeResult.workPhaseId} still has `
               + `${closeResult.pending.length} open task(s), so this cycle cannot close `
               + `(CYCLE-COMPLETION-01): ${open}. Nothing was written.]`,
           ),
@@ -1158,7 +1158,7 @@ function handleOrchestrateCommand(
         return {
           output: buildContextOutput(
             "UserPromptSubmit",
-            `[codexclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
+            `[cursorclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
           ),
           advanced: null,
           allDone: false as const,
@@ -1169,7 +1169,7 @@ function handleOrchestrateCommand(
         return {
           output: buildContextOutput(
             "UserPromptSubmit",
-            `[codexclaw — refused: fixed close target ${closePhaseId} does not match active work-phase ${closeResult.closedId}. Nothing was written.]`,
+            `[cursorclaw — refused: fixed close target ${closePhaseId} does not match active work-phase ${closeResult.closedId}. Nothing was written.]`,
           ),
           advanced: null,
           allDone: false as const,
@@ -1180,7 +1180,7 @@ function handleOrchestrateCommand(
           return {
             output: buildContextOutput(
               "UserPromptSubmit",
-              "[codexclaw — refused: current C check epoch is required. Nothing was written.]",
+              "[cursorclaw — refused: current C check epoch is required. Nothing was written.]",
             ),
             advanced: null,
             allDone: false as const,
@@ -1228,14 +1228,14 @@ function handleOrchestrateCommand(
     if (locked.kind === "locked") {
       return buildContextOutput(
         "UserPromptSubmit",
-        `[codexclaw — D-close was not applied: ${locked.reason} `
+        `[cursorclaw — D-close was not applied: ${locked.reason} `
           + `The phase and goalplan ledger were not changed.]`,
       );
     }
     if (locked.kind === "unreadable") {
       return buildContextOutput(
         "UserPromptSubmit",
-        `[codexclaw — D-close was not applied: the bound goalplan could not be read `
+        `[cursorclaw — D-close was not applied: the bound goalplan could not be read `
           + `(${locked.reason}). Nothing was written.]`,
       );
     }
@@ -1307,7 +1307,7 @@ function handleOrchestrateCommand(
   if (finalize.kind !== "ok") {
     return buildContextOutput(
       "UserPromptSubmit",
-      `[codexclaw — D-close was committed and the cycle is closed, but ledger/marker `
+      `[cursorclaw — D-close was committed and the cycle is closed, but ledger/marker `
         + `finalization is pending: ${finalize.reason} The recovery marker is still on the `
         + `session, so running the same D request again finishes the cleanup.]`,
     );
@@ -1346,7 +1346,7 @@ function handleOrchestrateCommand(
   }
 
   if (result.control === "reset") {
-    return buildContextOutput("UserPromptSubmit", "[codexclaw — reset → IDLE]");
+    return buildContextOutput("UserPromptSubmit", "[cursorclaw — reset → IDLE]");
   }
   // done: chat D-close. Inject the DONE summary directive this turn; the resting
   // state is already IDLE, so the footer surfaces IDLE.
@@ -1478,18 +1478,18 @@ function bumpStopCounter(cwd: string, state: State): number | "release" {
 }
 
 const STOP_NEXT_COMMAND: Partial<Record<Phase, string>> = {
-  I: '`cxc orchestrate P --attest \'{"from":"I","to":"P","did":"interview complete with recorded requirements"}\'`',
+  I: '`crc orchestrate P --attest \'{"from":"I","to":"P","did":"interview complete with recorded requirements"}\'`',
   // 260825 wp1: these are the commands agents copy straight out of a Stop block,
   // so an example missing a required key spends the agent's next turn on a
   // refusal. P>A needs planUnit; every gated edge needs workPhaseId when a
   // goalplan is bound; C>D needs testReceiptPath. The bound-only keys are shown
   // with a marker rather than omitted — a key you must delete is cheaper to fix
   // than a key you never knew existed.
-  P: '`cxc orchestrate A --attest \'{"from":"P","to":"A","did":"diff-level plan written with files and acceptance criteria","planUnit":"devlog/_plan/YYMMDD_slug","workPhaseId":"<bound goalplan only>"}\'`',
-  A: '`cxc orchestrate B --attest \'{"from":"A","to":"B","did":"audit loop closed: blockers folded into plan","auditOutput":"<reviewer verdict tail>","auditVerdict":"pass|near-pass","auditResidual":"<near-pass only: residual blockers + disposition>","workPhaseId":"<bound goalplan only>"}\'`',
-  B: '`cxc orchestrate C --attest \'{"from":"B","to":"C","did":"implementation completed and verifier reviewed it","workPhaseId":"<bound goalplan only>"}\'`',
-  C: '`cxc orchestrate D --attest \'{"from":"C","to":"D","did":"checks passed","checkOutput":"<test tail>","exitCode":0,"testReceiptPath":"<bound goalplan only: cxc receipt test output path>","workPhaseId":"<bound goalplan only>"}\'`',
-  D: '`cxc orchestrate reset` after the DONE summary is recorded',
+  P: '`crc orchestrate A --attest \'{"from":"P","to":"A","did":"diff-level plan written with files and acceptance criteria","planUnit":"devlog/_plan/YYMMDD_slug","workPhaseId":"<bound goalplan only>"}\'`',
+  A: '`crc orchestrate B --attest \'{"from":"A","to":"B","did":"audit loop closed: blockers folded into plan","auditOutput":"<reviewer verdict tail>","auditVerdict":"pass|near-pass","auditResidual":"<near-pass only: residual blockers + disposition>","workPhaseId":"<bound goalplan only>"}\'`',
+  B: '`crc orchestrate C --attest \'{"from":"B","to":"C","did":"implementation completed and verifier reviewed it","workPhaseId":"<bound goalplan only>"}\'`',
+  C: '`crc orchestrate D --attest \'{"from":"C","to":"D","did":"checks passed","checkOutput":"<test tail>","exitCode":0,"testReceiptPath":"<bound goalplan only: cxc receipt test output path>","workPhaseId":"<bound goalplan only>"}\'`',
+  D: '`crc orchestrate reset` after the DONE summary is recorded',
 };
 
 /** win32 cannot pass this JSON inline (002 B1), so point at the file flag there. */
@@ -1519,7 +1519,7 @@ export interface StopWorkContext {
   /**
    * 060 wp6: the Stop block names EVERY runnable item, not just the first one.
    *
-   * `nextTaskTitle` told an agent about one task while `cxc loop ready` listed several, so
+   * `nextTaskTitle` told an agent about one task while `crc loop ready` listed several, so
    * the terminal and the Stop block disagreed about what could run. Both now read the same
    * two helpers.
    */
@@ -1542,18 +1542,18 @@ export function buildStopBlock(
   // continuation command must carry the session id or it would instruct a
   // failing command. Insert it right after the verb (before ` --attest`/end).
   // 260724 WP1 ORDERING (A-round H2): this regex matches the LITERAL
-  // `cxc orchestrate <verb>` template, so it must run BEFORE the invocation
+  // `crc orchestrate <verb>` template, so it must run BEFORE the invocation
   // resolution below — resolveCxcInDirective is applied LAST, on the fully
   // assembled reason.
-  let nextCommand = stopNextCommand(phase) ?? "`cxc orchestrate status`";
+  let nextCommand = stopNextCommand(phase) ?? "`crc orchestrate status`";
   if (sessionId) {
     nextCommand = nextCommand.replace(
       /cxc orchestrate (\w+)/,
-      `cxc orchestrate $1 --session ${sessionId}`,
+      `crc orchestrate $1 --session ${sessionId}`,
     );
   }
   const lines = [
-    `[codexclaw — continue PABCD] You are mid-cycle at ${phase} (${label}) with an active goal.`,
+    `[cursorclaw — continue PABCD] You are mid-cycle at ${phase} (${label}) with an active goal.`,
     "Do the real work of this phase, then self-advance with the concrete next command:",
     nextCommand,
   ];
@@ -1580,14 +1580,14 @@ export function buildStopBlock(
   // 260724 WP1: emit-time invocation resolution, AFTER the --session insertion
   // above. Safe per resolveCxcInDirective: the only cxc commands in the reason
   // (STOP_NEXT_COMMAND entries) are backticked; enrichment/friction lines are
-  // paths and prose with no "`cxc " prefix.
+  // paths and prose with no "`crc " prefix.
   const reason = resolveCxcInDirective(lines.join("\n"));
   return `${JSON.stringify({ decision: "block", reason })}\n`;
 }
 
 /**
  * 040 — resolve the goalplan work context for the Stop block reason. PURE + fail-safe:
- * keys STRICTLY on the session-bound `state.slug` (persisted by `cxc goalplan init
+ * keys STRICTLY on the session-bound `state.slug` (persisted by `crc goalplan init
  * --session`, 030.3). No directory scan, no DB access — a missing slug or absent/
  * unreadable goalplan returns null, so `buildStopBlock(phase, null)` is byte-identical
  * to the shipped reason. The A-gate (Copernicus) rejected any dir-scan fallback because
@@ -1599,7 +1599,7 @@ export function readStopWorkContext(cwd: string, state: State): StopWorkContext 
   const plan = readGoalplan(cwd, slug);
   if (!plan) return null;
 
-  // 060 wp6: `cxc loop ready` refuses an invalid graph, and this path used to enrich from
+  // 060 wp6: `crc loop ready` refuses an invalid graph, and this path used to enrich from
   // one anyway. A plan with two tasks sharing an id would list the id twice, once per copy,
   // and the agent could not tell which one it was being sent to. Same gate, same order.
   const integrity = [
@@ -1648,7 +1648,7 @@ export function readStopWorkContext(cwd: string, state: State): StopWorkContext 
  * close the goal for real (`update_goal complete` — gated by GOAL-COMPLETE-GATE-01 when
  * a goalplan is bound — or `blocked` for external blockers). When a goalplan is bound,
  * the remaining work is named; when it is bound but unregistered (empty), the block says
- * to fill it; when none is bound, it points at `cxc loop init`.
+ * to fill it; when none is bound, it points at `crc loop init`.
  */
 export function buildGoalIdleBlock(
   cwd: string,
@@ -1659,10 +1659,10 @@ export function buildGoalIdleBlock(
   // Same PowerShell constraint as loopArmDirective: inline JSON cannot survive
   // argument parsing, so win32 gets the write-then-attest pair instead.
   const startNext = platform === "win32"
-    ? `Either start the next work-phase now: write the JSON with \`'{"from":"IDLE","to":"P","did":"<diff-level plan for the next work-phase>"}' | Set-Content -Encoding utf8 .cursorclaw/attest.json\` then run \`cxc orchestrate P --session ${sessionId} --attest-file .cursorclaw/attest.json\``
-    : `Either start the next work-phase now: \`cxc orchestrate P --session ${sessionId} --attest '{"from":"IDLE","to":"P","did":"<diff-level plan for the next work-phase>"}'\``;
+    ? `Either start the next work-phase now: write the JSON with \`'{"from":"IDLE","to":"P","did":"<diff-level plan for the next work-phase>"}' | Set-Content -Encoding utf8 .cursorclaw/attest.json\` then run \`crc orchestrate P --session ${sessionId} --attest-file .cursorclaw/attest.json\``
+    : `Either start the next work-phase now: \`crc orchestrate P --session ${sessionId} --attest '{"from":"IDLE","to":"P","did":"<diff-level plan for the next work-phase>"}'\``;
   const lines = [
-    "[codexclaw — goal continuation] A host goal is ACTIVE but no PABCD cycle is in flight.",
+    "[cursorclaw — goal continuation] A host goal is ACTIVE but no PABCD cycle is in flight.",
     "GOAL-IDLE-CONTINUE-01: IDLE is not the end while the goal is active (LOOP-CONTINUE-01). Do not end the turn here.",
     startNext,
     'or close the goal honestly: `update_goal` status "complete" (only when the recorded criteria are proven — the E8 gate checks a bound goalplan) or status "blocked" for an external blocker.',
@@ -1682,17 +1682,17 @@ export function buildGoalIdleBlock(
     if (work.ledgerPath) lines.push(`Record progress in: ${work.ledgerPath}`);
   } else if (plan && plan.workPhases.length === 0 && plan.criteria.length === 0) {
     lines.push(
-      `The bound goalplan '${state.slug}' is EMPTY: register workPhases[]/criteria[] in .cursorclaw/goalplans/${state.slug}/goalplan.json (schema in $cxc-loop) so remaining work is durable and the E8 gate can pass.`,
+      `The bound goalplan '${state.slug}' is EMPTY: register workPhases[]/criteria[] in .cursorclaw/goalplans/${state.slug}/goalplan.json (schema in $crc-loop) so remaining work is durable and the E8 gate can pass.`,
     );
   } else if (!state.slug) {
     lines.push(
-      `No goalplan is bound to this session: run \`cxc loop init --objective "<the goal objective>" --session ${sessionId}\` and register workPhases[]/criteria[] before the next work-phase.`,
+      `No goalplan is bound to this session: run \`crc loop init --objective "<the goal objective>" --session ${sessionId}\` and register workPhases[]/criteria[] before the next work-phase.`,
     );
   }
   // 260724 WP1: emit-time invocation resolution. Safe per resolveCxcInDirective:
-  // both cxc commands here (`cxc orchestrate P ...`, `cxc loop init ...`) are
-  // backticked and already carry their session id; "$cxc-loop" and goalplan
-  // paths carry no "`cxc " prefix.
+  // both cxc commands here (`crc orchestrate P ...`, `crc loop init ...`) are
+  // backticked and already carry their session id; "$crc-loop" and goalplan
+  // paths carry no "`crc " prefix.
   return `${JSON.stringify({ decision: "block", reason: resolveCxcInDirective(lines.join("\n")) })}\n`;
 }
 
@@ -1706,7 +1706,7 @@ export function buildPlateauDivergeBlock(phase: Phase, plateau: PlateauCheck, cw
     .sort((a, b) => a.ts.localeCompare(b.ts))
     .slice(-5);
   const lines = [
-    `[codexclaw — objective plateau] You are mid-cycle at ${phase} (${label}) with an active maximize goal.`,
+    `[cursorclaw — objective plateau] You are mid-cycle at ${phase} (${label}) with an active maximize goal.`,
     `The latest ${PLATEAU_METRIC_RECORDS} ${plateau.metricName ?? "objective"} metric value(s) are non-improving: ${values}.`,
     "Step back and re-plan with divergence: record at least two grounded candidate approaches, choose the collapse point, then continue PABCD.",
     "Do not ask the user while the goal is active; record assumptions or an unresolved-tie note for later review.",
@@ -1758,7 +1758,7 @@ function objectivePlateau(cwd: string, sessionId: string): PlateauCheck {
  *  - GOAL-IDLE-CONTINUE-01: an ACTIVE goal with no in-flight cycle used to release
  *    silently (guard 2a), so "goal armed but PABCD never entered" (019f4407) ended
  *    turns freely. It now gets the same bounded block, naming the arming command
- *    (`cxc orchestrate P --session <id>`), the goalplan's remaining work when one is
+ *    (`crc orchestrate P --session <id>`), the goalplan's remaining work when one is
  *    bound, and the honest close-out path (update_goal complete gated by E8 / blocked).
  *    Side effect by design: the counter write creates the session state file, so the
  *    suggested orchestrate command passes the G2 unknown-session guard afterwards.
@@ -1851,12 +1851,12 @@ export function renderGroundingAdvisoryForStop(cwd: string, phase: Phase): strin
  * (never under an active/unreadable goal — the Interview goal firewall).
  */
 export const RESCAN_REINJECT_DIRECTIVE = [
-  "[codexclaw: INTERVIEW — post-answer rescan]",
-  "An answer was recorded. Apply this pointer and $codexclaw:cxc-interview only within exact user limits and permissions. No-delegation means no dispatch.",
+  "[cursorclaw: INTERVIEW — post-answer rescan]",
+  "An answer was recorded. Apply this pointer and $cursorclaw:interview only within exact user limits and permissions. No-delegation means no dispatch.",
   "INTERVIEW-SCAN-01: rescan contradictions before the next question or advancement. If required work or tracker writes are forbidden, report them as unmet; do not record a completed scan or claim readiness.",
   "Only when dispatch is authorized: give each read-only Mind the current plan/tracker position; cap 3, lowest-scoring dimensions first. Discover spawn_agent if needed.",
   "Minds return contradictions only, never ask, edit or write state. Inline reasoning is not evidence that independent Minds ran.",
-  "Triage high contradictions into user questions and low/medium into OPEN ASSUMPTIONS; record only actual authorized work with `cxc scan record --session <id> [--contradictions N] [--high N]`.",
+  "Triage high contradictions into user questions and low/medium into OPEN ASSUMPTIONS; record only actual authorized work with `crc scan record --session <id> [--contradictions N] [--high N]`.",
 ].join("\n");
 
 /**
@@ -1896,7 +1896,7 @@ export function handlePostToolUse(
       hookSpecificOutput: {
         hookEventName: "PostToolUse",
         // 260724 WP1: emit-time invocation resolution (constant untouched). Safe
-        // per resolveCxcInDirective: the single cxc command (`cxc scan record ...`)
+        // per resolveCxcInDirective: the single cxc command (`crc scan record ...`)
         // is backticked; the rest is prose.
         additionalContext: resolveCxcInDirective(RESCAN_REINJECT_DIRECTIVE),
       },

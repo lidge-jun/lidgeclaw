@@ -1,5 +1,5 @@
 /**
- * release-cli.ts — `cxc release`: assemble a candidate manifest from real receipts
+ * release-cli.ts — `crc release`: assemble a candidate manifest from real receipts
  * and refuse publication when the evidence does not describe the candidate commit.
  *
  * release-gate.ts shipped the schema (issue #21) but nothing produced a manifest, so

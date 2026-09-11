@@ -1,5 +1,5 @@
 /**
-* orchestrate-cli.ts — `cxc orchestrate` terminal command (L4 / 040), the AGENT-gated
+* orchestrate-cli.ts — `crc orchestrate` terminal command (L4 / 040), the AGENT-gated
 * path. Unlike the chat hook (human free-pass, L3b), phase verbs here go through the
  * un-weakened `transition()` + `validateAttest`, so an agent MUST supply real
  * `--attest` evidence to advance a forward edge. Exception: I→P supports an
@@ -48,7 +48,7 @@ import { randomBytes } from "node:crypto";
 function validateReviewBinding(state: State, args: OrchestrateCliArgs, sessionId: string): { code: number; output: string } | null {
   const refuse = (why: string) => ({
     code: 1,
-    output: `orchestrate ${args.verb}: ${renderPhaseContext(state, sessionId)}; ${why} (LEAN-REVIEW-01). Either let the reviewer's exit record a verdict for this round, or close the round with \`cxc review-round abort --session <id>\` and advance on the attest alone. Nothing was written.`,
+    output: `orchestrate ${args.verb}: ${renderPhaseContext(state, sessionId)}; ${why} (LEAN-REVIEW-01). Either let the reviewer's exit record a verdict for this round, or close the round with \`crc review-round abort --session <id>\` and advance on the attest alone. Nothing was written.`,
   });
   let plan: Goalplan | null = null;
   try {
@@ -182,21 +182,21 @@ export function renderOrchestrateHelp(platform: NodeJS.Platform = process.platfo
         "Attestation examples (PowerShell single quotes do NOT protect embedded double",
         "quotes and cmd.exe ignores them entirely, so write the JSON to a file):",
         "  '{\"from\":\"P\",\"to\":\"A\",\"did\":\"wrote and audited the plan\",\"planUnit\":\"devlog/_plan/260714_slug\",\"workPhaseId\":\"wp1\"}' | Set-Content -Encoding utf8 .cursorclaw/attest.json",
-        "  cxc orchestrate A --session <id> --attest-file .cursorclaw/attest.json",
+        "  crc orchestrate A --session <id> --attest-file .cursorclaw/attest.json",
       ]
     : [
         "Attestation examples:",
-        "  cxc orchestrate A --session <id> --attest '{\"from\":\"P\",\"to\":\"A\",\"did\":\"wrote and audited the plan\",\"planUnit\":\"devlog/_plan/260714_slug\",\"workPhaseId\":\"wp1\"}'",
-        "  cxc orchestrate B --session <id> --attest '{\"from\":\"A\",\"to\":\"B\",\"did\":\"audit passed\",\"auditOutput\":\"VERDICT: PASS\",\"auditVerdict\":\"pass\",\"workPhaseId\":\"wp1\"}'",
-        "  cxc orchestrate C --session <id> --attest '{\"from\":\"B\",\"to\":\"C\",\"did\":\"implemented <files>\",\"workPhaseId\":\"wp1\"}'",
-        "  cxc orchestrate D --session <id> --attest '{\"from\":\"C\",\"to\":\"D\",\"did\":\"verified\",\"checkOutput\":\"tests passed\",\"exitCode\":0,\"testReceiptPath\":\".cursorclaw/evidence/<session>/test-receipt.json\",\"workPhaseId\":\"wp1\"}'",
+        "  crc orchestrate A --session <id> --attest '{\"from\":\"P\",\"to\":\"A\",\"did\":\"wrote and audited the plan\",\"planUnit\":\"devlog/_plan/260714_slug\",\"workPhaseId\":\"wp1\"}'",
+        "  crc orchestrate B --session <id> --attest '{\"from\":\"A\",\"to\":\"B\",\"did\":\"audit passed\",\"auditOutput\":\"VERDICT: PASS\",\"auditVerdict\":\"pass\",\"workPhaseId\":\"wp1\"}'",
+        "  crc orchestrate C --session <id> --attest '{\"from\":\"B\",\"to\":\"C\",\"did\":\"implemented <files>\",\"workPhaseId\":\"wp1\"}'",
+        "  crc orchestrate D --session <id> --attest '{\"from\":\"C\",\"to\":\"D\",\"did\":\"verified\",\"checkOutput\":\"tests passed\",\"exitCode\":0,\"testReceiptPath\":\".cursorclaw/evidence/<session>/test-receipt.json\",\"workPhaseId\":\"wp1\"}'",
       ];
   return [
     "cxc orchestrate — agent-gated IPABCD phase control",
     "",
     "Usage:",
-    "  cxc orchestrate <I|P|A|B|C|D|status|reset> [--session <id>] [--attest <json> | --attest-file <path>] [--cwd <path>] [--json]",
-    "  cxc orchestrate --help",
+    "  crc orchestrate <I|P|A|B|C|D|status|reset> [--session <id>] [--attest <json> | --attest-file <path>] [--cwd <path>] [--json]",
+    "  crc orchestrate --help",
     "",
     "Phases:",
     "  IDLE -> P -> A -> B -> C -> D -> IDLE",
@@ -207,16 +207,16 @@ export function renderOrchestrateHelp(platform: NodeJS.Platform = process.platfo
     "  Mutating verbs (I/P/A/B/C/D/reset) require explicit --session <id>.",
     "  Use your current SessionStart id, or the reserved terminal key 'cli'.",
     "  status uses native CODEX_THREAD_ID when present; plain terminals may use latest-session fallback.",
-    "  Missing/inherited binding? Run cxc session current, then cxc session bind in the native cwd.",
+    "  Missing/inherited binding? Run crc session current, then crc session bind in the native cwd.",
     "",
     ...attestExamples,
     "  Every attest carries from/to naming the edge; they are coerced before any gate runs.",
     "  (workPhaseId is required on gated edges whenever a goalplan is bound to the session,",
-    "   and testReceiptPath is required on C -> D for a bound session — see `cxc receipt test`)",
+    "   and testReceiptPath is required on C -> D for a bound session — see `crc receipt test`)",
     "",
     "Status:",
-    "  cxc orchestrate status --session <id>",
-    "  cxc orchestrate status --session <id> --json",
+    "  crc orchestrate status --session <id>",
+    "  crc orchestrate status --session <id> --json",
   ].join("\n");
 }
 
@@ -228,7 +228,7 @@ export function parseOrchestrateCliArgs(argv: string[], cwd: string): Orchestrat
   const verb = VERBS[verbTok];
   if (!verb) {
     return {
-      error: `unknown orchestrate verb '${argv[0] ?? ""}' (expected I|P|A|B|C|D|status|reset); run cxc orchestrate --help`,
+      error: `unknown orchestrate verb '${argv[0] ?? ""}' (expected I|P|A|B|C|D|status|reset); run crc orchestrate --help`,
       session: readFlagValue(argv, "--session"),
       cwd: readFlagValue(argv, "--cwd") ?? cwd,
     };
@@ -377,7 +377,7 @@ export function renderAttestShapeHint(verb: OrchestrateVerb, from: Phase | null)
   const extra = extras[to] ?? "";
   const statusHint = from
     ? ""
-    : " Run `cxc orchestrate status --session <id>` to read the current phase.";
+    : " Run `crc orchestrate status --session <id>` to read the current phase.";
   return (
     ` Every attest names the edge it advances: {"from":"${fromText}","to":"${to}","did":"..."}${extra}.` +
     ` A goalplan-bound session also needs "workPhaseId"${to === "D" ? ' and "testReceiptPath"' : ''}.` +
@@ -489,7 +489,7 @@ export function runOrchestrateCli(args: OrchestrateCliArgs | OrchestrateCliHelpA
   if (args.verb === "status") {
     if (!sessionId) return { code: 0, output: "no active session" };
     if (!sessionFileExists(args.cwd, sessionId)) {
-      const error = "session state is missing in this cwd; run cxc session current and cxc session bind from the native session cwd. Binding does not verify hook execution.";
+      const error = "session state is missing in this cwd; run crc session current and crc session bind from the native session cwd. Binding does not verify hook execution.";
       return { code: 1, output: args.json
         ? JSON.stringify({ sessionId, phase: null, stateExists: false, error })
         : `session=${sessionId}: ${error}` };
@@ -532,7 +532,7 @@ export function runOrchestrateCli(args: OrchestrateCliArgs | OrchestrateCliHelpA
   if (args.session && !sessionFileExists(args.cwd, sessionId) && !RESERVED_SESSION_KEYS.has(sessionId)) {
     return {
       code: 1,
-      output: `orchestrate ${args.verb}: unknown session '${sessionId}' — no .cursorclaw/sessions/${sessionId}.json exists. Run cxc session current and cxc session bind in the native session cwd; use 'cli' only for a standalone terminal.`,
+      output: `orchestrate ${args.verb}: unknown session '${sessionId}' — no .cursorclaw/sessions/${sessionId}.json exists. Run crc session current and crc session bind in the native session cwd; use 'cli' only for a standalone terminal.`,
     };
   }
   const state = readState(args.cwd, sessionId);
@@ -759,7 +759,7 @@ export function runOrchestrateCli(args: OrchestrateCliArgs | OrchestrateCliHelpA
             return {
               code: 1 as const,
               allDone: false as const,
-              output: `orchestrate D: the recovery marker for ${closePhaseId} predates the successor field, so this retry cannot tell whether the plan commit landed. The marker was kept; inspect the goalplan, set the work-phase statuses and activeWorkPhaseId by hand, then run \`cxc orchestrate reset --session ${sessionId}\` to clear the marker. Nothing was written.`,
+              output: `orchestrate D: the recovery marker for ${closePhaseId} predates the successor field, so this retry cannot tell whether the plan commit landed. The marker was kept; inspect the goalplan, set the work-phase statuses and activeWorkPhaseId by hand, then run \`crc orchestrate reset --session ${sessionId}\` to clear the marker. Nothing was written.`,
             };
           }
           // §39 Y1: the marker is written BEFORE the plan commit, so a matching
@@ -789,7 +789,7 @@ export function runOrchestrateCli(args: OrchestrateCliArgs | OrchestrateCliHelpA
               return {
                 code: 1 as const,
                 allDone: false as const,
-                output: `orchestrate D: recovery target ${closePhaseId} is gone from the plan and the successor ${orphan.successorId} it recorded ${absentSuccessorDetail(orphan.reason)}, so this retry cannot tell what to finish. The marker was kept; inspect the goalplan, set the work-phase statuses and activeWorkPhaseId by hand, then run \`cxc orchestrate reset --session ${sessionId}\` to clear the marker. Nothing was written.`,
+                output: `orchestrate D: recovery target ${closePhaseId} is gone from the plan and the successor ${orphan.successorId} it recorded ${absentSuccessorDetail(orphan.reason)}, so this retry cannot tell what to finish. The marker was kept; inspect the goalplan, set the work-phase statuses and activeWorkPhaseId by hand, then run \`crc orchestrate reset --session ${sessionId}\` to clear the marker. Nothing was written.`,
               };
             }
             if (orphan.kind === "activate") {
@@ -837,7 +837,7 @@ export function runOrchestrateCli(args: OrchestrateCliArgs | OrchestrateCliHelpA
                 return {
                   code: 1 as const,
                   allDone: false as const,
-                  output: `orchestrate D: the recovery marker for ${closePhaseId} names that same work-phase as its successor, which no close can produce, so this retry cannot tell what to finish. The marker was kept; inspect the goalplan, set the work-phase statuses and activeWorkPhaseId by hand, then run \`cxc orchestrate reset --session ${sessionId}\` to clear the marker. Nothing was written.`,
+                  output: `orchestrate D: the recovery marker for ${closePhaseId} names that same work-phase as its successor, which no close can produce, so this retry cannot tell what to finish. The marker was kept; inspect the goalplan, set the work-phase statuses and activeWorkPhaseId by hand, then run \`crc orchestrate reset --session ${sessionId}\` to clear the marker. Nothing was written.`,
                 };
               }
               const detail = closed.reason === "absent"

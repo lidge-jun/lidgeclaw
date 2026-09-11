@@ -29,10 +29,10 @@ test("readTranscriptTail: returns the byte-bounded tail", () => {
 
 test("hasStageMarkerForPhase: matches both directive head and stage header", () => {
   const directiveLine = JSON.stringify({
-    hookSpecificOutput: { hookEventName: "UserPromptSubmit", additionalContext: "[codexclaw: PLAN]\nWrite a diff-level plan" },
+    hookSpecificOutput: { hookEventName: "UserPromptSubmit", additionalContext: "[cursorclaw: PLAN]\nWrite a diff-level plan" },
   });
   assert.equal(hasStageMarkerForPhase(directiveLine, "P"), true);
-  assert.equal(hasStageMarkerForPhase("[codexclaw — A: AUDIT]", "A"), true);
+  assert.equal(hasStageMarkerForPhase("[cursorclaw — A: AUDIT]", "A"), true);
   assert.equal(hasStageMarkerForPhase(directiveLine, "B"), false);
   assert.equal(hasStageMarkerForPhase("", "P"), false);
   assert.equal(hasStageMarkerForPhase("noise", "IDLE"), false);

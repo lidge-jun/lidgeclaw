@@ -22,7 +22,7 @@ function cxcInvocation(moduleUrl: string): string {
   return cxcInvocationFn ? cxcInvocationFn(moduleUrl) : "cxc";
 }
 
-export const ADAPTER_PREAMBLE = `[codexclaw external skill adapter]
+export const ADAPTER_PREAMBLE = `[cursorclaw external skill adapter]
 - This is an EXTERNAL skill. codexclaw dev discipline (cxc-dev) always wins on conflict.
 - Substitute Claude-specific tools with Codex equivalents:
   claude -p / claude CLI -> codex exec; Read/Grep/Glob tools -> shell (cat/rg/fd).

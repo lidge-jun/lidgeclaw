@@ -8,7 +8,7 @@
  * `did` no longer satisfies P — the plan must exist as files.
  *
  * Caller gates the edge (state.phase === "P" && verb === "A"); `att` may be
- * null (bare `cxc orchestrate A`) — the gate still fires so the FIRST error
+ * null (bare `crc orchestrate A`) — the gate still fires so the FIRST error
  * names planUnit. Fail-closed on the P>A edge; other edges never call this.
  */
 
@@ -37,7 +37,7 @@ export function validatePlanArtifacts(att: Attestation | null, cwd: string): Pla
       reason:
         'P -> A requires "planUnit": the devlog/_plan/YYMMDD_slug/ unit this plan lives in ' +
         "(DIFFLEVEL-ROADMAP-01 — the plan must exist as numbered files, not chat). " +
-        "Scaffold one with `cxc plan init <slug>` if missing, write the docs, then re-attest. " +
+        "Scaffold one with `crc plan init <slug>` if missing, write the docs, then re-attest. " +
         "Put the JSON in a file and pass --attest-file <path> (required on Windows, where " +
         "inline JSON cannot survive shell argument parsing): " +
         '{"from":"P","to":"A","did":"...","planUnit":"devlog/_plan/..."}',
@@ -53,7 +53,7 @@ export function validatePlanArtifacts(att: Attestation | null, cwd: string): Pla
   if (!isDir) {
     return {
       ok: false,
-      reason: `planUnit ${att.planUnit} does not exist (or is not a directory). Create it with \`cxc plan init <slug>\` and write the plan docs before P -> A.`,
+      reason: `planUnit ${att.planUnit} does not exist (or is not a directory). Create it with \`crc plan init <slug>\` and write the plan docs before P -> A.`,
     };
   }
   let docs: string[] = [];

@@ -1,8 +1,8 @@
 {
   "name": "cursorclaw",
   "displayName": "Cursorclaw",
-  "version": "0.1.0",
-  "description": "cli-jaw-style development discipline (dev skills + PABCD) for the Cursor agent runtime — a Cursor-native fork of codexclaw.",
+  "version": "0.2.0",
+  "description": "Full Cursor-native port of codexclaw: all skills, Codex-parity hook fan-out, PABCD, agents, and crc CLI.",
   "author": {
     "name": "lidge-jun",
     "url": "https://github.com/lidge-jun"

@@ -223,8 +223,8 @@ test("hybrid mode 2: active + phase changed -> full directive for new phase", ()
     const out = handleUserPromptSubmit(ups("here is my work", cwd, "s1", "t2"));
     const parsed = JSON.parse(out.trimEnd());
     assert.equal(parsed.hookSpecificOutput.additionalContext, withFooter(phaseDirective("A"), "A"));
-    assert.match(parsed.hookSpecificOutput.additionalContext, /\$codexclaw:cxc-pabcd/);
-    assert.match(parsed.hookSpecificOutput.additionalContext, /\$codexclaw:cxc-dev-code-reviewer/);
+    assert.match(parsed.hookSpecificOutput.additionalContext, /\$cursorclaw:pabcd/);
+    assert.match(parsed.hookSpecificOutput.additionalContext, /\$cursorclaw:dev-code-reviewer/);
     assert.equal(readState(cwd, "s1").lastInjectedPhase, "A");
   } finally {
     rmSync(cwd, { recursive: true, force: true });
@@ -339,7 +339,7 @@ test("R-11: passive re-fire with phase marker already in transcript -> no re-inj
   const cwd = freshCwd();
   try {
     const tpath = join(cwd, "transcript.jsonl");
-    writeFileSync(tpath, JSON.stringify({ hookSpecificOutput: { hookEventName: "UserPromptSubmit", additionalContext: "[codexclaw — B: BUILD]" } }) + "\n");
+    writeFileSync(tpath, JSON.stringify({ hookSpecificOutput: { hookEventName: "UserPromptSubmit", additionalContext: "[cursorclaw — B: BUILD]" } }) + "\n");
     writeState(cwd, { ...defaultState("s1"), phase: "B", orchestrationActive: true, lastInjectedPhase: "B" });
     const out = handleUserPromptSubmit({
       hook_event_name: "UserPromptSubmit",
@@ -378,7 +378,7 @@ test("R-11: explicit trigger still injects even if a marker is present", () => {
   const cwd = freshCwd();
   try {
     const tpath = join(cwd, "transcript.jsonl");
-    writeFileSync(tpath, "[codexclaw — B: BUILD]\n");
+    writeFileSync(tpath, "[cursorclaw — B: BUILD]\n");
     writeState(cwd, { ...defaultState("s3"), phase: "B", orchestrationActive: true, lastInjectedPhase: "B" });
     const out = handleUserPromptSubmit({
       hook_event_name: "UserPromptSubmit",
@@ -447,25 +447,25 @@ test("L8: Stop continuation prints concrete next commands, never <next>", () => 
       midCycle(cwd, "l8-a", "A");
       const aReason = JSON.parse(handleStop(stop(cwd, "l8-a")).trim()).reason;
       assert.doesNotMatch(aReason, /<next>/);
-      assert.match(aReason, /cxc orchestrate B --session l8-a --attest/, "G3: continuation must carry --session");
+      assert.match(aReason, /crc orchestrate B --session l8-a --attest/, "G3: continuation must carry --session");
       assert.match(aReason, /auditOutput/, "WP3: A next-command must carry the reviewer verdict field");
 
       midCycle(cwd, "l8-b", "B");
       const bReason = JSON.parse(handleStop(stop(cwd, "l8-b")).trim()).reason;
       assert.doesNotMatch(bReason, /<next>/);
-      assert.match(bReason, /cxc orchestrate C --session l8-b --attest/);
+      assert.match(bReason, /crc orchestrate C --session l8-b --attest/);
 
       midCycle(cwd, "l8-c", "C");
       const cReason = JSON.parse(handleStop(stop(cwd, "l8-c")).trim()).reason;
       assert.doesNotMatch(cReason, /<next>/);
-      assert.match(cReason, /cxc orchestrate D --session l8-c --attest/);
+      assert.match(cReason, /crc orchestrate D --session l8-c --attest/);
       assert.match(cReason, /checkOutput/);
       assert.match(cReason, /exitCode/);
 
       midCycle(cwd, "l8-d", "D");
       const dReason = JSON.parse(handleStop(stop(cwd, "l8-d")).trim()).reason;
       assert.doesNotMatch(dReason, /<next>/);
-      assert.match(dReason, /cxc orchestrate reset/);
+      assert.match(dReason, /crc orchestrate reset/);
       assert.doesNotMatch(dReason, /orchestrate IDLE/);
     });
   } finally { rmSync(cwd, { recursive: true, force: true }); }
@@ -516,7 +516,7 @@ test("GOAL-IDLE-CONTINUE-01: active goal at IDLE blocks with the arming command"
       // `--attest` is a PREFIX of `--attest-file`, so the old assertion passed on
       // win32 by accident. Pin the POSIX form explicitly; the win32 branch is
       // asserted separately below.
-      assert.match(parsed.reason, /cxc orchestrate P --session gi1 --attest '\{/);
+      assert.match(parsed.reason, /crc orchestrate P --session gi1 --attest '\{/);
       assert.match(parsed.reason, /update_goal/);
       assert.match(parsed.reason, /LOOP-UNIT-CHAIN-01/, "IDLE block must teach heterogeneous work-phase chaining");
       assert.match(parsed.reason, /cxc loop init/, "unbound session must be pointed at loop init");
@@ -576,7 +576,7 @@ test("GOAL-IDLE-CONTINUE-01: bound goalplan names remaining work in the IDLE blo
       writeState(cwd, { ...defaultState("gi3"), phase: "IDLE", orchestrationActive: false, slug: plan.slug });
       const reason = JSON.parse(handleStop(stop(cwd, "gi3")).trim()).reason;
       // 060 wp6: the Stop block lists every runnable item instead of one next task, so the
-      // terminal (`cxc loop ready`) and this reason cannot disagree.
+      // terminal (`crc loop ready`) and this reason cannot disagree.
       assert.match(reason, /Ready work phases: wp-1 \(Stop hook\)/);
       assert.match(reason, /Ready tasks: wp-1\/t-1 \(goal-idle block\)/);
       assert.doesNotMatch(reason, /Remaining work:/);
@@ -735,7 +735,7 @@ test("040: buildStopBlock(phase) is byte-identical to buildStopBlock(phase, null
 test("G3: buildStopBlock with sessionId injects --session into the next command", () => {
   for (const p of ["P", "A", "B", "C"] as const) {
     const reason = (JSON.parse(buildStopBlock(p, null, null, "sess-9").trim()) as { reason: string }).reason;
-    assert.match(reason, /cxc orchestrate \w+ --session sess-9/, `phase ${p} must carry --session`);
+    assert.match(reason, /crc orchestrate \w+ --session sess-9/, `phase ${p} must carry --session`);
   }
   // without sessionId the command stays bare (byte-compat with shipped reason)
   const bare = (JSON.parse(buildStopBlock("P").trim()) as { reason: string }).reason;
@@ -772,7 +772,7 @@ test("040: with a session-bound slug + goalplan, the block reason names remainin
       assert.match(reason, /Required evidence: npm test green/);
       assert.match(reason, new RegExp(`Record progress in: \\.cursorclaw/goalplans/${plan.slug}/ledger\\.jsonl`));
       // enrichment never replaces the phase command or the closing note
-      assert.match(reason, /cxc orchestrate C --session [-\w]+ --attest/);
+      assert.match(reason, /crc orchestrate C --session [-\w]+ --attest/);
       assert.match(reason, /D is not a resting state/);
     });
   } finally { rmSync(cwd, { recursive: true, force: true }); }
@@ -1281,7 +1281,7 @@ test("wp6: Stop reason lists ready work and partial dependency waits together", 
         /Waiting on: task wp-live\/blocked waits for task wp-live\/later \(pending\); work-phase wp-blocked waits for work-phase wp-live \(in_progress\)/,
       );
       assert.match(reason, /Required evidence: node --test green/);
-      assert.match(reason, /cxc orchestrate C --session wp6-ready --attest/);
+      assert.match(reason, /crc orchestrate C --session wp6-ready --attest/);
     });
   } finally {
     rmSync(cwd, { recursive: true, force: true });

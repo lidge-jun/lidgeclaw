@@ -51,15 +51,15 @@ export function readTranscriptTail(
 
 /**
  * True if the transcript tail already carries a codexclaw stage marker for `phase`.
- * Matches both emitted forms: the full directive head `[codexclaw: PLAN]` and the
- * compaction-immune header `[codexclaw — P: PLAN]`.
+ * Matches both emitted forms: the full directive head `[cursorclaw: PLAN]` and the
+ * compaction-immune header `[cursorclaw — P: PLAN]`.
  */
 export function hasStageMarkerForPhase(tail: string, phase: Phase): boolean {
   if (!tail) return false;
   const label = PHASE_LABELS[phase];
   if (!label) return false;
-  const directiveHead = `[codexclaw: ${label}]`;
-  const headerHead = `[codexclaw — ${phase}: ${label}]`;
+  const directiveHead = `[cursorclaw: ${label}]`;
+  const headerHead = `[cursorclaw — ${phase}: ${label}]`;
   return tail.includes(directiveHead) || tail.includes(headerHead);
 }
 

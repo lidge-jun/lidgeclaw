@@ -1,5 +1,5 @@
 /**
- * memory-cli.ts — `cxc memory allow-write` (MEMORY-WRITE-GATE-01, 260909 wp1-A).
+ * memory-cli.ts — `crc memory allow-write` (MEMORY-WRITE-GATE-01, 260909 wp1-A).
  *
  * The operator-issued half of the gate's authorization. The other half reads the
  * user's own prompt, which is the right default but is unavailable to a script, to a
@@ -24,7 +24,7 @@ export interface MemoryAllowWriteArgs {
 
 export const MEMORY_USAGE = [
   "Usage:",
-  "  cxc memory allow-write --session <id>",
+  "  crc memory allow-write --session <id>",
   "",
   "Authorizes exactly ONE memory write (memories.add_ad_hoc_note, or an edit under",
   "~/.codex/memories) for that session. The grant is consumed by the next write.",

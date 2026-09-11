@@ -39,7 +39,7 @@ export function validateCheckReceipt(
   if (!state.checkEpoch) {
     return {
       ok: false,
-      reason: "this check cycle predates CHECK-BINDING-01, so no receipt can bind to it. Step back with `cxc orchestrate B` and re-enter `cxc orchestrate C` to mint a binding.",
+      reason: "this check cycle predates CHECK-BINDING-01, so no receipt can bind to it. Step back with `crc orchestrate B` and re-enter `crc orchestrate C` to mint a binding.",
     };
   }
 

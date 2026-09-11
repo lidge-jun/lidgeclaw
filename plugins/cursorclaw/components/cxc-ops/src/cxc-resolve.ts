@@ -2,9 +2,9 @@
  * cxc-resolve.ts — single source of truth for "how do I say `cxc` on this machine".
  *
  * WHY (260724 fresh-install RCA): the marketplace payload ships only
- * `plugins/codexclaw/`, while the PATH-level `cxc` bin is mapped from the REPO ROOT
+ * `plugins/cursorclaw/`, while the PATH-level `cxc` bin is mapped from the REPO ROOT
  * package.json — so on a fresh marketplace install every injected directive that
- * says `cxc orchestrate ...` names a command that does not exist. Emit sites must
+ * says `crc orchestrate ...` names a command that does not exist. Emit sites must
  * therefore template their command strings through `cxcInvocation()` instead of
  * hardcoding the literal `cxc` prefix.
  *
@@ -23,7 +23,7 @@ import { delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 /**
- * Derive the payload root (the `plugins/codexclaw` directory) from a component
+ * Derive the payload root (the `plugins/cursorclaw` directory) from a component
  * module URL. Works for both shipped `components/<c>/dist/<f>.js` and test-time
  * `components/<c>/src/<f>.ts` callers — both sit exactly three levels below the
  * payload root.
@@ -36,8 +36,8 @@ export function payloadRootFromModule(moduleUrl: string): string {
 // Reuse the dispatcher's actual command set. A partial payload without its bin
 // retains the legacy PATH fallback; importing this module never runs a command.
 let payloadCommands: Readonly<Record<string, string>> = {};
-if (existsSync(join(payloadRootFromModule(import.meta.url), "bin", "cxc.mjs"))) {
-  ({ COMMAND_TABLE: payloadCommands } = await import("../../../bin/cxc.mjs"));
+if (existsSync(join(payloadRootFromModule(import.meta.url), "bin", "cursorclaw.mjs"))) {
+  ({ COMMAND_TABLE: payloadCommands } = await import("../../../bin/cursorclaw.mjs"));
 }
 
 /** Windows-aware executable name candidates for a PATH scan. */
@@ -51,7 +51,7 @@ const WIN_EXTS = ["", ".cmd", ".exe", ".bat", ".ps1"];
 export function cxcOnPath(env: Record<string, string | undefined> = process.env): boolean {
   const path = env.PATH ?? "";
   if (!path) return false;
-  const names = process.platform === "win32" ? WIN_EXTS.map((e) => `cxc${e}`) : ["cxc"];
+  const names = process.platform === "win32" ? WIN_EXTS.map((e) => `crc${e}`) : ["crc", "cursorclaw", "cxc"];
   for (const dir of path.split(delimiter)) {
     if (!dir) continue;
     for (const name of names) {
@@ -76,12 +76,12 @@ export function cxcInvocation(
   env: Record<string, string | undefined> = process.env,
   command?: string,
 ): string {
-  const override = env.CODEXCLAW_CXC;
+  const override = env.CURSORCLAW_CRC || env.CODEXCLAW_CXC;
   if (typeof override === "string" && override.trim().length > 0) return override.trim();
-  const dispatcher = join(payloadRootFromModule(moduleUrl), "bin", "cxc.mjs");
+  const dispatcher = join(payloadRootFromModule(moduleUrl), "bin", "cursorclaw.mjs");
   if (command && Object.hasOwn(payloadCommands, command) && existsSync(dispatcher)) {
     return `node "${dispatcher}"`;
   }
-  if (cxcOnPath(env)) return "cxc";
+  if (cxcOnPath(env)) return "crc";
   return `node "${dispatcher}"`;
 }

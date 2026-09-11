@@ -100,7 +100,7 @@ test("detectTrigger: natural Korean with particles/suffixes still matches", () =
 });
 
 test("phase directives use resolvable skill mentions for spawn messages", () => {
-  const unresolvedBareMention = /\$cxc-[a-z0-9-]+(?![A-Za-z0-9_:-])(?!\]\(skill:\/\/[^)\n]+\))/;
+  const unresolvedBareMention = /\$crc-[a-z0-9-]+(?![A-Za-z0-9_:-])(?!\]\(skill:\/\/[^)\n]+\))/;
 
   for (const phase of ["A", "B", "C"] as const) {
     assert.doesNotMatch(phaseDirective(phase), unresolvedBareMention, `${phase} directive`);
@@ -109,9 +109,9 @@ test("phase directives use resolvable skill mentions for spawn messages", () => 
 
 test("wp3: phase pointers retain owners and active work-phase boundaries", () => {
   for (const phase of ["P", "A", "B", "C", "D"] as const) {
-    assert.match(phaseDirective(phase), /\$codexclaw:cxc-pabcd/);
+    assert.match(phaseDirective(phase), /\$cursorclaw:pabcd/);
   }
-  assert.match(interviewDirective(), /\$codexclaw:cxc-interview/);
+  assert.match(interviewDirective(), /\$cursorclaw:interview/);
   assert.match(interviewDirective(), /Mind dispatch/i);
   assert.match(phaseDirective("P"), /No implementation yet/);
   assert.match(phaseDirective("A"), /cxc-dev-code-reviewer/);
@@ -136,7 +136,7 @@ test("wp3: original Korean C2 still reaches scoped CHECK without entering C", ()
       const envelope = JSON.parse(output).hookSpecificOutput;
       assert.equal(envelope.hookEventName, "UserPromptSubmit");
       const ctx = envelope.additionalContext as string;
-      assert.match(ctx, /^\[codexclaw: CHECK\]/);
+      assert.match(ctx, /^\[cursorclaw: CHECK\]/);
       assert.match(ctx, /No-delegation means no dispatch/);
       assert.match(ctx, /No-tests forbids tests, not separately authorized build\/typecheck/);
       assert.match(ctx, /Independent review needs owner applicability and dispatch permission/);
@@ -269,7 +269,7 @@ test("handleUserPromptSubmit: trigger emits directive envelope once", () => {
     const parsed = JSON.parse(out.trimEnd());
     assert.equal(parsed.hookSpecificOutput.hookEventName, "UserPromptSubmit");
     assert.equal(parsed.hookSpecificOutput.additionalContext, withFooter(phaseDirective("P"), "P"));
-    assert.match(parsed.hookSpecificOutput.additionalContext, /\$codexclaw:cxc-pabcd/);
+    assert.match(parsed.hookSpecificOutput.additionalContext, /\$cursorclaw:pabcd/);
     assert.match(parsed.hookSpecificOutput.additionalContext, /No implementation yet/);
   } finally {
     rmSync(cwd, { recursive: true, force: true });
@@ -332,7 +332,7 @@ test("handleUserPromptSubmit: agbrowse request injects search directive without 
     const parsed = JSON.parse(out.trimEnd());
     const ctx = parsed.hookSpecificOutput.additionalContext as string;
     assert.equal(parsed.hookSpecificOutput.hookEventName, "UserPromptSubmit");
-    assert.match(ctx, /\[codexclaw: SEARCH/);
+    assert.match(ctx, /\[cursorclaw: SEARCH/);
     assert.match(ctx, /cxc-search/);
     assert.match(ctx, /agbrowse fetch/);
     assert.match(ctx, /Never use plain `agbrowse search/);
@@ -374,25 +374,25 @@ test("win32 arming directive teaches the file flag, not inline attest", () => {
 // mangled, which is exactly the guarantee this test exists to provide.
 test("posix arming directive is byte-identical to its pinned snapshot", () => {
   const expected = [
-    "[codexclaw: LOOP — orchestrate arming mandate (ORCH-MANDATE-01)]",
+    "[cursorclaw: LOOP — orchestrate arming mandate (ORCH-MANDATE-01)]",
     "Scope first: explicit interview-only, plan-only, HITL, read-only, no-goal, no-FSM, no-tests and no-delegation limits override the bare cxc-loop default.",
     "A mention or quoted example alone is not authorization. This pointer and its referenced procedures never override those limits.",
-    "Load $codexclaw:cxc-loop and $codexclaw:cxc-pabcd for an actual loop request; bare cxc-loop execution means scoped HOTL.",
+    "Load $cursorclaw:loop and $cursorclaw:pabcd for an actual loop request; bare cxc-loop execution means scoped HOTL.",
     "No-delegation means no dispatch. No-tests does not forbid separately authorized build/typecheck. Report required but forbidden actions as unmet.",
     "Only for authorized loop execution, apply steps 1-5 within scope. No-goal/no-FSM restrict creation/mutations, not read-only inspection. Narration is not persisted progress:",
-    "1. Session id: use the current SessionStart binding, corroborated by `cxc session current` when native CODEX_THREAD_ID is available.",
-    "   Missing/inherited/conflicting binding: use `cxc session current` then explicit `cxc session bind` in its verified cwd. Never set the environment id or replay hook JSON.",
+    "1. Session id: use the current SessionStart binding, corroborated by `crc session current` when native CODEX_THREAD_ID is available.",
+    "   Missing/inherited/conflicting binding: use `crc session current` then explicit `crc session bind` in its verified cwd. Never set the environment id or replay hook JSON.",
     "   SESSION-IDENTITY-01: never a parent/history id; binding alone does not verify hook execution or Stop-continuation.",
-    "2. `cxc orchestrate status --session <id>` — read the real phase first.",
+    "2. `crc orchestrate status --session <id>` — read the real phase first.",
     "3. Inspect the host goal with get_goal first. Resume a matching unfinished goal; do not duplicate it.",
     "   Only when no unfinished goal exists and new HOTL is authorized, create_goal with a detailed objective.",
     "   For a different unfinished goal or unsupported resume, report the conflict; do not replace it or fabricate active status.",
-    '   New loop setup: `cxc loop init --objective "<same text>" --session <id>` -> register',
+    '   New loop setup: `crc loop init --objective "<same text>" --session <id>` -> register',
     "   workPhases[] + criteria[]. On resume inspect/reuse the bound goalplan; do not reinitialize it.",
-    "   After status inspection, enter `cxc orchestrate P --session <id>` only when authorized and legal; an existing phase keeps its owner/edge contract.",
+    "   After status inspection, enter `crc orchestrate P --session <id>` only when authorized and legal; an existing phase keeps its owner/edge contract.",
     "   Explicit HITL keeps human pause points. Interview-only/plan-only stay at the requested stage without a goal or implementation; do not arm when state changes are forbidden.",
-    "4. Advance EVERY forward edge yourself with `cxc orchestrate <phase> --attest <json>` —",
-    `   e.g. \`cxc orchestrate A --session <id> --attest '{\"from\":\"P\",\"to\":\"A\",\"did\":\"...\",\"planUnit\":\"devlog/_plan/YYMMDD_slug\",\"workPhaseId\":\"wp1\"}'\` —`,
+    "4. Advance EVERY forward edge yourself with `crc orchestrate <phase> --attest <json>` —",
+    `   e.g. \`crc orchestrate A --session <id> --attest '{\"from\":\"P\",\"to\":\"A\",\"did\":\"...\",\"planUnit\":\"devlog/_plan/YYMMDD_slug\",\"workPhaseId\":\"wp1\"}'\` —`,
     "   a phase without its persisted transition + artifact did not happen (ORCH-ARTIFACT-01).",
     '   EVERY attest carries "from" and "to" naming the edge: they are coerced before any',
     "   gate runs, so omitting them is refused on every edge (ATTEST-SHAPE-01).",
@@ -400,7 +400,7 @@ test("posix arming directive is byte-identical to its pinned snapshot", () => {
     "   (one work-phase = one full PABCD cycle).",
     "   Bound chat D-close requires workPhaseId as the fixed close target unless every work-phase is already done.",
     "5. After authorized D closes to IDLE with authorized work remaining under an active goal, re-enter",
-    "   with `cxc orchestrate P --session <id>` (LOOP-UNIT-CHAIN-01).",
+    "   with `crc orchestrate P --session <id>` (LOOP-UNIT-CHAIN-01).",
     "HOTL does not grant push, merge, release, deploy or external-message permission. Stop for missing authority.",
     "Preserve guards and real evidence; do not bypass a gate or fabricate an attestation/receipt to satisfy this advice.",
   ].join("\n");
@@ -493,8 +493,8 @@ test("ORCH-MANDATE-01: loop request against un-armed FSM injects the arming mand
     const parsed = JSON.parse(out.trimEnd());
     const ctx = parsed.hookSpecificOutput.additionalContext as string;
     assert.match(ctx, /orchestrate arming mandate \(ORCH-MANDATE-01\)/);
-    assert.match(ctx, /cxc orchestrate status --session <id>/);
-    assert.match(ctx, /cxc orchestrate P --session <id>/);
+    assert.match(ctx, /crc orchestrate status --session <id>/);
+    assert.match(ctx, /crc orchestrate P --session <id>/);
     assert.match(ctx, /--attest <json>/);
     assert.match(ctx, /cxc loop init --objective/);
     // The mandate never arms the FSM by itself — commands do.
@@ -517,7 +517,7 @@ test("040: on an un-armed FSM the loop-arm mandate wins over a phase trigger", (
     const parsed = JSON.parse(out.trimEnd());
     const ctx = parsed.hookSpecificOutput.additionalContext as string;
     assert.match(ctx, /arming mandate/);
-    assert.doesNotMatch(ctx, /\[codexclaw: PLAN\]/);
+    assert.doesNotMatch(ctx, /\[cursorclaw: PLAN\]/);
     const st = readState(cwd, "s1");
     assert.equal(st.lastInjectedPhase, null); // the mandate injects no phase
     assert.equal(st.loopArmSeen, true);
@@ -533,7 +533,7 @@ test("ORCH-MANDATE-01: loop-arm and agbrowse directives compose when both are re
     const parsed = JSON.parse(out.trimEnd());
     const ctx = parsed.hookSpecificOutput.additionalContext as string;
     assert.match(ctx, /arming mandate/);
-    assert.match(ctx, /\[codexclaw: SEARCH/);
+    assert.match(ctx, /\[cursorclaw: SEARCH/);
   } finally {
     rmSync(cwd, { recursive: true, force: true });
   }
@@ -810,7 +810,7 @@ test("L5: injected directive carries the IPABCD footer naming the phase", () => 
   try {
     const out = handleUserPromptSubmit(ups("orchestrate p", cwd, "f1", "t1"));
     const ctx = JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext as string;
-    assert.match(ctx, /\[codexclaw: PLAN\]/); // directive body present
+    assert.match(ctx, /\[cursorclaw: PLAN\]/); // directive body present
     assert.match(ctx, /IPABCD: P \(PLAN\)/);   // footer present, names P
   } finally { rmSync(cwd, { recursive: true, force: true }); }
 });
@@ -821,7 +821,7 @@ test("L5: chat 'orchestrate status' returns the one-line status with flags", () 
     handleUserPromptSubmit(ups("orchestrate p", cwd, "f2", "t1"));
     const out = handleUserPromptSubmit(ups("orchestrate status", cwd, "f2", "t2"));
     const ctx = JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext as string;
-    assert.match(ctx, /\[codexclaw status\] IPABCD: P \(PLAN\)/);
+    assert.match(ctx, /\[cursorclaw status\] IPABCD: P \(PLAN\)/);
     assert.match(ctx, /auditPassed=false/);
     assert.equal(readState(cwd, "f2").phase, "P"); // status does not move phase
   } finally { rmSync(cwd, { recursive: true, force: true }); }
@@ -836,7 +836,7 @@ test("L5: chat 'orchestrate d' closes the cycle to IDLE (D is not a resting stat
     handleUserPromptSubmit(ups("orchestrate c", cwd, "f3", "t4"));
     const out = handleUserPromptSubmit(ups("orchestrate d", cwd, "f3", "t5"));
     const ctx = JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext as string;
-    assert.match(ctx, /\[codexclaw: DONE\]/);      // DONE directive shown this turn
+    assert.match(ctx, /\[cursorclaw: DONE\]/);      // DONE directive shown this turn
     assert.match(ctx, /IPABCD: IDLE/);             // resting state is IDLE, not D
     const st = readState(cwd, "f3");
     assert.equal(st.phase, "IDLE");                // cycle closed
@@ -1271,7 +1271,7 @@ test("all-done bound chat records closedWorkPhaseId null even when workPhaseId i
 
     assert.doesNotMatch(output, /refused|blocked or superseded/);
     const context = JSON.parse(output.trimEnd()).hookSpecificOutput.additionalContext as string;
-    assert.match(context, /\[codexclaw: DONE\]/);
+    assert.match(context, /\[cursorclaw: DONE\]/);
     assert.match(context, /IPABCD: IDLE/);
     assert.equal(readState(cwd, id).phase, "IDLE");
     assert.equal(readState(cwd, id).dcloseRecovery, null);
@@ -1422,7 +1422,7 @@ test("chat D-close recovery resumes when the marker target is absent from the pl
 
     assert.doesNotMatch(output, /refused|not in the bound goalplan/);
     const context = JSON.parse(output.trimEnd()).hookSpecificOutput.additionalContext as string;
-    assert.match(context, /\[codexclaw: DONE\]/);
+    assert.match(context, /\[cursorclaw: DONE\]/);
     assert.match(context, /IPABCD: IDLE/);
     assert.equal(readFileSync(planPath, "utf8"), beforePlan);
     assert.equal(
@@ -1530,7 +1530,7 @@ test("chat D-close retry after the recovery marker write matches an uninterrupte
 
     const refAttest = seedChatCycleAtC(reference, "chat-reference", "chat-reference-plan");
     const refOut = handleUserPromptSubmit(ups(`orchestrate d --attest ${refAttest}`, reference, "chat-reference", "r1"));
-    assert.match(refOut, /\[codexclaw: DONE\]/);
+    assert.match(refOut, /\[cursorclaw: DONE\]/);
     const referencePlan = readGoalplan(reference, "chat-reference-plan")!;
 
     assert.throws(
@@ -1551,7 +1551,7 @@ test("chat D-close retry after the recovery marker write matches an uninterrupte
     assert.equal(readGoalplan(cwd, slug)!.workPhases.find((wp) => wp.id === "wp-1")!.status, "in_progress");
 
     const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
-    assert.match(out, /\[codexclaw: DONE\]/);
+    assert.match(out, /\[cursorclaw: DONE\]/);
     const recovered = readGoalplan(cwd, slug)!;
     assert.deepEqual(
       {
@@ -1645,7 +1645,7 @@ test("chat recovery re-runs the close when only the target status was edited to 
 
     const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
 
-    assert.match(out, /\[codexclaw: DONE\]/);
+    assert.match(out, /\[cursorclaw: DONE\]/);
     const recovered = readGoalplan(cwd, slug)!;
     assert.equal(recovered.activeWorkPhaseId, "wp-2");
     assert.equal(recovered.workPhases.find((wp) => wp.id === "wp-2")!.status, "in_progress");
@@ -1751,7 +1751,7 @@ test("chat D-close keeps same-turn dedup and clears the Stop guard", () => {
     });
 
     const first = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "same-turn"));
-    assert.match(first, /\[codexclaw: DONE\]/);
+    assert.match(first, /\[cursorclaw: DONE\]/);
     const after = readState(cwd, id);
     assert.equal(after.phase, "IDLE");
     assert.equal(after.stopBlockPhase, null);
@@ -1913,7 +1913,7 @@ try {
   const output = handleUserPromptSubmit(payload, process.platform, hooks);
   // A completed second close while the peer sentinel still exists proves that its
   // transaction ran before the first finalization callback returned.
-  if (output.includes("[codexclaw: DONE]") && peerInsidePath !== "-" && existsSync(peerInsidePath)) {
+  if (output.includes("[cursorclaw: DONE]") && peerInsidePath !== "-" && existsSync(peerInsidePath)) {
     writeFileSync(overlapPath, "second recovery completed inside its peer\n");
   }
   process.stdout.write(output);
@@ -1993,7 +1993,7 @@ test("a second chat recovery contends while the first finalizer callback is held
 
     assert.equal(firstResult.status, 0, firstResult.stderr);
     assert.equal(secondResult.status, 0, secondResult.stderr);
-    assert.match(firstResult.stdout, /\[codexclaw: DONE\]/);
+    assert.match(firstResult.stdout, /\[cursorclaw: DONE\]/);
     assert.match(secondResult.stdout, /D-close was not applied/);
     assert.equal(existsSync(secondAttempted), true);
     assert.equal(

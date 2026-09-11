@@ -217,7 +217,7 @@ export function activate(deps: ActivateDeps): InstallManifest {
     copyFileSync(configPath, backupPath);
   }
 
-  // A re-run of `cxc enable` must not record OUR value as the prior one. Same guard as
+  // A re-run of `crc enable` must not record OUR value as the prior one. Same guard as
   // config-set.ts:139-141: the first recording of a key wins forever.
   const priorManifest = readPriorManifest(codexHome);
 

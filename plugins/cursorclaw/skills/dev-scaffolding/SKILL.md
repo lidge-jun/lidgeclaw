@@ -1,5 +1,5 @@
 ---
-name: cxc-dev-scaffolding
+name: dev-scaffolding
 description: "MUST USE for project setup, feature scaffolding, structural audits, or documentation scaffolding — applies feature-based layout, colocation, public boundary exports, repo-first convention reuse, and source-of-truth doc planning. Triggers: scaffold, scaffolding, new project, init project, new feature, add module, project setup, structure audit, architecture docs, source-of-truth docs, monorepo setup, API docs, 스캐폴딩, 새 프로젝트, 새 기능, 구조 점검, 모듈 추가."
 metadata:
   last-verified: "2026-07-02"
@@ -56,13 +56,13 @@ MUST preserve mature repo conventions over the default scaffold pattern.
 
 ### Codexclaw-First Durable Docs
 
-**Rule (SCAF-SOT-01):** In codexclaw or any repo that already uses durable devlog/source-of-truth conventions, prefer the existing `devlog/` placement, local numbering scheme, and source-of-truth paths before proposing generic `docs/` + `plans/`.
+**Rule (SCAF-SOT-01):** In cursorclaw or any repo that already uses durable devlog/source-of-truth conventions, prefer the existing `devlog/` placement, local numbering scheme, and source-of-truth paths before proposing generic `docs/` + `plans/`.
 
 Keep it light:
 - Cross-link scaffold docs to evidence paths (`path:line`, plan file, ADR, current-architecture note) so future workers can audit why files exist.
 - Follow existing phase/decade numbering when present; do not flatten or renumber local history.
 - In multi-cycle loop units, the decade docs (010, 020, 030...) are authored during
-  the docs-only first work-phase (LOOP-DOCS-FIRST-01, `cxc-loop`), not scaffolded
+  the docs-only first work-phase (LOOP-DOCS-FIRST-01, `loop`), not scaffolded
   empty.
 - Treat source-of-truth placement as part of scaffolding completion: the final audit must say which durable convention was reused or that none existed.
 - Boundary/public-export decisions still route to `dev-architecture` §1 (`ARCH-DECISION-01`, `ARCH-MAP-01`); scaffolding owns file placement and skeleton consistency.
@@ -74,7 +74,7 @@ Loop, UNIT-RESIDENCE-01) is the DEFAULT for C2+ work where the repository uses i
 C0/C1 follow the record exemptions in `dev` §0.1; do not create a unit just for them. Propose the `docs/`/`plans/`
 architecture docs when:
 
-C0/C1 record exemptions are owned by cxc-dev §0.1; this routine does not override them.
+C0/C1 record exemptions are owned by dev §0.1; this routine does not override them.
 
 - The repo is immature, undocumented, or inconsistent; or
 - The user asks for a durable source-of-truth structure; or
@@ -119,7 +119,7 @@ Phase naming is owned by [Implementation units](../pabcd/references/implementati
 Before creating any new source-of-truth folders, ask concisely: state that no durable docs were found,
 show the proposed tree, give a specific recommendation, and confirm you will not create them without approval.
 This gate governs introducing a convention, not routine unit subfolders in an
-existing devlog/_plan. Create a unit only when required; cxc-dev §0.1 does not
+existing devlog/_plan. Create a unit only when required; dev §0.1 does not
 require a new unit for a C0/C1 fast-path record.
 
 ## 2.2 Project Skeleton

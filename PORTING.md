@@ -4,43 +4,28 @@ Upstream pin: see `UPSTREAM.lock`.
 
 ## Goal
 
-Ship the same development discipline (dev skill family, PABCD, multi-model subagent guidance, recall/map/skill-search surfaces) on the **Cursor** agent runtime instead of the OpenAI Codex plugin runtime.
+Ship the **same** development discipline on Cursor that codexclaw ships on Codex: every skill, every hook pipeline, CLI, agents, commands.
 
-## Surface mapping
+## Status (parity push)
 
-| codexclaw (Codex) | cursorclaw (Cursor) | Status |
-| --- | --- | --- |
-| `plugins/codexclaw/.codex-plugin/plugin.json` | `plugins/cursorclaw/.cursor-plugin/plugin.json` + repo `.cursor-plugin/marketplace.json` | Scaffolded |
-| `skills/*/SKILL.md` (+ `agents/openai.yaml`) | `skills/*/SKILL.md` (Cursor discovery) | Copied; `crc-dev` / `crc-pabcd` alias skills added |
-| Codex `hooks/*.json` event names | `hooks/hooks.json` Cursor events | **Bridge live**: `scripts/cursor-bridge.mjs` maps sessionStart / beforeSubmitPrompt / preToolUse(pending inject) / stop / subagentStop; legacy JSON in `hooks/codex-legacy/` |
-| `agents/*.toml` | `agents/*.md` (+ toml kept for provenance) | Scaffolded |
-| `cxc` / `codexclaw` CLI | `crc` / `cursorclaw` CLI | Entry renamed; component paths still Codex-era |
-| `.codexclaw/` state | `.cursorclaw/` | **Done in components**: `STATE_DIR=.cursorclaw` + `migrateLegacyProjectState`; dist rebuilt; `CURSORCLAW_HOME` preferred over `CODEXCLAW_HOME` |
-| Codex feature-flag config-guard | Cursor settings / plugin variables | Deferred |
-| `~/.codex` recall artifacts | Cursor conversation / memory surfaces | Deferred |
-| Messenger GUI / serve | Optional later | Deferred |
+| Surface | Status |
+| --- | --- |
+| Cursor plugin manifest | `.cursor-plugin/` + marketplace |
+| Skills (29) | Folder-name == `name:`; bodies rebranded to Cursor/`crc`; dogfood symlinks in `.cursor/skills/` |
+| Hooks | Full Codex fan-out via `scripts/cursor-bridge.mjs` on sessionStart / beforeSubmitPrompt / preToolUse / postToolUse / preCompact / stop / subagentStop |
+| Dogfood | Repo `.cursor/hooks.json` + `.cursor/rules/` wired to the same bridge |
+| Agents | `explorer` / `reviewer` / `executor` / `architect` as Cursor `.md` agents |
+| Commands | orchestrate / status / doctor / map / interview / install-dev |
+| State | `.cursorclaw/` with legacy `.codexclaw/` migration |
+| CLI | `crc` / `cursorclaw` |
 
-## Hook event translation (initial)
+## Known Cursor I/O deltas (not missing features — host shape differences)
 
-| Codex event | Cursor event | Notes |
-| --- | --- | --- |
-| `SessionStart` | `sessionStart` | Banner script live |
-| `UserPromptSubmit` | `beforeSubmitPrompt` | Passthrough stub |
-| `Stop` | `stop` | Passthrough stub |
-| `PreToolUse` / `PostToolUse` | `preToolUse` / `postToolUse` | Not yet rewired |
-| `SubagentStop` | `subagentStop` | Not yet rewired |
-| `PostCompact` | `preCompact` | Semantics differ; needs redesign |
+- `beforeSubmitPrompt` cannot inject `additional_context`; bridge **stashes** Codex-style context and reinjects on the next `preToolUse`.
+- Codex `decision:"block"` on Stop becomes Cursor `followup_message` (auto-continue).
+- Codex tool names (`Bash`, `spawn_agent`, `apply_patch`) are mapped from Cursor tools (`Shell`, `Task`, `Write`/`Edit`).
+- `config-guard` Codex feature healing still runs but is largely a no-op outside Codex config.toml.
 
-## Non-goals for 0.1.0 scaffold
+## Legacy
 
-- Full behavioral parity of every Codex hook
-- Marketplace submission polish
-- Automatic rewrite of every skill string from `cxc` → `crc`
-
-## Next port slices
-
-1. ~~Rewire high-value hooks onto Cursor JSON I/O.~~ Done via `scripts/cursor-bridge.mjs` (prompt context deferred to `preToolUse` because Cursor `beforeSubmitPrompt` has no `additional_context`).
-2. ~~Rename component `STATE_DIR` to `.cursorclaw` + rebuild.~~ Done.
-3. Expand soft-rebrand beyond `crc-dev` / `crc-pabcd` aliases (or dual frontmatter names).
-4. Replace Codex-only recall roots with Cursor-compatible stores.
-5. Docs-site + README localization pass for Cursor install instructions.
+Original Codex hook JSON remains under `hooks/codex-legacy/` for provenance.
