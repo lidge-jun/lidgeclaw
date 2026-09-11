@@ -1,13 +1,14 @@
 **English** | [한국어](README.ko.md) | [中文](README.zh.md)
 
 <p align="center">
-  <img src="plugins/cursorclaw/assets/logo.png" alt="cursorclaw" width="140" />
+  <img src="plugins/cursorclaw/assets/logo.png" alt="lidgeclaw" width="140" />
 </p>
 
-<h1 align="center">cursorclaw</h1>
+<h1 align="center">lidgeclaw</h1>
 
 <p align="center">
   <img src="https://img.shields.io/badge/runtime-Cursor-black" alt="Cursor runtime">
+  <img src="https://img.shields.io/badge/runtime-ZCode-blue" alt="ZCode runtime">
   <img src="https://img.shields.io/badge/skills-29-blue" alt="29 skills">
   <img src="https://img.shields.io/badge/hooks-7-blue" alt="7 hooks">
   <img src="https://img.shields.io/badge/tests-0_passing-lightgrey" alt="0 tests passing">
@@ -16,91 +17,61 @@
 </p>
 
 <p align="center">
-  Development discipline and multi-model subagent guidance for <strong>Cursor</strong>,<br>
-  forked from <a href="https://github.com/lidge-jun/codexclaw">codexclaw</a> (Codex runtime).
+  One repo, two runtimes: <strong>cursorclaw</strong> (Cursor) + <strong>zclaw</strong> (ZCode).<br>
+  Shared skills and cli-jaw-style discipline, forked from
+  <a href="https://github.com/lidge-jun/codexclaw">codexclaw</a>.
 </p>
 
 ---
 
-cursorclaw packages the same cli-jaw-style discipline as codexclaw — **dev skill routers**, **PABCD**, and **role-based subagent guidance** — as a **Cursor plugin** (skills, rules, agents, commands, hooks) instead of a Codex plugin.
+**lidgeclaw** is the umbrella for:
 
-**0.2.0** ships full Cursor packaging: all skills, Codex-parity hook fan-out (`cursor-bridge.mjs`), agents, commands, dogfood `.cursor/` wiring, and the `crc` CLI. Codex hook JSON is kept under `hooks/codex-legacy/` for provenance. See [PORTING.md](PORTING.md).
+| Plugin | Runtime | Path |
+| --- | --- | --- |
+| **cursorclaw** | Cursor | `plugins/cursorclaw/` |
+| **zclaw** | ZCode | `plugins/zclaw/` |
 
-Workflow inspiration remains [OMO / oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent). Credits and pinned sources: [NOTICE.md](NOTICE.md).
+Skills live once under `plugins/cursorclaw/skills/`; zclaw mounts them via relative symlinks. Workflow inspiration remains [OMO / oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent). Credits: [NOTICE.md](NOTICE.md).
 
-## Features (inherited + Cursor packaging)
+## Install
 
-**Dev Skill Family** — surface routers (`dev-architecture`, `dev-backend`, `dev-frontend`, …) governed by the parent `dev` skill.
-
-**PABCD Workflow** — Plan / Audit / Build / Check / Done with file-backed state (`.cursorclaw/` preferred; `.cursorclaw/` still recognized during the port).
-
-**Subagent Roles** — explorer / reviewer / executor / architect prompts shipped as Cursor `agents/*.md` (TOML provenance kept).
-
-**CLI** — `cursorclaw` / `crc` (upstream `cxc` / `codexclaw` names print a redirect hint).
-
-## Install (Cursor — global)
-
-From a checkout:
+### Cursor (cursorclaw)
 
 ```bash
-./scripts/global-install.sh
+./scripts/global-install.sh --target cursor
+# or: ./scripts/global-install.sh   # default installs both
 ```
 
-That installs:
+Installs plugin → `~/.cursor/plugins/local/cursorclaw`, skills, hooks, rule, and `crc` / `cursorclaw` / `lidgeclaw` CLI. Restart the Cursor agent session.
 
-- plugin copy → `~/.cursor/plugins/local/cursorclaw`
-- 29 skill symlinks → `~/.cursor/skills/`
-- user hooks → `~/.cursor/hooks.json` (full bridge fan-out)
-- core rule → `~/.cursor/rules/cursorclaw-core.mdc`
-- CLI → `~/.local/bin/crc` and `cursorclaw`
-
-Then **restart the Cursor agent session**. Check with `./scripts/global-install.sh --status`.
-
-### Install (Cursor plugin dogfood in this repo)
-
-1. Clone this repository.
-2. In Cursor, add the repo (or `plugins/cursorclaw`) as a **local Cursor plugin** via Customize → Plugins (optional if global-install already ran).
-3. Restart the agent session.
-4. Confirm the `sessionStart` banner and that skills under `plugins/cursorclaw/skills/` are visible.
-
-Optional PATH CLI from a checkout:
+### ZCode (zclaw)
 
 ```bash
-git clone https://github.com/lidge-jun/cursorclaw
-alias crc='node /path/to/cursorclaw/bin/cursorclaw.mjs'
-crc status
-crc doctor
+./scripts/global-install.sh --target zcode
 ```
+
+Registers this checkout as a local ZCode marketplace and stages `zclaw`. In ZCode you can also **Settings → Plugins → Create → Add marketplace** → this repo, then install **zclaw**. Restart the ZCode session.
+
+Check status: `./scripts/global-install.sh --status`.
 
 ## Layout
 
 ```text
-.cursor-plugin/marketplace.json          # multi-plugin marketplace entry
-plugins/cursorclaw/
-  .cursor-plugin/plugin.json             # Cursor plugin manifest
-  skills/                                # Agent skills (from upstream)
-  rules/                                 # Cursor rules (.mdc)
-  agents/                                # Cursor agents (.md) + toml provenance
-  commands/                              # Cursor commands
-  hooks/hooks.json                       # Cursor hooks
-  hooks/codex-legacy/                    # Original Codex hook JSON (reference)
-  components/                            # Node CLIs / hook backends (porting)
-  scripts/                               # build/gate + Cursor bridge scripts
-bin/cursorclaw.mjs                       # crc / cursorclaw entry
-PORTING.md                               # surface map + next slices
-UPSTREAM.lock                            # pinned codexclaw commit
+.cursor-plugin/marketplace.json   # Cursor marketplace (cursorclaw)
+.zcode-plugin/marketplace.json    # ZCode marketplace (zclaw)
+plugins/cursorclaw/               # Cursor plugin (skills source of truth)
+plugins/zclaw/                    # ZCode plugin (symlinked skills + thin hooks)
+bin/cursorclaw.mjs                # crc / cursorclaw / lidgeclaw entry
+PORTING.md
+UPSTREAM.lock
 ```
 
-## Relationship to codexclaw
+## CLI
 
-| | codexclaw | cursorclaw |
-| --- | --- | --- |
-| Runtime | Cursor plugin | Cursor plugin |
-| Manifest | `.cursor-plugin/plugin.json` | `.cursor-plugin/plugin.json` |
-| CLI | `cxc` / `codexclaw` | `crc` / `cursorclaw` |
-| State dir | `.cursorclaw/` | `.cursorclaw/` (dual-read during port) |
-
-Upstream project: https://github.com/lidge-jun/codexclaw
+```bash
+lidgeclaw status   # aliases: crc, cursorclaw, lc
+crc doctor
+```
 
 ## Development
 
@@ -110,7 +81,7 @@ npm run gate
 npm test
 ```
 
-Hook parity and Cursor I/O adapters are tracked in [PORTING.md](PORTING.md).
+Cursor hook parity: [PORTING.md](PORTING.md). ZCode hooks start at SessionStart — see [plugins/zclaw/README.md](plugins/zclaw/README.md).
 
 ## License
 

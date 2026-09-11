@@ -3,7 +3,7 @@
   "plugin": {
     "name": "cursorclaw",
     "manifestVersion": "0.2.0",
-    "packageVersion": "0.2.0"
+    "packageVersion": "0.3.0"
   },
   "skills": [
     {

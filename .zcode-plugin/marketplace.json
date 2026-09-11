@@ -5,34 +5,33 @@
     "email": "plugins@lidge.dev"
   },
   "metadata": {
-    "description": "lidgeclaw — Cursor + ZCode ports of codexclaw discipline (PABCD, skill routers, subagents).",
+    "description": "lidgeclaw ZCode marketplace — zclaw plugin (shared skills with cursorclaw).",
     "version": "0.3.0",
     "pluginRoot": "plugins"
   },
   "plugins": [
     {
-      "name": "cursorclaw",
-      "source": "cursorclaw",
-      "description": "Full Cursor port of codexclaw — skills, hooks, PABCD, agents, commands.",
-      "version": "0.2.0",
+      "name": "zclaw",
+      "source": "zclaw",
+      "description": "ZCode port of lidgeclaw — shared skills, SessionStart hook, PABCD discipline.",
+      "version": "0.1.0",
       "keywords": [
-        "cursor",
-        "cursor-plugin",
-        "pabcd",
-        "skills",
-        "hooks",
-        "subagents",
-        "cursorclaw",
-        "lidgeclaw"
-      ],
-      "category": "developer-tools",
-      "tags": [
-        "cursor",
+        "zcode",
+        "zcode-plugin",
+        "zclaw",
+        "lidgeclaw",
         "pabcd",
         "skills",
         "hooks"
       ],
-      "logo": "cursorclaw/assets/logo.png",
+      "category": "developer-tools",
+      "tags": [
+        "zcode",
+        "pabcd",
+        "skills",
+        "hooks"
+      ],
+      "logo": "zclaw/assets/logo.png",
       "license": "MIT",
       "repository": "https://github.com/lidge-jun/lidgeclaw",
       "homepage": "https://github.com/lidge-jun/lidgeclaw"

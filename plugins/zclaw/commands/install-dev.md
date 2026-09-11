@@ -1,0 +1,1 @@
+../../cursorclaw/commands/install-dev.md

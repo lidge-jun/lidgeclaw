@@ -1,0 +1,1 @@
+../../cursorclaw/commands/doctor.md

@@ -1,15 +1,17 @@
 {
-  "name": "cursorclaw",
-  "version": "0.2.0",
+  "name": "lidgeclaw",
+  "version": "0.3.0",
   "private": true,
-  "description": "cli-jaw-style dev discipline + multi-model subagents for the Cursor agent runtime (fork of codexclaw).",
+  "description": "Umbrella for cursorclaw (Cursor) + zclaw (ZCode) — cli-jaw-style discipline from codexclaw.",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lidge-jun/cursorclaw.git"
+    "url": "git+https://github.com/lidge-jun/lidgeclaw.git"
   },
   "license": "MIT",
   "bin": {
+    "lidgeclaw": "bin/cursorclaw.mjs",
+    "lc": "bin/cursorclaw.mjs",
     "cursorclaw": "bin/cursorclaw.mjs",
     "crc": "bin/cursorclaw.mjs"
   },

@@ -1,8 +1,8 @@
 {
-  "name": "cursorclaw",
-  "displayName": "Cursorclaw",
-  "version": "0.2.0",
-  "description": "Full Cursor-native port of codexclaw: all skills, Codex-parity hook fan-out, PABCD, agents, and crc CLI.",
+  "name": "zclaw",
+  "displayName": "zclaw",
+  "version": "0.1.0",
+  "description": "ZCode port of lidgeclaw discipline — shared skills with cursorclaw, PABCD, SessionStart hook.",
   "author": {
     "name": "lidge-jun",
     "url": "https://github.com/lidge-jun"
@@ -11,27 +11,24 @@
   "homepage": "https://github.com/lidge-jun/lidgeclaw",
   "license": "MIT",
   "keywords": [
-    "cursor",
-    "cursor-plugin",
-    "cursorclaw",
+    "zcode",
+    "zcode-plugin",
+    "zclaw",
     "lidgeclaw",
     "pabcd",
-    "subagents",
-    "dev-skills",
+    "skills",
     "hooks"
   ],
   "logo": "assets/logo.png",
   "category": "developer-tools",
   "tags": [
-    "cursor",
+    "zcode",
     "pabcd",
     "skills",
     "hooks",
     "workflow"
   ],
   "skills": "./skills/",
-  "rules": "./rules/",
   "agents": "./agents/",
-  "commands": "./commands/",
-  "hooks": "./hooks/hooks.json"
+  "commands": "./commands/"
 }

@@ -1,17 +1,17 @@
 ---
-description: cursorclaw core — full Cursor-native port of codexclaw discipline (hooks + skills + PABCD)
+description: lidgeclaw / cursorclaw core — Cursor port of codexclaw discipline (hooks + skills + PABCD)
 alwaysApply: true
 ---
 
-# cursorclaw
+# lidgeclaw → cursorclaw
 
-This environment runs **cursorclaw**, the Cursor port of codexclaw.
+This environment runs **cursorclaw**, the Cursor surface of the **lidgeclaw** umbrella (sibling: **zclaw** for ZCode).
 
 ## What is armed
 
 - **Hooks** (plugin + this repo `.cursor/hooks.json`): sessionStart, beforeSubmitPrompt, preToolUse, postToolUse, preCompact, stop, subagentStop — full Codex-era component fan-out via `scripts/cursor-bridge.mjs`.
-- **Skills**: every folder under `plugins/cursorclaw/skills/` (and dogfood symlinks in `.cursor/skills/`). Skill `name` matches the folder name.
-- **CLI**: `crc` / `cursorclaw` (`node bin/cursorclaw.mjs`).
+- **Skills**: every folder under `plugins/cursorclaw/skills/` (and dogfood symlinks in `.cursor/skills/`). Skill `name` matches the folder name. Shared with `plugins/zclaw/skills/` via symlinks.
+- **CLI**: `crc` / `cursorclaw` / `lidgeclaw` (`node bin/cursorclaw.mjs`).
 - **State**: `.cursorclaw/` (legacy `.codexclaw/` is migrated automatically).
 
 ## Discipline
@@ -22,4 +22,4 @@ This environment runs **cursorclaw**, the Cursor port of codexclaw.
 
 ## Naming
 
-Upstream Codex used `$crc-*` skill ids and `cxc` CLI. On Cursor those are `skills/<folder>` and `crc`.
+Umbrella repo: **lidgeclaw**. Cursor plugin: **cursorclaw**. ZCode plugin: **zclaw**. Upstream Codex used `$crc-*` skill ids and `cxc` CLI; on Cursor those are `skills/<folder>` and `crc`.
