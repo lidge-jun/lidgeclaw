@@ -1,0 +1,2052 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync, rmSync, existsSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+// B1 (260724 WP1): emit sites resolve the `cxc` invocation per-machine. Pin the
+// literal so directive assertions stay deterministic without `cxc` on PATH
+// (each test file is its own node --test process — no restore needed).
+process.env.CODEXCLAW_CXC = "cxc";
+
+import {
+  detectTrigger,
+  detectAgbrowseSearchRequest,
+  detectLoopArmRequest,
+  buildContextOutput,
+  handleUserPromptSubmit,
+  handleStop,
+  phaseDirective,
+  interviewDirective,
+  loopArmDirective,
+  TRIGGER_AUTHORITY_NOTE,
+  withFooter,
+  type UserPromptSubmitPayload,
+  type StopPayload,
+} from "../src/hook.ts";
+import { STATE_DIR, LEDGER_FILE, readState, writeState, defaultState } from "../src/state.ts";
+import { buildGoalplan, readGoalplan, writeGoalplan, type Goalplan } from "../src/goalplan.ts";
+import { captureSourceIdentity } from "../src/source-identity.ts";
+import { spawn, spawnSync } from "node:child_process";
+import { writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
+
+const expectedTaskFields = [
+  { id: "t-1", dependsOn: [], outcome: "first task verified" },
+  { id: "t-2", dependsOn: ["t-1"], outcome: "second task verified" },
+];
+
+function taskFields(plan: { workPhases: Array<{ tasks: Array<{
+  id: string;
+  dependsOn?: string[];
+  outcome?: string;
+}> }> }) {
+  return plan.workPhases[0].tasks.map(({ id, dependsOn, outcome }) => ({ id, dependsOn, outcome }));
+}
+
+function freshCwd(): string {
+  return mkdtempSync(join(tmpdir(), "codexclaw-hook-"));
+}
+
+function ups(prompt: string, cwd: string, sessionId: string, turnId?: string): UserPromptSubmitPayload {
+  return {
+    hook_event_name: "UserPromptSubmit",
+    session_id: sessionId,
+    cwd,
+    prompt,
+    transcript_path: null,
+    turn_id: turnId,
+  };
+}
+
+test("detectTrigger: explicit triggers map to phases (EN + Korean)", () => {
+  assert.equal(detectTrigger("please interview me"), "I");
+  assert.equal(detectTrigger("인터뷰 시작하자"), "I");
+  assert.equal(detectTrigger("orchestrate I"), "I");
+  assert.equal(detectTrigger("orchestrate P now"), "P");
+  assert.equal(detectTrigger("plan this feature"), "P");
+  assert.equal(detectTrigger("계획 세워줘"), "P");
+  assert.equal(detectTrigger("orchestrate A"), "A");
+  assert.equal(detectTrigger("audit this plan"), "A");
+  assert.equal(detectTrigger("이거 감사해줘"), "A");
+  assert.equal(detectTrigger("orchestrate B"), "B");
+  assert.equal(detectTrigger("build this"), "B");
+  assert.equal(detectTrigger("이거 구현해"), "B");
+  assert.equal(detectTrigger("orchestrate C"), "C");
+  assert.equal(detectTrigger("check this output"), "C");
+  assert.equal(detectTrigger("검증 좀"), "C");
+});
+
+test("detectTrigger: interview wins over plan when both present", () => {
+  assert.equal(detectTrigger("interview then plan this"), "I");
+});
+
+test("detectTrigger: non-trigger -> null", () => {
+  assert.equal(detectTrigger("just a normal message"), null);
+  assert.equal(detectTrigger(""), null);
+});
+
+test("detectTrigger: everyday Korean words do NOT misfire (Galileo blocker #1)", () => {
+  assert.equal(detectTrigger("감사합니다"), null); // "thank you" must NOT trigger AUDIT
+  assert.equal(detectTrigger("정말 감사해요 도와주셔서"), null);
+});
+
+test("detectTrigger: natural Korean with particles/suffixes still matches", () => {
+  assert.equal(detectTrigger("계획을 세워줘"), "P");
+  assert.equal(detectTrigger("이거 감사해줘"), "A");
+  assert.equal(detectTrigger("기능 구현해줘"), "B");
+  assert.equal(detectTrigger("검증 좀 해줘"), "C");
+});
+
+test("phase directives use resolvable skill mentions for spawn messages", () => {
+  const unresolvedBareMention = /\$cxc-[a-z0-9-]+(?![A-Za-z0-9_:-])(?!\]\(skill:\/\/[^)\n]+\))/;
+
+  for (const phase of ["A", "B", "C"] as const) {
+    assert.doesNotMatch(phaseDirective(phase), unresolvedBareMention, `${phase} directive`);
+  }
+});
+
+test("wp3: phase pointers retain owners and active work-phase boundaries", () => {
+  for (const phase of ["P", "A", "B", "C", "D"] as const) {
+    assert.match(phaseDirective(phase), /\$codexclaw:cxc-pabcd/);
+  }
+  assert.match(interviewDirective(), /\$codexclaw:cxc-interview/);
+  assert.match(interviewDirective(), /Mind dispatch/i);
+  assert.match(phaseDirective("P"), /No implementation yet/);
+  assert.match(phaseDirective("A"), /cxc-dev-code-reviewer/);
+  assert.match(phaseDirective("C"), /C-RENDER-GROUNDING-01/);
+  const bound = phaseDirective("B", { activeWorkPhase: { id: "wp3", title: "minimal hooks" } });
+  assert.match(bound, /ACTIVE WORK-PHASE: wp3 — minimal hooks/);
+  assert.match(bound, /other work-phases are OUT OF SCOPE until D closes/);
+});
+
+const WP3_ORIGINAL_C2_PROMPT = "README 계약에 맞게 기존 내부 메모 생성/목록 기능을 완성해줘. 네트워크 서버나 공개 API는 아니고 src/route.mjs와 src/service.mjs의 기존 빈 구현을 채우는 작업이야. src/store.mjs와 test/notes.test.mjs는 수정하지 마. 기존 번호 문서에 결과를 기록하고 node --test test/notes.test.mjs로 실제 검증해줘. 새 의존성/추상화/파일, goal/FSM 변경, 커밋, 서브에이전트 파견은 하지 마.";
+
+test("wp3: original Korean C2 still reaches scoped CHECK without entering C", () => {
+  for (const turn of ["t1", ""] as const) {
+    const cwd = freshCwd();
+    try {
+      const session = "wp3-original-c2";
+      const before = readState(cwd, session);
+      assert.equal(detectTrigger(WP3_ORIGINAL_C2_PROMPT), "C");
+      assert.equal(detectLoopArmRequest(WP3_ORIGINAL_C2_PROMPT), false);
+      const payload = ups(WP3_ORIGINAL_C2_PROMPT, cwd, session, turn);
+      const output = handleUserPromptSubmit(payload, "linux");
+      const envelope = JSON.parse(output).hookSpecificOutput;
+      assert.equal(envelope.hookEventName, "UserPromptSubmit");
+      const ctx = envelope.additionalContext as string;
+      assert.match(ctx, /^\[codexclaw: CHECK\]/);
+      assert.match(ctx, /No-delegation means no dispatch/);
+      assert.match(ctx, /No-tests forbids tests, not separately authorized build\/typecheck/);
+      assert.match(ctx, /Independent review needs owner applicability and dispatch permission/);
+      assert.match(ctx, /Report unmet review; inline review is not its proof/);
+      assert.match(ctx, /A lexical phase hint is not execution authority/);
+      assert.match(ctx, /Only if a phase transition is authorized/);
+      assert.match(ctx, /IPABCD: IDLE \(IDLE\)/);
+      assert.doesNotMatch(ctx, /pass, dispatch with|retain independent review/);
+      const after = readState(cwd, session);
+      assert.equal(after.phase, before.phase);
+      assert.equal(after.orchestrationActive, before.orchestrationActive);
+      assert.equal(after.lastInjectedPhase, before.lastInjectedPhase);
+      assert.deepEqual(after.flags, before.flags);
+      assert.equal(after.loopArmSeen, before.loopArmSeen);
+      assert.deepEqual(after.injectedTurns, turn ? [turn] : []);
+      assert.equal(existsSync(join(cwd, STATE_DIR, LEDGER_FILE)), false);
+      if (turn) assert.equal(handleUserPromptSubmit(payload, "linux"), "");
+    } finally { rmSync(cwd, { recursive: true, force: true }); }
+  }
+});
+
+test("wp3: CHECK negatives retain lexical trigger and the actual persisted phase", () => {
+  const prompts = [
+    "검증해줘. 읽기 전용으로 코드만 검토해. 수정, 테스트/빌드/타입검사, goal/FSM 변경, 서브에이전트 파견 금지.",
+    "Check this code by reading it only; no edits, no tests, no build, no typecheck, no goals, no FSM changes, no delegation.",
+  ];
+  for (const prompt of prompts) {
+    for (const phase of ["IDLE", "P", "B", "C"] as const) {
+      const cwd = freshCwd();
+      try {
+        const session = "wp3-check-negative";
+        const before = { ...defaultState(session), phase,
+          orchestrationActive: phase !== "IDLE",
+          lastInjectedPhase: phase === "IDLE" ? null : phase };
+        writeState(cwd, before);
+        assert.equal(detectTrigger(prompt), "C");
+        const ctx = JSON.parse(handleUserPromptSubmit(ups(prompt, cwd, session, "n1")))
+          .hookSpecificOutput.additionalContext as string;
+        assert.match(ctx, /within exact user limits and permissions/);
+        assert.match(ctx, /No-delegation means no dispatch/);
+        assert.match(ctx, /Forbidden checks: NOT RUN/);
+        assert.match(ctx, /No-goal\/no-FSM restrict creation\/mutations, not read-only inspection/);
+        assert.ok(ctx.includes(`IPABCD: ${phase} (`));
+        const after = readState(cwd, session);
+        assert.equal(after.phase, before.phase);
+        assert.equal(after.orchestrationActive, before.orchestrationActive);
+        assert.equal(after.lastInjectedPhase, before.lastInjectedPhase);
+        assert.deepEqual(after.flags, before.flags);
+        assert.equal(existsSync(join(cwd, STATE_DIR, LEDGER_FILE)), false);
+      } finally { rmSync(cwd, { recursive: true, force: true }); }
+    }
+  }
+});
+
+test("wp3: neutral C2 remains an ordinary non-trigger control", () => {
+  const prompt = "Complete the existing internal notes create/list slice according to README.md. Fill only the existing src/route.mjs and src/service.mjs stubs; this is not a network server or public API. Do not modify src/store.mjs or test/notes.test.mjs. Record results in the existing numbered implementation document and execute node --test test/notes.test.mjs. Do not add dependencies, abstractions or files; do not create goals, mutate FSM state, commit, or delegate to subagents.";
+  const cwd = freshCwd();
+  try {
+    assert.equal(detectTrigger(prompt), null);
+    assert.equal(detectLoopArmRequest(prompt), false);
+    assert.equal(handleUserPromptSubmit(ups(prompt, cwd, "wp3-neutral", "n1")), "");
+    assert.equal(existsSync(join(cwd, STATE_DIR)), false);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("wp3: CHECK preserves separately allowed build and read-only state inspection", () => {
+  for (const prompt of [
+    "Check this. No-tests, but npm run build is explicitly allowed. No delegation or goal/FSM mutations.",
+    "검증해줘. 테스트는 금지지만 빌드와 타입검사는 허용해. goal/FSM 생성과 변경은 금지하고 상태 조회는 허용해. 파견 금지.",
+    "Check this read-only. No-goal/no-FSM mutations; inspect get_goal and orchestrate status only. No edits, tests, build, typecheck or delegation.",
+  ]) {
+    const cwd = freshCwd();
+    try {
+      assert.equal(detectTrigger(prompt), "C");
+      const before = readState(cwd, "wp3-exact-limits");
+      const ctx = JSON.parse(handleUserPromptSubmit(ups(prompt, cwd, "wp3-exact-limits", "e1")))
+        .hookSpecificOutput.additionalContext as string;
+      assert.match(ctx, /No-tests forbids tests, not separately authorized build\/typecheck/);
+      assert.match(ctx, /no-goal\/no-FSM restrict creation\/mutations, not read-only get_goal or orchestrate status/);
+      assert.match(ctx, /No-delegation means no dispatch/);
+      assert.doesNotMatch(ctx, /forbids tests\/build\/typecheck|forbid agent goal\/state commands/);
+      const after = readState(cwd, "wp3-exact-limits");
+      assert.equal(after.phase, before.phase);
+      assert.equal(after.orchestrationActive, before.orchestrationActive);
+      assert.deepEqual(after.flags, before.flags);
+    } finally { rmSync(cwd, { recursive: true, force: true }); }
+  }
+});
+
+test("detectAgbrowseSearchRequest: Korean/English search requests, including typo, are detected", () => {
+  assert.equal(detectAgbrowseSearchRequest("agbrowse를 통해서 질문해줘"), true);
+  assert.equal(detectAgbrowseSearchRequest("agbrowe를 통해서 질문해줘"), true);
+  assert.equal(detectAgbrowseSearchRequest("use agbrowse to verify this URL"), true);
+  assert.equal(detectAgbrowseSearchRequest("agbrowse hook도 넣어야될듯"), false);
+  assert.equal(detectAgbrowseSearchRequest("그냥 agbrowse 참조"), false);
+});
+
+test("buildContextOutput: wraps in omo envelope with trailing newline", () => {
+  const out = buildContextOutput("UserPromptSubmit", "hello");
+  assert.ok(out.endsWith("\n"));
+  const parsed = JSON.parse(out.trimEnd());
+  assert.equal(parsed.hookSpecificOutput.hookEventName, "UserPromptSubmit");
+  assert.equal(parsed.hookSpecificOutput.additionalContext, "hello");
+});
+
+test("buildContextOutput: CRLF normalized + trimmed", () => {
+  const out = buildContextOutput("UserPromptSubmit", "  a\r\nb\r\n  ");
+  const parsed = JSON.parse(out.trimEnd());
+  assert.equal(parsed.hookSpecificOutput.additionalContext, "a\nb");
+});
+
+test("buildContextOutput: empty / whitespace -> ''", () => {
+  assert.equal(buildContextOutput("UserPromptSubmit", ""), "");
+  assert.equal(buildContextOutput("UserPromptSubmit", "   \r\n  "), "");
+});
+
+test("buildContextOutput: caps at 32k with truncation marker", () => {
+  const big = "x".repeat(40_000);
+  const out = buildContextOutput("UserPromptSubmit", big);
+  const parsed = JSON.parse(out.trimEnd());
+  assert.ok(parsed.hookSpecificOutput.additionalContext.length <= 32_000);
+  assert.ok(parsed.hookSpecificOutput.additionalContext.endsWith("[truncated]"));
+});
+
+test("handleUserPromptSubmit: trigger emits directive envelope once", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("orchestrate P", cwd, "s1", "t1"));
+    assert.notEqual(out, "");
+    const parsed = JSON.parse(out.trimEnd());
+    assert.equal(parsed.hookSpecificOutput.hookEventName, "UserPromptSubmit");
+    assert.equal(parsed.hookSpecificOutput.additionalContext, withFooter(phaseDirective("P"), "P"));
+    assert.match(parsed.hookSpecificOutput.additionalContext, /\$codexclaw:cxc-pabcd/);
+    assert.match(parsed.hookSpecificOutput.additionalContext, /No implementation yet/);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("handleUserPromptSubmit: idempotent within same (session,turn)", () => {
+  const cwd = freshCwd();
+  try {
+    // loose-trigger path (parser returns null for prose) — exercises turn dedup.
+    const first = handleUserPromptSubmit(ups("plan this", cwd, "s1", "t1"));
+    const second = handleUserPromptSubmit(ups("plan this", cwd, "s1", "t1"));
+    assert.notEqual(first, "");
+    assert.equal(second, "");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("handleUserPromptSubmit: new turn re-injects", () => {
+  const cwd = freshCwd();
+  try {
+    const first = handleUserPromptSubmit(ups("plan this", cwd, "s1", "t1"));
+    const second = handleUserPromptSubmit(ups("plan this", cwd, "s1", "t2"));
+    assert.notEqual(first, "");
+    assert.notEqual(second, "");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("handleUserPromptSubmit: different sessions are independent", () => {
+  const cwd = freshCwd();
+  try {
+    const a = handleUserPromptSubmit(ups("plan this", cwd, "alpha", "t1"));
+    const b = handleUserPromptSubmit(ups("plan this", cwd, "beta", "t1"));
+    assert.notEqual(a, "");
+    assert.notEqual(b, "");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("handleUserPromptSubmit: non-trigger -> '' and writes no state", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("hello there", cwd, "s1", "t1"));
+    assert.equal(out, "");
+    assert.equal(existsSync(join(cwd, STATE_DIR)), false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("handleUserPromptSubmit: agbrowse request injects search directive without activating PABCD", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("agbrowse를 통해서 질문해줘", cwd, "s1", "t1"));
+    assert.notEqual(out, "");
+    const parsed = JSON.parse(out.trimEnd());
+    const ctx = parsed.hookSpecificOutput.additionalContext as string;
+    assert.equal(parsed.hookSpecificOutput.hookEventName, "UserPromptSubmit");
+    assert.match(ctx, /\[codexclaw: SEARCH/);
+    assert.match(ctx, /cxc-search/);
+    assert.match(ctx, /agbrowse fetch/);
+    assert.match(ctx, /Never use plain `agbrowse search/);
+    assert.match(ctx, /dev\/references\/browser-routing\.md/);
+    assert.match(ctx, /optional/);
+    assert.match(ctx, /diagnosed CDP connection failure/);
+    assert.match(ctx, /task-owned/);
+    assert.doesNotMatch(ctx, /browser:control-in-app-browser|chrome:control-chrome|computer-use:computer-use/);
+    const st = readState(cwd, "s1");
+    assert.equal(st.orchestrationActive, false);
+    assert.equal(st.lastInjectedPhase, null);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+// fuck-powershell#6: PowerShell strips the quotes from an inline JSON argument and,
+// once you escape them, splits the value at its first space. Every gated edge needs a
+// `did` narrative, which always has spaces, so no inline spelling works there. The
+// directive is injected at prompt time, so handing a Windows agent the POSIX form is
+// how it concludes the FSM is broken before running anything.
+//
+// Platform is injected so Linux CI drives the win32 branch (atomic-write.test.ts §1).
+test("win32 arming directive teaches the file flag, not inline attest", () => {
+  const win = loopArmDirective("win32");
+  assert.match(win, /--attest-file \.codexclaw\/attest\.json/);
+  assert.doesNotMatch(win, /--attest <json>/);
+  // A negative alone would pass on text that is merely DIFFERENT. Assert the agent
+  // actually receives the two-step recipe it needs.
+  assert.match(win, /Set-Content -Encoding utf8 \.codexclaw\/attest\.json/);
+  // Everything else must survive the branch.
+  assert.match(win, /ORCH-MANDATE-01/);
+  assert.match(win, /LOOP-UNIT-CHAIN-01/);
+  assert.match(win, /ORCH-ARTIFACT-01/);
+});
+
+// The POSIX text is pinned as a LITERAL snapshot rather than compared against the
+// function that produces it: a self-comparison passes no matter how badly the text is
+// mangled, which is exactly the guarantee this test exists to provide.
+test("posix arming directive is byte-identical to its pinned snapshot", () => {
+  const expected = [
+    "[codexclaw: LOOP — orchestrate arming mandate (ORCH-MANDATE-01)]",
+    "Scope first: explicit interview-only, plan-only, HITL, read-only, no-goal, no-FSM, no-tests and no-delegation limits override the bare cxc-loop default.",
+    "A mention or quoted example alone is not authorization. This pointer and its referenced procedures never override those limits.",
+    "Load $codexclaw:cxc-loop and $codexclaw:cxc-pabcd for an actual loop request; bare cxc-loop execution means scoped HOTL.",
+    "No-delegation means no dispatch. No-tests does not forbid separately authorized build/typecheck. Report required but forbidden actions as unmet.",
+    "Only for authorized loop execution, apply steps 1-5 within scope. No-goal/no-FSM restrict creation/mutations, not read-only inspection. Narration is not persisted progress:",
+    "1. Session id: use the current SessionStart binding, corroborated by `cxc session current` when native CODEX_THREAD_ID is available.",
+    "   Missing/inherited/conflicting binding: use `cxc session current` then explicit `cxc session bind` in its verified cwd. Never set the environment id or replay hook JSON.",
+    "   SESSION-IDENTITY-01: never a parent/history id; binding alone does not verify hook execution or Stop-continuation.",
+    "2. `cxc orchestrate status --session <id>` — read the real phase first.",
+    "3. Inspect the host goal with get_goal first. Resume a matching unfinished goal; do not duplicate it.",
+    "   Only when no unfinished goal exists and new HOTL is authorized, create_goal with a detailed objective.",
+    "   For a different unfinished goal or unsupported resume, report the conflict; do not replace it or fabricate active status.",
+    '   New loop setup: `cxc loop init --objective "<same text>" --session <id>` -> register',
+    "   workPhases[] + criteria[]. On resume inspect/reuse the bound goalplan; do not reinitialize it.",
+    "   After status inspection, enter `cxc orchestrate P --session <id>` only when authorized and legal; an existing phase keeps its owner/edge contract.",
+    "   Explicit HITL keeps human pause points. Interview-only/plan-only stay at the requested stage without a goal or implementation; do not arm when state changes are forbidden.",
+    "4. Advance EVERY forward edge yourself with `cxc orchestrate <phase> --attest <json>` —",
+    `   e.g. \`cxc orchestrate A --session <id> --attest '{\"from\":\"P\",\"to\":\"A\",\"did\":\"...\",\"planUnit\":\"devlog/_plan/YYMMDD_slug\",\"workPhaseId\":\"wp1\"}'\` —`,
+    "   a phase without its persisted transition + artifact did not happen (ORCH-ARTIFACT-01).",
+    '   EVERY attest carries "from" and "to" naming the edge: they are coerced before any',
+    "   gate runs, so omitting them is refused on every edge (ATTEST-SHAPE-01).",
+    "   When a goalplan is bound, include the active workPhaseId in every gated attest",
+    "   (one work-phase = one full PABCD cycle).",
+    "   Bound chat D-close requires workPhaseId as the fixed close target unless every work-phase is already done.",
+    "5. After authorized D closes to IDLE with authorized work remaining under an active goal, re-enter",
+    "   with `cxc orchestrate P --session <id>` (LOOP-UNIT-CHAIN-01).",
+    "HOTL does not grant push, merge, release, deploy or external-message permission. Stop for missing authority.",
+    "Preserve guards and real evidence; do not bypass a gate or fabricate an attestation/receipt to satisfy this advice.",
+  ].join("\n");
+  assert.equal(loopArmDirective("linux"), expected);
+  assert.equal(loopArmDirective("darwin"), expected);
+});
+
+test("ORCH-MANDATE-01: detectLoopArmRequest catches loop/goalplan/continue-until-done intent (EN+KO)", () => {
+  assert.equal(detectLoopArmRequest("cxc-loop로 진행하자"), true);
+  assert.equal(detectLoopArmRequest("HOTL 모드로 돌려줘"), true);
+  assert.equal(detectLoopArmRequest("goalplan 잡고 시작해"), true);
+  assert.equal(detectLoopArmRequest("골플랜부터 등록해"), true);
+  assert.equal(detectLoopArmRequest("continue until done, no pauses"), true);
+  assert.equal(detectLoopArmRequest("루프 돌려서 처리해"), true);
+  assert.equal(detectLoopArmRequest("알아서 끝까지 해줘"), true);
+  assert.equal(detectLoopArmRequest("멈추지 말고 진행해"), true);
+  // Negatives: code-talk about loops must NOT arm PABCD ceremony.
+  assert.equal(detectLoopArmRequest("fix the for loop in parser.ts"), false);
+  assert.equal(detectLoopArmRequest("이 loop 버그 좀 봐줘"), false);
+  assert.equal(detectLoopArmRequest("루프백 오디오 설정"), false);
+  assert.equal(detectLoopArmRequest("계속해"), false);
+});
+
+test("ORCH-ARM-PABCD-01: pabcd + strong run/repeat marker arms; questions/repeat-runs do not (260714)", () => {
+  // Positives — natural phrasings for "run PABCD repeatedly".
+  assert.equal(detectLoopArmRequest("pabcd 여러 번 돌려서 해결해"), true);
+  assert.equal(detectLoopArmRequest("PABCD를 여러 번 돌려서 이 문제 해결해라"), true);
+  assert.equal(detectLoopArmRequest("run pabcd repeatedly until this is fixed"), true);
+  assert.equal(detectLoopArmRequest("pabcd multiple times please"), true);
+  assert.equal(detectLoopArmRequest("ipabcd 사이클로 돌리자"), true);
+  assert.equal(detectLoopArmRequest("여러 번 반복해서 해결해"), true);
+  // Negatives — questions ABOUT pabcd and ordinary repeat-run asks must stay cold.
+  assert.equal(detectLoopArmRequest("what is pabcd?"), false);
+  assert.equal(detectLoopArmRequest("pabcd 문서 다시 보여줘"), false);
+  assert.equal(detectLoopArmRequest("explain how pabcd runs internally"), false);
+  assert.equal(detectLoopArmRequest("pabcd가 뭐야? 계속 헷갈리네"), false);
+  assert.equal(detectLoopArmRequest("이 함수 여러 번 호출되는 버그 고쳐"), false);
+  assert.equal(detectLoopArmRequest("이 테스트 여러 번 실행해봐"), false);
+  assert.equal(detectLoopArmRequest("앱 아이콘 여러 번 실행해도 안 열려"), false);
+  assert.equal(detectLoopArmRequest("빌드 반복 실행해서 flaky 잡아줘"), false);
+  assert.equal(detectLoopArmRequest("여러 번 진행된 마이그레이션 롤백해줘"), false);
+});
+
+test("260714 wp3: loop-arm prompt persists loopArmSeen on the un-armed branch (even turnless)", () => {
+  const cwd = freshCwd();
+  try {
+    // with turn
+    handleUserPromptSubmit(ups("pabcd 여러 번 돌려서 해결해", cwd, "la1", "t1"));
+    assert.equal(readState(cwd, "la1").loopArmSeen, true);
+    assert.equal(readState(cwd, "la1").orchestrationActive, false); // mandate never arms
+    // turnless payload still persists the flag (audit decision a)
+    handleUserPromptSubmit(ups("cxc-loop로 알아서 끝까지 해줘", cwd, "la2", ""));
+    assert.equal(readState(cwd, "la2").loopArmSeen, true);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+// TRIGGER-AUTHORITY-01 (040) reversed the precedence this case pinned. A prompt that
+// asks for a loop AND names a phase used to get the phase directive and arm P; it now
+// gets the arming mandate, because that is the request it most clearly makes. The flag
+// still has to survive, which is what 260714 wp3 was protecting.
+test("040: trigger + loop phrase on an un-armed FSM yields the mandate, not a phase", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("plan this and then 루프 돌려서 끝까지 해줘", cwd, "la3", "t1"));
+    const ctx = JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext as string;
+    assert.match(ctx, /arming mandate/);
+    const st = readState(cwd, "la3");
+    assert.equal(st.phase, "IDLE"); // the mandate never arms the FSM by itself
+    assert.equal(st.orchestrationActive, false);
+    assert.equal(st.loopArmSeen, true); // and the flag survives (audit Med #2)
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("260714 wp4: B directive starves context to the active work-phase iff bound", () => {
+  const bare = phaseDirective("B");
+  assert.doesNotMatch(bare, /ACTIVE WORK-PHASE/);
+  const bound = phaseDirective("B", { activeWorkPhase: { id: "wp2", title: "second slice" } });
+  assert.match(bound, /ACTIVE WORK-PHASE: wp2 — second slice/);
+  assert.match(bound, /OUT OF SCOPE until D closes/);
+  assert.match(bound, /LOOP-UNIT-CHAIN-01/);
+  // other phases ignore opts
+  assert.equal(phaseDirective("C", { activeWorkPhase: { id: "wp2", title: "x" } }), phaseDirective("C"));
+});
+
+test("ORCH-MANDATE-01: loop request against un-armed FSM injects the arming mandate", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("이 유닛 cxc-loop로 알아서 끝까지 해줘", cwd, "s1", "t1"), "linux");
+    assert.notEqual(out, "");
+    const parsed = JSON.parse(out.trimEnd());
+    const ctx = parsed.hookSpecificOutput.additionalContext as string;
+    assert.match(ctx, /orchestrate arming mandate \(ORCH-MANDATE-01\)/);
+    assert.match(ctx, /cxc orchestrate status --session <id>/);
+    assert.match(ctx, /cxc orchestrate P --session <id>/);
+    assert.match(ctx, /--attest <json>/);
+    assert.match(ctx, /cxc loop init --objective/);
+    // The mandate never arms the FSM by itself — commands do.
+    const st = readState(cwd, "s1");
+    assert.equal(st.orchestrationActive, false);
+    assert.equal(st.lastInjectedPhase, null);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+// TRIGGER-AUTHORITY-01 (040): the reverse of what this case used to assert. On an
+// un-armed FSM the loop request is answered first — "plan this and then loop until
+// done" is a request to run the loop, and answering it with a PLAN directive is how
+// a loop used to begin as narration with no FSM behind it.
+test("040: on an un-armed FSM the loop-arm mandate wins over a phase trigger", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("plan this and then loop until done", cwd, "s1", "t1"));
+    const parsed = JSON.parse(out.trimEnd());
+    const ctx = parsed.hookSpecificOutput.additionalContext as string;
+    assert.match(ctx, /arming mandate/);
+    assert.doesNotMatch(ctx, /\[codexclaw: PLAN\]/);
+    const st = readState(cwd, "s1");
+    assert.equal(st.lastInjectedPhase, null); // the mandate injects no phase
+    assert.equal(st.loopArmSeen, true);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("ORCH-MANDATE-01: loop-arm and agbrowse directives compose when both are requested", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("agbrowse로 검증하면서 cxc-loop 돌려줘", cwd, "s1", "t1"));
+    const parsed = JSON.parse(out.trimEnd());
+    const ctx = parsed.hookSpecificOutput.additionalContext as string;
+    assert.match(ctx, /arming mandate/);
+    assert.match(ctx, /\[codexclaw: SEARCH/);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("wp3: loop arming output is scope-first and does not activate a phase", () => {
+  for (const prompt of [
+    "cxc-loop",
+    "cxc-loop, interview-only; do not create a goal",
+    "cxc-loop, plan-only; no implementation",
+    "cxc-loop로 인터뷰만 해줘. goal 만들지 마",
+    "cxc-loop로 계획만 작성해줘. 구현하지 마",
+    "Explain the quoted example cxc-loop; read-only, no FSM changes",
+  ]) {
+    const cwd = freshCwd();
+    try {
+      const out = handleUserPromptSubmit(ups(prompt, cwd, "scope-first", "t1"));
+      const ctx = JSON.parse(out).hookSpecificOutput.additionalContext as string;
+      assert.match(ctx, /explicit interview-only, plan-only/);
+      assert.match(ctx, /mention or quoted example alone is not authorization/);
+      assert.match(ctx, /HOTL does not grant push, merge, release, deploy or external-message permission/);
+      assert.ok(ctx.indexOf("Scope first:") < ctx.indexOf("create_goal"));
+      const state = readState(cwd, "scope-first");
+      assert.equal(state.phase, "IDLE");
+      assert.equal(state.orchestrationActive, false);
+      assert.equal(state.loopArmSeen, true);
+    } finally {
+      rmSync(cwd, { recursive: true, force: true });
+    }
+  }
+});
+
+test("wp3: arming limits precede recipes on both platforms and never arm a phase", () => {
+  for (const platform of ["linux", "win32"] as const) {
+    for (const prompt of [
+      "cxc-loop",
+      "cxc-loop, plan-only; no-goal, no-FSM, no-tests, no-delegation; read-only",
+      "cxc-loop로 인터뷰만 해줘. goal/FSM 변경, 테스트, 수정, 파견 금지.",
+      "Explain the quoted cxc-loop example; read-only, no-goal, no-FSM, no-tests, no-delegation.",
+      "cxc-loop, explicit HITL; no-delegation; tests only on macmini, no local tests",
+    ]) {
+      const cwd = freshCwd();
+      try {
+        const ctx = JSON.parse(handleUserPromptSubmit(ups(prompt, cwd, "wp3-arm", "a1"), platform))
+          .hookSpecificOutput.additionalContext as string;
+        assert.match(ctx, /no-FSM, no-tests and no-delegation limits override/);
+        assert.match(ctx, /mention or quoted example alone is not authorization/);
+        assert.match(ctx, /Only for authorized loop execution, apply steps 1-5 within scope/);
+        assert.match(ctx, /No-delegation means no dispatch/);
+        assert.match(ctx, /No-tests does not forbid separately authorized build\/typecheck/);
+        assert.match(ctx, /No-goal\/no-FSM restrict creation\/mutations, not read-only inspection/);
+        assert.ok(ctx.indexOf("Scope first:") < ctx.indexOf("create_goal"));
+        assert.ok(ctx.indexOf("get_goal first") < ctx.indexOf("create_goal"));
+        assert.match(ctx, /Resume a matching unfinished goal; do not duplicate it/);
+        assert.match(ctx, /Only when no unfinished goal exists and new HOTL is authorized, create_goal/);
+        assert.match(ctx, /different unfinished goal or unsupported resume, report the conflict/);
+        assert.match(ctx, /On resume inspect\/reuse the bound goalplan; do not reinitialize it/);
+        assert.match(ctx, /Stop for missing authority/);
+        assert.match(ctx, /do not bypass a gate or fabricate an attestation\/receipt/);
+        if (platform === "win32") {
+          assert.match(ctx, /Set-Content -Encoding utf8/);
+          assert.match(ctx, /--attest-file \.codexclaw\/attest\.json/);
+          assert.doesNotMatch(ctx, /--attest <json>/);
+        } else assert.match(ctx, /--attest <json>/);
+        const state = readState(cwd, "wp3-arm");
+        assert.equal(state.phase, "IDLE");
+        assert.equal(state.orchestrationActive, false);
+        assert.equal(state.lastInjectedPhase, null);
+        assert.equal(state.loopArmSeen, true);
+        assert.deepEqual(state.injectedTurns, ["a1"]);
+      } finally { rmSync(cwd, { recursive: true, force: true }); }
+    }
+  }
+});
+
+test("handleUserPromptSubmit: agbrowse request is idempotent within same turn", () => {
+  const cwd = freshCwd();
+  try {
+    const first = handleUserPromptSubmit(ups("agbrowe를 통해서 질문해줘", cwd, "s1", "t1"));
+    const second = handleUserPromptSubmit(ups("agbrowe를 통해서 질문해줘", cwd, "s1", "t1"));
+    assert.notEqual(first, "");
+    assert.equal(second, "");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("handleUserPromptSubmit: PABCD hint wins over agbrowse without phase entry", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("plan this with agbrowse", cwd, "s1", "t1"));
+    const ctx = JSON.parse(out).hookSpecificOutput.additionalContext as string;
+    assert.equal(ctx, withFooter(`${interviewDirective()}\n\n${TRIGGER_AUTHORITY_NOTE}`, "IDLE"));
+    assert.doesNotMatch(ctx, /agbrowse fetch/);
+    const state = readState(cwd, "s1");
+    assert.equal(state.phase, "IDLE");
+    assert.equal(state.orchestrationActive, false);
+    assert.equal(state.lastInjectedPhase, null);
+    assert.deepEqual(state.injectedTurns, ["t1"]);
+    assert.equal(ledgerLines(cwd).length, 0);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("wp4: interview policy off selects PLAN advice without phase entry", () => {
+  const cwd = freshCwd();
+  try {
+    writeFileSync(join(cwd, "codexclaw.json"), JSON.stringify({ interview: "off" }), "utf8");
+    const out = handleUserPromptSubmit(ups("plan this with agbrowse", cwd, "s1off", "t1"));
+    const ctx = JSON.parse(out).hookSpecificOutput.additionalContext as string;
+    assert.equal(ctx, withFooter(`${phaseDirective("P")}\n\n${TRIGGER_AUTHORITY_NOTE}`, "IDLE"));
+    assert.doesNotMatch(ctx, /agbrowse fetch/);
+    const state = readState(cwd, "s1off");
+    assert.equal(state.phase, "IDLE");
+    assert.equal(state.orchestrationActive, false);
+    assert.equal(state.lastInjectedPhase, null);
+    assert.equal(ledgerLines(cwd).length, 0);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("handleStop: releases (no block) when there is no active cycle/goal", () => {
+  const cwd = freshCwd();
+  try {
+    const payload: StopPayload = {
+      hook_event_name: "Stop",
+      session_id: "s1",
+      cwd,
+      transcript_path: null,
+      turn_id: "t1",
+      stop_hook_active: false,
+      last_assistant_message: "done",
+    };
+    // fresh session: IDLE + orchestration inactive -> guard 2a releases.
+    assert.equal(handleStop(payload), "");
+    assert.equal(existsSync(join(cwd, STATE_DIR, LEDGER_FILE)), false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("hybrid FAIL-CLOSED: fresh session, non-trigger prompt -> '' (no I-phase leak)", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("hello, can you help me", cwd, "s1", "t1"));
+    assert.equal(out, "");
+    // no state written either (nothing to record)
+    assert.equal(existsSync(join(cwd, STATE_DIR)), false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("hybrid command path: explicit orchestrate P activates orchestration + injects directive", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("orchestrate P", cwd, "s1", "t1"));
+    const parsed = JSON.parse(out.trimEnd());
+    assert.equal(parsed.hookSpecificOutput.additionalContext, withFooter(phaseDirective("P"), "P"));
+    const st = readState(cwd, "s1");
+    assert.equal(st.orchestrationActive, true);
+    assert.equal(st.lastInjectedPhase, "P");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+// ── L3b/031: orchestrate command wire (parser-first, human free-pass) ──
+
+function ledgerLines(cwd: string): Array<Record<string, unknown>> {
+  const p = join(cwd, STATE_DIR, LEDGER_FILE);
+  if (!existsSync(p)) return [];
+  return readFileSync(p, "utf8").trim().split("\n").filter(Boolean).map((l) => JSON.parse(l));
+}
+
+test("L3b: chat 'orchestrate p' actually moves phase to P + appends one ledger entry", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("orchestrate p", cwd, "s1", "t1"));
+    assert.equal(JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext, withFooter(phaseDirective("P"), "P"));
+    const st = readState(cwd, "s1");
+    assert.equal(st.phase, "P"); // the missing wire: phase actually changed
+    const led = ledgerLines(cwd);
+    assert.equal(led.length, 1);
+    assert.equal(led[0].to, "P");
+    assert.equal(led[0].reason, "chat");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("L3b: human free-pass advances A->B with no --attest", () => {
+  const cwd = freshCwd();
+  try {
+    handleUserPromptSubmit(ups("orchestrate p", cwd, "s2", "t1"));
+    handleUserPromptSubmit(ups("orchestrate a", cwd, "s2", "t2"));
+    const out = handleUserPromptSubmit(ups("orchestrate b", cwd, "s2", "t3"));
+    assert.equal(JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext, withFooter(phaseDirective("B"), "B"));
+    assert.equal(readState(cwd, "s2").phase, "B");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("L3b: illegal jump 'orchestrate c' from IDLE is refused, no state/ledger", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("orchestrate c", cwd, "s3", "t1"));
+    assert.match(JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext, /refused/);
+    assert.equal(readState(cwd, "s3").phase, "IDLE");
+    assert.equal(ledgerLines(cwd).length, 0);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("L3b: 'orchestrate reset' returns to IDLE and clears flags", () => {
+  const cwd = freshCwd();
+  try {
+    handleUserPromptSubmit(ups("orchestrate p", cwd, "s4", "t1"));
+    handleUserPromptSubmit(ups("orchestrate a", cwd, "s4", "t2"));
+    const out = handleUserPromptSubmit(ups("orchestrate reset", cwd, "s4", "t3"));
+    assert.match(JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext, /reset/);
+    const st = readState(cwd, "s4");
+    assert.equal(st.phase, "IDLE");
+    assert.equal(st.flags.auditPassed, false);
+    assert.equal(st.orchestrationActive, false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("L3b: 'orchestrate status' is read-only (no phase change, no ledger)", () => {
+  const cwd = freshCwd();
+  try {
+    handleUserPromptSubmit(ups("orchestrate p", cwd, "s5", "t1"));
+    const before = ledgerLines(cwd).length;
+    const out = handleUserPromptSubmit(ups("orchestrate status", cwd, "s5", "t2"));
+    assert.notEqual(out, "");
+    assert.equal(readState(cwd, "s5").phase, "P");
+    assert.equal(ledgerLines(cwd).length, before); // no new ledger entry
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("L3b: same-turn re-fire does NOT double-append the ledger", () => {
+  const cwd = freshCwd();
+  try {
+    handleUserPromptSubmit(ups("orchestrate p", cwd, "s6", "t1"));
+    handleUserPromptSubmit(ups("orchestrate p", cwd, "s6", "t1")); // re-fire same turn
+    assert.equal(ledgerLines(cwd).length, 1);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("L3b: no command falls through to advisory detectTrigger without a transition", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("plan this feature", cwd, "s7", "t1"));
+    assert.equal(JSON.parse(out).hookSpecificOutput.additionalContext,
+      withFooter(`${interviewDirective()}\n\n${TRIGGER_AUTHORITY_NOTE}`, "IDLE"));
+    const state = readState(cwd, "s7");
+    assert.equal(state.phase, "IDLE");
+    assert.equal(state.orchestrationActive, false);
+    assert.equal(state.lastInjectedPhase, null);
+    assert.equal(ledgerLines(cwd).length, 0);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+// ── L5/050: phase footer + status polish + D-close ──
+
+test("L5: injected directive carries the IPABCD footer naming the phase", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("orchestrate p", cwd, "f1", "t1"));
+    const ctx = JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext as string;
+    assert.match(ctx, /\[codexclaw: PLAN\]/); // directive body present
+    assert.match(ctx, /IPABCD: P \(PLAN\)/);   // footer present, names P
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("L5: chat 'orchestrate status' returns the one-line status with flags", () => {
+  const cwd = freshCwd();
+  try {
+    handleUserPromptSubmit(ups("orchestrate p", cwd, "f2", "t1"));
+    const out = handleUserPromptSubmit(ups("orchestrate status", cwd, "f2", "t2"));
+    const ctx = JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext as string;
+    assert.match(ctx, /\[codexclaw status\] IPABCD: P \(PLAN\)/);
+    assert.match(ctx, /auditPassed=false/);
+    assert.equal(readState(cwd, "f2").phase, "P"); // status does not move phase
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("L5: chat 'orchestrate d' closes the cycle to IDLE (D is not a resting state)", () => {
+  const cwd = freshCwd();
+  try {
+    handleUserPromptSubmit(ups("orchestrate p", cwd, "f3", "t1"));
+    handleUserPromptSubmit(ups("orchestrate a", cwd, "f3", "t2"));
+    handleUserPromptSubmit(ups("orchestrate b", cwd, "f3", "t3"));
+    handleUserPromptSubmit(ups("orchestrate c", cwd, "f3", "t4"));
+    const out = handleUserPromptSubmit(ups("orchestrate d", cwd, "f3", "t5"));
+    const ctx = JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext as string;
+    assert.match(ctx, /\[codexclaw: DONE\]/);      // DONE directive shown this turn
+    assert.match(ctx, /IPABCD: IDLE/);             // resting state is IDLE, not D
+    const st = readState(cwd, "f3");
+    assert.equal(st.phase, "IDLE");                // cycle closed
+    assert.equal(st.flags.auditPassed, false);
+    assert.equal(st.flags.checkPassed, false);
+    assert.equal(st.orchestrationActive, false);
+    const led = ledgerLines(cwd);
+    assert.equal(led.at(-1)?.to, "IDLE");
+    assert.equal(led.at(-1)?.reason, "done");
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("L5: ledger entries carry ts/from/to/reason on chat + reset paths", () => {
+  const cwd = freshCwd();
+  try {
+    handleUserPromptSubmit(ups("orchestrate p", cwd, "f4", "t1")); // chat
+    handleUserPromptSubmit(ups("orchestrate reset", cwd, "f4", "t2")); // reset
+    for (const e of ledgerLines(cwd)) {
+      assert.ok(typeof e.ts === "string" && e.ts.length > 0);
+      assert.ok("from" in e && "to" in e);
+      assert.ok(e.reason === "chat" || e.reason === "reset");
+    }
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+// ── CYCLE-COMPLETION-01 (030): chat D-close preflight ───────────────────────
+// Mirror of the CLI gate. The chat path writes state and the ledger before it
+// ever consulted the goalplan, so a late refusal would have left the cycle as
+// "FSM idle, ledger done, goalplan unfinished". The preflight now runs first.
+
+test("chat D-close is refused while the work-phase has open tasks, and writes nothing", () => {
+  const cwd = gitRepoForHook();
+  try {
+    const slug = "chat-cycle-pending";
+    const plan = buildGoalplan({ objective: "chat cycle gate" });
+    plan.slug = slug;
+    plan.workPhases = [
+      { id: "wp-1", title: "first", status: "in_progress", tasks: [{ id: "t-1", title: "the work", status: "pending" }], criteriaIds: [] },
+    ];
+    plan.activeWorkPhaseId = "wp-1";
+    writeGoalplan(cwd, plan);
+    writeState(cwd, { ...defaultState("chat-c"), phase: "C", slug, orchestrationActive: true, checkEpoch: "c-test", flags: { interview: false, auditPassed: true, checkPassed: true } });
+    seedChatReceipt(cwd, "chat-c", "c-test");
+
+    const attest = JSON.stringify({ from: "C", to: "D", did: "ran the suite", checkOutput: "ok", exitCode: 0, workPhaseId: "wp-1", testReceiptPath: ".codexclaw/evidence/chat-c/test-receipt.json" });
+    const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, "chat-c", "t1"));
+
+    assert.match(out, /refused/);
+    assert.match(out, /open task/);
+    assert.match(out, /CYCLE-COMPLETION-01/);
+    assert.equal(readState(cwd, "chat-c").phase, "C");
+    const ledger = join(cwd, STATE_DIR, LEDGER_FILE);
+    assert.equal(existsSync(ledger) ? readFileSync(ledger, "utf8").trim() : "", "");
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("chat D-close succeeds once the tasks are done", () => {
+  const cwd = gitRepoForHook();
+  try {
+    const slug = "chat-cycle-done";
+    const plan = buildGoalplan({ objective: "chat cycle gate" });
+    plan.slug = slug;
+    plan.workPhases = [
+      { id: "wp-1", title: "first", status: "in_progress", tasks: [{ id: "t-1", title: "the work", status: "done", outcome: "focused tests passed" }], criteriaIds: [] },
+    ];
+    plan.activeWorkPhaseId = "wp-1";
+    writeGoalplan(cwd, plan);
+    writeState(cwd, { ...defaultState("chat-d"), phase: "C", slug, orchestrationActive: true, checkEpoch: "c-test", flags: { interview: false, auditPassed: true, checkPassed: true } });
+    seedChatReceipt(cwd, "chat-d", "c-test");
+
+    const attest = JSON.stringify({ from: "C", to: "D", did: "ran the suite", checkOutput: "ok", exitCode: 0, workPhaseId: "wp-1", testReceiptPath: ".codexclaw/evidence/chat-d/test-receipt.json" });
+    const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, "chat-d", "t1"));
+
+    assert.ok(!/refused/.test(out));
+    assert.equal(readState(cwd, "chat-d").phase, "IDLE");
+    const saved = JSON.parse(readFileSync(join(cwd, STATE_DIR, "goalplans", slug, "goalplan.json"), "utf8"));
+    assert.equal(saved.workPhases[0].status, "done");
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+// ── TRIGGER-AUTHORITY-01 (040) ─────────────────────────────────────────────
+// Natural-language hints never enter or advance a phase; explicit commands own transitions.
+
+test("040: a natural-language build trigger from IDLE leaves the phase alone", () => {
+  const cwd = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("이거 구현해줘", cwd, "ta1", "t1"));
+    const ctx = JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext as string;
+    assert.match(ctx, /BUILD/);
+    assert.match(ctx, /TRIGGER-AUTHORITY-01/);
+    assert.match(ctx, /orchestrate/);
+    const st = readState(cwd, "ta1");
+    assert.equal(st.phase, "IDLE");
+    assert.equal(st.orchestrationActive, false);
+    assert.equal(st.lastInjectedPhase, null);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("wp3: plain P/I hints never enter or advance, including explicit no-FSM", () => {
+  for (const prompt of [
+    "plan this", "interview me", "계획을 세워줘", "인터뷰만 해줘",
+    "Plan this read-only; no FSM mutations, goals, tests or delegation.",
+    "인터뷰만 해줘. FSM 변경, goal 생성, 파일 수정, 테스트, 서브에이전트 파견 금지.",
+  ]) {
+    for (const phase of ["IDLE", "P", "B"] as const) {
+      for (const turn of ["t1", ""] as const) {
+        const cwd = freshCwd();
+        try {
+          const session = "wp3-plain-hint";
+          const before = { ...defaultState(session), phase,
+            orchestrationActive: phase !== "IDLE",
+            lastInjectedPhase: phase === "IDLE" ? null : phase };
+          writeState(cwd, before);
+          assert.ok(detectTrigger(prompt) === "P" || detectTrigger(prompt) === "I");
+          assert.equal(detectLoopArmRequest(prompt), false);
+          const out = handleUserPromptSubmit(ups(prompt, cwd, session, turn));
+          const ctx = JSON.parse(out).hookSpecificOutput.additionalContext as string;
+          assert.match(ctx, /TRIGGER-AUTHORITY-01/);
+          assert.match(ctx, /No-delegation means no dispatch/);
+          assert.ok(ctx.includes(`IPABCD: ${phase} (`));
+          const after = readState(cwd, session);
+          assert.equal(after.phase, before.phase);
+          assert.equal(after.orchestrationActive, before.orchestrationActive);
+          assert.equal(after.lastInjectedPhase, before.lastInjectedPhase);
+          assert.deepEqual(after.flags, before.flags);
+          assert.deepEqual(after.injectedTurns, turn ? [turn] : []);
+          assert.equal(ledgerLines(cwd).length, 0);
+          if (turn) assert.equal(handleUserPromptSubmit(ups(prompt, cwd, session, turn)), "");
+        } finally { rmSync(cwd, { recursive: true, force: true }); }
+      }
+    }
+  }
+});
+
+test("040: a mid-cycle trigger cannot move the phase and the footer reports the real one", () => {
+  const cwd = freshCwd();
+  try {
+    writeState(cwd, { ...defaultState("ta3"), phase: "P", orchestrationActive: true, lastInjectedPhase: "P" });
+    const out = handleUserPromptSubmit(ups("이거 구현해줘", cwd, "ta3", "t1"));
+    const ctx = JSON.parse(out.trimEnd()).hookSpecificOutput.additionalContext as string;
+    assert.match(ctx, /TRIGGER-AUTHORITY-01/);
+    assert.match(ctx, /IPABCD: P/); // the phase on disk, not the one asked for
+    const st = readState(cwd, "ta3");
+    assert.equal(st.phase, "P");
+    assert.equal(st.orchestrationActive, true);
+    assert.equal(st.lastInjectedPhase, "P");
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+// The flag has to survive the passive pipeline. Every passive branch used to spread
+// the state captured on entry, so a loopArmSeen written earlier in the same call was
+// silently overwritten — these three cases pin each branch.
+
+test("040: an armed session's loop request records loopArmSeen through the stage-marker branch", () => {
+  const cwd = freshCwd();
+  try {
+    writeState(cwd, { ...defaultState("ar1"), phase: "B", orchestrationActive: true, lastInjectedPhase: "B" });
+    handleUserPromptSubmit(ups("pabcd 여러 번 돌려줘", cwd, "ar1", "t1"));
+    assert.equal(readState(cwd, "ar1").loopArmSeen, true);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("040: same through mode 2 (phase changed since last inject)", () => {
+  const cwd = freshCwd();
+  try {
+    writeState(cwd, { ...defaultState("ar2"), phase: "C", orchestrationActive: true, lastInjectedPhase: "B" });
+    handleUserPromptSubmit(ups("pabcd 여러 번 돌려줘", cwd, "ar2", "t1"));
+    const st = readState(cwd, "ar2");
+    assert.equal(st.loopArmSeen, true);
+    assert.equal(st.phase, "C");
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("040: same through mode 3 (same phase, header only)", () => {
+  const cwd = freshCwd();
+  try {
+    writeState(cwd, { ...defaultState("ar3"), phase: "C", orchestrationActive: true, lastInjectedPhase: "C" });
+    handleUserPromptSubmit(ups("pabcd 여러 번 돌려줘", cwd, "ar3", "t1"));
+    assert.equal(readState(cwd, "ar3").loopArmSeen, true);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+// Turnless payloads: injectedTurns is the only thing gated on a turn id. Meaningful
+// state changes still have to land, or a turnless prompt silently loses them.
+
+test("040: turnless hints preserve phase while loop requests persist bookkeeping", () => {
+  const cwdA = freshCwd();
+  try {
+    const out = handleUserPromptSubmit(ups("plan this", cwdA, "tl1", ""));
+    assert.match(JSON.parse(out).hookSpecificOutput.additionalContext, /IPABCD: IDLE \(IDLE\)/);
+    const state = readState(cwdA, "tl1");
+    assert.equal(state.phase, "IDLE");
+    assert.equal(state.orchestrationActive, false);
+    assert.equal(state.lastInjectedPhase, null);
+    assert.deepEqual(state.injectedTurns, []);
+    assert.equal(existsSync(join(cwdA, STATE_DIR)), false);
+  } finally { rmSync(cwdA, { recursive: true, force: true }); }
+  const cwdB = freshCwd();
+  try {
+    handleUserPromptSubmit(ups("pabcd 여러 번 돌려줘", cwdB, "tl2", ""));
+    assert.equal(readState(cwdB, "tl2").loopArmSeen, true);
+    assert.equal(readState(cwdB, "tl2").phase, "IDLE");
+  } finally { rmSync(cwdB, { recursive: true, force: true }); }
+  const cwdC = freshCwd();
+  try {
+    writeState(cwdC, { ...defaultState("tl3"), phase: "C", orchestrationActive: true, lastInjectedPhase: "C" });
+    handleUserPromptSubmit(ups("pabcd 여러 번 돌려줘", cwdC, "tl3", ""));
+    assert.equal(readState(cwdC, "tl3").loopArmSeen, true);
+    assert.equal(readState(cwdC, "tl3").phase, "C");
+  } finally { rmSync(cwdC, { recursive: true, force: true }); }
+});
+
+// ── SOURCE-DELTA-01 (050): the chat path gets the same gate ────────────────
+// Wiring only the CLI would leave a phrasing that bypasses the check entirely.
+
+
+/** CHECK-BINDING-01 (075): these cases exercise CYCLE-COMPLETION-01, so they need a
+ *  receipt the C>D gate accepts before they can reach it. Needs a real repo. */
+function seedChatReceipt(cwd: string, id: string, epoch: string): void {
+  const dir = join(cwd, STATE_DIR, "evidence", id);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "test-receipt.json"), JSON.stringify({
+    kind: "test",
+    sourceIdentity: captureSourceIdentity(cwd, { excludeCodexclawArtifacts: true }),
+    command: "npm test",
+    exitCode: 0,
+    createdAt: new Date().toISOString(),
+    ownerSessionId: id,
+    checkEpoch: epoch,
+  }));
+}
+
+function gitRepoForHook(): string {
+  const cwd = mkdtempSync(join(tmpdir(), "codexclaw-hook-git-"));
+  const run = (...a: string[]) => spawnSync("git", a, { cwd, encoding: "utf8" });
+  run("init", "-q");
+  run("config", "user.email", "t@example.com");
+  run("config", "user.name", "t");
+  writeFileSync(join(cwd, "seed.txt"), "seed\n");
+  run("add", "-A");
+  run("commit", "-qm", "seed");
+  return cwd;
+}
+
+test("050: chat B>C is refused when the source never changed during B", () => {
+  const cwd = gitRepoForHook();
+  try {
+    writeState(cwd, {
+      ...defaultState("chat-delta"),
+      phase: "B",
+      orchestrationActive: true,
+      lastInjectedPhase: "B",
+      flags: { interview: false, auditPassed: true, checkPassed: false },
+      phaseEntrySource: captureSourceIdentity(cwd, { excludeCodexclawArtifacts: true }),
+    });
+    const out = handleUserPromptSubmit(ups("orchestrate c", cwd, "chat-delta", "t1"));
+    assert.match(out, /refused/);
+    assert.match(out, /SOURCE-DELTA-01/);
+    assert.equal(readState(cwd, "chat-delta").phase, "B");
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("050: chat A>B snapshots the source and chat B>C passes once it changed", () => {
+  const cwd = gitRepoForHook();
+  try {
+    writeState(cwd, {
+      ...defaultState("chat-life"),
+      phase: "A",
+      orchestrationActive: true,
+      lastInjectedPhase: "A",
+      flags: { interview: false, auditPassed: false, checkPassed: false },
+    });
+    handleUserPromptSubmit(ups("orchestrate b", cwd, "chat-life", "t1"));
+    const atB = readState(cwd, "chat-life");
+    assert.equal(atB.phase, "B");
+    assert.ok(atB.phaseEntrySource, "entering B from chat must snapshot too");
+
+    writeFileSync(join(cwd, "built.ts"), "export const z = 3;\n");
+    handleUserPromptSubmit(ups("orchestrate c", cwd, "chat-life", "t2"));
+    const atC = readState(cwd, "chat-life");
+    assert.equal(atC.phase, "C");
+    assert.equal(atC.phaseEntrySource, null, "a snapshot must not outlive its phase");
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("050: closing or resetting a cycle clears the snapshot", () => {
+  for (const verb of ["orchestrate d", "orchestrate reset"]) {
+    const cwd = gitRepoForHook();
+    try {
+      writeState(cwd, {
+        ...defaultState("chat-clear"),
+        phase: "C",
+        orchestrationActive: true,
+        lastInjectedPhase: "C",
+        flags: { interview: false, auditPassed: true, checkPassed: true },
+        phaseEntrySource: captureSourceIdentity(cwd, { excludeCodexclawArtifacts: true }),
+      });
+      handleUserPromptSubmit(ups(verb, cwd, "chat-clear", "t1"));
+      assert.equal(readState(cwd, "chat-clear").phaseEntrySource, null, verb);
+    } finally { rmSync(cwd, { recursive: true, force: true }); }
+  }
+});
+
+function goalplanLedgerRows(cwd: string, slug: string): Array<Record<string, unknown>> {
+  const path = join(cwd, STATE_DIR, "goalplans", slug, "ledger.jsonl");
+  if (!existsSync(path)) return [];
+  return readFileSync(path, "utf8").split("\n").filter(Boolean).map((line) => JSON.parse(line));
+}
+test("bound chat D-close without workPhaseId is refused after empty and all-done checks", () => {
+  const cwd = gitRepoForHook();
+  try {
+    const slug = "chat-missing-target";
+    const plan = buildGoalplan({ objective: "chat missing target" });
+    plan.slug = slug;
+    plan.workPhases = [
+      { id: "wp-1", title: "first", status: "in_progress", tasks: [], criteriaIds: [] },
+    ];
+    plan.activeWorkPhaseId = "wp-1";
+    writeGoalplan(cwd, plan);
+    writeState(cwd, {
+      ...defaultState("chat-missing-target"),
+      phase: "C",
+      slug,
+      orchestrationActive: true,
+      checkEpoch: "c-test",
+      flags: { interview: false, auditPassed: true, checkPassed: true },
+    });
+    seedChatReceipt(cwd, "chat-missing-target", "c-test");
+    const beforePlan = readFileSync(join(cwd, STATE_DIR, "goalplans", slug, "goalplan.json"), "utf8");
+    const attest = JSON.stringify({
+      from: "C",
+      to: "D",
+      did: "ran the suite",
+      checkOutput: "ok",
+      exitCode: 0,
+      testReceiptPath: ".codexclaw/evidence/chat-missing-target/test-receipt.json",
+    });
+
+    const output = handleUserPromptSubmit(
+      ups(`orchestrate d --attest ${attest}`, cwd, "chat-missing-target", "t1"),
+    );
+
+    assert.match(output, /requires attest\.workPhaseId/);
+    assert.equal(readState(cwd, "chat-missing-target").phase, "C");
+    assert.equal(readFileSync(join(cwd, STATE_DIR, "goalplans", slug, "goalplan.json"), "utf8"), beforePlan);
+    assert.equal(ledgerLines(cwd).length, 0);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+for (const workPhaseId of [undefined, "wp-finished"] as const) {
+  test(`all-done bound chat closes without a marker (workPhaseId=${workPhaseId ?? "missing"})`, () => {
+    const cwd = gitRepoForHook();
+    try {
+      const id = `chat-all-done-${workPhaseId ?? "missing"}`;
+      const slug = `${id}-plan`;
+      const plan = buildGoalplan({ objective: "close an all-done chat cycle" });
+      plan.slug = slug;
+      plan.workPhases = [
+        { id: "wp-finished", title: "finished", status: "done", tasks: [], criteriaIds: [] },
+      ];
+      plan.activeWorkPhaseId = null;
+      writeGoalplan(cwd, plan);
+      writeState(cwd, {
+        ...defaultState(id),
+        phase: "C",
+        slug,
+        orchestrationActive: true,
+        checkEpoch: "c-all-done",
+        flags: { interview: false, auditPassed: true, checkPassed: true },
+      });
+      seedChatReceipt(cwd, id, "c-all-done");
+      const attest = JSON.stringify({
+        from: "C",
+        to: "D",
+        did: "verified the completed plan",
+        checkOutput: "ok",
+        exitCode: 0,
+        ...(workPhaseId ? { workPhaseId } : {}),
+        testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+      });
+      const planPath = join(cwd, STATE_DIR, "goalplans", slug, "goalplan.json");
+      const beforePlan = readFileSync(planPath, "utf8");
+
+      const output = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t1"));
+
+      assert.doesNotMatch(output, /refused|blocked or superseded/);
+      assert.equal(readState(cwd, id).phase, "IDLE");
+      assert.equal(readState(cwd, id).dcloseRecovery, null);
+      assert.equal(readFileSync(planPath, "utf8"), beforePlan);
+      assert.equal(
+        existsSync(join(cwd, STATE_DIR, "goalplans", slug, "ledger.jsonl")),
+        false,
+      );
+    } finally { rmSync(cwd, { recursive: true, force: true }); }
+  });
+}
+test("all-done bound chat records closedWorkPhaseId null even when workPhaseId is provided", () => {
+  const cwd = gitRepoForHook();
+  try {
+    const id = "chat-all-done-ledger-null";
+    const slug = "chat-all-done-ledger-null-plan";
+    const plan = buildGoalplan({ objective: "close an all-done cycle without a target" });
+    plan.slug = slug;
+    plan.workPhases = [
+      { id: "wp-finished", title: "finished", status: "done", tasks: [], criteriaIds: [] },
+    ];
+    plan.activeWorkPhaseId = null;
+    writeGoalplan(cwd, plan);
+    writeState(cwd, {
+      ...defaultState(id),
+      phase: "C",
+      slug,
+      orchestrationActive: true,
+      checkEpoch: "c-all-done-null",
+      flags: { interview: false, auditPassed: true, checkPassed: true },
+    });
+    seedChatReceipt(cwd, id, "c-all-done-null");
+    const attest = JSON.stringify({
+      from: "C",
+      to: "D",
+      did: "verified the completed plan",
+      checkOutput: "ok",
+      exitCode: 0,
+      workPhaseId: "wp-finished",
+      testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+    });
+    const planPath = join(cwd, STATE_DIR, "goalplans", slug, "goalplan.json");
+    const beforePlan = readFileSync(planPath, "utf8");
+
+    const output = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t1"));
+
+    assert.doesNotMatch(output, /refused|blocked or superseded/);
+    const context = JSON.parse(output.trimEnd()).hookSpecificOutput.additionalContext as string;
+    assert.match(context, /\[codexclaw: DONE\]/);
+    assert.match(context, /IPABCD: IDLE/);
+    assert.equal(readState(cwd, id).phase, "IDLE");
+    assert.equal(readState(cwd, id).dcloseRecovery, null);
+    assert.equal(readFileSync(planPath, "utf8"), beforePlan);
+    assert.deepEqual(
+      ledgerLines(cwd)
+        .filter((row) => row.sessionId === id && row.from === "C" && row.to === "IDLE")
+        .map((row) => [row.checkEpoch, row.closedWorkPhaseId]),
+      [["c-all-done-null", null]],
+    );
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+test("chat D-close rejects an invalid v3 dependency plan before every write", () => {
+  const cwd = gitRepoForHook();
+  try {
+    const id = "invalid-v3-chat-close";
+    const slug = "invalid-v3-chat-close-plan";
+    const plan = buildGoalplan({ objective: "invalid chat dependency close" });
+    plan.slug = slug;
+    plan.schemaVersion = 3;
+    plan.workPhases = [
+      { id: "wp-1", title: "broken", status: "in_progress", dependsOn: ["missing"], tasks: [], criteriaIds: [] },
+    ];
+    plan.activeWorkPhaseId = "wp-1";
+    writeGoalplan(cwd, plan);
+    writeState(cwd, {
+      ...defaultState(id), phase: "C", slug, orchestrationActive: true, checkEpoch: "c-invalid",
+      flags: { interview: false, auditPassed: true, checkPassed: true },
+    });
+    seedChatReceipt(cwd, id, "c-invalid");
+    const statePath = join(cwd, STATE_DIR, "sessions", `${id}.json`);
+    const planPath = join(cwd, STATE_DIR, "goalplans", slug, "goalplan.json");
+    const pabcdPath = join(cwd, STATE_DIR, LEDGER_FILE);
+    const goalplanLedgerPath = join(cwd, STATE_DIR, "goalplans", slug, "ledger.jsonl");
+    const before = {
+      state: readFileSync(statePath, "utf8"),
+      plan: readFileSync(planPath, "utf8"),
+      pabcd: existsSync(pabcdPath) ? readFileSync(pabcdPath, "utf8") : "",
+      goalplan: existsSync(goalplanLedgerPath) ? readFileSync(goalplanLedgerPath, "utf8") : "",
+    };
+    const attest = JSON.stringify({
+      from: "C", to: "D", did: "ran the suite", checkOutput: "ok", exitCode: 0,
+      workPhaseId: "wp-1",
+      testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+    });
+
+    const output = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id));
+
+    assert.match(output, /invalid goalplan/);
+    assert.equal(readFileSync(statePath, "utf8"), before.state);
+    assert.equal(readFileSync(planPath, "utf8"), before.plan);
+    assert.equal(existsSync(pabcdPath) ? readFileSync(pabcdPath, "utf8") : "", before.pabcd);
+    assert.equal(existsSync(goalplanLedgerPath) ? readFileSync(goalplanLedgerPath, "utf8") : "", before.goalplan);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+function seedRecoverableChatClose(cwd: string, id: string, slug: string): string {
+  const plan = buildGoalplan({ objective: `recover ${id}` });
+  plan.slug = slug;
+  // Marker persisted, plan commit did not — the state right after step 1 of the
+  // §5 table. The phase must stay open: seeding it `done` would make the plan
+  // all-done, and before §39 Y2 the all-done branch consumed the retry and wrote
+  // closedWorkPhaseId: null while these tests expected "wp-1". Recovery now runs
+  // first and idempotently closes this fixed target (§39 Y1).
+  plan.workPhases = [
+    { id: "wp-1", title: "first", status: "in_progress", tasks: [], criteriaIds: [] },
+  ];
+  plan.activeWorkPhaseId = "wp-1";
+  writeGoalplan(cwd, plan);
+  writeState(cwd, {
+    ...defaultState(id),
+    phase: "C",
+    slug,
+    orchestrationActive: true,
+    checkEpoch: "c-recovery",
+    dcloseRecovery: {
+      sessionId: id,
+      checkEpoch: "c-recovery",
+      closedWorkPhaseId: "wp-1",
+      // §48: this fixture holds one work-phase, so the first attempt had no successor
+      // to activate and the marker records that honestly.
+      nextWorkPhaseId: null,
+    },
+  });
+  return JSON.stringify({
+    from: "C",
+    to: "D",
+    did: "ran the suite",
+    workPhaseId: "wp-1",
+  });
+}
+
+test("chat recovery activates the recorded successor when the target is absent", () => {
+  // §53: the absent-target decision lives in a shared helper precisely so this surface
+  // behaves like the CLI. Before that, the same marker activated a pending successor
+  // through the CLI and only logged `started` here, leaving the phase unstarted while
+  // the ledger claimed the cycle closed. The case above seeds wp-2 already in_progress,
+  // which hides the difference; this one leaves it pending.
+  const cwd = gitRepoForHook();
+  try {
+    const id = "chat-recovery-absent-pending";
+    const slug = "chat-recovery-absent-pending-plan";
+    const attest = seedRecoverableChatClose(cwd, id, slug);
+    const remaining = buildGoalplan({ objective: "absent target, pending successor" });
+    remaining.slug = slug;
+    remaining.workPhases = [
+      { id: "wp-2", title: "next", status: "pending", tasks: [], criteriaIds: [] },
+    ];
+    remaining.activeWorkPhaseId = null;
+    writeGoalplan(cwd, remaining);
+    // The seed records no successor, so point the marker at wp-2 the way a real close would.
+    const seeded = readState(cwd, id);
+    writeState(cwd, {
+      ...seeded,
+      dcloseRecovery: { ...seeded.dcloseRecovery!, nextWorkPhaseId: "wp-2" },
+    });
+
+    const output = handleUserPromptSubmit(
+      ups(`orchestrate d --attest ${attest}`, cwd, id, "t1"),
+    );
+
+    assert.doesNotMatch(output, /refused/);
+    const repaired = readGoalplan(cwd, slug)!;
+    assert.equal(repaired.activeWorkPhaseId, "wp-2");
+    assert.equal(repaired.workPhases.find((wp) => wp.id === "wp-2")!.status, "in_progress");
+    assert.equal(readState(cwd, id).phase, "IDLE");
+    assert.equal(readState(cwd, id).dcloseRecovery, null);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+test("chat D-close recovery resumes when the marker target is absent from the plan", () => {
+  const cwd = gitRepoForHook();
+  try {
+    const id = "chat-recovery-target-absent";
+    const slug = "chat-recovery-target-absent-plan";
+    const attest = seedRecoverableChatClose(cwd, id, slug);
+    const remaining = buildGoalplan({ objective: "resume cleanup after target removal" });
+    remaining.slug = slug;
+    remaining.workPhases = [
+      { id: "wp-2", title: "next", status: "in_progress", tasks: [], criteriaIds: [] },
+    ];
+    remaining.activeWorkPhaseId = "wp-2";
+    writeGoalplan(cwd, remaining);
+    const planPath = join(cwd, STATE_DIR, "goalplans", slug, "goalplan.json");
+    const beforePlan = readFileSync(planPath, "utf8");
+
+    const output = handleUserPromptSubmit(
+      ups(`orchestrate d --attest ${attest}`, cwd, id, "t1"),
+    );
+
+    assert.doesNotMatch(output, /refused|not in the bound goalplan/);
+    const context = JSON.parse(output.trimEnd()).hookSpecificOutput.additionalContext as string;
+    assert.match(context, /\[codexclaw: DONE\]/);
+    assert.match(context, /IPABCD: IDLE/);
+    assert.equal(readFileSync(planPath, "utf8"), beforePlan);
+    assert.equal(
+      ledgerLines(cwd).filter(
+        (row) => row.sessionId === id && row.from === "C" && row.to === "IDLE"
+          && row.checkEpoch === "c-recovery" && row.closedWorkPhaseId === "wp-1",
+      ).length,
+      1,
+    );
+    assert.equal(readState(cwd, id).phase, "IDLE");
+    assert.equal(readState(cwd, id).checkEpoch, null);
+    assert.equal(readState(cwd, id).dcloseRecovery, null);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("chat D-close retry after state write appends the missing PABCD close row", () => {
+  const cwd = gitRepoForHook();
+  try {
+    const id = "chat-retry-state";
+    const attest = seedRecoverableChatClose(cwd, id, "chat-retry-state-plan");
+    assert.throws(
+      () => handleUserPromptSubmit(
+        ups(`orchestrate d --attest ${attest}`, cwd, id, "t1"),
+        process.platform,
+        { afterStateWrite: () => { throw new Error("after state write"); } },
+      ),
+      /after state write/,
+    );
+    assert.equal(ledgerLines(cwd).length, 0);
+
+    const retry = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
+    assert.doesNotMatch(retry, /refused/);
+    assert.equal(ledgerLines(cwd).filter((row) => row.sessionId === id && row.from === "C" && row.to === "IDLE").length, 1);
+    assert.equal(readState(cwd, id).dcloseRecovery, null);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("chat D-close retry after PABCD append keeps one close row", () => {
+  const cwd = gitRepoForHook();
+  try {
+    const id = "chat-retry-append";
+    const attest = seedRecoverableChatClose(cwd, id, "chat-retry-append-plan");
+    assert.throws(
+      () => handleUserPromptSubmit(
+        ups(`orchestrate d --attest ${attest}`, cwd, id, "t1"),
+        process.platform,
+        { afterPabcdLedgerAppend: () => { throw new Error("after PABCD append"); } },
+      ),
+      /after PABCD append/,
+    );
+    assert.equal(ledgerLines(cwd).filter((row) => row.sessionId === id).length, 1);
+
+    handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
+    assert.equal(ledgerLines(cwd).filter((row) => row.sessionId === id && row.from === "C" && row.to === "IDLE").length, 1);
+    assert.equal(readState(cwd, id).dcloseRecovery, null);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+/**
+ * A bound chat session sitting at C with NO recovery marker, plus the receipt the
+ * C->D gate needs. §41 W6: marker-seam regressions must start here, because
+ * afterRecoveryMarkerWrite only fires on the non-recovery branch — a fixture that
+ * pre-writes the marker never reaches the seam.
+ */
+function seedChatCycleAtC(cwd: string, id: string, slug: string): string {
+  const plan = buildGoalplan({ objective: `chat close ${id}` });
+  plan.slug = slug;
+  plan.workPhases = [
+    { id: "wp-1", title: "first", status: "in_progress", tasks: [], criteriaIds: [] },
+    { id: "wp-2", title: "second", status: "pending", tasks: [], criteriaIds: [] },
+  ];
+  plan.activeWorkPhaseId = "wp-1";
+  writeGoalplan(cwd, plan);
+  const epoch = "c-chat-epoch";
+  writeState(cwd, {
+    ...defaultState(id),
+    phase: "C",
+    slug,
+    orchestrationActive: true,
+    checkEpoch: epoch,
+    flags: { interview: false, auditPassed: true, checkPassed: false },
+  });
+  seedChatReceipt(cwd, id, epoch);
+  return JSON.stringify({
+    from: "C",
+    to: "D",
+    did: "ran the suite",
+    checkOutput: "ok",
+    exitCode: 0,
+    workPhaseId: "wp-1",
+    testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+  });
+}
+
+test("chat D-close retry after the recovery marker write matches an uninterrupted close", () => {
+  // §41 W4/W6: the CLI had this regression and the chat path did not. Both surfaces
+  // run the same closeFixedWorkPhase(), so both need the parity assertion — and the
+  // fixture must be marker-free so the seam actually fires.
+  const cwd = gitRepoForHook();
+  const reference = gitRepoForHook();
+  try {
+    const id = "chat-retry-after-marker";
+    const slug = "chat-retry-after-marker-plan";
+    const attest = seedChatCycleAtC(cwd, id, slug);
+
+    const refAttest = seedChatCycleAtC(reference, "chat-reference", "chat-reference-plan");
+    const refOut = handleUserPromptSubmit(ups(`orchestrate d --attest ${refAttest}`, reference, "chat-reference", "r1"));
+    assert.match(refOut, /\[codexclaw: DONE\]/);
+    const referencePlan = readGoalplan(reference, "chat-reference-plan")!;
+
+    assert.throws(
+      () => handleUserPromptSubmit(
+        ups(`orchestrate d --attest ${attest}`, cwd, id, "t1"),
+        process.platform,
+        { afterRecoveryMarkerWrite: () => { throw new Error("fail right after the chat marker"); } },
+      ),
+      /fail right after the chat marker/,
+    );
+    assert.equal(readState(cwd, id).phase, "C");
+    assert.deepEqual(readState(cwd, id).dcloseRecovery, {
+      sessionId: id,
+      checkEpoch: "c-chat-epoch",
+      closedWorkPhaseId: "wp-1",
+      nextWorkPhaseId: "wp-2",
+    });
+    assert.equal(readGoalplan(cwd, slug)!.workPhases.find((wp) => wp.id === "wp-1")!.status, "in_progress");
+
+    const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
+    assert.match(out, /\[codexclaw: DONE\]/);
+    const recovered = readGoalplan(cwd, slug)!;
+    assert.deepEqual(
+      {
+        workPhases: recovered.workPhases.map((wp) => ({ id: wp.id, status: wp.status })),
+        activeWorkPhaseId: recovered.activeWorkPhaseId,
+      },
+      {
+        workPhases: referencePlan.workPhases.map((wp) => ({ id: wp.id, status: wp.status })),
+        activeWorkPhaseId: referencePlan.activeWorkPhaseId,
+      },
+    );
+    assert.deepEqual(
+      goalplanLedgerRows(cwd, slug).filter((row) => row.event === "workphase_started").map((row) => row.detail),
+      ["started wp-2"],
+    );
+    assert.equal(readState(cwd, id).phase, "IDLE");
+    assert.equal(readState(cwd, id).dcloseRecovery, null);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+    rmSync(reference, { recursive: true, force: true });
+  }
+});
+
+test("chat recovery is refused when a pending task is hidden under the closed target", () => {
+  // §43: the chat surface shares the rule. The commit landed, so only an
+  // unconditional closeFixedWorkPhase() call can still see the open task.
+  const cwd = gitRepoForHook();
+  try {
+    const id = "chat-done-hides-pending";
+    const slug = "chat-done-hides-pending-plan";
+    const attest = seedChatCycleAtC(cwd, id, slug);
+
+    assert.throws(
+      () => handleUserPromptSubmit(
+        ups(`orchestrate d --attest ${attest}`, cwd, id, "t1"),
+        process.platform,
+        { afterGoalplanCommit: () => { throw new Error("stop after the goalplan commit"); } },
+      ),
+      /stop after the goalplan commit/,
+    );
+
+    const plan = readGoalplan(cwd, slug)!;
+    assert.equal(plan.workPhases.find((wp) => wp.id === "wp-1")!.status, "done");
+    assert.equal(plan.activeWorkPhaseId, "wp-2");
+    writeGoalplan(cwd, {
+      ...plan,
+      workPhases: plan.workPhases.map((wp) =>
+        wp.id === "wp-1"
+          ? { ...wp, tasks: [{ id: "t-hidden", title: "snuck in", status: "pending" as const }] }
+          : wp
+      ),
+    });
+    const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+
+    const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
+
+    assert.match(out, /gained 1 open task\(s\) after its marker was written/);
+    assert.match(out, /The recovery marker was kept/);
+    assert.equal(readState(cwd, id).phase, "C");
+    assert.notEqual(readState(cwd, id).dcloseRecovery, null);
+    assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("chat recovery re-runs the close when only the target status was edited to done", () => {
+  // §42: the chat surface shares the commit test. A status-only edit keeps the cursor
+  // on wp-1, so treating `done` as committed would log a false `started wp-1`.
+  const cwd = gitRepoForHook();
+  try {
+    const id = "chat-status-only-done";
+    const slug = "chat-status-only-done-plan";
+    const attest = seedChatCycleAtC(cwd, id, slug);
+
+    assert.throws(
+      () => handleUserPromptSubmit(
+        ups(`orchestrate d --attest ${attest}`, cwd, id, "t1"),
+        process.platform,
+        { afterRecoveryMarkerWrite: () => { throw new Error("stop at the marker"); } },
+      ),
+      /stop at the marker/,
+    );
+
+    const plan = readGoalplan(cwd, slug)!;
+    assert.equal(plan.activeWorkPhaseId, "wp-1");
+    writeGoalplan(cwd, {
+      ...plan,
+      workPhases: plan.workPhases.map((wp) =>
+        wp.id === "wp-1" ? { ...wp, status: "done" as const } : wp
+      ),
+    });
+
+    const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
+
+    assert.match(out, /\[codexclaw: DONE\]/);
+    const recovered = readGoalplan(cwd, slug)!;
+    assert.equal(recovered.activeWorkPhaseId, "wp-2");
+    assert.equal(recovered.workPhases.find((wp) => wp.id === "wp-2")!.status, "in_progress");
+    assert.deepEqual(
+      goalplanLedgerRows(cwd, slug).filter((row) => row.event === "workphase_started").map((row) => row.detail),
+      ["started wp-2"],
+    );
+    assert.equal(readState(cwd, id).phase, "IDLE");
+    assert.equal(readState(cwd, id).dcloseRecovery, null);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+for (const scenario of [
+  { name: "gained an open task", pattern: /gained 1 open task\(s\) after its marker was written/,
+    mutate: (plan: Goalplan): Goalplan => ({
+      ...plan,
+      workPhases: plan.workPhases.map((wp) =>
+        wp.id === "wp-1"
+          ? { ...wp, tasks: [{ id: "t-late", title: "added late", status: "pending" as const }] }
+          : wp
+      ),
+    }) },
+  { name: "became blocked", pattern: /is now blocked/,
+    mutate: (plan: Goalplan): Goalplan => ({
+      ...plan,
+      workPhases: plan.workPhases.map((wp) => wp.id === "wp-1" ? { ...wp, status: "blocked" as const } : wp),
+    }) },
+  { name: "lost a dependency", pattern: /now waits for wp-2/,
+    mutate: (plan: Goalplan): Goalplan => ({
+      ...plan,
+      workPhases: plan.workPhases.map((wp) =>
+        wp.id === "wp-1" ? { ...wp, dependsOn: ["wp-2"] } : wp
+      ),
+    }) },
+] as const) {
+  test(`chat recovery is refused when the fixed target ${scenario.name} after its marker`, () => {
+    // §41 W1/W5: the same three gates the CLI enforces, on the chat surface. The
+    // marker is kept in every case so the operator can repair and repeat.
+    const cwd = gitRepoForHook();
+    try {
+      const id = `chat-recovery-${scenario.name.replace(/\s+/g, "-")}`;
+      const slug = `${id}-plan`;
+      const attest = seedChatCycleAtC(cwd, id, slug);
+
+      assert.throws(
+        () => handleUserPromptSubmit(
+          ups(`orchestrate d --attest ${attest}`, cwd, id, "t1"),
+          process.platform,
+          { afterRecoveryMarkerWrite: () => { throw new Error("stop at the marker"); } },
+        ),
+        /stop at the marker/,
+      );
+      writeGoalplan(cwd, scenario.mutate(readGoalplan(cwd, slug)!));
+      const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
+
+      const out = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
+      assert.match(out, scenario.pattern);
+      assert.match(out, /The recovery marker was kept/);
+      assert.equal(readState(cwd, id).phase, "C");
+      assert.notEqual(readState(cwd, id).dcloseRecovery, null);
+      assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+      assert.deepEqual(goalplanLedgerRows(cwd, slug).filter((row) => row.event === "workphase_done"), []);
+    } finally { rmSync(cwd, { recursive: true, force: true }); }
+  });
+}
+
+test("chat D-close keeps same-turn dedup and clears the Stop guard", () => {
+  // §40 Z3: the replacement state write must not drop injectedTurns or the stopBlock
+  // reset. Without injectedTurns the same turn re-runs and prints an IDLE -> D
+  // refusal instead of staying quiet; without the reset, C stagnation state survives
+  // into IDLE.
+  const cwd = gitRepoForHook();
+  try {
+    const id = "chat-dclose-state-fields";
+    const slug = "chat-dclose-state-fields-plan";
+    const plan = buildGoalplan({ objective: "keep the existing fields" });
+    plan.slug = slug;
+    plan.workPhases = [{ id: "wp-1", title: "first", status: "in_progress", tasks: [], criteriaIds: [] }];
+    plan.activeWorkPhaseId = "wp-1";
+    writeGoalplan(cwd, plan);
+    writeState(cwd, {
+      ...defaultState(id),
+      phase: "C",
+      slug,
+      orchestrationActive: true,
+      checkEpoch: "c-fields",
+      stopBlockPhase: "C",
+      stopBlockWorkPhaseId: "wp-1",
+      stopBlockCount: 3,
+    });
+    // CHECK-BINDING-01 runs before the goalplan branch on the chat path too, so
+    // without both the receipt and its path the first call refuses at the gate and
+    // never reaches the state write this test is about.
+    seedChatReceipt(cwd, id, "c-fields");
+    const attest = JSON.stringify({
+      from: "C",
+      to: "D",
+      did: "ran the suite",
+      checkOutput: "ok",
+      exitCode: 0,
+      testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
+      workPhaseId: "wp-1",
+    });
+
+    const first = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "same-turn"));
+    assert.match(first, /\[codexclaw: DONE\]/);
+    const after = readState(cwd, id);
+    assert.equal(after.phase, "IDLE");
+    assert.equal(after.stopBlockPhase, null);
+    assert.equal(after.stopBlockWorkPhaseId, null);
+    assert.equal(after.stopBlockCount, 0);
+    assert.equal(after.injectedTurns.includes("same-turn"), true);
+
+    // Same turn again: dedup keeps this silent instead of surfacing IDLE -> D.
+    const repeat = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, id, "same-turn"));
+    assert.equal(repeat, "");
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+test("chat D-close lock timeout keeps phase C, emits a warning, and writes no ledger", () => {
+  const cwd = gitRepoForHook();
+  try {
+    const slug = "chat-cycle-lock-timeout";
+    const plan = buildGoalplan({ objective: "chat lock timeout" });
+    plan.slug = slug;
+    plan.workPhases = [
+      {
+        id: "wp-1",
+        title: "first",
+        status: "in_progress",
+        tasks: [{ id: "t-1", title: "the work", status: "done" }],
+        criteriaIds: [],
+      },
+    ];
+    plan.activeWorkPhaseId = "wp-1";
+    writeGoalplan(cwd, plan);
+    writeState(cwd, {
+      ...defaultState("chat-lock"),
+      phase: "C",
+      slug,
+      orchestrationActive: true,
+      checkEpoch: "c-test",
+      flags: { interview: false, auditPassed: true, checkPassed: true },
+    });
+    seedChatReceipt(cwd, "chat-lock", "c-test");
+    const lock = join(cwd, STATE_DIR, "goalplans", slug, ".goalplan.lock");
+    mkdirSync(lock, { recursive: false });
+    writeFileSync(join(lock, "owner.json"), `${JSON.stringify({ pid: 4242 })}\n`);
+    const planPath = join(cwd, STATE_DIR, "goalplans", slug, "goalplan.json");
+    const beforePlan = readFileSync(planPath, "utf8");
+    const attest = JSON.stringify({
+      from: "C",
+      to: "D",
+      did: "ran the suite",
+      checkOutput: "ok",
+      exitCode: 0,
+      workPhaseId: "wp-1",
+      testReceiptPath: ".codexclaw/evidence/chat-lock/test-receipt.json",
+    });
+
+    let output = "";
+    assert.doesNotThrow(() => {
+      output = handleUserPromptSubmit(
+        ups(`orchestrate d --attest ${attest}`, cwd, "chat-lock", "t1"),
+      );
+    });
+
+    assert.match(output, /D-close was not applied/);
+    assert.match(output, /\.goalplan\.lock/);
+    assert.equal(readState(cwd, "chat-lock").phase, "C");
+    assert.equal(readFileSync(planPath, "utf8"), beforePlan);
+    assert.equal(ledgerLines(cwd).length, 0);
+    assert.equal(existsSync(join(cwd, STATE_DIR, "goalplans", slug, "ledger.jsonl")), false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+test("hook CLI exits 0 when chat D-close cannot acquire the goalplan lock", () => {
+  const cwd = gitRepoForHook();
+  try {
+    const slug = "chat-process-lock-timeout";
+    const plan = buildGoalplan({ objective: "chat process lock timeout" });
+    plan.slug = slug;
+    plan.workPhases = [
+      { id: "wp-1", title: "first", status: "in_progress", tasks: [], criteriaIds: [] },
+    ];
+    plan.activeWorkPhaseId = "wp-1";
+    writeGoalplan(cwd, plan);
+    writeState(cwd, {
+      ...defaultState("chat-process"),
+      phase: "C",
+      slug,
+      orchestrationActive: true,
+      checkEpoch: "c-test",
+      flags: { interview: false, auditPassed: true, checkPassed: true },
+    });
+    seedChatReceipt(cwd, "chat-process", "c-test");
+    const lock = join(cwd, STATE_DIR, "goalplans", slug, ".goalplan.lock");
+    mkdirSync(lock, { recursive: false });
+    writeFileSync(join(lock, "owner.json"), `${JSON.stringify({ pid: 4242 })}\n`);
+    const attest = JSON.stringify({
+      from: "C",
+      to: "D",
+      did: "ran the suite",
+      checkOutput: "ok",
+      exitCode: 0,
+      workPhaseId: "wp-1",
+      testReceiptPath: ".codexclaw/evidence/chat-process/test-receipt.json",
+    });
+    const payload = JSON.stringify(ups(
+      `orchestrate d --attest ${attest}`,
+      cwd,
+      "chat-process",
+      "t1",
+    ));
+
+    const child = spawnSync(
+      process.execPath,
+      ["--experimental-strip-types", resolve(dirname(fileURLToPath(import.meta.url)), "../src/cli.ts"), "hook", "user-prompt-submit"],
+      { input: payload, encoding: "utf8" },
+    );
+
+    assert.equal(child.status, 0, child.stderr);
+    assert.match(child.stdout, /D-close was not applied/);
+    assert.equal(readState(cwd, "chat-process").phase, "C");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+const HOOK_RACE_SCRIPT = String.raw`
+import { existsSync, rmSync, writeFileSync } from "node:fs";
+
+const [
+  hookUrl, encodedPayload, attemptPath, insidePath, peerInsidePath,
+  releasePath, overlapPath, donePath,
+] = process.argv.slice(1);
+const { handleUserPromptSubmit } = await import(hookUrl);
+const payload = JSON.parse(Buffer.from(encodedPayload, "base64").toString("utf8"));
+
+function waitForFile(path) {
+  const deadline = Date.now() + 10_000;
+  while (!existsSync(path)) {
+    if (Date.now() >= deadline) throw new Error("timed out waiting for " + path);
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 5);
+  }
+}
+
+if (attemptPath !== "-") writeFileSync(attemptPath, "attempted\n");
+const hooks = insidePath === "-"
+  ? {}
+  : {
+      afterPabcdLedgerAppend() {
+        writeFileSync(insidePath, "inside finalization callback\n");
+        try {
+          if (peerInsidePath !== "-" && existsSync(peerInsidePath)) {
+            writeFileSync(overlapPath, "callbacks overlapped\n");
+          }
+          if (releasePath !== "-") waitForFile(releasePath);
+        } finally {
+          rmSync(insidePath, { force: true });
+        }
+      },
+    };
+
+try {
+  const output = handleUserPromptSubmit(payload, process.platform, hooks);
+  // A completed second close while the peer sentinel still exists proves that its
+  // transaction ran before the first finalization callback returned.
+  if (output.includes("[codexclaw: DONE]") && peerInsidePath !== "-" && existsSync(peerInsidePath)) {
+    writeFileSync(overlapPath, "second recovery completed inside its peer\n");
+  }
+  process.stdout.write(output);
+} finally {
+  if (donePath !== "-") writeFileSync(donePath, "done\n");
+}
+`;
+
+interface HookRaceSignals {
+  attemptPath?: string;
+  insidePath?: string;
+  peerInsidePath?: string;
+  releasePath?: string;
+  overlapPath?: string;
+  donePath?: string;
+}
+
+function runHookProcess(
+  payload: string,
+  signals: HookRaceSignals = {},
+): Promise<{ status: number | null; stdout: string; stderr: string }> {
+  return new Promise((resolveChild, rejectChild) => {
+    const child = spawn(process.execPath, [
+      "--experimental-strip-types", "--input-type=module", "-e", HOOK_RACE_SCRIPT,
+      new URL("../src/hook.ts", import.meta.url).href,
+      Buffer.from(payload, "utf8").toString("base64"),
+      signals.attemptPath ?? "-",
+      signals.insidePath ?? "-",
+      signals.peerInsidePath ?? "-",
+      signals.releasePath ?? "-",
+      signals.overlapPath ?? "-",
+      signals.donePath ?? "-",
+    ], { stdio: ["ignore", "pipe", "pipe"] });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.setEncoding("utf8").on("data", (chunk) => { stdout += chunk; });
+    child.stderr.setEncoding("utf8").on("data", (chunk) => { stderr += chunk; });
+    child.on("error", rejectChild);
+    child.on("close", (status) => resolveChild({ status, stdout, stderr }));
+  });
+}
+
+async function waitForHookSignal(path: string): Promise<void> {
+  const deadline = Date.now() + 10_000;
+  while (!existsSync(path)) {
+    if (Date.now() >= deadline) throw new Error(`timed out waiting for ${path}`);
+    await new Promise<void>((resolveWait) => setTimeout(resolveWait, 5));
+  }
+}
+
+test("a second chat recovery contends while the first finalizer callback is held", async () => {
+  const cwd = gitRepoForHook();
+  try {
+    const id = "chat-concurrent-recovery";
+    const attest = seedRecoverableChatClose(cwd, id, "chat-concurrent-recovery-plan");
+    const firstPayload = JSON.stringify(ups(`orchestrate d --attest ${attest}`, cwd, id, "t1"));
+    const secondPayload = JSON.stringify(ups(`orchestrate d --attest ${attest}`, cwd, id, "t2"));
+    const firstInside = join(cwd, "first-finalizer-inside");
+    const secondAttempted = join(cwd, "second-recovery-attempted");
+    const secondDone = join(cwd, "second-recovery-done");
+    const overlap = join(cwd, "recovery-finalizers-overlapped");
+
+    const first = runHookProcess(firstPayload, {
+      insidePath: firstInside,
+      releasePath: secondDone,
+      overlapPath: overlap,
+    });
+    await waitForHookSignal(firstInside);
+
+    const second = runHookProcess(secondPayload, {
+      attemptPath: secondAttempted,
+      peerInsidePath: firstInside,
+      overlapPath: overlap,
+      donePath: secondDone,
+    });
+    const [firstResult, secondResult] = await Promise.all([first, second]);
+
+    assert.equal(firstResult.status, 0, firstResult.stderr);
+    assert.equal(secondResult.status, 0, secondResult.stderr);
+    assert.match(firstResult.stdout, /\[codexclaw: DONE\]/);
+    assert.match(secondResult.stdout, /D-close was not applied/);
+    assert.equal(existsSync(secondAttempted), true);
+    assert.equal(
+      existsSync(overlap),
+      false,
+      "the second recovery must not complete while the first finalizer callback is active",
+    );
+    assert.equal(
+      ledgerLines(cwd).filter(
+        (row) => row.sessionId === id && row.from === "C" && row.to === "IDLE"
+          && row.checkEpoch === "c-recovery" && row.closedWorkPhaseId === "wp-1",
+      ).length,
+      1,
+    );
+    assert.equal(readState(cwd, id).dcloseRecovery, null);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("wp7 preservation: chat D-close keeps dependsOn and outcome", () => {
+  const cwd = gitRepoForHook();
+  try {
+    const slug = "wp7-chat-d";
+    const plan = buildGoalplan({ objective: "wp7 chat D" });
+    plan.slug = slug;
+    plan.schemaVersion = 3;
+    plan.workPhases = [{
+      id: "wp-1", title: "first", status: "in_progress", criteriaIds: [],
+      tasks: [
+        { id: "t-1", title: "first", status: "done", dependsOn: [], outcome: "first task verified" },
+        { id: "t-2", title: "second", status: "done", dependsOn: ["t-1"], outcome: "second task verified" },
+      ],
+    }];
+    plan.activeWorkPhaseId = "wp-1";
+    writeGoalplan(cwd, plan);
+    writeState(cwd, {
+      ...defaultState("wp7-chat-d"), phase: "C", slug, orchestrationActive: true,
+      checkEpoch: "wp7-check", flags: { interview: false, auditPassed: true, checkPassed: true },
+    });
+    seedChatReceipt(cwd, "wp7-chat-d", "wp7-check");
+    const attest = JSON.stringify({
+      from: "C", to: "D", did: "ran wp7 suite", checkOutput: "12 passed", exitCode: 0,
+      workPhaseId: "wp-1",
+      testReceiptPath: ".codexclaw/evidence/wp7-chat-d/test-receipt.json",
+    });
+
+    const output = handleUserPromptSubmit(ups(`orchestrate d --attest ${attest}`, cwd, "wp7-chat-d", "turn-1"));
+
+    assert.doesNotMatch(output, /refused/);
+    assert.equal(readState(cwd, "wp7-chat-d").phase, "IDLE");
+    const saved = readGoalplan(cwd, slug)!;
+    assert.equal(saved.workPhases[0].status, "done");
+    assert.deepEqual(taskFields(saved), expectedTaskFields);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});

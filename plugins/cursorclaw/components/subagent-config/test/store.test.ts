@@ -1,0 +1,193 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { execFileSync } from "node:child_process";
+import {
+  defaultConfig,
+  readConfig,
+  writeConfig,
+  setRole,
+  resolveSpawnConfig,
+  projectConfigTrustToken,
+  validateRolePatch,
+  ROLES,
+  EFFORTS,
+} from "../src/store.ts";
+
+function tmp(): string {
+  return mkdtempSync(join(tmpdir(), "cxc-subagents-"));
+}
+
+test("AC1: missing subagents.json -> all roles default/null/null", () => {
+  const cwd = tmp();
+  const cfg = readConfig(cwd);
+  for (const role of ROLES) {
+    assert.equal(cfg.roles[role].mode, "default");
+    assert.equal(cfg.roles[role].model, null);
+    assert.equal(cfg.roles[role].promptOverride, null);
+  }
+});
+
+test("AC2: set reviewer mode:model persists and reads back exactly", () => {
+  const cwd = tmp();
+  setRole(cwd, "reviewer", { mode: "model", model: "gpt-5.5", promptOverride: "Be adversarial." });
+  const cfg = readConfig(cwd);
+  assert.equal(cfg.roles.reviewer.mode, "model");
+  assert.equal(cfg.roles.reviewer.model, "gpt-5.5");
+  assert.equal(cfg.roles.reviewer.promptOverride, "Be adversarial.");
+  // other roles untouched
+  assert.equal(cfg.roles.explorer.mode, "default");
+});
+
+test("AC3 / spawn-honor: model-mode role spawns with its model; default roles inherit main", () => {
+  const cwd = tmp();
+  setRole(cwd, "executor", { mode: "model", model: "claude-opus" });
+  const exec = resolveSpawnConfig(cwd, "executor");
+  assert.equal(exec.usesMainModel, false);
+  assert.equal(exec.model, "claude-opus");
+  const explorer = resolveSpawnConfig(cwd, "explorer");
+  assert.equal(explorer.usesMainModel, true);
+  assert.equal(explorer.model, null);
+});
+
+test("validation: invalid mode rejected with clear message", () => {
+  assert.match(validateRolePatch({ mode: "turbo" as never }) ?? "", /invalid mode/);
+  assert.equal(validateRolePatch({ mode: "default" }), null);
+});
+
+test("validation: mode:model without a model id rejected", () => {
+  assert.match(validateRolePatch({ mode: "model", model: null }) ?? "", /requires a non-empty model/);
+  assert.throws(() => setRole(tmp(), "reviewer", { mode: "model" }), /requires a non-empty model/);
+});
+
+test("default-mode invariant: switching back to default clears the model", () => {
+  const cwd = tmp();
+  setRole(cwd, "reviewer", { mode: "model", model: "m1" });
+  setRole(cwd, "reviewer", { mode: "default" });
+  assert.equal(readConfig(cwd).roles.reviewer.model, null);
+});
+
+test("malformed file -> defaults, never throws", () => {
+  const cwd = tmp();
+  mkdirSync(join(cwd, ".codexclaw"), { recursive: true });
+  writeFileSync(join(cwd, ".codexclaw", "subagents.json"), "{ not json ]");
+  const cfg = readConfig(cwd);
+  assert.deepEqual(cfg, defaultConfig());
+});
+
+test("partial/invalid role values normalized per-field (model-mode missing model -> default)", () => {
+  const cwd = tmp();
+  mkdirSync(join(cwd, ".codexclaw"), { recursive: true });
+  writeFileSync(
+    join(cwd, ".codexclaw", "subagents.json"),
+    JSON.stringify({ roles: { reviewer: { mode: "model", model: 123, promptOverride: 7 } } }),
+  );
+  const r = readConfig(cwd).roles.reviewer;
+  assert.equal(r.mode, "default"); // model:123 invalid -> fail safe to default
+  assert.equal(r.model, null);
+  assert.equal(r.promptOverride, null); // non-string -> null, never fabricated
+});
+
+test("promptOverride accepts null and never fabricates text", () => {
+  const cwd = tmp();
+  setRole(cwd, "explorer", { promptOverride: null });
+  assert.equal(readConfig(cwd).roles.explorer.promptOverride, null);
+});
+
+test("effort: valid wire values persist; null inherits; invalid rejected on write", () => {
+  const cwd = tmp();
+  setRole(cwd, "explorer", { effort: "high" });
+  assert.equal(readConfig(cwd).roles.explorer.effort, "high");
+  setRole(cwd, "explorer", { effort: null });
+  assert.equal(readConfig(cwd).roles.explorer.effort, null);
+  assert.throws(() => setRole(cwd, "explorer", { effort: "x-high" as never }), /invalid effort/);
+  assert.throws(() => setRole(cwd, "explorer", { effort: "max" as never }), /invalid effort/);
+});
+
+test("effort: offered set is exactly the catalog-supported wire values (no none/minimal trap)", () => {
+  // codex-rs validate_spawn_agent_reasoning_effort hard-rejects an effort the resolved
+  // model does not support; every selectable model supports exactly these four, so the
+  // store must not offer none/minimal (which would brick every spawn once persisted).
+  assert.deepEqual([...EFFORTS], ["low", "medium", "high", "xhigh"]);
+  const cwd = tmp();
+  assert.throws(() => setRole(cwd, "explorer", { effort: "none" as never }), /invalid effort/);
+  assert.throws(() => setRole(cwd, "explorer", { effort: "minimal" as never }), /invalid effort/);
+});
+
+test("effort: unknown persisted value normalizes to null (inherit), read never throws", () => {
+  const cwd = tmp();
+  mkdirSync(join(cwd, ".codexclaw"), { recursive: true });
+  writeFileSync(
+    join(cwd, ".codexclaw", "subagents.json"),
+    JSON.stringify({ roles: { executor: { mode: "default", model: null, effort: "ultra", promptOverride: null } } }),
+  );
+  assert.equal(readConfig(cwd).roles.executor.effort, null);
+});
+
+test("effort: independent of mode — survives a default-mode role and resolves in spawn config", () => {
+  const cwd = tmp();
+  setRole(cwd, "reviewer", { effort: "low" });
+  const res = resolveSpawnConfig(cwd, "reviewer");
+  assert.equal(res.usesMainModel, true);
+  assert.equal(res.effort, "low");
+});
+
+test("atomic write leaves no orphan .tmp", () => {
+  const cwd = tmp();
+  setRole(cwd, "reviewer", { mode: "model", model: "m1" });
+  const files = readdirSync(join(cwd, ".codexclaw"));
+  assert.ok(!files.some((f) => f.endsWith(".tmp")), `orphan tmp left: ${files.join(",")}`);
+  assert.ok(existsSync(join(cwd, ".codexclaw", "subagents.json")));
+});
+
+test("merged validation: {mode:'model'} alone passes when the role already has a model", () => {
+  const cwd = tmp();
+  setRole(cwd, "reviewer", { mode: "model", model: "gpt-5.4" });
+  const cfg = setRole(cwd, "reviewer", { mode: "model" }); // bare re-assert: must not throw
+  assert.equal(cfg.roles.reviewer.mode, "model");
+  assert.equal(cfg.roles.reviewer.model, "gpt-5.4");
+});
+
+test("merged validation: fresh default role still rejects bare {mode:'model'}", () => {
+  assert.throws(() => setRole(tmp(), "explorer", { mode: "model" }), /requires a non-empty model/);
+});
+
+test("merged validation: default->model round-trip needs an explicit model again (default cleared it)", () => {
+  const cwd = tmp();
+  setRole(cwd, "reviewer", { mode: "model", model: "m1" });
+  setRole(cwd, "reviewer", { mode: "default" }); // invariant nulls model
+  assert.throws(() => setRole(cwd, "reviewer", { mode: "model" }), /requires a non-empty model/);
+  const cfg = setRole(cwd, "reviewer", { mode: "model", model: "m2" });
+  assert.equal(cfg.roles.reviewer.model, "m2");
+});
+
+test("Git-tracked project config is ignored until the operator explicitly trusts it", () => {
+  const cwd = tmp();
+  setRole(cwd, "executor", { mode: "model", model: "repo-model", promptOverride: "repo instructions" });
+  execFileSync("git", ["init", "-q"], { cwd });
+  execFileSync("git", ["add", "-f", ".codexclaw/subagents.json"], { cwd });
+
+  const denied = resolveSpawnConfig(cwd, "executor", { CODEXCLAW_HOME: join(cwd, "test-global") });
+  assert.equal(denied.usesMainModel, true);
+  assert.equal(denied.promptOverride, null);
+  assert.match(denied.trustWarning ?? "", /Git-tracked/);
+
+  const token = projectConfigTrustToken(cwd);
+  assert.ok(token);
+  const trusted = resolveSpawnConfig(cwd, "executor", { CODEXCLAW_HOME: join(cwd, "test-global"), CODEXCLAW_TRUST_PROJECT_SUBAGENTS: token! });
+  assert.equal(trusted.model, "repo-model");
+  assert.equal(trusted.promptOverride, "repo instructions");
+
+  const other = tmp();
+  setRole(other, "executor", { mode: "model", model: "repo-model", promptOverride: "repo instructions" });
+  execFileSync("git", ["init", "-q"], { cwd: other });
+  execFileSync("git", ["add", "-f", ".codexclaw/subagents.json"], { cwd: other });
+  assert.notEqual(projectConfigTrustToken(other), token, "the same bytes in another repository need separate review");
+  assert.equal(resolveSpawnConfig(other, "executor", { CODEXCLAW_HOME: join(cwd, "test-global"), CODEXCLAW_TRUST_PROJECT_SUBAGENTS: token! }).model, null);
+
+  writeFileSync(join(cwd, ".codexclaw", "subagents.json"), JSON.stringify({ roles: {} }));
+  assert.notEqual(projectConfigTrustToken(cwd), token, "editing the reviewed config invalidates trust");
+  assert.equal(resolveSpawnConfig(cwd, "executor", { CODEXCLAW_HOME: join(cwd, "test-global"), CODEXCLAW_TRUST_PROJECT_SUBAGENTS: token! }).model, null);
+});

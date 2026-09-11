@@ -1,0 +1,151 @@
+/**
+ * mcp.test.ts — drives the compiled subagent-config MCP server over stdio and
+ * verifies the get/set tools roundtrip against a temp cwd store.
+ */
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import { mkdtempSync, readFileSync, existsSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { ROLES } from "../src/store.ts";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const serverJs = resolve(here, "..", "dist", "mcp.js");
+
+function rpc(child: ReturnType<typeof spawn>, msg: unknown): void {
+  child.stdin!.write(`${JSON.stringify(msg)}\n`);
+}
+
+async function collect(cwd: string, messages: unknown[], expectedReplies: number): Promise<any[]> {
+  if (!existsSync(serverJs)) return []; // build not run yet; skip gracefully
+  return await new Promise((resolveP, rejectP) => {
+    const child = spawn(process.execPath, [serverJs], { cwd, stdio: ["pipe", "pipe", "inherit"] });
+    const out: any[] = [];
+    let buf = "";
+    // G23 / C10. This ceiling is a HANG detector, not a flake absorber: the
+    // assertion is "the server answered", and any real answer arrives in
+    // milliseconds. The value is generous because a cold spawn under a loaded
+    // suite pays a type-strip cost, so a tight budget would fail on scheduling
+    // jitter rather than on the behavior under test.
+    //
+    // Naming that honestly matters, because raising a timeout until a test passes
+    // is exactly what TEST-FLAKE-RERUN-01 forbids. The underlying contention is
+    // NOT fixed here and is tracked as C10 in structure/30_contradiction_register.md;
+    // the honest fixes are build/test serialization or removing the real-process
+    // dependency from this assertion.
+    const MCP_STDIO_TIMEOUT_MS = 30000;
+    const timer = setTimeout(() => {
+      child.kill();
+      rejectP(new Error("mcp server timeout"));
+    }, MCP_STDIO_TIMEOUT_MS);
+    child.stdout!.on("data", (d) => {
+      buf += d.toString();
+      let idx;
+      while ((idx = buf.indexOf("\n")) >= 0) {
+        const line = buf.slice(0, idx).trim();
+        buf = buf.slice(idx + 1);
+        if (line) out.push(JSON.parse(line));
+        if (out.length >= expectedReplies) {
+          clearTimeout(timer);
+          child.stdin!.end();
+          child.kill();
+          resolveP(out);
+        }
+      }
+    });
+    for (const m of messages) rpc(child, m);
+  });
+}
+
+test("MCP: tools/list advertises subagents_get + subagents_set", async () => {
+  const cwd = mkdtempSync(join(tmpdir(), "cxc-mcp-"));
+  const replies = await collect(cwd, [{ jsonrpc: "2.0", id: 1, method: "tools/list" }], 1);
+  if (replies.length === 0) return; // dist not built
+  const names = replies[0].result.tools.map((t: { name: string }) => t.name);
+  assert.deepEqual(names.sort(), ["catalog_list", "subagents_get", "subagents_set"]);
+});
+
+test("MCP: subagents_set then subagents_get roundtrips through the store file", async () => {
+  const cwd = mkdtempSync(join(tmpdir(), "cxc-mcp-"));
+  const replies = await collect(
+    cwd,
+    [
+      { jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "subagents_set", arguments: { role: "reviewer", mode: "model", model: "gpt-5.5" } } },
+      { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "subagents_get", arguments: {} } },
+    ],
+    2,
+  );
+  if (replies.length === 0) return;
+  const getReply = replies.find((r) => r.id === 2);
+  const cfg = JSON.parse(getReply.result.content[0].text);
+  assert.equal(cfg.roles.reviewer.mode, "model");
+  assert.equal(cfg.roles.reviewer.model, "gpt-5.5");
+  // and it actually hit disk
+  assert.ok(existsSync(join(cwd, ".codexclaw", "subagents.json")));
+  const onDisk = JSON.parse(readFileSync(join(cwd, ".codexclaw", "subagents.json"), "utf8"));
+  assert.equal(onDisk.roles.reviewer.model, "gpt-5.5");
+});
+
+test("MCP: subagents_set with invalid mode returns an isError result, no crash", async () => {
+  const cwd = mkdtempSync(join(tmpdir(), "cxc-mcp-"));
+  const replies = await collect(
+    cwd,
+    [{ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "subagents_set", arguments: { role: "reviewer", mode: "turbo" } } }],
+    1,
+  );
+  if (replies.length === 0) return;
+  assert.equal(replies[0].result.isError, true);
+});
+
+test("MCP: subagents_set effort roundtrips; invalid effort is isError", async () => {
+  const cwd = mkdtempSync(join(tmpdir(), "cxc-mcp-"));
+  const ok = await collect(
+    cwd,
+    [{ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "subagents_set", arguments: { role: "executor", effort: "xhigh" } } }],
+    1,
+  );
+  if (ok.length > 0) {
+    const payload = JSON.parse(ok[0].result.content[0].text);
+    assert.equal(payload.roles.executor.effort, "xhigh");
+  }
+  const bad = await collect(
+    cwd,
+    [{ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "subagents_set", arguments: { role: "executor", effort: "turbo" } } }],
+    1,
+  );
+  if (bad.length === 0) return;
+  assert.equal(bad[0].result.isError, true);
+});
+
+test("MCP: first fallback roundtrips for every role and rejects invalid nested effort", async () => {
+  const cwd = mkdtempSync(join(tmpdir(), "cxc-mcp-fallback-"));
+  for (const role of ROLES) {
+    const replies = await collect(cwd, [
+      { jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "subagents_set", arguments: { role, fallback: { model: "cursor/grok-4.6", effort: "low" } } } },
+      { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "subagents_get", arguments: {} } },
+    ], 2);
+    assert.equal(replies.length, 2, "built MCP server is required for fallback verification");
+    const result = JSON.parse(replies.find(r => r.id === 2).result.content[0].text);
+    assert.deepEqual(result.roles[role].fallback, { model: "cursor/grok-4.6", effort: "low" });
+  }
+  const rejected = await collect(cwd, [{ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "subagents_set", arguments: { role: "executor", fallback: { effort: "invalid" } } } }], 1);
+  assert.equal(rejected[0].result.isError, true);
+});
+
+test('MCP advertises and persists architect with independent reviewer settings', async () => {
+  const cwd = mkdtempSync(join(tmpdir(), 'cxc-mcp-architect-'));
+  assert.ok(existsSync(serverJs), 'compiled MCP server required');
+  const replies = await collect(cwd, [
+    { jsonrpc: '2.0', id: 1, method: 'tools/list' },
+    { jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'subagents_set', arguments: { role: 'architect', mode: 'model', model: 'design-fixture', effort: 'high' } } },
+    { jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'subagents_get', arguments: {} } },
+  ], 3);
+  const advertised = replies.find(r => r.id === 1).result.tools.find((tool: { name: string }) => tool.name === 'subagents_set');
+  assert.ok(advertised.inputSchema.properties.role.enum.includes('architect'));
+  const settings = JSON.parse(replies.find(r => r.id === 3).result.content[0].text);
+  assert.equal(settings.roles.architect.model, 'design-fixture');
+  assert.equal(settings.roles.architect.effort, 'high');
+  assert.equal(settings.roles.reviewer.model, null);
+});

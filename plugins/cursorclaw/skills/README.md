@@ -1,0 +1,116 @@
+# codexclaw skills
+
+This directory holds the Codex `SKILL.md` skills bundled by the codexclaw plugin.
+
+## Shipped catalog
+
+The block below is machine-checked against every on-disk skill folder that contains
+`SKILL.md`. Keep it sorted; deprecated redirect folders remain listed because they
+still ship as compatibility surfaces.
+
+<!-- skill-catalog:start -->
+- `ast-grep/`
+- `dev/`
+- `dev-architecture/`
+- `dev-backend/`
+- `dev-code-reviewer/`
+- `dev-data/`
+- `dev-debugging/`
+- `dev-devops/`
+- `dev-diagram-viewer/`
+- `dev-frontend/`
+- `dev-scaffolding/`
+- `dev-security/`
+- `dev-testing/`
+- `dev-uiux-design/`
+- `dev-visualizer/`
+- `goalplan/`
+- `interview/`
+- `kwrite/`
+- `loop/`
+- `lunasearch/`
+- `orchestrate/`
+- `pabcd/`
+- `qa/`
+- `recall/`
+- `remote/`
+- `repo-map/`
+- `search/`
+- `skill-hub/`
+- `worktree-guardian/`
+<!-- skill-catalog:end -->
+
+## Skill set
+
+- `dev/` — always-on universal dev discipline (work classifier C0-C5, modular limits,
+  pre-write search, verification gate, safety rules). The hub that routes to the
+  surface-specific routers below. `agents/openai.yaml` sets `allow_implicit_invocation: true`.
+  Its `references/reader-documents.md` owns reader-facing document structure (answer first,
+  evidence separated) for every report, explainer or visual document a dev skill delivers.
+- `dev-*` — surface routers, each activated by its description matching the change surface:
+  `dev-architecture`, `dev-backend`, `dev-code-reviewer`, `dev-data`, `dev-debugging`,
+  `dev-devops`, `dev-frontend`, `dev-scaffolding`, `dev-security`, `dev-testing`,
+  `dev-uiux-design`. `dev-frontend` and `dev-uiux-design` ship
+  `allow_implicit_invocation: true` (implicit-visible, mutually cross-referenced, so
+  anti-slop design grammar reaches every UI-generating session); the rest ship
+  `agents/openai.yaml` with `allow_implicit_invocation: false`.
+- `dev-visualizer/` — visual documents, reports and diagrams: composes HTML/SVG
+  explainers, report documents with cover and contents pages, charts and
+  interactive models, then renders and verifies the delivered artifact (PDF included,
+  via `scripts/export-paged-report.mjs`). Reader-facing structure comes from
+  `dev/references/reader-documents.md`; report storyline, paragraph, exhibit and
+  page-design rules (REPORT-*) live in its `reference/` files. Ships
+  `allow_implicit_invocation: false`; activates by description match or explicit
+  `$cxc-dev-visualizer`. `dev-diagram-viewer/` is the deprecated redirect folder for
+  the previous name.
+- `pabcd/` — Codex-native PABCD workflow (Interview/Plan/Audit/Build/Check/Done) with
+  class-scaled depth. Folds in the structured-development discipline.
+- `interview/` — discoverable `cxc-interview` surface for persistent I-phase
+  contradiction discovery, question/answer recording, and readiness gating.
+- `orchestrate/` — discoverable `cxc-orchestrate (DEPRECATED -> cxc-pabcd)` surface for explicit IPABCD
+  phase control from chat plus the live agent-gated `cxc orchestrate` terminal path.
+- `loop/` — discoverable `cxc-loop` surface for HOTL work-phase continuation.
+- `goalplan/` — discoverable `cxc-goalplan (DEPRECATED -> cxc-loop)` surface for durable criteria,
+  checkpoints, steering, and quality gates.
+- `search/` — discoverable `cxc-search` surface for external/current/public lookup
+  discipline; not memory or chat search. It also owns the former `ultraresearch`
+  multi-wave research protocol; no separate `ultraresearch/` folder ships.
+- `recall/` — discoverable `cxc-recall` surface for read-only past-session chat and
+  memory search over `~/.codex` before asking the user to repeat context.
+- `qa/` — discoverable `cxc-qa` manual surface-driving QA gate for web, GUI, TUI,
+  CLI, and HTTP API scenarios, with captured evidence and teardown receipts.
+- `repo-map/` — discoverable `cxc-repo-map` one-shot tree-sitter + PageRank map for
+  unfamiliar repository structure and symbol orientation before deep search.
+- `kwrite/` — discoverable `cxc-kwrite` surface for Korean prose polishing (윤문):
+  AI-tell removal, register consistency, rhythm, meaning-exact revision of existing
+  Korean text. On-demand: `agents/openai.yaml` sets `allow_implicit_invocation: false`;
+  it activates by description match or explicit `$cxc-kwrite`.
+- `remote/` — discoverable `cxc-remote` surface for messenger-bridge onboarding:
+  agent-run Telegram/Discord connection ladder (serve -> token -> agent -> pair ->
+  smoke) plus setup troubleshooting. On-demand like the `dev-*` routers:
+  `agents/openai.yaml` sets `allow_implicit_invocation: false`; it activates by
+  description match or explicit `$cxc-remote`.
+- `ast-grep/` — discoverable `cxc-ast-grep` surface for optional AST-aware structural
+  search/codemods, with `rg` first for ordinary text search.
+- `skill-hub/` — discoverable `cxc-skill-hub (DEPRECATED -> cxc-dev)` catalog for choosing the right
+  on-demand skill.
+- `lunasearch/` — discoverable `cxc-lunasearch` lane for cheap parallel public-web
+  discovery that hands proof back to `cxc-search`.
+- `worktree-guardian/` — discoverable `cxc-worktree-guardian` surface for Codex-app
+  managed-worktree safety: three namespaces (branch/worktree/thread), adopt-in-place
+  renaming, the never-list, and the WORKTREE-GUARD-01/02/03 hook interplay.
+  On-demand (`allow_implicit_invocation: false`; the pinned implicit set in
+  `test/manifest-policy.test.mjs` S3 stays untouched) — the WORKTREE-GUARD hooks
+  reference it explicitly.
+
+## Conventions
+
+- Frontmatter: `name` + a trigger-rich "MUST USE" `description` + `metadata.short-description`.
+- Progressive disclosure via `references/`; supporting `scripts/`, `examples/`, and `assets/`
+  travel with their skill.
+- Content is project-agnostic Codex-native: no external orchestrator server, no
+  host-specific identity paths, and repo root is resolved via `pwd`/AGENTS.md rather
+  than any fixed location. The live `cxc orchestrate` CLI is a local component path
+  over codexclaw file state, not a server runtime.
+
+See `devlog/_plan/` for the conversion sequence and the per-skill conversion delta.

@@ -1,0 +1,110 @@
+/**
+ * triage.ts — auto-mode severity triage + assumption transition (L10.2 / 102).
+ *
+ * Converts L9 contradictions into either a user question (high severity, manual
+ * interview) or a recorded assumption (low/medium). Pure functions: callers own
+ * the actual request_user_input call and state write.
+ *
+ * Policy (FROZEN 102):
+ *  - low    -> recorded assumption (conservative)
+ *  - medium -> recorded assumption by default
+ *  - high   -> user question (manual interview); CANNOT be safe-defaulted
+ *  - goal-mode backfill: a high gap becomes a high-severity assumption requiring
+ *    user review (goal mode cannot ask).
+ *  - rhythm guard: after 3 consecutive auto-resolves, the next contradiction is
+ *    escalated to the user regardless of severity.
+ *  - an auto-resolved contradiction moves contradictions[] -> assumptions[]
+ *    (recorded:true) only AFTER it is written into `## OPEN ASSUMPTIONS`.
+ */
+import type { Assumption, Contradiction, ContradictionSeverity } from "./interview.ts";
+
+export type TriageMode = "manual" | "goal-backfill";
+export type TriageAction = "ask_user" | "record_assumption";
+
+/** Consecutive auto-resolves allowed before forcing a user escalation (102). */
+export const AUTO_RESOLVE_RHYTHM_LIMIT = 3;
+
+export interface TriageDecision {
+  action: TriageAction;
+  /** When record_assumption: the severity the assumption carries. */
+  assumptionSeverity?: ContradictionSeverity;
+  reason: string;
+}
+
+/**
+ * Decide how a single contradiction exits, given the interview mode and how many
+ * auto-resolves happened back-to-back. Never silently defaults a high-severity
+ * gap in manual interview.
+ */
+export function triageContradiction(
+  severity: ContradictionSeverity,
+  mode: TriageMode,
+  consecutiveAutoResolves: number,
+): TriageDecision {
+  // rhythm guard: force a user question after N consecutive auto-resolves (manual only).
+  if (mode === "manual" && consecutiveAutoResolves >= AUTO_RESOLVE_RHYTHM_LIMIT) {
+    return { action: "ask_user", reason: `rhythm guard: ${consecutiveAutoResolves} consecutive auto-resolves -> escalate` };
+  }
+
+  if (severity === "high") {
+    if (mode === "manual") {
+      return { action: "ask_user", reason: "high severity in manual interview must go to the user" };
+    }
+    // goal-backfill cannot ask: keep as a high-severity assumption needing review.
+    return {
+      action: "record_assumption",
+      assumptionSeverity: "high",
+      reason: "goal-mode backfill: high gap recorded as high-severity assumption requiring user review",
+    };
+  }
+
+  // low / medium -> conservative recorded assumption
+  return {
+    action: "record_assumption",
+    assumptionSeverity: severity,
+    reason: `${severity} severity auto-resolved to a recorded assumption`,
+  };
+}
+
+export interface AutoResolveResult {
+  contradictions: Contradiction[];
+  assumptions: Assumption[];
+  consecutiveAutoResolves: number;
+}
+
+export interface AutoResolveInput {
+  contradictions: Contradiction[];
+  assumptions: Assumption[];
+  target: Contradiction;
+  assumptionText: string;
+  consecutiveAutoResolves: number;
+  /** PROOF the assumptionText was written into `## OPEN ASSUMPTIONS` (102). */
+  writtenToOpenAssumptions: boolean;
+  /** Set true for goal-backfill high gaps (recorded assumption still needs user review). */
+  requiresUserReview?: boolean;
+}
+
+/**
+ * Move one contradiction out of contradictions[] and into assumptions[]. The
+ * assumption is marked recorded:true ONLY when the caller proves it was written
+ * into `## OPEN ASSUMPTIONS` (writtenToOpenAssumptions:true). Without that proof
+ * the assumption is recorded:false (it keeps blocking readiness, 102 fail-closed).
+ * Pure: does not mutate inputs. Carries the contradiction severity onto the
+ * assumption so goal-backfill high gaps retain their review metadata.
+ */
+export function autoResolveToAssumption(input: AutoResolveInput): AutoResolveResult {
+  const { contradictions, assumptions, target, assumptionText, consecutiveAutoResolves } = input;
+  const remaining = contradictions.filter((c) => c.contradictionId !== target.contradictionId);
+  const assumption: Assumption = {
+    id: target.contradictionId || `assumption-${assumptions.length + 1}`,
+    text: assumptionText,
+    recorded: input.writtenToOpenAssumptions === true,
+    severity: target.severity,
+    ...(input.requiresUserReview === true ? { requiresUserReview: true } : {}),
+  };
+  return {
+    contradictions: remaining,
+    assumptions: [...assumptions, assumption],
+    consecutiveAutoResolves: consecutiveAutoResolves + 1,
+  };
+}

@@ -1,0 +1,140 @@
+/**
+ * freeze-cli.ts — runtime wiring for the L10.3 freeze/stale path (HIGH-1/HIGH-4).
+ *
+ * `cli.js freeze --dry-run [--cwd <dir>] [--session <id>]` reads the session
+ * interview tracker, hashes the plan files under .codexclaw/plan/<slug>/, builds
+ * (or previews) the freeze manifest at .codexclaw/interview/freeze.json, runs a
+ * stale check against any existing manifest, and prints a human summary. This
+ * makes triage/freeze reachable from production, not just exported definitions.
+ */
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { join, relative } from "node:path";
+import { STATE_DIR, readState } from "./state.ts";
+import { isInterviewReady } from "./interview.ts";
+import {
+  PLAN_SUBDIR,
+  FREEZE_MANIFEST_DIR,
+  FREEZE_MANIFEST_FILE,
+  buildFreezeManifest,
+  checkStale,
+  deriveSlug,
+  sha256,
+  GOAL_ACTIVATION_DIRECTIVE,
+  type EvidenceBundle,
+  type FreezeManifest,
+  type PlanFileHash,
+} from "./freeze.ts";
+
+function listPlanFiles(planDir: string): PlanFileHash[] {
+  if (!existsSync(planDir)) return [];
+  const out: PlanFileHash[] = [];
+  const walk = (dir: string): void => {
+    for (const name of readdirSync(dir)) {
+      if (name.startsWith(".")) continue;
+      const full = join(dir, name);
+      if (statSync(full).isDirectory()) walk(full);
+      else out.push({ path: relative(planDir, full), sha256: sha256(readFileSync(full, "utf8")) });
+    }
+  };
+  walk(planDir);
+  return out;
+}
+
+export interface FreezeCliArgs {
+  cwd: string;
+  sessionId: string;
+  dryRun: boolean;
+  /** True for `help`/`--help`/`-h` or a bare invocation. runFreeze returns
+   *  before any filesystem write when this is set. */
+  help?: boolean;
+}
+
+export function parseFreezeArgs(argv: string[]): FreezeCliArgs {
+  const get = (flag: string): string | undefined => {
+    const i = argv.indexOf(flag);
+    return i >= 0 && i + 1 < argv.length ? argv[i + 1] : undefined;
+  };
+  return {
+    cwd: get("--cwd") ?? process.cwd(),
+    sessionId: get("--session") ?? "default",
+    dryRun: argv.includes("--dry-run"),
+    // 260825 wp1: `cxc freeze --help` used to fall straight through to runFreeze,
+    // which WROTE .codexclaw/interview/freeze.json and exited 0 — a workspace
+    // mutation behind a read-only-looking flag, with nothing in the output to
+    // signal it. Help is now parsed, and runFreeze returns before any IO.
+    help: argv.length === 0 || argv.some((a) => a === "help" || a === "--help" || a === "-h"),
+  };
+}
+
+export function runFreeze(args: FreezeCliArgs): string {
+  if (args.help) {
+    return [
+      "cxc freeze — build or preview the interview freeze manifest",
+      "",
+      "Usage:",
+      "  cxc freeze --session <id> [--cwd <path>]",
+      "  cxc freeze --dry-run --session <id> [--cwd <path>]",
+      "  cxc freeze --help",
+      "",
+      "Notes:",
+      "  Hashes the plan files under .codexclaw/plan/<slug>/ and writes the manifest",
+      "  at .codexclaw/interview/freeze.json, then reports staleness against any",
+      "  existing manifest.",
+      "  --dry-run previews without writing. --help never writes.",
+    ].join("\n");
+  }
+  const state = readState(args.cwd, args.sessionId);
+  const tracker = state.interview;
+  const ready = isInterviewReady(tracker);
+  const objective = state.slug || args.sessionId;
+  const slug = deriveSlug(objective);
+  const planDir = join(args.cwd, STATE_DIR, PLAN_SUBDIR, slug);
+  const planFiles = listPlanFiles(planDir);
+
+  const evidenceBundle: EvidenceBundle = {
+    dimensions: tracker?.dimensions ?? null,
+    openAssumptions: (tracker?.assumptions ?? []).filter((a) => a.recorded).map((a) => `- ${a.text}`),
+    contradictions: tracker?.contradictions ?? [],
+    acceptanceCriteria: [],
+    researchReportRef: null,
+  };
+
+  const manifest = buildFreezeManifest({ objective, planFiles, evidenceBundle });
+  const manifestPath = join(args.cwd, STATE_DIR, FREEZE_MANIFEST_DIR, FREEZE_MANIFEST_FILE);
+
+  // stale check against an existing manifest (goal-start integration)
+  let staleLine = "stale-check: no prior manifest";
+  if (existsSync(manifestPath)) {
+    try {
+      const prior = JSON.parse(readFileSync(manifestPath, "utf8")) as FreezeManifest;
+      const r = checkStale(prior, planFiles);
+      staleLine = `stale-check: ${r.stale ? "STALE" : "fresh"} — ${r.reason}`;
+    } catch {
+      staleLine = "stale-check: prior manifest unreadable (will re-freeze)";
+    }
+  }
+
+  if (!args.dryRun) {
+    mkdirSync(join(args.cwd, STATE_DIR, FREEZE_MANIFEST_DIR), { recursive: true });
+    writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+  }
+
+  const lines = [
+    `[codexclaw freeze${args.dryRun ? " --dry-run" : ""}]`,
+    `manifest: ${manifestPath}`,
+    `slug: ${slug}`,
+    `planFiles: ${planFiles.length}`,
+    `planHash: ${manifest.planHash}`,
+    `interviewReady: ${ready}`,
+    `openAssumptions: ${evidenceBundle.openAssumptions.length}`,
+    staleLine,
+  ];
+  // L14.2: when the interview is ready, surface the goal-activation handoff so the
+  // MAIN session knows to call create_goal (codexclaw stays read-only on the goal DB).
+  // This is the production consumer of GOAL_ACTIVATION_DIRECTIVE — it is emitted to
+  // freeze stdout, which `cxc freeze` exposes to the operator/main session.
+  if (ready) {
+    lines.push("", GOAL_ACTIVATION_DIRECTIVE);
+  }
+  return lines.join("\n");
+}

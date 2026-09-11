@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <style>
+    .bg { fill: #05090d; }
+    .codex { fill: #f7f8fb; }
+    .claw { fill: #ef1b2d; }
+    .cut { fill: #05090d; }
+    @media (prefers-color-scheme: light) {
+      .bg { fill: #070b10; }
+    }
+  </style>
+  <rect class="bg" width="64" height="64" rx="12"/>
+  <circle class="codex" cx="24" cy="18" r="8"/>
+  <circle class="codex" cx="16" cy="32" r="8"/>
+  <circle class="codex" cx="24" cy="46" r="8"/>
+  <rect class="bg" x="24" y="8" width="9" height="48"/>
+  <path class="claw" d="M34 9c13 4 22 16 22 30 0 6-2 12-5 17l-12-8c2-3 3-6 3-10 0-7-4-13-10-16z"/>
+  <path class="claw" d="M37 18c8 2 14 9 14 18 0 4-1 8-4 11l-8-5c1-2 2-4 2-7 0-4-2-8-6-10z"/>
+  <path class="cut" d="M44 21c5 3 8 8 8 14 0 4-1 7-4 10l-6-5c1-1 1-3 1-5 0-3-2-6-5-8z"/>
+  <path class="codex" d="M32 25l9 5v10l-9 5-9-5V30zM32 30l-5 3v4l5 3 5-3v-4z"/>
+</svg>

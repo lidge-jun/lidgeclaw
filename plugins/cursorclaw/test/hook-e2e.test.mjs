@@ -1,0 +1,1120 @@
+// hook-e2e.test.mjs - manifest-path end-to-end coverage for EVERY declared hook
+// (G19 / L20-WP7 + WP22). Each test drives the REAL dist entrypoint named in the
+// hook's plugin.json command string, exactly as codex would invoke it (argv hook
+// <event> + a JSON payload on stdin), and asserts exit 0 plus the expected stdout
+// envelope or filesystem side effect. WP7 covered 5 of 6 hooks behaviorally + a
+// resolve check across all 6; WP22 added the 6th (user-prompt-submit) behaviorally,
+// so every manifest hook is now exercised, not just resolved.
+//
+// Determinism (per the WP7 A-gate): the interview-in-goal guard reads codex's goals
+// DB, so we point CODEX_HOME/CODEX_SQLITE_HOME at an empty temp dir (no goals_1.sqlite
+// => status "inactive" => allow). The provider session-start path shells out to find
+// ocx; it ALWAYS exits 0 and emits a status line regardless, so we assert only the
+// stable contract (exit 0 + a parseable provider status line), not a specific mode.
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { spawn, spawnSync } from "node:child_process";
+import { readFileSync, realpathSync, existsSync, rmSync, mkdtempSync, cpSync, mkdirSync, writeFileSync, readdirSync } from "node:fs";
+import { join, dirname, resolve, basename } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+import { tmpdir } from "node:os";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const pluginRoot = resolve(here, "..");
+const manifestPath = join(pluginRoot, ".codex-plugin", "plugin.json");
+
+// This suite drives the COMPILED dist entrypoints, so it needs a prior `npm run build`
+// (the project verify protocol builds before testing). It deliberately does NOT invoke
+// build.mjs itself. To stay immune to the C10 build/test contention (build.test.mjs and
+// packaging.test.mjs rebuild dist in parallel workers and would clobber a cli.js mid-read),
+// each entrypoint is SNAPSHOT-copied to an isolated temp dir before it is run. A concurrent
+// rebuild of the source tree cannot then race the spawned process. If dist is absent, each
+// test skips gracefully (matching mcp.test.ts).
+const snapshots = new Map();
+process.on("exit", () => {
+  for (const dir of snapshots.values()) {
+    try { rmSync(dir, { recursive: true, force: true }); } catch { /* best-effort */ }
+  }
+});
+// Synchronous sleep (Atomics) so a settle-retry works inside node:test's sync flow.
+function sleepSync(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+// Snapshot the component's whole dist/ to temp, but only once a SETTLED tree is
+// observed: build.test.mjs/packaging.test.mjs rebuild the shared committed dist/
+// mid-run (C10), so a naive copy can capture a half-written cli.js. We retry the
+// copy + a parse smoke-check until the entrypoint is intact (or skip if dist is
+// genuinely absent). This isolates the spawned process from concurrent rebuilds.
+function snapshotEntrypoint(distAbs) {
+  const srcDir = dirname(distAbs); // cli.js imports siblings -> copy the dir
+  const existing = snapshots.get(srcDir);
+  if (existing) return join(existing, basename(distAbs));
+  if (!existsSync(distAbs)) return null;
+  for (let attempt = 0; attempt < 40; attempt++) {
+    const snapDir = mkdtempSync(join(tmpdir(), "ccx-dist-"));
+    try {
+      cpSync(srcDir, snapDir, { recursive: true });
+      const ep = join(snapDir, basename(distAbs));
+      const body = readFileSync(ep, "utf8");
+      // smoke-check: a fully-written entrypoint ends with the main() invocation — either
+      // bare (`main();`) or wrapped in an import-guard block (`main();\n}`), not mid-write.
+      if (body.length > 0 && /main\(\);?\s*\}?\s*$/.test(body.trimEnd())) {
+        snapshots.set(srcDir, snapDir);
+        return ep;
+      }
+    } catch { /* mid-rebuild; fall through to retry */ }
+    rmSync(snapDir, { recursive: true, force: true });
+    sleepSync(50);
+  }
+  // dist never settled within budget. Returning null makes the caller skip, which
+  // is a PRECONDITION failure, not flake avoidance: without a settled dist there
+  // is nothing to exercise, so the test would assert on a build artifact it never
+  // saw. TEST-FLAKE-QUARANTINE-01 does not apply — this skips a missing fixture,
+  // not a failing assertion.
+  return null;
+}
+
+// Resolve a hook JSON's first command string to its absolute dist entrypoint plus
+// the `hook <event>` argv, by reading the real manifest-referenced hook file.
+function readHookCommand(hookFileRel) {
+  const hookPath = join(pluginRoot, hookFileRel.replace(/^\.\//, ""));
+  const json = JSON.parse(readFileSync(hookPath, "utf8"));
+  const [event] = Object.keys(json.hooks);
+  const command = json.hooks[event][0].hooks[0].command;
+  const m = /"\$\{PLUGIN_ROOT\}\/([^"]+)"\s+hook\s+(\S+)/.exec(command);
+  assert.ok(m, `hook command not parseable: ${command}`);
+  return { event, distRel: m[1], hookEvent: m[2], distAbs: join(pluginRoot, m[1]) };
+}
+
+function runHook(distAbs, hookEvent, payload, extraEnv = {}) {
+  const env = { ...process.env, ...extraEnv };
+  for (const [key, value] of Object.entries(extraEnv)) {
+    if (value === undefined) delete env[key];
+  }
+  return spawnSync(process.execPath, [distAbs, "hook", hookEvent], {
+    input: payload === null ? "" : JSON.stringify(payload),
+    encoding: "utf8",
+    env,
+  });
+}
+
+function runHookAsync(distAbs, hookEvent, payload, extraEnv = {}) {
+  const env = { ...process.env, ...extraEnv };
+  for (const [key, value] of Object.entries(extraEnv)) {
+    if (value === undefined) delete env[key];
+  }
+  return new Promise((resolveRun, rejectRun) => {
+    const child = spawn(process.execPath, [distAbs, "hook", hookEvent], { env });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+    child.stdout.on("data", (chunk) => { stdout += chunk; });
+    child.stderr.on("data", (chunk) => { stderr += chunk; });
+    child.on("error", rejectRun);
+    child.on("close", (status) => resolveRun({ status, stdout, stderr }));
+    child.stdin.end(payload === null ? "" : JSON.stringify(payload));
+  });
+}
+
+function emptyCodexHome() {
+  const dir = mkdtempSync(join(tmpdir(), "ccx-home-"));
+  return { dir, env: { CODEX_HOME: dir, CODEXCLAW_HOME: join(dir, "cxc"), CODEX_SQLITE_HOME: dir } };
+}
+
+test("WP7/G19: every manifest hook command resolves to an existing dist entrypoint", () => {
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+  // 260804: 18 -> 21 with the worktree-guard hooks (session-start-detecting-
+  // managed-worktree, user-prompt-submit-guiding-worktree-rename,
+  // pre-tool-use-guarding-managed-worktree-deletion).
+  // 260909 wp1-A: 23 -> 24 with the memory-write gate
+  // (pre-tool-use-guarding-memory-write).
+  // 260910: 25 -> 28 with bg-wake's three hooks. The pin is deliberate — it is the
+  // machine-checked partner of the README badges and inventory.json, so an optional
+  // component removes itself here too (see `cxc bg removal`).
+  assert.ok(Array.isArray(manifest.hooks) && manifest.hooks.length === 28, "expected 28 declared hooks");
+  for (const rel of manifest.hooks) {
+    const { distAbs } = readHookCommand(rel);
+    // Settle-retry: a concurrent rebuild (C10) may briefly unlink dist mid-run.
+    let present = false;
+    for (let i = 0; i < 40 && !present; i++) {
+      if (existsSync(distAbs)) { present = true; break; }
+      sleepSync(50);
+    }
+    assert.ok(present, `manifest hook dist entrypoint missing: ${distAbs}`);
+  }
+});
+
+test("SessionStart state bootstrap: fresh compiled hook creates exact IDLE state and immediate orchestrate P succeeds", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/session-start-bootstrapping-pabcd-state.json");
+  assert.equal(event, "SessionStart");
+  assert.equal(hookEvent, "session-start");
+  const ep = snapshotEntrypoint(distAbs);
+  assert.ok(ep, "pabcd-state dist entrypoint must settle");
+  const cwd = mkdtempSync(join(tmpdir(), "ccx-session-bootstrap-"));
+  const sessionId = "019f4a8a-b1a1-7113-b72a-460a39a8f096";
+  try {
+    const started = runHook(ep, hookEvent, { hook_event_name: "SessionStart", session_id: sessionId, cwd });
+    assert.equal(started.status, 0, started.stderr);
+    assert.equal(started.stdout, "", "bootstrap is side-effect-only");
+
+    const statePath = join(cwd, ".codexclaw", "sessions", `${sessionId}.json`);
+    const initial = JSON.parse(readFileSync(statePath, "utf8"));
+    assert.deepEqual(initial, {
+      phase: "IDLE",
+      sessionId,
+      slug: "",
+      updatedAt: initial.updatedAt,
+      flags: { interview: false, auditPassed: false, checkPassed: false },
+      supersededBy: null,
+      injectedTurns: [],
+      lastInjectedPhase: null,
+      orchestrationActive: false,
+      interview: null,
+      stopBlockPhase: null,
+      stopBlockCount: 0,
+      stopBlockWorkPhaseId: null,
+      stopMetricCursor: 0,
+      stopBlockTotal: 0,
+      loopArmSeen: false,
+      idleEditNudges: 0,
+      memoryWriteRequested: false,
+      memoryWriteTurn: null,
+      memoryWriteGrant: false,
+      unverifiedSubagents: [],
+      unverifiedCorrupt: false,
+      phaseEntrySource: null,
+      planUnit: null,
+      planEpoch: null,
+      checkEpoch: null,
+      dcloseRecovery: null,
+    });
+
+    const attest = JSON.stringify({ from: "IDLE", to: "P", did: "SessionStart bound the session" });
+    const planned = spawnSync(
+      process.execPath,
+      [ep, "orchestrate", "P", "--session", sessionId, "--cwd", cwd, "--attest", attest],
+      { encoding: "utf8" },
+    );
+    assert.equal(planned.status, 0, planned.stderr);
+    assert.match(planned.stdout, /IDLE -> P/);
+    const after = JSON.parse(readFileSync(statePath, "utf8"));
+    assert.equal(after.phase, "P");
+    assert.equal(after.sessionId, sessionId);
+    assert.equal(after.orchestrationActive, true);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("SessionStart state bootstrap: valid and corrupt resumed state remain byte-for-byte unchanged", () => {
+  const { hookEvent, distAbs } = readHookCommand("./hooks/session-start-bootstrapping-pabcd-state.json");
+  const ep = snapshotEntrypoint(distAbs);
+  assert.ok(ep, "pabcd-state dist entrypoint must settle");
+  for (const fixture of [
+    {
+      sessionId: "session-start-valid-resume",
+      bytes: Buffer.from(JSON.stringify({
+        phase: "B",
+        sessionId: "session-start-valid-resume",
+        slug: "resume",
+        updatedAt: "2026-07-10T00:00:00.000Z",
+        flags: { interview: false, auditPassed: true, checkPassed: false },
+        supersededBy: null,
+        injectedTurns: ["turn-1"],
+        lastInjectedPhase: "B",
+        orchestrationActive: true,
+        interview: null,
+        stopBlockPhase: "B",
+        stopBlockCount: 2,
+      }, null, 2) + "\n"),
+    },
+    { sessionId: "session-start-corrupt-resume", bytes: Buffer.from("{ corrupt \u0000 bytes") },
+  ]) {
+    const cwd = mkdtempSync(join(tmpdir(), "ccx-session-resume-"));
+    try {
+      const sessionsDir = join(cwd, ".codexclaw", "sessions");
+      mkdirSync(sessionsDir, { recursive: true });
+      const statePath = join(sessionsDir, `${fixture.sessionId}.json`);
+      writeFileSync(statePath, fixture.bytes);
+      const resumed = runHook(ep, hookEvent, {
+        hook_event_name: "SessionStart",
+        session_id: fixture.sessionId,
+        cwd,
+      });
+      assert.equal(resumed.status, 0, resumed.stderr);
+      assert.equal(resumed.stdout, "");
+      assert.deepEqual(readFileSync(statePath), fixture.bytes);
+    } finally {
+      rmSync(cwd, { recursive: true, force: true });
+    }
+  }
+});
+
+test("SessionStart state bootstrap: concurrent compiled hooks publish one complete state file without temp leaks", async () => {
+  const { hookEvent, distAbs } = readHookCommand("./hooks/session-start-bootstrapping-pabcd-state.json");
+  const ep = snapshotEntrypoint(distAbs);
+  assert.ok(ep, "pabcd-state dist entrypoint must settle");
+  const cwd = mkdtempSync(join(tmpdir(), "ccx-session-race-"));
+  const sessionId = "session-start-race";
+  const payload = { hook_event_name: "SessionStart", session_id: sessionId, cwd };
+  try {
+    const results = await Promise.all([
+      runHookAsync(ep, hookEvent, payload),
+      runHookAsync(ep, hookEvent, payload),
+    ]);
+    for (const result of results) {
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(result.stdout, "");
+    }
+    const sessionsDir = join(cwd, ".codexclaw", "sessions");
+    assert.deepEqual(readdirSync(sessionsDir), [`${sessionId}.json`]);
+    const state = JSON.parse(readFileSync(join(sessionsDir, `${sessionId}.json`), "utf8"));
+    assert.equal(state.phase, "IDLE");
+    assert.equal(state.sessionId, sessionId);
+    assert.equal(state.orchestrationActive, false);
+    assert.deepEqual(readdirSync(sessionsDir).filter((name) => name.endsWith(".tmp")), []);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("SessionStart state bootstrap: ENOTDIR fails open with empty stdout and no state", () => {
+  const { hookEvent, distAbs } = readHookCommand("./hooks/session-start-bootstrapping-pabcd-state.json");
+  const ep = snapshotEntrypoint(distAbs);
+  assert.ok(ep, "pabcd-state dist entrypoint must settle");
+  const cwd = mkdtempSync(join(tmpdir(), "ccx-session-enotdir-"));
+  try {
+    writeFileSync(join(cwd, ".codexclaw"), "not a directory");
+    const result = runHook(ep, hookEvent, {
+      hook_event_name: "SessionStart",
+      session_id: "session-start-enotdir",
+      cwd,
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stdout, "");
+    assert.equal(existsSync(join(cwd, ".codexclaw", "sessions", "session-start-enotdir.json")), false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("SessionStart state bootstrap: noncanonical identity and synthetic agent fields write no state", () => {
+  const { hookEvent, distAbs } = readHookCommand("./hooks/session-start-bootstrapping-pabcd-state.json");
+  const ep = snapshotEntrypoint(distAbs);
+  assert.ok(ep, "pabcd-state dist entrypoint must settle");
+  const cwd = mkdtempSync(join(tmpdir(), "ccx-session-invalid-"));
+  try {
+    for (const sessionId of [" \t\n", "  session-start-padded  ", "../session-start-path", "세션-start"]) {
+      const rejectedSession = runHook(ep, hookEvent, {
+        hook_event_name: "SessionStart",
+        session_id: sessionId,
+        cwd,
+      });
+      assert.equal(rejectedSession.status, 0, rejectedSession.stderr);
+      assert.equal(rejectedSession.stdout, "");
+    }
+
+    const whitespaceCwdSandbox = mkdtempSync(join(cwd, "whitespace-cwd-"));
+    const whitespaceCwd = spawnSync(process.execPath, [ep, "hook", hookEvent], {
+      cwd: whitespaceCwdSandbox,
+      input: JSON.stringify({ hook_event_name: "SessionStart", session_id: "session-start-whitespace-cwd", cwd: " \t\n" }),
+      encoding: "utf8",
+    });
+    assert.equal(whitespaceCwd.status, 0, whitespaceCwd.stderr);
+    assert.equal(whitespaceCwd.stdout, "");
+    assert.deepEqual(readdirSync(whitespaceCwdSandbox), []);
+
+    const syntheticChild = runHook(ep, hookEvent, {
+      hook_event_name: "SessionStart",
+      session_id: "session-start-child",
+      cwd,
+      agent_id: "agent-1",
+      agent_type: "worker",
+    });
+    assert.equal(syntheticChild.status, 0, syntheticChild.stderr);
+    assert.equal(syntheticChild.stdout, "");
+    assert.equal(existsSync(join(cwd, ".codexclaw", "sessions")), false);
+
+    const attest = JSON.stringify({ from: "IDLE", to: "P", did: "noncanonical identity must remain unknown" });
+    const planned = spawnSync(
+      process.execPath,
+      [ep, "orchestrate", "P", "--session", "  session-start-padded  ", "--cwd", cwd, "--attest", attest],
+      { encoding: "utf8" },
+    );
+    assert.notEqual(planned.status, 0);
+    assert.match(`${planned.stdout}${planned.stderr}`, /unknown session/i);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("WP7/G19: stop hook e2e - no in-flight cycle releases (exit 0, empty stdout)", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/stop-checking-pabcd-continuation.json");
+  assert.equal(event, "Stop");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return; // build not run yet; skip gracefully
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-stop-"));
+  try {
+    const res = runHook(ep, hookEvent, { hook_event_name: "Stop", session_id: "s1", cwd: tmp });
+    assert.equal(res.status, 0, res.stderr);
+    assert.equal(res.stdout.trim(), "", "fresh cwd => IDLE => no block");
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+// lazygap_impl 080.1: shell friction capture (PostToolUse ^Bash$) + advisory gate
+// (PreToolUse ^Bash$). Capture records a signature on a failure-looking tool_response;
+// the gate advises to change approach once a stop-level signature exists. Both fail-open.
+test("L080: post-tool-use-friction records on a failing Bash response; pre gate advises at stop", () => {
+  const cap = readHookCommand("./hooks/_deprecated/post-tool-use-capturing-shell-friction.json");
+  assert.equal(cap.event, "PostToolUse");
+  const capEp = snapshotEntrypoint(cap.distAbs);
+  if (!capEp) return;
+  const gate = readHookCommand("./hooks/_deprecated/pre-tool-use-advising-on-friction.json");
+  assert.equal(gate.event, "PreToolUse");
+  const gateEp = snapshotEntrypoint(gate.distAbs);
+  if (!gateEp) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-friction-"));
+  try {
+    const failPayload = {
+      hook_event_name: "PostToolUse", session_id: "s1", cwd: tmp,
+      tool_name: "Bash", tool_input: { command: "build" },
+      tool_response: "fatal: boom at x.ts:1:1\nnpm ERR! code E1",
+    };
+    // 3 recurrences of the SAME normalized signature -> stop
+    for (let i = 0; i < 3; i++) {
+      const r = runHook(capEp, cap.hookEvent, { ...failPayload, tool_response: `fatal: boom at x.ts:${i}:1` });
+      assert.equal(r.status, 0, r.stderr);
+      assert.equal(r.stdout.trim(), "", "capture is side-effect only");
+    }
+    assert.ok(existsSync(join(tmp, ".codexclaw", "friction.jsonl")), "friction ledger written");
+
+    // the PreToolUse gate now advises without blocking on a Bash call
+    const adv = runHook(gateEp, gate.hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd: tmp, tool_name: "Bash", tool_input: { command: "rerun" },
+    });
+    assert.equal(adv.status, 0, adv.stderr);
+    const out = JSON.parse(adv.stdout);
+    assert.equal(out.hookSpecificOutput.permissionDecision, "allow");
+    assert.match(out.hookSpecificOutput.permissionDecisionReason, /friction/i);
+
+    // a clean response does NOT record; fresh cwd gate stays silent (fail-open allow)
+    const clean = mkdtempSync(join(tmpdir(), "ccx-friction2-"));
+    try {
+      const ok = runHook(capEp, cap.hookEvent, {
+        hook_event_name: "PostToolUse", session_id: "s1", cwd: clean,
+        tool_name: "Bash", tool_input: { command: "ls" }, tool_response: "ok, listing complete",
+      });
+      assert.equal(ok.stdout.trim(), "", "clean response side-effect only");
+      const silent = runHook(gateEp, gate.hookEvent, {
+        hook_event_name: "PreToolUse", session_id: "s1", cwd: clean, tool_name: "Bash", tool_input: {},
+      });
+      assert.equal(silent.stdout.trim(), "", "no stop signature => gate allows (empty stdout)");
+    } finally { rmSync(clean, { recursive: true, force: true }); }
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+test("WP7/G19: pre-tool-use goal-budget hook e2e - bare create_goal allows, token_budget denies", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/pre-tool-use-guarding-goal-budget.json");
+  assert.equal(event, "PreToolUse");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-budget-"));
+  try {
+    const allow = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd: tmp,
+      tool_name: "create_goal", tool_input: { objective: "x" },
+    });
+    assert.equal(allow.status, 0, allow.stderr);
+    assert.equal(allow.stdout.trim(), "", "bare objective must allow (empty stdout)");
+
+    const deny = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd: tmp,
+      tool_name: "create_goal", tool_input: { objective: "x", token_budget: 1000 },
+    });
+    assert.equal(deny.status, 0, deny.stderr);
+    const out = JSON.parse(deny.stdout);
+    assert.equal(out.hookSpecificOutput.permissionDecision, "deny");
+    assert.match(out.hookSpecificOutput.permissionDecisionReason, /token_budget/i);
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+test("260709: pre-tool-use goal-complete hook e2e - mid-cycle complete denies, blocked allows", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/pre-tool-use-guarding-goal-complete.json");
+  assert.equal(event, "PreToolUse");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-complete-"));
+  try {
+    // seed a mid-cycle session state (phase B, orchestration active)
+    const sessionsDir = join(tmp, ".codexclaw", "sessions");
+    mkdirSync(sessionsDir, { recursive: true });
+    writeFileSync(join(sessionsDir, "gc-e2e.json"), JSON.stringify({
+      phase: "B", sessionId: "gc-e2e", slug: "", updatedAt: new Date().toISOString(),
+      flags: { interview: false, auditPassed: false, checkPassed: false },
+      supersededBy: null, injectedTurns: [], lastInjectedPhase: "B",
+      orchestrationActive: true, interview: null, stopBlockPhase: null, stopBlockCount: 0,
+    }));
+
+    const deny = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "gc-e2e", cwd: tmp,
+      tool_name: "update_goal", tool_input: { status: "complete" },
+    });
+    assert.equal(deny.status, 0, deny.stderr);
+    const out = JSON.parse(deny.stdout);
+    assert.equal(out.hookSpecificOutput.permissionDecision, "deny");
+    assert.match(out.hookSpecificOutput.permissionDecisionReason, /GOAL-COMPLETE-GATE-01/);
+
+    const allow = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "gc-e2e", cwd: tmp,
+      tool_name: "update_goal", tool_input: { status: "blocked" },
+    });
+    assert.equal(allow.status, 0, allow.stderr);
+    assert.equal(allow.stdout.trim(), "", "blocked must pass through (honest escape hatch)");
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+test("WP7/G19: pre-tool-use interview-in-goal hook e2e - inactive goal allows request_user_input", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/pre-tool-use-guarding-interview-in-goal.json");
+  assert.equal(event, "PreToolUse");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-ig-"));
+  const home = emptyCodexHome();
+  try {
+    const res = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd: tmp,
+      tool_name: "request_user_input", tool_input: { questions: [] },
+    }, home.env);
+    assert.equal(res.status, 0, res.stderr);
+    assert.equal(res.stdout.trim(), "", "no goals DB => inactive => allow (empty stdout)");
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+    rmSync(home.dir, { recursive: true, force: true });
+  }
+});
+
+test("WP7/G19: post-tool-use hook e2e - captures a request_user_input round into the ledger", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/post-tool-use-capturing-interview-answers.json");
+  assert.equal(event, "PostToolUse");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-post-"));
+  try {
+    const res = runHook(ep, hookEvent, {
+      hook_event_name: "PostToolUse", session_id: "s1", cwd: tmp, turn_id: "t1",
+      tool_name: "request_user_input",
+      tool_input: { questions: [{ id: "q1", question: "Pick one" }] },
+      tool_response: { answers: { q1: { answers: ["A"] } } },
+    });
+    assert.equal(res.status, 0, res.stderr);
+    assert.equal(res.stdout.trim(), "", "PostToolUse recorder emits nothing");
+    const ledger = join(tmp, ".codexclaw", "interviews", "s1.jsonl");
+    assert.ok(existsSync(ledger), "interview ledger not written");
+    const events = readFileSync(ledger, "utf8").trim().split("\n").map((l) => JSON.parse(l).event);
+    assert.ok(events.includes("question_asked"), "missing question_asked row");
+    assert.ok(events.includes("answer_recorded"), "missing answer_recorded row");
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+// 260802 wp2 — the sibling above feeds OBJECT payloads, which is why the suite
+// stayed green while production recorded 222 question_asked rows and ZERO
+// answer_recorded rows. This case replays the JSON-STRING wire shape recorded in
+// devlog/_plan/260802_interview_answer_capture/001_evidence.md.
+test("WP7/G19: post-tool-use hook e2e - captures a JSON-string request_user_input round", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/post-tool-use-capturing-interview-answers.json");
+  assert.equal(event, "PostToolUse");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-post-str-"));
+  try {
+    const res = runHook(ep, hookEvent, {
+      hook_event_name: "PostToolUse", session_id: "s1", cwd: tmp, turn_id: "t1",
+      tool_name: "request_user_input",
+      tool_input: JSON.stringify({ questions: [{ id: "item3", header: "기준 형태", question: "항목 3의 기준 문서를 어떤 형태로 쓸까요?" }] }),
+      tool_response: JSON.stringify({ answers: { item3: { answers: ["신규 채택에만 적용"] } } }),
+    });
+    assert.equal(res.status, 0, res.stderr);
+    const ledger = join(tmp, ".codexclaw", "interviews", "s1.jsonl");
+    assert.ok(existsSync(ledger), "interview ledger not written for string payload");
+    const rows = readFileSync(ledger, "utf8").trim().split("\n").map((l) => JSON.parse(l));
+    assert.ok(rows.some((r) => r.event === "question_asked"), "missing question_asked row");
+    const answered = rows.find((r) => r.event === "answer_recorded");
+    assert.ok(answered, "missing answer_recorded row (the 222/0 defect)");
+    assert.deepEqual(answered.answers, ["신규 채택에만 적용"]);
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+test("WP7/G19: session-start provider hook e2e - exit 0 + parseable SessionStart envelope", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/session-start-ensuring-provider-bridge.json");
+  assert.equal(event, "SessionStart");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const emptyPath = mkdtempSync(join(tmpdir(), "ccx-path-"));
+  try {
+    const res = runHook(ep, hookEvent, null, { PATH: emptyPath });
+    assert.equal(res.status, 0, res.stderr);
+    const out = JSON.parse(res.stdout.trim());
+    assert.equal(out.hookSpecificOutput.hookEventName, "SessionStart");
+    const status = JSON.parse(out.hookSpecificOutput.additionalContext);
+    assert.equal(status.provider, "ocx");
+    assert.ok(["native", "provider", "error"].includes(status.mode), `unexpected mode: ${status.mode}`);
+  } finally { rmSync(emptyPath, { recursive: true, force: true }); }
+});
+
+// Real registered dist entry: natural hints emit guidance/dedup only; explicit
+// commands below prove legal entry. Use an isolated inactive-goal environment.
+test("WP22/G19: natural plan hint emits PLAN advice with IDLE footer, never activates", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/user-prompt-submit-checking-pabcd-trigger.json");
+  assert.equal(event, "UserPromptSubmit");
+  const ep = snapshotEntrypoint(distAbs);
+  assert.ok(ep, "compiled entry required for WP3 verification");
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-ups-"));
+  const home = emptyCodexHome();
+  try {
+    writeFileSync(join(tmp, "codexclaw.json"), JSON.stringify({ interview: "off" }));
+    const res = runHook(ep, hookEvent, {
+      hook_event_name: "UserPromptSubmit", session_id: "s1", cwd: tmp, turn_id: "t1",
+      prompt: "plan this",
+    }, home.env);
+    assert.equal(res.status, 0, res.stderr);
+    const out = JSON.parse(res.stdout);
+    assert.equal(out.hookSpecificOutput.hookEventName, "UserPromptSubmit");
+    const ctx = out.hookSpecificOutput.additionalContext;
+    assert.match(ctx, /codexclaw: PLAN/);
+    assert.match(ctx, /PHASE UNCHANGED/);
+    assert.match(ctx, /IPABCD: IDLE \(IDLE\)/);
+    const stateFile = join(tmp, ".codexclaw", "sessions", "s1.json");
+    assert.ok(existsSync(stateFile));
+    const state = JSON.parse(readFileSync(stateFile, "utf8"));
+    assert.equal(state.phase, "IDLE");
+    assert.equal(state.orchestrationActive, false);
+    assert.equal(state.lastInjectedPhase, null);
+    assert.deepEqual(state.injectedTurns, ["t1"]);
+    assert.equal(existsSync(join(tmp, ".codexclaw", "ledger.jsonl")), false);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+    rmSync(home.dir, { recursive: true, force: true });
+  }
+});
+
+test("wp3: advisory snapshot then agent CLI entry reports real state and preserves denied edges", () => {
+  const start = readHookCommand("./hooks/session-start-bootstrapping-pabcd-state.json");
+  const prompt = readHookCommand("./hooks/user-prompt-submit-checking-pabcd-trigger.json");
+  const ep = snapshotEntrypoint(start.distAbs);
+  assert.ok(ep, "compiled entry required for WP3 verification");
+  for (const phase of ["P", "I"]) {
+    const cwd = mkdtempSync(join(tmpdir(), "ccx-footer-transition-"));
+    const home = emptyCodexHome();
+    const sessionId = "footer-current-session";
+    const cli = verb => spawnSync(process.execPath, [ep, "orchestrate", verb,
+      "--session", sessionId, "--cwd", cwd], { cwd, env: { ...process.env, ...home.env }, encoding: "utf8" });
+    try {
+      const boot = runHook(ep, start.hookEvent, { hook_event_name: "SessionStart", session_id: sessionId, cwd }, home.env);
+      assert.equal(boot.status, 0, boot.stderr);
+      const hint = runHook(ep, prompt.hookEvent, { hook_event_name: "UserPromptSubmit",
+        session_id: sessionId, cwd, turn_id: "hint", prompt: phase === "P" ? "plan this" : "인터뷰만 해줘" }, home.env);
+      assert.equal(hint.status, 0, hint.stderr);
+      assert.match(JSON.parse(hint.stdout).hookSpecificOutput.additionalContext, /IPABCD: IDLE \(IDLE\)/);
+      assert.match(cli("status").stdout, /phase=IDLE/);
+      const entered = cli(phase);
+      assert.equal(entered.status, 0, entered.stderr);
+      const status = cli("status");
+      assert.equal(status.status, 0, status.stderr);
+      assert.ok(status.stdout.includes(`phase=${phase}`));
+      const statePath = join(cwd, ".codexclaw", "sessions", `${sessionId}.json`);
+      assert.equal(JSON.parse(readFileSync(statePath, "utf8")).phase, phase);
+      const ledgerPath = join(cwd, ".codexclaw", "ledger.jsonl");
+      const ledger = readFileSync(ledgerPath, "utf8");
+      const rows = ledger.trim().split("\n").map(JSON.parse);
+      assert.equal(rows.length, 1);
+      assert.equal(rows[0].from, "IDLE");
+      assert.equal(rows[0].to, phase);
+      assert.equal(rows[0].reason, "cli");
+      if (phase === "P") {
+        assert.notEqual(cli("A").status, 0, "missing attestation must be refused");
+        assert.match(cli("status").stdout, /phase=P/);
+        assert.equal(readFileSync(ledgerPath, "utf8"), ledger);
+        assert.equal(JSON.parse(readFileSync(statePath, "utf8")).phase, "P");
+      }
+    } finally {
+      rmSync(cwd, { recursive: true, force: true });
+      rmSync(home.dir, { recursive: true, force: true });
+    }
+  }
+});
+
+test("wp3: registered explicit orchestrate P/I commands still enter and record chat edges", () => {
+  const { hookEvent, distAbs } = readHookCommand("./hooks/user-prompt-submit-checking-pabcd-trigger.json");
+  const ep = snapshotEntrypoint(distAbs);
+  assert.ok(ep, "compiled entry required for WP3 verification");
+  for (const phase of ["P", "I"]) {
+    const tmp = mkdtempSync(join(tmpdir(), "ccx-command-entry-"));
+    const home = emptyCodexHome();
+    try {
+      const res = runHook(ep, hookEvent, {
+        hook_event_name: "UserPromptSubmit", session_id: "explicit-entry", cwd: tmp,
+        turn_id: "t1", prompt: `orchestrate ${phase}`,
+      }, home.env);
+      assert.equal(res.status, 0, res.stderr);
+      assert.ok(JSON.parse(res.stdout).hookSpecificOutput.additionalContext.includes(`IPABCD: ${phase} (`));
+      const state = JSON.parse(readFileSync(join(tmp, ".codexclaw", "sessions", "explicit-entry.json"), "utf8"));
+      assert.equal(state.phase, phase);
+      assert.equal(state.orchestrationActive, true);
+      const rows = readFileSync(join(tmp, ".codexclaw", "ledger.jsonl"), "utf8")
+        .trim().split("\n").map(line => JSON.parse(line));
+      assert.equal(rows.length, 1);
+      assert.equal(rows[0].from, "IDLE");
+      assert.equal(rows[0].to, phase);
+      assert.equal(rows[0].reason, "chat");
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+      rmSync(home.dir, { recursive: true, force: true });
+    }
+  }
+});
+
+test("WP22/G19: user-prompt-submit hook e2e - no trigger + un-orchestrated stays silent (fail-closed)", () => {
+  const { hookEvent, distAbs } = readHookCommand("./hooks/user-prompt-submit-checking-pabcd-trigger.json");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-ups0-"));
+  try {
+    const res = runHook(ep, hookEvent, {
+      hook_event_name: "UserPromptSubmit", session_id: "s2", cwd: tmp, turn_id: "t1",
+      prompt: "hello there",
+    });
+    assert.equal(res.status, 0, res.stderr);
+    assert.equal(res.stdout.trim(), "", "no trigger + never orchestrated => empty stdout");
+    // fail-closed: nothing should have been persisted either.
+    assert.ok(!existsSync(join(tmp, ".codexclaw", "sessions", "s2.json")), "no state should be written");
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+test("agbrowse: user-prompt-submit hook e2e - natural language agbrowse request injects cxc-search guidance", () => {
+  const { hookEvent, distAbs } = readHookCommand("./hooks/user-prompt-submit-checking-pabcd-trigger.json");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-agbrowse-"));
+  try {
+    const res = runHook(ep, hookEvent, {
+      hook_event_name: "UserPromptSubmit", session_id: "s-ag", cwd: tmp, turn_id: "t1",
+      prompt: "agbrowe를 통해서 질문해줘",
+    });
+    assert.equal(res.status, 0, res.stderr);
+    const out = JSON.parse(res.stdout);
+    const ctx = out.hookSpecificOutput.additionalContext;
+    assert.match(ctx, /\[codexclaw: SEARCH/);
+    assert.match(ctx, /cxc-search/);
+    assert.match(ctx, /agbrowse fetch/);
+    assert.match(ctx, /Never use plain `agbrowse search/);
+    const stateFile = join(tmp, ".codexclaw", "sessions", "s-ag.json");
+    assert.ok(existsSync(stateFile), "turn dedup state should be persisted");
+    const persisted = JSON.parse(readFileSync(stateFile, "utf8"));
+    assert.equal(persisted.orchestrationActive, false, "search injection must not activate PABCD");
+    assert.equal(persisted.lastInjectedPhase, null, "search injection must not pretend to be a PABCD phase");
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+// lazygap_impl 010: SubagentStop evidence-receipt gate. A gated worker child with no
+// receipt must be blocked (decision:block); a valid receipt under .codexclaw/evidence/
+// releases. Drives the real dist entrypoint via the manifest command.
+for (const agentType of ["executor", "worker"]) test(`L010: subagent-stop hook e2e - ${agentType} w/o receipt blocks, valid receipt releases`, () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/subagent-stop-verifying-evidence.json");
+  assert.equal(event, "SubagentStop");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-sas-"));
+  try {
+    // 1) worker, no receipt -> block with the EVIDENCE_RECORDED contract.
+    const blocked = runHook(ep, hookEvent, {
+      hook_event_name: "SubagentStop", session_id: "s1", cwd: tmp,
+      agent_type: agentType, agent_id: "a1", last_assistant_message: "all done!",
+    });
+    assert.equal(blocked.status, 0, blocked.stderr);
+    const out = JSON.parse(blocked.stdout);
+    assert.equal(out.decision, "block");
+    assert.match(out.reason, /EVIDENCE_RECORDED/);
+
+    // 2) explorer (non-gated) -> released (empty stdout).
+    const released = runHook(ep, hookEvent, {
+      hook_event_name: "SubagentStop", session_id: "s1", cwd: tmp,
+      agent_type: "explorer", agent_id: "a2", last_assistant_message: "findings...",
+    });
+    assert.equal(released.status, 0, released.stderr);
+    assert.equal(released.stdout.trim(), "", "non-gated agent_type must release");
+
+    // 3) worker WITH a valid receipt -> released.
+    mkdirSync(join(tmp, ".codexclaw", "evidence"), { recursive: true });
+    writeFileSync(join(tmp, ".codexclaw", "evidence", "p.md"), "tests green");
+    const ok = runHook(ep, hookEvent, {
+      hook_event_name: "SubagentStop", session_id: "s3", cwd: tmp,
+      agent_type: agentType, agent_id: "a3",
+      last_assistant_message: "done.\nEVIDENCE_RECORDED: .codexclaw/evidence/p.md",
+    });
+    assert.equal(ok.status, 0, ok.stderr);
+    assert.equal(ok.stdout.trim(), "", "valid receipt must release");
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+// 260710: the spawn hook repairs provided cxc mentions on both schemas without
+// inventing baselines. 260710 parity: BOTH surfaces get D1/D2 leaf guarding and
+// configured model/effort routing; V2 additionally gets SKILL.md body inlining.
+// This snapshot-shaped case exercises the explicit CXC_SKILLS_DIR resolution branch.
+
+// cr1 (C-gate r1 F5): the MANIFEST matcher itself must select every hook-facing
+// spawn name — native V2 arrives as `collaborationspawn_agent` (flat_tool_name
+// concatenation), and a matcher regression would silently disable the whole hook
+// there even with a correct implementation. Parse the shipped regex and pin the
+// positive/negative name sets, then drive the real dist with the collaboration name.
+test("260710: spawn hook manifest matcher covers native V2 hook names", () => {
+  const manifest = JSON.parse(
+    readFileSync(join(pluginRoot, "hooks", "pre-tool-use-attaching-skills.json"), "utf8"),
+  );
+  const matcher = new RegExp(manifest.hooks.PreToolUse[0].matcher);
+  for (const name of ["spawn_agent", "collaborationspawn_agent", "collaboration.spawn_agent"]) {
+    assert.ok(matcher.test(name), `matcher must select ${name}`);
+  }
+  for (const name of ["shell", "multi_agent_v1.spawn_agent", "spawn_agent_extra", "xspawn_agent"]) {
+    assert.ok(!matcher.test(name), `matcher must NOT select ${name}`);
+  }
+});
+
+test("260710: spawn hook e2e - native collaboration name drives the V2 path", () => {
+  const { hookEvent, distAbs } = readHookCommand("./hooks/pre-tool-use-attaching-skills.json");
+  const ep = snapshotEntrypoint(distAbs);
+  assert.ok(ep, "subagent-config dist entrypoint must settle");
+  const cwd = mkdtempSync(join(tmpdir(), "ccx-collab-name-"));
+  try {
+    const res = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd,
+      tool_name: "collaborationspawn_agent",
+      tool_input: { task_name: "t", fork_turns: "none", message: "use $cxc-dev" },
+    }, { CXC_SKILLS_DIR: join(pluginRoot, "skills") });
+    assert.equal(res.status, 0, res.stderr);
+    const ui = JSON.parse(res.stdout).hookSpecificOutput.updatedInput;
+    assert.ok(ui.message.startsWith("[CXC-LEAF-GUARD]"), "collab name classifies as V2 -> guard");
+    assert.match(ui.message, /<skill name="cxc-dev">/, "collab name classifies as V2 -> inline");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+// WP2 cr3: an opaque (ciphertext-like) V2 message that inlines nothing gains the
+// plaintext self-load affordance block, after the task text, under the guard.
+test("260710 WP2: spawn hook e2e - opaque V2 message gains the skill affordance", () => {
+  const { hookEvent, distAbs } = readHookCommand("./hooks/pre-tool-use-attaching-skills.json");
+  const ep = snapshotEntrypoint(distAbs);
+  assert.ok(ep, "subagent-config dist entrypoint must settle");
+  const cwd = mkdtempSync(join(tmpdir(), "ccx-affordance-"));
+  try {
+    const res = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd,
+      tool_name: "collaborationspawn_agent",
+      tool_input: { task_name: "t", fork_turns: "none", message: "gAAAAABopaque-payload" },
+    }, { CXC_SKILLS_DIR: join(pluginRoot, "skills") });
+    assert.equal(res.status, 0, res.stderr);
+    const ui = JSON.parse(res.stdout).hookSpecificOutput.updatedInput;
+    assert.ok(ui.message.startsWith("[CXC-LEAF-GUARD]"));
+    assert.match(ui.message, /\[CXC-SKILL-AFFORDANCE\]/);
+    assert.ok(ui.message.indexOf("gAAAAABopaque-payload") < ui.message.indexOf("[CXC-SKILL-AFFORDANCE]"));
+    assert.match(ui.message, /skills\/<name>\/SKILL\.md/);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+test("260713: spawn hook e2e - snapshot override composes mention repair with the v1/v2 surface-split", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/pre-tool-use-attaching-skills.json");
+  assert.equal(event, "PreToolUse");
+  const ep = snapshotEntrypoint(distAbs);
+  assert.ok(ep, "subagent-config dist entrypoint must settle (vacuous skip is a test bug)");
+  const isolatedCwd = mkdtempSync(join(tmpdir(), "ccx-spawn-e2e-"));
+  const configuredCwd = mkdtempSync(join(tmpdir(), "ccx-spawn-e2e-model-"));
+  const skillsEnv = { CXC_SKILLS_DIR: join(pluginRoot, "skills") };
+  try {
+    const v1Normalized = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd: isolatedCwd,
+      tool_name: "spawn_agent",
+      tool_input: { message: "$cxc-dev review the frontend diff", agent_type: "explorer", trace_id: "v1" },
+    }, skillsEnv);
+    assert.equal(v1Normalized.status, 0, v1Normalized.stderr);
+    const v1NormalizedUi = JSON.parse(v1Normalized.stdout).hookSpecificOutput.updatedInput;
+    assert.equal(v1NormalizedUi.trace_id, "v1");
+    // Separator-tolerant: the runtime emits native path separators inside the
+    // link target (skill://D:\a\...\skills\dev\SKILL.md on Windows).
+    assert.match(v1NormalizedUi.message, /\[\$cxc-dev\]\(skill:\/\/.*[\\/]skills[\\/]dev[\\/]SKILL\.md\)/);
+    // 260713 WP2 surface-split: v1 payloads (no task_name) get the compact V1
+    // scope block; only v2 payloads receive the leaf guard.
+    assert.ok(v1NormalizedUi.message.startsWith("[CXC-SUBAGENT-SCOPE]"), "260713 surface-split: v1 spawn gets the scope block");
+
+    mkdirSync(join(configuredCwd, ".codexclaw"), { recursive: true });
+    writeFileSync(
+      join(configuredCwd, ".codexclaw", "subagents.json"),
+      JSON.stringify({ roles: { explorer: { mode: "model", model: "model-explorer", promptOverride: null } } }),
+    );
+    const v1Model = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd: configuredCwd,
+      tool_name: "spawn_agent",
+      tool_input: { message: "$cxc-dev map the codebase", agent_type: "explorer" },
+    }, skillsEnv);
+    assert.equal(v1Model.status, 0, v1Model.stderr);
+    const v1Ui = JSON.parse(v1Model.stdout).hookSpecificOutput.updatedInput;
+    assert.equal(v1Ui.model, "model-explorer");
+    assert.match(v1Ui.message, /\[\$cxc-dev\]\(skill:\/\//);
+    assert.ok(v1Ui.message.startsWith("[CXC-SUBAGENT-SCOPE]"), "260713 surface-split: v1 spawn gets the scope block");
+    assert.ok(!("reasoning_effort" in v1Ui), "no configured effort -> none injected");
+
+    const v2Normalized = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd: isolatedCwd,
+      tool_name: "spawn_agent",
+      // 090 line-based contract: the bracketed marker line is protected, so the
+      // repairable mention sits on its own line.
+      tool_input: { task_name: "normalized", fork_turns: "none", message: "[CXC-LEAF-GUARD] guarded\n$cxc-dev" },
+    }, skillsEnv);
+    assert.equal(v2Normalized.status, 0, v2Normalized.stderr);
+    const v2NormalizedUi = JSON.parse(v2Normalized.stdout).hookSpecificOutput.updatedInput;
+    // A bare marker is untrusted input and cannot suppress the real full guard.
+    assert.equal((v2NormalizedUi.message.match(/\[CXC-LEAF-GUARD\]/g) ?? []).length, 2);
+    assert.ok(v2NormalizedUi.message.startsWith("[CXC-LEAF-GUARD] You are a LEAF agent"));
+    assert.match(v2NormalizedUi.message, /\[\$cxc-dev\]\(skill:\/\//);
+    assert.match(v2NormalizedUi.message, /<skill name="cxc-dev">/, "v2 inlines the SKILL.md body");
+
+    const v2Guard = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd: configuredCwd,
+      tool_name: "spawn_agent",
+      tool_input: { task_name: "child_task", fork_turns: "none", message: "$cxc-dev map the codebase" },
+    }, skillsEnv);
+    assert.equal(v2Guard.status, 0, v2Guard.stderr);
+    const v2Ui = JSON.parse(v2Guard.stdout).hookSpecificOutput.updatedInput;
+    assert.ok(v2Ui.message.startsWith("[CXC-LEAF-GUARD]"));
+    assert.match(v2Ui.message, /\[\$cxc-dev\]\(skill:\/\//);
+    assert.equal(v2Ui.model, "model-explorer", "260713 surface-split: v2 non-full fork gets configured model");
+    assert.match(v2Ui.message, /<skill name="cxc-dev">/);
+
+    const denied = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd: isolatedCwd,
+      tool_name: "spawn_agent", agent_id: "child-1", agent_type: "explorer",
+      tool_input: { task_name: "recursive", fork_turns: "none", message: "$cxc-dev spawn a helper" },
+    }, skillsEnv);
+    assert.equal(denied.status, 0, denied.stderr);
+    const deniedOut = JSON.parse(denied.stdout).hookSpecificOutput;
+    assert.equal(deniedOut.permissionDecision, "deny");
+    assert.ok(!("updatedInput" in deniedOut), "D1 denial precedes mention normalization");
+  } finally {
+    rmSync(isolatedCwd, { recursive: true, force: true });
+    rmSync(configuredCwd, { recursive: true, force: true });
+  }
+});
+
+// The production cache layout resolves skills relative to dist/../../../skills when
+// CXC_SKILLS_DIR is absent. Build a complete miniature plugin tree to exercise it.
+test("260713: spawn hook e2e - cache-shaped fixture uses script-relative skills", () => {
+  const { hookEvent, distAbs } = readHookCommand("./hooks/pre-tool-use-attaching-skills.json");
+  const fixture = mkdtempSync(join(tmpdir(), "ccx-spawn-cache-"));
+  const cwd = mkdtempSync(join(tmpdir(), "ccx-spawn-cache-cwd-"));
+  try {
+    const cacheDist = join(fixture, "plugin", "components", "subagent-config", "dist");
+    mkdirSync(dirname(cacheDist), { recursive: true });
+    cpSync(dirname(distAbs), cacheDist, { recursive: true });
+    const cacheSkill = join(fixture, "plugin", "skills", "dev", "SKILL.md");
+    mkdirSync(dirname(cacheSkill), { recursive: true });
+    writeFileSync(cacheSkill, "# dev fixture\n");
+
+    const res = runHook(join(cacheDist, basename(distAbs)), hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd,
+      tool_name: "spawn_agent",
+      tool_input: { message: "$cxc-dev inspect the cache", agent_type: "explorer" },
+    }, { CXC_SKILLS_DIR: undefined });
+    assert.equal(res.status, 0, res.stderr);
+    const ui = JSON.parse(res.stdout).hookSpecificOutput.updatedInput;
+    // 260713 WP2 surface-split: this is a v1 payload (no task_name), so it gets
+    // the V1 scope block, not the leaf guard.
+    assert.ok(ui.message.startsWith("[CXC-SUBAGENT-SCOPE]"), "260713 surface-split: v1 spawn gets the scope block");
+    // The hook builds the link as skill:// + resolve(skillsDir, folder,
+    // "SKILL.md") (canonicalMention), i.e. native separators on every platform.
+    // Node realpaths the main module, so the script-relative skillsDir and this
+    // explicit realpathSync agree on both POSIX and Windows temp roots.
+    assert.ok(
+      ui.message.includes(`[$cxc-dev](skill://${realpathSync(cacheSkill)}) inspect the cache`),
+      "normalized mention link resolves against the script-relative skills dir",
+    );
+    // 260818: v1 now carries the SKILL.md BODY as well as the link, so the
+    // caller's text is no longer the tail of the message.
+    assert.ok(ui.message.includes('<skill name="cxc-dev">'), "v1 spawn must carry the skill body");
+  } finally {
+    rmSync(fixture, { recursive: true, force: true });
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+// lazygap_impl 050: PostCompact recovery hook. Side-effect-only — resets the re-inject
+// cursor (lastInjectedPhase=null) on an active cycle so the next non-suppressed same-phase
+// prompt gets the FULL directive; no-op when idle. Output is always empty (PostCompact
+// cannot inject context). Drives the real dist entrypoint via the manifest command.
+test("L050: post-compact hook e2e - active cycle resets cursor, idle is a no-op", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/post-compact-resetting-reinject-cursor.json");
+  assert.equal(event, "PostCompact");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-postcompact-"));
+  try {
+    const sessionsDir = join(tmp, ".codexclaw", "sessions");
+    mkdirSync(sessionsDir, { recursive: true });
+    const statePath = join(sessionsDir, "s1.json");
+    // active cycle at B with the cursor pinned to B (mode-3 short-header condition)
+    writeFileSync(statePath, JSON.stringify({
+      phase: "B", sessionId: "s1", slug: "", updatedAt: "2026-07-01T00:00:00Z",
+      flags: { interview: false, auditPassed: false, checkPassed: false },
+      supersededBy: null, injectedTurns: [], lastInjectedPhase: "B",
+      orchestrationActive: true, interview: null, stopBlockPhase: null, stopBlockCount: 0,
+    }));
+    const res = runHook(ep, hookEvent, { hook_event_name: "PostCompact", session_id: "s1", cwd: tmp, trigger: "auto" });
+    assert.equal(res.status, 0, res.stderr);
+    assert.equal(res.stdout.trim(), "", "PostCompact output is side-effect only (empty stdout)");
+    const after = JSON.parse(readFileSync(statePath, "utf8"));
+    assert.equal(after.lastInjectedPhase, null, "cursor must be reset to null on an active cycle");
+    assert.equal(after.phase, "B", "phase untouched");
+    assert.equal(after.orchestrationActive, true, "orchestrationActive untouched");
+
+    // idle session => no-op (no state file written / unchanged)
+    const idlePath = join(sessionsDir, "idle.json");
+    writeFileSync(idlePath, JSON.stringify({
+      phase: "IDLE", sessionId: "idle", slug: "", updatedAt: "2026-07-01T00:00:00Z",
+      flags: { interview: false, auditPassed: false, checkPassed: false },
+      supersededBy: null, injectedTurns: [], lastInjectedPhase: null,
+      orchestrationActive: false, interview: null, stopBlockPhase: null, stopBlockCount: 0,
+    }));
+    const idleRes = runHook(ep, hookEvent, { hook_event_name: "PostCompact", session_id: "idle", cwd: tmp, trigger: "auto" });
+    assert.equal(idleRes.status, 0, idleRes.stderr);
+    assert.equal(idleRes.stdout.trim(), "", "idle session => empty stdout");
+    assert.equal(JSON.parse(readFileSync(idlePath, "utf8")).updatedAt, "2026-07-01T00:00:00Z", "idle state must be untouched");
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+// lazygap_impl 060.2 + 260714 050: combined edit-path PreToolUse (lint deny-capable
+// first, then IDLE-edit advisory). FAIL-OPEN: denies a forbidden pattern on an added
+// line; allows clean patches and any error. Drives the real dist entrypoint via the
+// manifest command (event arg pre-tool-use-edit after the 050 consolidation).
+// Hermeticity (050 audit Low #3): the advisory leg reads session state + goal DB, so
+// empty-stdout assertions pin an empty CODEX_HOME and a tmp cwd.
+test("L060: edit-path hook e2e - forbidden pattern denies, clean patch allows", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/pre-tool-use-linting-apply-patch.json");
+  assert.equal(event, "PreToolUse");
+  // 050 registration truth: one edit-path registration drives the COMBINED event.
+  assert.equal(hookEvent, "pre-tool-use-edit");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-editpath-"));
+  try {
+    const { env } = emptyCodexHome();
+    const deny = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd: tmp,
+      tool_name: "apply_patch", tool_input: { command: "+++ b/x.ts\n+const v = foo as any;\n" }, // justified: lint-deny fixture string, not shipped code
+    }, env);
+    assert.equal(deny.status, 0, deny.stderr);
+    const out = JSON.parse(deny.stdout);
+    assert.equal(out.hookSpecificOutput.permissionDecision, "deny");
+    assert.match(out.hookSpecificOutput.permissionDecisionReason, /comment-lint/);
+
+    const allow = runHook(ep, hookEvent, {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd: tmp,
+      tool_name: "apply_patch", tool_input: { command: "+++ b/x.ts\n+const v: Foo = foo;\n" },
+    }, env);
+    assert.equal(allow.status, 0, allow.stderr);
+    assert.equal(allow.stdout.trim(), "", "clean patch must allow (empty stdout)");
+
+    // FAIL-OPEN: malformed payload => allow
+    const bad = runHook(ep, hookEvent, null, env);
+    assert.equal(bad.status, 0, bad.stderr);
+    assert.equal(bad.stdout.trim(), "", "malformed stdin must fail open (empty stdout)");
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+// lazygap_impl 060.1: SessionStart project-rule injector. Emits an additionalContext
+// envelope when rules exist, "" when none. Drives the real dist entrypoint (event arg
+// session-start-rules).
+test("L060: session-start-rules hook e2e - seeded rules inject, empty dir is silent", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/_deprecated/session-start-injecting-project-rules.json");
+  assert.equal(event, "SessionStart");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-rules-"));
+  try {
+    // no rules => empty
+    const empty = runHook(ep, hookEvent, { hook_event_name: "SessionStart", session_id: "s1", cwd: tmp });
+    assert.equal(empty.status, 0, empty.stderr);
+    assert.equal(empty.stdout.trim(), "", "no rules => empty stdout");
+
+    // seed a rule
+    const rulesDir = join(tmp, ".codexclaw", "rules");
+    mkdirSync(rulesDir, { recursive: true });
+    writeFileSync(join(rulesDir, "a.md"), "Project rule: always run the gate.");
+    const res = runHook(ep, hookEvent, { hook_event_name: "SessionStart", session_id: "s1", cwd: tmp });
+    assert.equal(res.status, 0, res.stderr);
+    const out = JSON.parse(res.stdout);
+    assert.equal(out.hookSpecificOutput.hookEventName, "SessionStart");
+    assert.match(out.hookSpecificOutput.additionalContext, /always run the gate/);
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+// 260709 subagent hook guard: turn-level hooks must no-op for thread-spawned
+// subagent turns. codex-rs stamps agent_id/agent_type into child hook stdin
+// (hooks/src/schema.rs:270,537) and reuses the PARENT session id (fbfbfe5fc),
+// so an unguarded child turn would read/write the parent's PABCD state and
+// receive root-only directives (request_user_input is root-thread-only).
+test("subagent-guard: user-prompt-submit with agent fields is silent and writes no state", () => {
+  const { hookEvent, distAbs } = readHookCommand("./hooks/user-prompt-submit-checking-pabcd-trigger.json");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-subups-"));
+  try {
+    const res = runHook(ep, hookEvent, {
+      hook_event_name: "UserPromptSubmit", session_id: "s-parent", cwd: tmp, turn_id: "t1",
+      prompt: "interview me, then plan this", // root hints emit guidance/dedup; child guard must remain silent
+      agent_id: "agent-1", agent_type: "worker",
+    });
+    assert.equal(res.status, 0, res.stderr);
+    assert.equal(res.stdout.trim(), "", "subagent turn must not receive phase directives");
+    assert.ok(!existsSync(join(tmp, ".codexclaw", "sessions")), "subagent turn must not write session state");
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+// Discriminating fail-closed pair (audit P1/P2): with an ACTIVE goal for the
+// session, the R-9 interview-in-goal gate must still DENY a root
+// request_user_input call, while the SAME payload carrying agent fields must
+// skip the gate entirely (empty stdout) — proving the guard sits BEFORE
+// handlePreToolUseFailClosed without weakening root fail-closed semantics.
+test("subagent-guard: pre-tool-use interview gate denies root, skips subagent payload", () => {
+  const { event, hookEvent, distAbs } = readHookCommand("./hooks/pre-tool-use-guarding-interview-in-goal.json");
+  assert.equal(event, "PreToolUse");
+  const ep = snapshotEntrypoint(distAbs);
+  if (!ep) return;
+  const tmp = mkdtempSync(join(tmpdir(), "ccx-subgoal-"));
+  const home = mkdtempSync(join(tmpdir(), "ccx-subhome-"));
+  try {
+    // Seed a real goals_1.sqlite with an active goal for session s1 (mirrors
+    // the thread_goals fixture in pabcd-state/test/goal-active.test.ts).
+    const { DatabaseSync } = createRequire(import.meta.url)("node:sqlite");
+    const db = new DatabaseSync(join(home, "goals_1.sqlite"));
+    db.exec("CREATE TABLE thread_goals (thread_id TEXT PRIMARY KEY NOT NULL, goal_id TEXT NOT NULL, objective TEXT NOT NULL, status TEXT NOT NULL);");
+    db.prepare("INSERT INTO thread_goals (thread_id, goal_id, objective, status) VALUES (?,?,?,?)").run("s1", "g1", "obj", "active");
+    db.close();
+    const env = { CODEX_HOME: home, CODEXCLAW_HOME: join(home, "cxc"), CODEX_SQLITE_HOME: home };
+    const payload = {
+      hook_event_name: "PreToolUse", session_id: "s1", cwd: tmp,
+      tool_name: "request_user_input", tool_input: { questions: [] },
+    };
+    const root = runHook(ep, hookEvent, payload, env);
+    assert.equal(root.status, 0, root.stderr);
+    const rootOut = JSON.parse(root.stdout.trim());
+    assert.equal(rootOut.hookSpecificOutput.permissionDecision, "deny", "root fail-closed DENY regression");
+    const child = runHook(ep, hookEvent, { ...payload, agent_id: "agent-1", agent_type: "worker" }, env);
+    assert.equal(child.status, 0, child.stderr);
+    assert.equal(child.stdout.trim(), "", "subagent payload must skip the fail-closed gate");
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+    rmSync(home, { recursive: true, force: true });
+  }
+});

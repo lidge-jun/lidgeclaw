@@ -1,0 +1,20 @@
+{
+  "name": "cursorclaw",
+  "interface": {
+    "displayName": "Codexclaw"
+  },
+  "plugins": [
+    {
+      "name": "cursorclaw",
+      "source": {
+        "source": "local",
+        "path": "./plugins/cursorclaw"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

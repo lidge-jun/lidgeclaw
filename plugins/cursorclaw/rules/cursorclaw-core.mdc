@@ -1,0 +1,25 @@
+---
+description: cursorclaw core — Cursor-native discipline fork of codexclaw (PABCD + skill routers)
+alwaysApply: true
+---
+
+# cursorclaw
+
+You are working with **cursorclaw**, a Cursor-runtime fork of [codexclaw](https://github.com/lidge-jun/codexclaw).
+
+## Runtime boundary
+
+- Host is **Cursor** (skills, hooks, agents, commands), not OpenAI Codex plugin hooks.
+- Prefer Cursor plugin skills under this package over inventing parallel process.
+- Project state lives in `.cursorclaw/` when present; during the port, `.codexclaw/` may still appear in docs/CLI — treat them as the same family until renamed.
+
+## Discipline
+
+- Use the work classifier (C0–C5) from the `dev` / `cxc-dev` skill before deep process.
+- Full PABCD is mandatory for C4 and conditional for C3; never force it on C0/C1.
+- Prefer evidence over intent. Do not mark work done without verification.
+
+## CLI
+
+- Entry: `node <repo>/bin/cursorclaw.mjs` (planned alias `crc`).
+- Upstream Codex CLI name was `cxc` / `codexclaw` — commands are being adapted; if a command is stubbed, say so and continue with agent-side discipline.

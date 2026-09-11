@@ -1,0 +1,36 @@
+{
+  "name": "cursorclaw",
+  "displayName": "Cursorclaw",
+  "version": "0.1.0",
+  "description": "cli-jaw-style development discipline (dev skills + PABCD) for the Cursor agent runtime — a Cursor-native fork of codexclaw.",
+  "author": {
+    "name": "lidge-jun",
+    "url": "https://github.com/lidge-jun"
+  },
+  "repository": "https://github.com/lidge-jun/cursorclaw",
+  "homepage": "https://github.com/lidge-jun/cursorclaw",
+  "license": "MIT",
+  "keywords": [
+    "cursor",
+    "cursor-plugin",
+    "cursorclaw",
+    "pabcd",
+    "subagents",
+    "dev-skills",
+    "hooks"
+  ],
+  "logo": "assets/logo.png",
+  "category": "developer-tools",
+  "tags": [
+    "cursor",
+    "pabcd",
+    "skills",
+    "hooks",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "rules": "./rules/",
+  "agents": "./agents/",
+  "commands": "./commands/",
+  "hooks": "./hooks/hooks.json"
+}

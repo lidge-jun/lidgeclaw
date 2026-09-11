@@ -1,0 +1,1957 @@
+/**
+ * hook.ts — pure hook logic (no process IO; stdin/stdout handled by cli.ts).
+ *
+ * UserPromptSubmit: detect an explicit IPABCD/interview trigger in the prompt
+ * and inject the matching phase directive as additionalContext. Idempotent per
+ * (session, turn): a turn_id is recorded in state.injectedTurns so a re-fired
+ * hook in the same turn does not double-inject.
+ *
+ * Stop: active under a native goal only. It returns a bounded
+ * `{decision:"block",reason}` continuation envelope while a PABCD cycle is in flight —
+ * or, since 260709 (GOAL-IDLE-CONTINUE-01), while an ACTIVE goal is parked with no
+ * in-flight cycle (arming nudge). It releases on: no active goal, phase I, context
+ * pressure, or the same-phase stagnation cap (the single total-termination bound now
+ * that the old unconditional `stop_hook_active` release is gone).
+ *
+ * Ground truth:
+ *  - payload field names: codex-rs hooks/src/events/{user_prompt_submit,stop}.rs (snake_case)
+ *  - output shape:        omo rules/src/hook-output.ts:10-16 (camelCase hookSpecificOutput)
+ */
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import {
+  appendLedger,
+  ensureState,
+  LEDGER_FILE,
+  matchesDcloseRecovery,
+  readState,
+  STATE_DIR,
+  writeState,
+  type Phase,
+  type State,
+} from "./state.ts";
+// Cross-component dist import (precedent: messenger-bridge/src/api-compat.ts:17) —
+// relative .js specifiers survive the build's .ts->.js rewrite untouched and
+// resolve identically from src/ (tests) and dist/ (shipped hooks).
+// Cross-component dist import, LAZY + FAIL-OPEN (260724 WP1): the entry must keep
+// working when the cxc-ops sibling is absent (isolated dist snapshots in tests,
+// partial checkouts). A missing resolver degrades to the literal `cxc`.
+type CxcInvocationFn = (moduleUrl: string, env?: Record<string, string | undefined>, command?: string) => string;
+let cxcInvocationFn: CxcInvocationFn | null = null;
+try {
+  ({ cxcInvocation: cxcInvocationFn } = (await import("../../cxc-ops/dist/cxc-resolve.js")) as {
+    cxcInvocation: CxcInvocationFn;
+  });
+} catch {
+  cxcInvocationFn = null;
+}
+function cxcInvocation(moduleUrl: string, command?: string): string {
+  return cxcInvocationFn ? cxcInvocationFn(moduleUrl, process.env, command) : "cxc";
+}
+import { hasStageMarkerForPhase, isContextPressureTail, readTranscriptTail } from "./transcript.ts";
+import { getGoalActiveStatus, suppressesInterview } from "./goal-active.ts";
+import { parseOrchestrateCommand } from "./orchestrate-grammar.ts";
+import { applyHumanTransition, clearedIdle, type ApplyResult } from "./orchestrate-apply.ts";
+import { captureInterviewAnswers } from "./interview-ledger.ts";
+import {
+  DEFAULT_INTERVIEW_POLICY,
+  decideInterviewEntry,
+  readInterviewPolicy,
+} from "./interview-policy.ts";
+import { MIND_DISPATCH_DIRECTIVE } from "./minds.ts";
+import { checkObjectivePlateau, readObjectiveKind, readObjectiveMetrics, type PlateauCheck } from "./metrics.ts";
+import {
+  advanceWorkPhase,
+  appendGoalplanLedger,
+  dependencyDeadlock,
+  effectiveActiveWorkPhaseId,
+  GOALPLAN_LEDGER_FILE,
+  goalplanDir,
+  goalplanDefinitionIntegrityReasons,
+  goalplanDependencyCompletionReasons,
+  dependencyWaitReasons,
+  readGoalplan,
+  readyTasks,
+  readyWorkPhases,
+  unmetCriteria,
+  withGoalplanWriteLock,
+  writeGoalplan,
+  absentSuccessorDetail,
+  closeFixedWorkPhase,
+  resumeAbsentTarget,
+  type AdvanceResult,
+  type Goalplan,
+} from "./goalplan.ts";
+ import { compareSource, describeSource } from "./source-identity.ts";
+import { resolveSessionSource } from "./session-source.ts";
+import { captureSessionSourceIdentity } from "./session-source-identity.ts";
+import { validateCheckReceipt } from "./check-gate.ts";
+import { validatePlanArtifacts } from "./plan-gate.ts";
+import { validateWorkPhaseBinding, type Attestation } from "./attest.ts";
+import { randomBytes } from "node:crypto";
+
+
+/**
+ * The plan binding for a chat P>A, or null when the attest does not earn one.
+ *
+ * Chat is a human free-pass for phase movement, but a binding is evidence, and
+ * evidence clears the same bar on both paths: the unit must hold numbered plan
+ * docs, and the attest must name the work-phase the goalplan says is active.
+ * Failing either moves the phase anyway and leaves the binding null — the audit
+ * then refuses to open, which is the honest outcome.
+ */
+function chatPlanBinding(
+  cwd: string,
+  slug: string,
+  attest: Attestation | null,
+): { unit: string; epoch: string } | null {
+  try {
+    if (!attest) return null;
+    const planCheck = validatePlanArtifacts(attest, cwd);
+    if (!planCheck.ok) return null;
+    if (slug) {
+      const plan = readGoalplan(cwd, slug);
+      if (!plan) return null;
+      const bind = validateWorkPhaseBinding(attest, effectiveActiveWorkPhaseId(plan));
+      if (!bind.ok) return null;
+    }
+    const stamp = new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 14);
+    return { unit: planCheck.unit, epoch: `e-${stamp}-${randomBytes(3).toString("hex")}` };
+  } catch {
+    return null; // FAIL-CLOSED on the binding only: the phase still moves
+  }
+}
+
+/** CHECK-BINDING-01 (075): one nonce per entry to C, mirroring the CLI producer. */
+function mintCheckEpoch(): string {
+  return `c-${new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 14)}-${randomBytes(3).toString("hex")}`;
+}
+import { peakFrictionVerdict, looksLikeFailure, recordFriction } from "./friction.ts";
+import { discardStreak, readDivergenceCandidates } from "./divergence.ts";
+import { hasRenderArtifactModified, hasRenderObservation, renderGroundingAdvisory } from "./render-observations.ts";
+import { detectMemoryWriteRequest } from "./memory-write-gate.ts";
+
+export interface UserPromptSubmitPayload {
+  hook_event_name: "UserPromptSubmit";
+  session_id: string;
+  cwd: string;
+  prompt: string;
+  transcript_path?: string | null;
+  turn_id?: string;
+  model?: string;
+  permission_mode?: string;
+}
+
+export interface SessionStartPayload {
+  hook_event_name: "SessionStart";
+  session_id: string;
+  cwd: string;
+}
+
+export interface StopPayload {
+  hook_event_name: "Stop";
+  session_id: string;
+  cwd: string;
+  transcript_path?: string | null;
+  turn_id?: string;
+  stop_hook_active?: boolean;
+  last_assistant_message?: string | null;
+}
+
+export interface PostToolUsePayload {
+  hook_event_name: "PostToolUse";
+  session_id: string;
+  cwd: string;
+  tool_name: string;
+  tool_input: unknown;
+  tool_response: unknown;
+  tool_use_id?: string;
+  turn_id?: string;
+}
+
+/**
+ * PostCompact payload (lazygap_impl 050). Fires after a context compaction. Wire shape
+ * verified against codex-rs `schema.rs:362` (`PostCompactCommandInput`, snake_case) +
+ * `compact.rs:207` (`hook_event_name: "PostCompact"`). Both `session_id` and `cwd` are
+ * present, so state path resolution works. Output is side-effect-only (the runtime honors
+ * only universal fields), so the handler always returns "".
+ */
+export interface PostCompactPayload {
+  hook_event_name: "PostCompact";
+  session_id: string;
+  cwd: string;
+  turn_id?: string;
+  transcript_path?: string | null;
+  trigger?: string;
+}
+
+/**
+ * SubagentStop payload (lazygap_impl 010). Fires when a plugin thread-spawned child
+ * ends its turn. Wire shape verified against codex-rs `schema.rs:576`
+ * (`SubagentStopCommandInput`, snake_case). NOTE: `transcript_path` is the PARENT
+ * transcript; the CHILD's transcript is `agent_transcript_path`
+ * (codex-rs `hook_runtime.rs:302`) — the compaction bail must read the child path.
+ */
+export interface SubagentStopPayload {
+  hook_event_name: "SubagentStop";
+  session_id: string;
+  cwd: string;
+  agent_type: string;
+  agent_id?: string;
+  turn_id?: string;
+  transcript_path?: string | null;
+  agent_transcript_path?: string | null;
+  model?: string;
+  permission_mode?: string;
+  stop_hook_active?: boolean;
+  last_assistant_message?: string | null;
+}
+
+const MAX_CTX = 32_000;
+
+/**
+ * 260724 WP1 (fresh-install RCA): rewrite backtick-anchored `cxc ` command
+ * prefixes in a directive to the invocation that actually resolves on this
+ * machine (PATH `cxc`, or the payload dispatcher `node "<payload>/bin/cxc.mjs"`).
+ * EMIT-TIME ONLY — exported directive constants are never mutated, so
+ * constants-only tests stay byte-stable and the PATH check happens per-machine.
+ *
+ * SAFETY CONTRACT: the /`cxc /g anchor is safe ONLY for directive strings whose
+ * cxc COMMANDS are all backticked. Every call site below was verified against
+ * that claim (noun phrases like "cxc-loop" or "owns cxc orchestration" carry no
+ * backtick-space prefix and are untouched). Do not apply this to free text.
+ */
+export function resolveCxcInDirective(text: string): string {
+  try {
+    return text.replace(/`cxc ([^\s`]+)/g,
+      (_prefix: string, command: string) => `\`${cxcInvocation(import.meta.url, command)} ${command}`);
+  } catch {
+    return text; // FAIL-OPEN: a resolution error must not break directive emission
+  }
+}
+
+/**
+ * Detect an explicit IPABCD/interview trigger. Explicit only — no goal-mode
+ * branch (A3 decision, see 022.3). Both English and Korean phrasings.
+ * Order matters: interview is checked first so "orchestrate i" wins over "p".
+ */
+export function detectTrigger(prompt: string): Phase | null {
+  const p = (prompt ?? "").toLowerCase();
+  // Korean triggers are anchored to an action marker. 감사 ("audit") is
+  // ambiguous with 감사 ("thanks"), so AUDIT REQUIRES a strong do-it marker
+  // (해줘/해라/하자/좀/진행/부탁) and rejects the bare/polite thanks forms
+  // 감사 / 감사해 / 감사해요 / 감사합니다 (Galileo blocker #1).
+  if (/\binterview\b|인터뷰|\borchestrate i\b/.test(p)) return "I";
+  if (/\borchestrate p\b|plan this|계획(?:을)?\s*세워/.test(p)) return "P";
+  if (/\borchestrate a\b|audit this|감사\s*(?:해줘|해라|하자|좀|진행|부탁)/.test(p)) return "A";
+  if (/\borchestrate b\b|build this|구현\s*(?:해|하자|좀)/.test(p)) return "B";
+  if (/\borchestrate c\b|check this|검증\s*(?:해|하자|좀)/.test(p)) return "C";
+  return null;
+}
+
+/**
+ * Detect a user asking to route a question/research task through agbrowse.
+ * This is intentionally narrower than "mentions agbrowse": implementation work
+ * about the hook or package should not be mistaken for a search request.
+ */
+export function detectAgbrowseSearchRequest(prompt: string): boolean {
+  const p = (prompt ?? "").toLowerCase();
+  if (!/\bagbrows?e\b/.test(p)) return false;
+  return (
+    /\b(?:through|via|using|use|with|ask|question|research|search|browse|look\s*up|find|fetch|verify)\b/.test(p) ||
+    /(?:통해|통해서|사용|써서|가지고|질문|물어|조사|검색|리서치|알아봐|찾아|확인|검증|브라우즈)/.test(p)
+  );
+}
+
+/**
+ * Detect an explicit loop/goalplan/continue-until-done request (ORCH-MANDATE-01).
+ * HEURISTIC and deliberately curated: bare "loop"/"루프" are excluded (a `for` loop
+ * bug report must not arm PABCD ceremony) — a loop word needs an action marker, and
+ * the strongest signals are the cxc-loop/HOTL/goalplan tokens themselves.
+ */
+export function detectLoopArmRequest(prompt: string): boolean {
+  const p = (prompt ?? "").toLowerCase();
+  if (/\bcxc-?loop\b|\bhotl\b|\bgoal\s*plan\b|\bgoalplan\b|골플랜|고울플랜/.test(p)) return true;
+  // ORCH-ARM-PABCD-01: the harness's own protocol name is a first-class arming
+  // token when paired with a STRONG run/repeat marker ("pabcd 여러 번", "run
+  // pabcd", "pabcd 돌려", "pabcd repeatedly"). Bare "pabcd" alone stays excluded
+  // (a question ABOUT pabcd must not arm ceremony), and weak markers like
+  // 다시/계속/again/runs are deliberately NOT signals (260714 audit round 1).
+  if (/\bi?pabcd\b/.test(p) && /여러\s*번|반복|한\s*번\s*더|돌려|돌리|돌자|사이클|\b(?:run|loop|repeat|iterate|cycle)\b|\brepeatedly\b|\bmultiple\s+times\b/.test(p)) return true;
+  // Repeat-marker IMMEDIATELY followed by a solve/progress marker, without the
+  // literal 루프 word ("여러 번 돌려서 해결해"). Bare 실행/수행/진행 excluded:
+  // "테스트 여러 번 실행해봐" is a repeat-run ask, not a loop request.
+  if (/(?:여러\s*번|반복(?:해서|적으로)?)\s*(?:돌|해결|해라|하자)/.test(p)) return true;
+  if (/\bcontinue\s+until\s+done\b|\bkeep\s+going\s+until\b|\buntil\s+(?:it'?s\s+)?done\b/.test(p)) return true;
+  if (/\bautonomous(?:ly)?\b.*\b(?:loop|continue|run|finish)\b|\bwork[- ]phase\s+loop\b/.test(p)) return true;
+  if (/루프\s*(?:를?\s*돌|시작|모드|가동|진행)/.test(p)) return true;
+  if (/끝까지\s*(?:해|진행|돌|완성|가|마무리)|멈추지\s*말|알아서\s*(?:끝까지|다\s*해)/.test(p)) return true;
+  return false;
+}
+
+const PHASE_DIRECTIVES: Partial<Record<Phase, string>> = {
+  I: [
+    "[codexclaw: INTERVIEW]",
+    "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
+    "This also scopes the Mind instructions below. Load $codexclaw:cxc-interview for dimensions, questions, loop classification and readiness. Do not implement.",
+    "INTERVIEW-GROUND-01: when tracker writes are authorized, `cxc scan record --session <id> --derive --map <questionId>=<dimension> ...`",
+    "records known[]/unknown[]; read `.codexclaw/sessions/<id>.json` before the next question. Report unmet actions, not false readiness.",
+    "INTERVIEW-RENDER-01: show knowns, the weakest dimension and the answer's impact before the question.",
+    "INTERVIEW-INDEPENDENT-01: batch only INDEPENDENT questions; independence governs, not a count.",
+  ].join("\n"),
+  P: [
+    "[codexclaw: PLAN]",
+    "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
+    "Load $codexclaw:cxc-pabcd for P and C2+ plan-output; $codexclaw:cxc-dev selects class and relevant surfaces. No implementation yet.",
+    "Plan-only ends with the plan. Forbidden checks: NOT RUN; naming an artifact grants no write permission.",
+  ].join("\n"),
+  A: [
+    "[codexclaw: AUDIT]",
+    "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
+    "Load $codexclaw:cxc-dev-code-reviewer for review and $codexclaw:cxc-dev for relevant surfaces; authorized PABCD A uses $codexclaw:cxc-pabcd's audit owner. Do not build yet.",
+    "Authorized dispatch follows the owner's named-skill, same-reviewer and verdict contracts; main synthesizes. Report unmet independent review; inline review is not its proof. Do not bypass gates.",
+  ].join("\n"),
+  B: [
+    "[codexclaw: BUILD]",
+    "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
+    "Use $codexclaw:cxc-dev for class/surfaces; authorized PABCD B uses $codexclaw:cxc-pabcd. Implement only authorized scope.",
+    "Forbidden checks: NOT RUN; no invented proof.",
+  ].join("\n"),
+  C: [
+    "[codexclaw: CHECK]",
+    "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
+    "Use $codexclaw:cxc-dev and $codexclaw:cxc-dev-testing; authorized PABCD C uses $codexclaw:cxc-pabcd's check owner, including C-RENDER-GROUNDING-01.",
+    "No-tests forbids tests, not separately authorized build/typecheck. No-goal/no-FSM restrict creation/mutations, not read-only inspection.",
+    "Independent review needs owner applicability and dispatch permission. Report unmet review; inline review is not its proof. Forbidden checks: NOT RUN. No pass or gate bypass without real evidence.",
+  ].join("\n"),
+  D: [
+    "[codexclaw: DONE]",
+    "Apply this pointer and its owners within exact user limits and permissions. No-delegation means no dispatch.",
+    "For authorized D closure load $codexclaw:cxc-pabcd; report evidence and unmet work, then IDLE. Remaining authorized work follows $codexclaw:cxc-loop from disk.",
+    "A header or budget/time stop is not completion; never fabricate attestations/receipts.",
+  ].join("\n"),
+};
+
+/**
+ * Fail-open loader for the B-directive starvation opts: resolves the bound
+ * goalplan's effective active work-phase, or undefined when no goalplan resolves.
+ */
+export function activeWorkPhaseOpts(cwd: string, slug: string): { activeWorkPhase?: { id: string; title: string } } | undefined {
+  if (!slug) return undefined;
+  try {
+    const plan = readGoalplan(cwd, slug);
+    if (!plan) return undefined;
+    const id = effectiveActiveWorkPhaseId(plan);
+    if (!id) return undefined;
+    const wp = plan.workPhases.find((w) => w.id === id);
+    return wp ? { activeWorkPhase: { id: wp.id, title: wp.title } } : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * 260714 wp4 (context starvation): when a goalplan is bound, the B directive names
+ * (see also activeWorkPhaseOpts above, the fail-open loader used by call sites)
+ * ONLY the effective active work-phase — the model cannot batch slices it is told
+ * are out of scope. Other phases are unchanged; opts is optional so every existing
+ * caller stays source-compatible.
+ */
+export function phaseDirective(phase: Phase, opts?: { activeWorkPhase?: { id: string; title: string } }): string {
+  const base = PHASE_DIRECTIVES[phase] ?? "";
+  if (phase === "B" && opts?.activeWorkPhase && base) {
+    return [
+      base,
+      `ACTIVE WORK-PHASE: ${opts.activeWorkPhase.id} — ${opts.activeWorkPhase.title}. This cycle`,
+      "implements THIS slice only; other work-phases are OUT OF SCOPE until D closes",
+      "(LOOP-UNIT-CHAIN-01). Attest gated edges with this workPhaseId.",
+    ].join("\n");
+  }
+  return base;
+}
+
+export function interviewDirective(): string {
+  // L17: the I directive now carries the Mind-dispatch contract so the main session
+  // actually runs the contradiction-rescan loop (select Minds -> dispatch read-only
+  // lenses -> triage -> ask the user proceed/keep-interviewing). This is what wires
+  // minds.ts into the production hook path. It only ever reaches the agent OUTSIDE a
+  // goal: the goal-active firewall (explicit + passive I-path) suppresses the whole
+  // Interview when a goal is active.
+  // Resolve backticked commands such as the I pointer's scan-record hint here,
+  // at emit time; detailed Mind configuration examples live in its reference.
+  // Safe per the resolveCxcInDirective contract: every cxc COMMAND in both parts is
+  // backticked; `$codexclaw:cxc-*` skill mentions carry no "`cxc " prefix.
+  return resolveCxcInDirective(`${PHASE_DIRECTIVES.I}\n\n${MIND_DISPATCH_DIRECTIVE}`);
+}
+
+/**
+ * Question-shape directive (L10.1 / 101). The main session (never a subagent)
+ * uses request_user_input with this shape: background + why it matters + where
+ * the answer changes the plan, 2-3 concrete options, recommendation FIRST, and
+ * one impact/tradeoff sentence per option. assistant-emitted choice fences are
+ * not the primary selector.
+ */
+export const QUESTION_SHAPE_DIRECTIVE = [
+  "[codexclaw: INTERVIEW — user question]",
+  "Ask via request_user_input only (not an assistant choice fence). Each question must include:",
+  "- background: what is unresolved and why it matters,",
+  "- where the answer changes the plan,",
+  "- 2-3 concrete options (recommendation FIRST),",
+  "- one impact/tradeoff sentence per option.",
+  "Only the main session asks; subagents never generate or deliver questions.",
+  "While a question is pending, refuse or restate unrelated free-form answers.",
+].join("\n");
+
+export const AGBROWSE_SEARCH_DIRECTIVE = [
+  "[codexclaw: SEARCH — agbrowse requested]",
+  "Honor the user's agbrowse preference when the required capability is available and authorized.",
+  "Load cxc-search and the shared dev/references/browser-routing.md policy when available.",
+  "agbrowse and Aside are optional tools; inspect the actual CLI/tool schema and session access.",
+  "For a known public URL, prefer HTTP proof such as `agbrowse fetch \"<url>\" --json --browser never`.",
+  "Discover candidate URLs with available hosted search first. Never use plain `agbrowse search \"<query>\"` as discovery.",
+  "For independent extraction or built-UI QA, use a suitable available browser capability.",
+  "Prefer suitable Aside for authenticated/judgment-heavy work unless the user specifies another tool.",
+  "If a preferred tool is absent, use a capability-preserving alternative and disclose the limitation; respect explicit tool restrictions.",
+  "Start a browser only for a diagnosed CDP connection failure and only when the session is task-owned.",
+  "HTTP, authentication, and missing-content failures do not justify blindly starting Chrome.",
+  "Inspect whether a side effect completed before retrying or switching tools; never assume cookies transfer.",
+  "Do not install tools or change accounts without authorization. No equivalent capability means report the gap, not PASS.",
+  "Verify inspect -> act -> re-inspect, read captured evidence, and confirm the actual source claim or interaction.",
+].join("\n");
+
+/**
+ * Arming mandate injected when a loop/goalplan request arrives against an
+ * UN-ARMED FSM (ORCH-MANDATE-01). This is the prompt-time companion to the
+ * Stop hook's GOAL-IDLE-CONTINUE-01: together they close the "loop narrated
+ * but never entered via cxc orchestrate" gap at both ends of the turn.
+ */
+/**
+ * TRIGGER-AUTHORITY-01 (040): appended when a natural-language trigger asked for a
+ * phase the FSM will not move to. The directive still goes out — the request is
+ * legitimate work — but the phase on disk is unchanged, and this says how to move it.
+ */
+export const TRIGGER_AUTHORITY_NOTE = [
+  "[codexclaw: PHASE UNCHANGED — TRIGGER-AUTHORITY-01]",
+  "A lexical phase hint is not execution authority. The phase on disk is unchanged;",
+  "no-goal/no-FSM restrict creation/mutations, not read-only get_goal or orchestrate status.",
+  "Do not start orchestration for ordinary work. Preserve adjacency, attestations and ledger checks.",
+  "Only if a phase transition is authorized, use the cxc-pabcd phase-control owner and",
+  "`cxc orchestrate <I|P|A|B|C|D> --session <id>` — work edges carry --attest.",
+].join(" ");
+
+/**
+ * The arming mandate, injected at prompt time by UserPromptSubmit.
+ *
+ * Step 4 is platform-dependent because PowerShell cannot pass inline JSON as one
+ * argv token: single quotes are stripped (`{from:P,to:A,did:wrote the plan}`) and
+ * escaping them ends the quoted span so the value splits at its first space. Every
+ * gated edge requires a `did` narrative, which always contains spaces, so there is
+ * no inline spelling that works. Telling a Windows agent otherwise is how it
+ * concludes the FSM is broken. Same reasoning as `stopNextCommand` below.
+ */
+/** The P>A object every arming surface shows. One definition, so the win32 and
+ *  posix branches cannot drift, and so from/to are never dropped from one of them. */
+const PA_ATTEST_EXAMPLE =
+  '{"from":"P","to":"A","did":"...","planUnit":"devlog/_plan/YYMMDD_slug","workPhaseId":"wp1"}';
+
+export function loopArmDirective(platform: NodeJS.Platform = process.platform): string {
+  const advance = platform === "win32"
+    ? [
+        "4. Advance EVERY forward edge yourself. On Windows write the JSON first, then attest:",
+        `   \`'${PA_ATTEST_EXAMPLE}' | Set-Content -Encoding utf8 .codexclaw/attest.json\` then`,
+        "   `cxc orchestrate <phase> --session <id> --attest-file .codexclaw/attest.json` —",
+        "   inline --attest cannot survive PowerShell argument parsing (quotes are stripped,",
+        "   and escaping them splits the value at its first space).",
+      ]
+    : [
+        "4. Advance EVERY forward edge yourself with `cxc orchestrate <phase> --attest <json>` —",
+        `   e.g. \`cxc orchestrate A --session <id> --attest '${PA_ATTEST_EXAMPLE}'\` —`,
+      ];
+  return [
+    "[codexclaw: LOOP — orchestrate arming mandate (ORCH-MANDATE-01)]",
+    "Scope first: explicit interview-only, plan-only, HITL, read-only, no-goal, no-FSM, no-tests and no-delegation limits override the bare cxc-loop default.",
+    "A mention or quoted example alone is not authorization. This pointer and its referenced procedures never override those limits.",
+    "Load $codexclaw:cxc-loop and $codexclaw:cxc-pabcd for an actual loop request; bare cxc-loop execution means scoped HOTL.",
+    "No-delegation means no dispatch. No-tests does not forbid separately authorized build/typecheck. Report required but forbidden actions as unmet.",
+    "Only for authorized loop execution, apply steps 1-5 within scope. No-goal/no-FSM restrict creation/mutations, not read-only inspection. Narration is not persisted progress:",
+    "1. Session id: use the current SessionStart binding, corroborated by `cxc session current` when native CODEX_THREAD_ID is available.",
+    "   Missing/inherited/conflicting binding: use `cxc session current` then explicit `cxc session bind` in its verified cwd. Never set the environment id or replay hook JSON.",
+    "   SESSION-IDENTITY-01: never a parent/history id; binding alone does not verify hook execution or Stop-continuation.",
+    "2. `cxc orchestrate status --session <id>` — read the real phase first.",
+    "3. Inspect the host goal with get_goal first. Resume a matching unfinished goal; do not duplicate it.",
+    "   Only when no unfinished goal exists and new HOTL is authorized, create_goal with a detailed objective.",
+    "   For a different unfinished goal or unsupported resume, report the conflict; do not replace it or fabricate active status.",
+    '   New loop setup: `cxc loop init --objective "<same text>" --session <id>` -> register',
+    "   workPhases[] + criteria[]. On resume inspect/reuse the bound goalplan; do not reinitialize it.",
+    "   After status inspection, enter `cxc orchestrate P --session <id>` only when authorized and legal; an existing phase keeps its owner/edge contract.",
+    "   Explicit HITL keeps human pause points. Interview-only/plan-only stay at the requested stage without a goal or implementation; do not arm when state changes are forbidden.",
+    ...advance,
+    "   a phase without its persisted transition + artifact did not happen (ORCH-ARTIFACT-01).",
+    '   EVERY attest carries "from" and "to" naming the edge: they are coerced before any',
+    "   gate runs, so omitting them is refused on every edge (ATTEST-SHAPE-01).",
+    "   When a goalplan is bound, include the active workPhaseId in every gated attest",
+    "   (one work-phase = one full PABCD cycle).",
+    "   Bound chat D-close requires workPhaseId as the fixed close target unless every work-phase is already done.",
+    "5. After authorized D closes to IDLE with authorized work remaining under an active goal, re-enter",
+    "   with `cxc orchestrate P --session <id>` (LOOP-UNIT-CHAIN-01).",
+    "HOTL does not grant push, merge, release, deploy or external-message permission. Stop for missing authority.",
+    "Preserve guards and real evidence; do not bypass a gate or fabricate an attestation/receipt to satisfy this advice.",
+  ].join("\n");
+}
+
+const STAGE_LABELS: Partial<Record<Phase, string>> = {
+  I: "INTERVIEW",
+  P: "PLAN",
+  A: "AUDIT",
+  B: "BUILD",
+  C: "CHECK",
+  D: "DONE",
+};
+
+/** Short compaction-immune stage header (jwc pabcd-stage-header parity). */
+export function buildStageHeader(phase: Phase): string {
+  return `[codexclaw — ${phase}: ${STAGE_LABELS[phase] ?? phase}]`;
+}
+
+/**
+ * L5 — phase footer directive. codex has no status UI, so the model surfaces its own
+ * PABCD state by printing one line at the end of each reply. Resting states are IDLE
+ * and the work phases I/P/A/B/C; D is the closing transition (after it, the resting
+ * state is IDLE), so a chat D-close shows IDLE.
+ */
+export function phaseFooter(phase: Phase): string {
+  const label = STAGE_LABELS[phase] ?? phase;
+  return [
+    `Prompt-time persisted snapshot: \`IPABCD: ${phase} (${label})\`.`,
+    "At the end of your reply, print exactly one status line in the format",
+    "`IPABCD: <phase> (<LABEL>)`, using the latest verified persisted phase",
+    "and its matching label for the current SessionStart-bound session and cwd.",
+    "A later authorized, successful phase transition supersedes this snapshot for reporting.",
+    "Otherwise retain the latest verified state; a request, lexical hint, narration,",
+    "or failed transition is not a persisted phase change.",
+    "This reporting instruction requires no additional tool calls and authorizes no transitions or gate bypasses.",
+    "D closes to IDLE; a later authorized successful re-entry supersedes that resting state too.",
+  ].join(" ");
+}
+
+/** Append the phase footer to a directive/header (one blank line between). */
+export function withFooter(directive: string, phase: Phase): string {
+  if (!directive) return directive;
+  return `${directive}\n\n${phaseFooter(phase)}`;
+}
+
+/** Cap injectedTurns to the most recent N to bound state-file growth (audit blocker #2). */
+const MAX_INJECTED_TURNS = 50;
+function appendTurn(turns: string[], turn: string): string[] {
+  return [...turns, turn].slice(-MAX_INJECTED_TURNS);
+}
+
+/**
+ * Build the codex hook stdout line. Normalizes CRLF, trims, caps at 32k, and
+ * wraps in the omo-parity envelope. Empty context => "" (no injection).
+ */
+export function buildContextOutput(eventName: string, ctx: string): string {
+  const norm = (ctx ?? "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
+  if (!norm) return "";
+  const capped =
+    norm.length <= MAX_CTX
+      ? norm
+      : `${norm.slice(0, MAX_CTX - 64).replace(/[ \t\r\n]+$/, "")}\n\n[truncated]`;
+  return `${JSON.stringify({
+    hookSpecificOutput: { hookEventName: eventName, additionalContext: capped },
+  })}\n`;
+}
+
+/**
+ * Bootstrap the exact SessionStart-bound FSM before an agent can invoke the
+ * explicit-session CLI. Context output remains owned by the existing provider and
+ * cxc-ops SessionStart hooks, so this side-effect-only handler is always silent.
+ */
+export function handleSessionStart(payload: SessionStartPayload): string {
+  if (payload.hook_event_name !== "SessionStart") return "";
+  ensureState(payload.cwd, payload.session_id);
+  return "";
+}
+
+/**
+ * UserPromptSubmit handler — hybrid directive injection (018.3, audit-revised).
+ *
+ * Idempotent per (session, turn) via state.injectedTurns. Explicit commands
+ * are parsed first and own transitions. Natural-language hints inject scoped
+ * guidance without changing phase or activating orchestration.
+ * Passive modes are gated behind state.orchestrationActive:
+ *  - mode 2 (active, no trigger, phase changed since last inject): inject the
+ *    full directive for the current phase (state-transition directive).
+ *  - mode 3 (active, no trigger, same phase): inject the short stage header
+ *    every turn (compaction-immune, jwc M2 parity).
+ */
+function readJsonlObjects(path: string): Array<Record<string, unknown>> {
+  if (!existsSync(path)) return [];
+  return readFileSync(path, "utf8").split("\n").filter(Boolean)
+    .map((line) => JSON.parse(line) as Record<string, unknown>);
+}
+
+function hasGoalplanRow(cwd: string, slug: string, event: string, detail: string): boolean {
+  return readJsonlObjects(join(goalplanDir(cwd, slug), GOALPLAN_LEDGER_FILE))
+    .some((row) => row.event === event && row.detail === detail);
+}
+
+function hasPabcdCloseRow(
+  cwd: string,
+  sessionId: string,
+  checkEpoch: string | null,
+  closedWorkPhaseId: string | null,
+): boolean {
+  return readJsonlObjects(join(cwd, STATE_DIR, LEDGER_FILE)).some(
+    (row) => row.sessionId === sessionId && row.from === "C"
+      && row.to === "IDLE" && row.reason === "done"
+      && row.checkEpoch === checkEpoch
+      && row.closedWorkPhaseId === closedWorkPhaseId,
+  );
+}
+
+export interface HookDcloseCommitHooks {
+  // §41 W4: the chat path needs the same marker seam the CLI has, so a
+  // marker-then-crash retry is testable on both surfaces.
+  afterRecoveryMarkerWrite?: () => void;
+  afterGoalplanCommit?: () => void;
+  afterStateWrite?: () => void;
+  afterPabcdLedgerAppend?: () => void;
+}
+
+export function handleUserPromptSubmit(
+  payload: UserPromptSubmitPayload,
+  platform: NodeJS.Platform = process.platform,
+  dcloseCommitHooks: HookDcloseCommitHooks = {},
+): string {
+  if (payload.hook_event_name !== "UserPromptSubmit") return "";
+  const turn = payload.turn_id ?? "";
+
+  // MEMORY-WRITE-GATE-01 (260909 wp1-A): record the remember request BEFORE the turn
+  // guard and before every early return below. PreToolUse carries no prompt
+  // (codex-rs hooks/src/schema.rs:278-296), so this write is the only place the gate's
+  // evidence can come from — and the paths that return early here (an already-injected
+  // turn, a suppressed interview, a silent un-armed session) are ordinary prompts that
+  // may still ask to remember something. Same placement rule as loopArmSeen below.
+  // Directive-free: the marker is bookkeeping, so nothing is injected into the model.
+  //
+  // It also runs BEFORE the state snapshot every later branch spreads. Writing it
+  // afterwards would land the marker on disk and then have the next `{ ...state }`
+  // write overwrite it with the pre-marker snapshot.
+  if (detectMemoryWriteRequest(payload.prompt)) {
+    try {
+      const fresh = readState(payload.cwd, payload.session_id);
+      writeState(payload.cwd, { ...fresh, memoryWriteRequested: true, memoryWriteTurn: turn === "" ? null : turn });
+    } catch {
+      // A marker that cannot be persisted degrades to a deny the user can lift with
+      // `cxc memory allow-write`; it must never break prompt handling.
+    }
+  }
+  const state = readState(payload.cwd, payload.session_id);
+  if (turn && state.injectedTurns.includes(turn)) return "";
+
+  // L3b: parser-first AUTHORITATIVE path. An explicit, line-anchored
+  // `orchestrate <verb>` command actually moves the FSM (the missing wire). This is
+  // the HUMAN (chat) source → free-pass: forward edges advance without --attest.
+  // The loose detectTrigger heuristic below runs ONLY when this returns null.
+  const command = parseOrchestrateCommand(payload.prompt);
+  if (command) {
+    const out = handleOrchestrateCommand(payload, state, turn, command, dcloseCommitHooks);
+    if (out !== null) return out;
+    // null => fall through to the loose path (e.g. suppressed interview).
+  }
+
+  const rawTrigger = detectTrigger(payload.prompt);
+
+  // 260829 config-autopilot wp4: a plan request may OPEN with the interview instead of
+  // requiring the word "interview". Advisory only — the phase below is unchanged, so
+  // this cannot wedge a session behind the I→P gate. Only the P trigger is eligible
+  // (A/B/C stay non-Interview hints under TRIGGER-AUTHORITY-01), and the
+  // goal-active lookup stays behind that check so an ordinary prompt opens no sqlite.
+  const entry = decideInterviewEntry({
+    trigger: rawTrigger,
+    policy: rawTrigger === "P" ? readInterviewPolicy(payload.cwd) : DEFAULT_INTERVIEW_POLICY,
+    orchestrationActive: state.orchestrationActive,
+    goalSuppresses:
+      rawTrigger === "P" ? suppressesInterview(getGoalActiveStatus(payload.session_id)) : false,
+  });
+  const trigger = entry.phase;
+
+  // L11: in active goal mode, the Interview (I) phase is suppressed — do not inject
+  // the I directive and do not create/update interview state (HOTL boundary). Other
+  // phase triggers (P/A/B/C) still work; goal mode runs PABCD, just never reopens I.
+  if (trigger === "I" && suppressesInterview(getGoalActiveStatus(payload.session_id))) {
+    return "";
+  }
+
+  const agbrowseRequested = detectAgbrowseSearchRequest(payload.prompt);
+  const loopArmRequested = detectLoopArmRequest(payload.prompt);
+
+  // TRIGGER-AUTHORITY-01 (040): the loop-arm branch is evaluated BEFORE the trigger
+  // branch. "pabcd 여러 번 돌려서 구현해" reads as both a B trigger and a loop request,
+  // and the trigger branch used to return first — so the prompt that most clearly
+  // asks for a loop got a BUILD directive and never saw the arming mandate.
+  // Only the un-armed loop-arm case is promoted; the agbrowse-only case keeps its
+  // original position so a plain search request is unaffected.
+  if (!state.orchestrationActive && loopArmRequested) {
+    // 260714 wp3 (audit decision a): persist loopArmSeen OUTSIDE the turn guard —
+    // a turnless payload must not lose the flag; injectedTurns stays turn-guarded.
+    writeState(payload.cwd, {
+      ...state,
+      loopArmSeen: true,
+      injectedTurns: turn ? appendTurn(state.injectedTurns, turn) : state.injectedTurns,
+    });
+    const parts: string[] = [];
+    // 260724 WP1: resolve the invocation at emit time (constant untouched). Safe
+    // per resolveCxcInDirective: every cxc command in the arming directive is
+    // backticked; "cxc-loop"/"cxc-pabcd" skill nouns carry no "`cxc " prefix.
+    parts.push(resolveCxcInDirective(loopArmDirective(platform)));
+    if (agbrowseRequested) parts.push(AGBROWSE_SEARCH_DIRECTIVE);
+    return buildContextOutput("UserPromptSubmit", parts.join("\n\n"));
+  }
+
+  // Natural-language triggers are advisory only. Explicit chat commands above or
+  // authorized agent CLI calls own phase entry and advancement through real gates.
+  if (trigger) {
+    const directive =
+      trigger === "I" || entry.adviseInterview
+        ? interviewDirective()
+        : phaseDirective(trigger, activeWorkPhaseOpts(payload.cwd, state.slug));
+    // Keep phase, orchestrationActive and lastInjectedPhase unchanged, including
+    // from IDLE. Only dedup/loop-arm bookkeeping is recorded here.
+    if (turn || loopArmRequested) {
+      writeState(payload.cwd, {
+        ...state,
+        injectedTurns: turn ? appendTurn(state.injectedTurns, turn) : state.injectedTurns,
+        ...(loopArmRequested ? { loopArmSeen: true } : {}),
+      });
+    }
+    const guided = `${directive}\n\n${resolveCxcInDirective(TRIGGER_AUTHORITY_NOTE)}`;
+    return buildContextOutput("UserPromptSubmit", withFooter(guided, state.phase));
+  }
+
+  // fail-closed: no trigger and orchestration never activated -> stay silent.
+  if (!state.orchestrationActive) {
+    if (agbrowseRequested) {
+      writeState(payload.cwd, {
+        ...state,
+        injectedTurns: turn ? appendTurn(state.injectedTurns, turn) : state.injectedTurns,
+      });
+      return buildContextOutput("UserPromptSubmit", AGBROWSE_SEARCH_DIRECTIVE);
+    }
+    return "";
+  }
+
+  // TRIGGER-AUTHORITY-01 (040): an armed session that asks for a loop keeps its
+  // phase and falls through to the passive pipeline, but the flag must survive.
+  // `working` alone is not enough — the passive branches below can return without
+  // writing (context pressure, no turn id), so persist once here and let every
+  // later write spread `working` instead of the stale `state`.
+  const working = loopArmRequested && !state.loopArmSeen ? { ...state, loopArmSeen: true } : state;
+  if (working !== state) writeState(payload.cwd, working);
+
+  // L17 firewall: the goal-active interview suppression must also cover the PASSIVE
+  // re-injection paths (modes 2/3), not just the explicit `trigger === "I"` path above.
+  // If the session is sitting in phase I and a native goal is (or becomes) active, do
+  // NOT re-inject any Interview directive — goal mode is PABCD-only and the Interview
+  // never fires under a goal. Fail-closed: an unreadable goal DB also suppresses.
+  if (state.phase === "I" && suppressesInterview(getGoalActiveStatus(payload.session_id))) {
+    return "";
+  }
+
+  // R-11 transcript-grounded idempotency (passive modes only; explicit trigger
+  // above already injected). The local injectedTurns flag dedups within a turn,
+  // but turn_id can churn/reset after compaction. Read the transcript tail and:
+  //  - suppress under context-pressure/compaction recovery (don't pile on), and
+  //  - skip when the current phase's stage marker is already present in the tail.
+  const tail = readTranscriptTail(payload.transcript_path);
+  if (isContextPressureTail(tail) && !agbrowseRequested) return "";
+  if (hasStageMarkerForPhase(tail, state.phase)) {
+    if (turn) {
+      writeState(payload.cwd, {
+        ...working,
+        lastInjectedPhase: state.phase,
+        injectedTurns: appendTurn(state.injectedTurns, turn),
+      });
+    }
+    if (agbrowseRequested) {
+      return buildContextOutput("UserPromptSubmit", AGBROWSE_SEARCH_DIRECTIVE);
+    }
+    return "";
+  }
+
+  // mode 2: phase changed since the last injected phase -> full directive.
+  if (state.phase !== state.lastInjectedPhase) {
+    const directive = state.phase === "I" ? interviewDirective() : phaseDirective(state.phase, activeWorkPhaseOpts(payload.cwd, state.slug));
+    const context = agbrowseRequested ? `${directive}\n\n${AGBROWSE_SEARCH_DIRECTIVE}` : directive;
+    if (turn) {
+      writeState(payload.cwd, {
+        ...working,
+        lastInjectedPhase: state.phase,
+        injectedTurns: appendTurn(state.injectedTurns, turn),
+      });
+    }
+    return buildContextOutput("UserPromptSubmit", withFooter(context, state.phase));
+  }
+
+  // mode 3: same phase -> short compaction-immune stage header every turn.
+  if (turn) {
+    writeState(payload.cwd, {
+      ...working,
+      injectedTurns: appendTurn(state.injectedTurns, turn),
+    });
+  }
+  const header = buildStageHeader(state.phase);
+  const context = agbrowseRequested ? `${header}\n\n${AGBROWSE_SEARCH_DIRECTIVE}` : header;
+  return buildContextOutput("UserPromptSubmit", withFooter(context, state.phase));
+}
+
+/** L5 — one-line human status for the chat `orchestrate status` affordance. */
+export function renderStatusLine(phase: Phase, flags: { interview: boolean; auditPassed: boolean; checkPassed: boolean }): string {
+  const label = STAGE_LABELS[phase] ?? phase;
+  return `[codexclaw status] IPABCD: ${phase} (${label}) · interview=${flags.interview} auditPassed=${flags.auditPassed} checkPassed=${flags.checkPassed}`;
+}
+
+/**
+ * L3b — apply an explicit chat orchestrate command to file state (human free-pass),
+ * persist phase + ledger, and return the directive/status/reset line. Returns null
+ * to defer to the loose path (goal-mode interview suppression only).
+ */
+function handleOrchestrateCommand(
+  payload: UserPromptSubmitPayload,
+  state: ReturnType<typeof readState>,
+  turn: string,
+  command: NonNullable<ReturnType<typeof parseOrchestrateCommand>>,
+  dcloseCommitHooks: HookDcloseCommitHooks,
+): string | null {
+  // HIGH fix: preserve goal-mode Interview suppression on the parser path too,
+  // before any state/ledger write (HOTL boundary).
+  if (command.verb === "I" && suppressesInterview(getGoalActiveStatus(payload.session_id))) {
+    return null;
+  }
+
+  if (command.verb !== "status" && command.verb !== "reset") {
+    try { resolveSessionSource(payload.cwd, payload.session_id); }
+    catch (err) { return buildContextOutput("UserPromptSubmit", `[codexclaw — refused: SOURCE-ROOT: ${err instanceof Error ? err.message : String(err)}]`); }
+  }
+
+  const closePhaseId = command.verb === "D" ? command.attest?.workPhaseId?.trim() ?? "" : "";
+  const recoveringDclose = command.verb === "D" && matchesDcloseRecovery(state, closePhaseId);
+  let closedWorkPhaseId: string | null = closePhaseId || null;
+  const result: ApplyResult = recoveringDclose
+    ? {
+        ok: true as const,
+        control: "done" as const,
+        state: { ...clearedIdle(state), checkEpoch: state.checkEpoch, dcloseRecovery: state.dcloseRecovery },
+        ledger: {
+          ts: new Date().toISOString(),
+          sessionId: state.sessionId,
+          from: "C",
+          to: "IDLE",
+          reason: "done",
+          ...(command.attest?.did ? { evidence: command.attest.did } : {}),
+        },
+        noop: false,
+      }
+    : applyHumanTransition(state, command.verb, command.attest);
+  if (!result.ok) {
+    // Refused (illegal adjacency): surface the reason, do not write state/ledger.
+    return buildContextOutput("UserPromptSubmit", `[codexclaw — refused: ${result.reason}]`);
+  }
+
+  // status: read-only, no state change, no ledger.
+  // SOURCE-DELTA-01 (050): the chat path gets the same B>C check as the CLI. Wiring
+  // only one of them would leave a phrasing that bypasses the gate entirely, which
+  // is the class of hole this unit exists to close.
+  if (state.phase === "B" && command.verb === "C" && !state.phaseEntrySource
+      && resolveSessionSource(payload.cwd, payload.session_id) !== payload.cwd) {
+    return buildContextOutput("UserPromptSubmit", "[codexclaw — refused: SOURCE-ROOT: bound source has no valid B baseline. Re-plan before continuing.]");
+  }
+  if (state.phase === "B" && command.verb === "C" && state.phaseEntrySource) {
+    const now = captureSessionSourceIdentity(payload.cwd, payload.session_id, { excludeCodexclawArtifacts: true });
+    if (state.phaseEntrySource.sourceRoot !== now.sourceRoot) {
+      return buildContextOutput("UserPromptSubmit", "[codexclaw — refused: SOURCE-ROOT: source binding changed since B began. Re-plan and capture a new baseline; nothing was written.]");
+    }
+    if (compareSource(state.phaseEntrySource, now).kind === "same") {
+      return buildContextOutput(
+        "UserPromptSubmit",
+        `[codexclaw — refused: the source is unchanged since B began (${describeSource(now)}), so nothing was implemented in this B (SOURCE-DELTA-01). Nothing was written.]`,
+      );
+    }
+  }
+
+
+  if (result.control === "status") {
+    return buildContextOutput("UserPromptSubmit", renderStatusLine(state.phase, state.flags));
+  }
+
+  // reset-from-IDLE no-op: recognized but nothing to write.
+  if (result.noop) {
+    return buildContextOutput("UserPromptSubmit", "[codexclaw — already IDLE]");
+  }
+
+  // State-changing command: persist phase + record the turn (same-turn dedup so a
+  // re-fire does not double-append the ledger) BEFORE returning.
+  // CYCLE-COMPLETION-01 preflight (030): mirror of the CLI path. Decide the
+  // work-phase close BEFORE the state write below, so a refusal leaves state,
+  // PABCD ledger and goalplan all untouched instead of stranding the cycle as
+  // "FSM idle, ledger done, goalplan unfinished".
+  let advanced: AdvanceResult | null = null;
+  // 050 wp5 §40 Z2: set by the lock callback when the plan was already fully done.
+  // The finalization lock and the marker fields below both read it, so it lives out
+  // here rather than inside the callback's block.
+  let allDoneClose = false;
+  if (result.control === "done" && state.slug) {
+    // CHECK-BINDING-01 (075): same receipt requirement as the CLI, checked here so
+    // a chat D-close cannot be the way around it.
+    // 050 wp5 §5: a marker-matched retry already spent its receipt in the first
+    // attempt, and re-requiring it would refuse a repair for a gate it cannot satisfy
+    // twice. The CLI path skips it on the same condition.
+    if (!recoveringDclose) {
+      const receiptCheck = validateCheckReceipt(state, payload.session_id, command.attest?.testReceiptPath, payload.cwd);
+      if (!receiptCheck.ok) {
+        return buildContextOutput("UserPromptSubmit", `[codexclaw — refused: ${receiptCheck.reason} Nothing was written.]`);
+      }
+    }
+    const locked = withGoalplanWriteLock(payload.cwd, state.slug, (plan) => {
+      // §5: integrity is checked inside the lock, before marker or any write.
+      const integrityReasons = [
+        ...goalplanDefinitionIntegrityReasons(plan),
+        ...goalplanDependencyCompletionReasons(plan),
+      ];
+      if (integrityReasons.length > 0) {
+        return {
+          output: buildContextOutput(
+            "UserPromptSubmit",
+            `[codexclaw — refused: invalid goalplan: ${integrityReasons.join("; ")}. Nothing was written.]`,
+          ),
+          advanced: null,
+          allDone: false as const,
+        };
+      }
+      if (plan.workPhases.length === 0) {
+        return {
+          output: buildContextOutput(
+            "UserPromptSubmit",
+            `[codexclaw — refused: the bound goalplan "${state.slug}" has no active work-phase to close (CYCLE-COMPLETION-01). Nothing was written.]`,
+          ),
+          advanced: null,
+          allDone: false as const,
+        };
+      }
+      // §39 Y2: recovery is checked BEFORE all-done, in the same order as the CLI
+      // path. Crashing right after the final work-phase commit leaves an all-done
+      // plan; checking all-done first would consume that retry as a plain cycle
+      // close and record closedWorkPhaseId: null, dropping the marker's target.
+      let closeResult: AdvanceResult;
+      let writeClosedPlan = false;
+      // §53: set when an absent-target resume activated the recorded successor.
+      let resumedAbsent: Goalplan | null = null;
+      if (recoveringDclose) {
+        // §50: same refusal as the CLI. A pre-§48 marker has no safe reading, so this
+        // stops instead of nulling the cursor on a plan whose commit may have landed.
+        if (state.dcloseRecovery.legacy) {
+          return {
+            output: buildContextOutput(
+              "UserPromptSubmit",
+              `[codexclaw — refused: the recovery marker for ${closePhaseId} predates the `
+                + `successor field, so this retry cannot tell whether the plan commit `
+                + `landed. The marker was kept; inspect the goalplan, set the work-phase `
+                + `statuses and activeWorkPhaseId by hand, then run `
+                + `\`cxc orchestrate reset --session ${payload.session_id}\` to clear the `
+                + `marker. Nothing was written.]`,
+            ),
+            advanced: null,
+            allDone: false as const,
+          };
+        }
+        // §39 Y1: the marker is written before the plan commit, so a matching
+        // marker does not prove the plan was closed. Look the fixed target up —
+        // absent means a later edit removed it and the commit is not ours to redo;
+        // present-but-open is the marker-then-crash case and we close exactly that
+        // phase.
+        //
+        // §40 Z1: the CLI path and this one both go through closeFixedWorkPhase(),
+        // so the recovered plan matches what a normal close would have written —
+        // cursor moved, successor in_progress, and a truthful started row.
+        const fixed = plan.workPhases.find((workPhase) => workPhase.id === closePhaseId);
+        // §42/§43: same rule as the CLI. The helper decides, not the caller, so both
+        // a status-only edit and a pending task hidden under an already-closed phase
+        // are caught. `already_done` comes back only after all three gates pass.
+        // §53: the absent-target decision is shared with the CLI. Leaving it out here let
+        // the same marker activate a pending successor on one surface and silently log
+        // `started` without a plan write on the other.
+        if (!fixed) {
+          const orphan = resumeAbsentTarget(plan, state.dcloseRecovery.nextWorkPhaseId);
+          if (orphan.kind === "successor_lost") {
+            return {
+              output: buildContextOutput(
+                "UserPromptSubmit",
+                `[codexclaw — refused: recovery target ${closePhaseId} is gone from the plan `
+                  + `and the successor ${orphan.successorId} it recorded `
+                  + `${absentSuccessorDetail(orphan.reason)}, so this retry cannot tell what `
+                  + `to finish. The marker was kept; inspect the goalplan, set the work-phase `
+                  + `statuses and activeWorkPhaseId by hand, then run `
+                  + `\`cxc orchestrate reset --session ${payload.session_id}\` to clear the `
+                  + `marker. Nothing was written.]`,
+              ),
+              advanced: null,
+              allDone: false as const,
+            };
+          }
+          if (orphan.kind === "activate") {
+            resumedAbsent = orphan.plan;
+          }
+        }
+        // §53: `resumedAbsent` carries the activation past the switch below. Assigning
+        // closeResult inside the branch above was not enough: the absent case of that
+        // switch overwrote it with the original plan, so the successor stayed pending
+        // while the ledger logged `started` for it.
+        const closed = fixed
+          ? closeFixedWorkPhase(plan, closePhaseId, state.dcloseRecovery.nextWorkPhaseId)
+          : { kind: "absent" as const };
+        // §41 W1: same fail-closed rule as the CLI. The marker stays so the operator
+        // can repair the plan and finish with the same request.
+        if (closed.kind === "tasks_pending") {
+          const open = closed.pending.map((task) => `${task.id} (${task.title})`).join("; ");
+          return {
+            output: buildContextOutput(
+              "UserPromptSubmit",
+              `[codexclaw — refused: recovery target ${closePhaseId} gained `
+                + `${closed.pending.length} open task(s) after its marker was written `
+                + `(CYCLE-COMPLETION-01): ${open}. The recovery marker was kept; close those `
+                + `tasks and repeat the same D request. Nothing was written.]`,
+            ),
+            advanced: null,
+            allDone: false as const,
+          };
+        }
+        if (closed.kind === "not_runnable") {
+          return {
+            output: buildContextOutput(
+              "UserPromptSubmit",
+              `[codexclaw — refused: recovery target ${closePhaseId} is now ${closed.status} `
+                + `(CYCLE-COMPLETION-01). The recovery marker was kept; restore that work-phase `
+                + `and repeat the same D request. Nothing was written.]`,
+            ),
+            advanced: null,
+            allDone: false as const,
+          };
+        }
+        if (closed.kind === "dependencies_unmet") {
+          return {
+            output: buildContextOutput(
+              "UserPromptSubmit",
+              `[codexclaw — refused: recovery target ${closePhaseId} now waits for `
+                + `${closed.unmet.join(", ")} (CYCLE-COMPLETION-01). The recovery marker was kept; `
+                + `satisfy those work-phases and repeat the same D request. Nothing was written.]`,
+            ),
+            advanced: null,
+            allDone: false as const,
+          };
+        }
+        // §50: same binding rule as the CLI.
+        if (closed.kind === "successor_lost") {
+          // §51: same split as the CLI — a corrupt marker points at reset, not at a fix.
+          if (closed.reason === "corrupt") {
+            return {
+              output: buildContextOutput(
+                "UserPromptSubmit",
+                `[codexclaw — refused: the recovery marker for ${closePhaseId} names that `
+                  + `same work-phase as its successor, which no close can produce, so this `
+                  + `retry cannot tell what to finish. The marker was kept; inspect the `
+                  + `goalplan, set the work-phase statuses and activeWorkPhaseId by hand, `
+                  + `then run \`cxc orchestrate reset --session ${payload.session_id}\` to `
+                  + `clear the marker. Nothing was written.]`,
+              ),
+              advanced: null,
+              allDone: false as const,
+            };
+          }
+          const detail = closed.reason === "absent"
+            ? "is no longer in the plan"
+            : closed.reason === "not_runnable"
+              ? "can no longer be started"
+              : "now waits for another work-phase";
+          return {
+            output: buildContextOutput(
+              "UserPromptSubmit",
+              `[codexclaw — refused: recovery target ${closePhaseId} was closed with `
+                + `successor ${closed.successorId}, which ${detail} (CYCLE-COMPLETION-01). `
+                + `The recovery marker was kept; restore that work-phase and repeat the `
+                + `same D request. Nothing was written.]`,
+            ),
+            advanced: null,
+            allDone: false as const,
+          };
+        }
+        if (closed.kind === "ok") {
+          closeResult = { kind: "ok" as const, closedId: closed.closedId, plan: closed.plan };
+          writeClosedPlan = true;
+        } else if (resumedAbsent) {
+          closeResult = { kind: "ok" as const, closedId: closePhaseId, plan: resumedAbsent };
+          writeClosedPlan = true;
+        } else {
+          closeResult = { kind: "ok" as const, closedId: closePhaseId, plan };
+        }
+      } else {
+        // §35-3: a non-empty all-done plan closes only the cycle. It needs no
+        // target and writes no recovery marker or goalplan row. This now sits
+        // inside the non-recovery branch so a matching marker always wins.
+        if (plan.workPhases.every((workPhase) => workPhase.status === "done")) {
+          closedWorkPhaseId = null;
+          // §40 Z2: same as the CLI — the close row lands inside this first lock,
+          // because all-done leaves no marker for a failed second lock to resume.
+          if (result.ledger && state.phase === "C"
+            && !hasPabcdCloseRow(payload.cwd, payload.session_id, state.checkEpoch, null)) {
+            appendLedger(payload.cwd, { ...result.ledger, checkEpoch: state.checkEpoch, closedWorkPhaseId: null });
+            dcloseCommitHooks.afterPabcdLedgerAppend?.();
+          }
+          // allDone travels back as a discriminant on the callback's return value.
+          // An outer mutable flag would be easy to leave unset, and forgetting it
+          // sends all-done back into the finalization lock §40 Z2 removed.
+          return { output: "", advanced: null, allDone: true as const };
+        }
+        // §35-5: target validation follows empty-plan, all-done, and recovery.
+        if (!closePhaseId) {
+          return {
+            output: buildContextOutput(
+              "UserPromptSubmit",
+              "[codexclaw — refused: bound chat D-close requires attest.workPhaseId. Nothing was written.]",
+            ),
+            advanced: null,
+            allDone: false as const,
+          };
+        }
+        const target = plan.workPhases.find((workPhase) => workPhase.id === closePhaseId);
+        if (!target) {
+          return {
+            output: buildContextOutput(
+              "UserPromptSubmit",
+              `[codexclaw — refused: work-phase ${closePhaseId} is not in the bound goalplan. Nothing was written.]`,
+            ),
+            advanced: null,
+            allDone: false as const,
+          };
+        }
+        closeResult = advanceWorkPhase(plan);
+        writeClosedPlan = true;
+      }
+      if (closeResult.kind === "tasks_pending") {
+        const open = closeResult.pending.map((task) => `${task.id} (${task.title})`).join("; ");
+        return {
+          output: buildContextOutput(
+            "UserPromptSubmit",
+            `[codexclaw — refused: work-phase ${closeResult.workPhaseId} still has `
+              + `${closeResult.pending.length} open task(s), so this cycle cannot close `
+              + `(CYCLE-COMPLETION-01): ${open}. Nothing was written.]`,
+          ),
+          advanced: null,
+          allDone: false as const,
+        };
+      }
+      if (closeResult.kind === "no_active") {
+        const deadlock = dependencyDeadlock(plan);
+        const detail = deadlock
+          ? `Dependency deadlock: ${deadlock.reasons.join("; ")}`
+          : `the bound goalplan "${state.slug}" has no active work-phase to close`;
+        return {
+          output: buildContextOutput(
+            "UserPromptSubmit",
+            `[codexclaw — refused: ${detail} (CYCLE-COMPLETION-01). Nothing was written.]`,
+          ),
+          advanced: null,
+          allDone: false as const,
+        };
+      }
+
+      if (!recoveringDclose && closeResult.closedId !== closePhaseId) {
+        return {
+          output: buildContextOutput(
+            "UserPromptSubmit",
+            `[codexclaw — refused: fixed close target ${closePhaseId} does not match active work-phase ${closeResult.closedId}. Nothing was written.]`,
+          ),
+          advanced: null,
+          allDone: false as const,
+        };
+      }
+      if (!recoveringDclose) {
+        if (state.phase !== "C" || !state.checkEpoch) {
+          return {
+            output: buildContextOutput(
+              "UserPromptSubmit",
+              "[codexclaw — refused: current C check epoch is required. Nothing was written.]",
+            ),
+            advanced: null,
+            allDone: false as const,
+          };
+        }
+        writeState(payload.cwd, {
+          ...state,
+          dcloseRecovery: {
+            sessionId: state.sessionId,
+            checkEpoch: state.checkEpoch,
+            closedWorkPhaseId: closePhaseId,
+            // §48: same as the CLI — the successor this close chose is recorded before
+            // the plan commit, so a retry never has to infer it from the file.
+            nextWorkPhaseId: closeResult.plan.activeWorkPhaseId,
+          },
+        });
+        dcloseCommitHooks.afterRecoveryMarkerWrite?.();
+      }
+      if (writeClosedPlan) {
+        writeGoalplan(payload.cwd, closeResult.plan);
+        dcloseCommitHooks.afterGoalplanCommit?.();
+      }
+      if (!hasGoalplanRow(payload.cwd, state.slug!, "workphase_done", `closed ${closePhaseId}`)) {
+        appendGoalplanLedger(payload.cwd, state.slug!, {
+          ts: new Date().toISOString(),
+          slug: state.slug!,
+          event: "workphase_done",
+          detail: `closed ${closePhaseId}`,
+        });
+      }
+      // §52: same as the CLI — a resume names the marker successor, a fresh close names
+      // the cursor it just computed.
+      const startedId = recoveringDclose
+        ? state.dcloseRecovery.nextWorkPhaseId
+        : closeResult.plan.activeWorkPhaseId;
+      if (startedId && !hasGoalplanRow(payload.cwd, state.slug!, "workphase_started", `started ${startedId}`)) {
+        appendGoalplanLedger(payload.cwd, state.slug!, {
+          ts: new Date().toISOString(), slug: state.slug!, event: "workphase_started",
+          detail: `started ${startedId}`,
+        });
+      }
+      return { output: "", advanced: closeResult, allDone: false as const };
+    });
+
+    if (locked.kind === "locked") {
+      return buildContextOutput(
+        "UserPromptSubmit",
+        `[codexclaw — D-close was not applied: ${locked.reason} `
+          + `The phase and goalplan ledger were not changed.]`,
+      );
+    }
+    if (locked.kind === "unreadable") {
+      return buildContextOutput(
+        "UserPromptSubmit",
+        `[codexclaw — D-close was not applied: the bound goalplan could not be read `
+          + `(${locked.reason}). Nothing was written.]`,
+      );
+    }
+    if (locked.value.output) return locked.value.output;
+    advanced = locked.value.advanced;
+    allDoneClose = locked.value.allDone;
+  }
+
+  // 050 wp5: these three are needed by BOTH the bound D-close write below and the
+  // ordinary forward-edge write, so they are computed once here instead of inside one
+  // branch. The values are unchanged from the pre-wp5 block.
+  const entrySource = result.state && result.state.phase === "B"
+    ? captureSessionSourceIdentity(payload.cwd, payload.session_id, { excludeCodexclawArtifacts: true })
+    : null;
+  const planBinding = state.phase === "P" && result.state?.phase === "A"
+    ? chatPlanBinding(payload.cwd, state.slug, command.attest)
+    : null;
+  const keepBinding = result.state?.phase === "A" && state.phase === "A";
+
+  // §40 Z3: a bound D-close owns its own state write and finalization. The write keeps
+  // every field the pre-wp5 one set — dropping injectedTurns would break same-turn
+  // dedup and dropping the stopBlock reset would leave C stagnation state on an IDLE
+  // session — and layers the recovery fields on top.
+  if (result.control === "done" && state.slug && result.state) {
+  const recovery = readState(payload.cwd, payload.session_id).dcloseRecovery;
+  const closeCheckEpoch = recovery?.checkEpoch ?? state.checkEpoch;
+  // §40 Z3: keep every field the existing D-close write sets. Dropping injectedTurns
+  // breaks same-turn dedup (a re-run of the same turn would print an IDLE -> D refusal
+  // instead of staying quiet), and dropping the stopBlock reset leaves C's stagnation
+  // state on an IDLE session. wp5 only layers the recovery fields on top.
+  writeState(payload.cwd, {
+    ...result.state!,
+    phaseEntrySource: entrySource,
+    planUnit: planBinding ? planBinding.unit : keepBinding ? state.planUnit : null,
+    planEpoch: planBinding ? planBinding.epoch : keepBinding ? state.planEpoch : null,
+    orchestrationActive: false,
+    lastInjectedPhase: null,
+    injectedTurns: turn ? appendTurn(state.injectedTurns, turn) : state.injectedTurns,
+    stopBlockPhase: null,
+    stopBlockWorkPhaseId: null,
+    stopBlockCount: 0,
+    checkEpoch: allDoneClose ? null : recovery?.checkEpoch ?? null,
+    dcloseRecovery: allDoneClose ? null : recovery,
+  });
+  dcloseCommitHooks.afterStateWrite?.();
+  // §40 Z2: all-done wrote its close row inside the first lock and has no marker to
+  // clear, so it skips this second critical section entirely.
+  const finalize = allDoneClose
+    ? { kind: "ok" as const, value: undefined }
+    : withGoalplanWriteLock(payload.cwd, state.slug, () => {
+    if (result.ledger && !hasPabcdCloseRow(
+      payload.cwd,
+      payload.session_id,
+      closeCheckEpoch,
+      closedWorkPhaseId,
+    )) {
+      appendLedger(payload.cwd, {
+        ...result.ledger,
+        checkEpoch: closeCheckEpoch,
+        closedWorkPhaseId,
+      });
+      dcloseCommitHooks.afterPabcdLedgerAppend?.();
+    }
+    const current = readState(payload.cwd, payload.session_id);
+    if (matchesDcloseRecovery(current, closePhaseId)) {
+      writeState(payload.cwd, { ...current, checkEpoch: null, dcloseRecovery: null });
+    }
+  });
+  if (finalize.kind !== "ok") {
+    return buildContextOutput(
+      "UserPromptSubmit",
+      `[codexclaw — D-close was committed and the cycle is closed, but ledger/marker `
+        + `finalization is pending: ${finalize.reason} The recovery marker is still on the `
+        + `session, so running the same D request again finishes the cleanup.]`,
+    );
+  }
+  } else if (result.state) {
+    // 050: snapshot on entry to B, clear on every other phase. clearedIdle() already
+    // nulls it for reset/done; this covers the forward edges.
+
+    // 060/032: chat P>A mints the same plan binding the CLI does. Wiring only the
+    // CLI meant a cycle entered from chat reached A with no binding at all, and the
+    // audit refused to open before it could start.
+    //
+    // The checks are the CLI's, not a looser copy: an attest naming any directory
+    // with numbered docs would otherwise bind through chat what the CLI refuses.
+
+    writeState(payload.cwd, {
+      ...result.state,
+      phaseEntrySource: entrySource,
+      ...(entrySource?.sourceRoot ? { boundSourceRoot: entrySource.sourceRoot } : {}),
+      planUnit: planBinding ? planBinding.unit : keepBinding ? state.planUnit : null,
+      planEpoch: planBinding ? planBinding.epoch : keepBinding ? state.planEpoch : null,
+      // 075: same rule as the CLI — C mints, staying in C keeps, elsewhere drops.
+      checkEpoch: result.state.phase !== "C" ? null : state.phase === "C" ? state.checkEpoch : mintCheckEpoch(),
+      orchestrationActive: result.control === "reset" || result.control === "done" ? false : true,
+      lastInjectedPhase: result.control === "reset" || result.control === "done" ? null : result.state.phase,
+      injectedTurns: turn ? appendTurn(state.injectedTurns, turn) : state.injectedTurns,
+      // L6: a real chat transition is progress -> reset the Stop stagnation guard.
+      stopBlockPhase: null,
+      stopBlockCount: 0,
+    });
+  }
+  // 050 wp5: a bound D-close pays its PABCD row inside a lock with the dedup key, so
+  // appending it again here would double-count the close.
+  if (result.ledger && !(result.control === "done" && state.slug)) {
+    appendLedger(payload.cwd, result.ledger);
+  }
+
+  if (result.control === "reset") {
+    return buildContextOutput("UserPromptSubmit", "[codexclaw — reset → IDLE]");
+  }
+  // done: chat D-close. Inject the DONE summary directive this turn; the resting
+  // state is already IDLE, so the footer surfaces IDLE.
+  if (result.control === "done") {
+    // 050 wp5: the plan commit and both goalplan rows happen inside the lock above.
+    return buildContextOutput("UserPromptSubmit", withFooter(phaseDirective("D"), "IDLE"));
+  }
+  const phase = result.state?.phase ?? state.phase;
+  const directive = phase === "I" ? interviewDirective() : phaseDirective(phase, activeWorkPhaseOpts(payload.cwd, state.slug));
+  return buildContextOutput("UserPromptSubmit", withFooter(directive, phase));
+}
+
+/** L6 — max consecutive Stop blocks at the SAME phase before the loop releases. */
+export const MAX_STOP_BLOCKS = 3;
+/**
+ * Absolute per-session bound on Stop blocks, never reset by progress.
+ * MAX_STOP_BLOCKS bounds stagnation and recharges when work moves; this one does
+ * not, so recognising progress can never turn into an unbounded loop.
+ */
+export const MAX_STOP_BLOCKS_TOTAL = 24;
+export const PLATEAU_METRIC_RECORDS = 2;
+export const PLATEAU_NOISE_FLOOR = 0;
+
+/**
+ * L6 — shared stagnation guard: bound consecutive Stop blocks at the SAME phase. A real
+ * transition resets the counter (done at the transition persist sites), so a healthy
+ * cycle gets a fresh budget per phase; a stuck agent releases after MAX_STOP_BLOCKS.
+ * Returns "release" when the cap is exceeded (counter reset + release), else the
+ * persisted consecutive-block count. With guard 1 removed (260709) this cap is the
+ * single total-termination bound for every Stop block path, including GOAL-IDLE
+ * blocks (which key the counter at phase "IDLE").
+ */
+/**
+ * Read the session-bound goalplan, refusing a slug that could escape its directory.
+ *
+ * readState only checks that a persisted slug is a string, and goalplanDir joins it
+ * without containment checks, so "." and ".." resolve outside goalplans/ even though
+ * they pass a character-class test. Centralised here so every hook reader shares one
+ * rule rather than each remembering it.
+ */
+export function safeReadBoundGoalplan(cwd: string, slug: string): ReturnType<typeof readGoalplan> {
+  if (!slug || slug === "." || slug === "..") return null;
+  if (!/^[A-Za-z0-9._-]+$/.test(slug)) return null;
+  return readGoalplan(cwd, slug);
+}
+
+interface ProgressObservation {
+  progressed: boolean;
+  /** high-water metric cursor to persist, whatever the block decision is. */
+  metricCursor: number;
+  workPhaseId: string | null;
+}
+
+/**
+ * Did anything actually move since the last Stop?
+ *
+ * Three ways it can have. A phase transition or a work-phase switch are plain
+ * value comparisons. The third is metric improvement, and it needs two separate
+ * questions answered:
+ *
+ *   is this observation NEW?  — the ledger cursor
+ *   is it BETTER?             — checkObjectivePlateau
+ *
+ * Neither alone is enough. The cursor alone would count re-recording the same
+ * value as progress. The plateau check alone reports a state, not an event: a
+ * rising window stays non-flat on every later Stop, so one recording would keep
+ * refilling the budget until the absolute cap. That was the defect five audit
+ * rounds kept circling before this slice was deferred.
+ *
+ * checkObjectivePlateau is called directly rather than through objectivePlateau,
+ * which gates on readObjectiveKind === "maximize" for the divergence block and
+ * would hide metric progress in a satisfy session.
+ *
+ * Fail-open throughout: a Stop hook that throws kills the loop.
+ */
+function observeProgress(cwd: string, state: State): ProgressObservation {
+  let metricCursor = state.stopMetricCursor;
+  let improved = false;
+  try {
+    const rows = readObjectiveMetrics(cwd, state.sessionId);
+    // High-water: a hand-truncated ledger must not let restored rows replay as
+    // new observations. rows counts valid rows for this session, not physical
+    // lines, so it can legitimately shrink.
+    metricCursor = Math.max(state.stopMetricCursor, rows.length);
+    if (rows.length > state.stopMetricCursor) {
+      improved = !checkObjectivePlateau(cwd, state.sessionId, {
+        minRecords: PLATEAU_METRIC_RECORDS,
+        noiseFloor: PLATEAU_NOISE_FLOOR,
+      }).flat;
+    }
+  } catch {
+    // leave the cursor where it was and treat this as no progress
+  }
+
+  let workPhaseId: string | null = null;
+  try {
+    const plan = safeReadBoundGoalplan(cwd, state.slug);
+    if (plan) workPhaseId = effectiveActiveWorkPhaseId(plan);
+  } catch {
+    // an unreadable goalplan is not progress
+  }
+
+  const progressed =
+    state.stopBlockPhase !== state.phase || state.stopBlockWorkPhaseId !== workPhaseId || improved;
+  return { progressed, metricCursor, workPhaseId };
+}
+
+function bumpStopCounter(cwd: string, state: State): number | "release" {
+  const obs = observeProgress(cwd, state);
+  const nextCount = obs.progressed ? 1 : state.stopBlockCount + 1;
+  const nextTotal = state.stopBlockTotal + 1;
+  // The cursor and the total advance on every Stop, block or release: an
+  // observation counts as progress exactly once, and the absolute bound holds
+  // regardless of how often progress recharges the per-phase counter.
+  const carry = { stopMetricCursor: obs.metricCursor, stopBlockTotal: nextTotal };
+  if (nextCount > MAX_STOP_BLOCKS || nextTotal > MAX_STOP_BLOCKS_TOTAL) {
+    // give up the loop: reset the counter and release so the turn can end.
+    writeState(cwd, { ...state, ...carry, stopBlockPhase: null, stopBlockWorkPhaseId: null, stopBlockCount: 0 });
+    return "release";
+  }
+  writeState(cwd, {
+    ...state,
+    ...carry,
+    stopBlockPhase: state.phase,
+    stopBlockWorkPhaseId: obs.workPhaseId,
+    stopBlockCount: nextCount,
+  });
+  return nextCount;
+}
+
+const STOP_NEXT_COMMAND: Partial<Record<Phase, string>> = {
+  I: '`cxc orchestrate P --attest \'{"from":"I","to":"P","did":"interview complete with recorded requirements"}\'`',
+  // 260825 wp1: these are the commands agents copy straight out of a Stop block,
+  // so an example missing a required key spends the agent's next turn on a
+  // refusal. P>A needs planUnit; every gated edge needs workPhaseId when a
+  // goalplan is bound; C>D needs testReceiptPath. The bound-only keys are shown
+  // with a marker rather than omitted — a key you must delete is cheaper to fix
+  // than a key you never knew existed.
+  P: '`cxc orchestrate A --attest \'{"from":"P","to":"A","did":"diff-level plan written with files and acceptance criteria","planUnit":"devlog/_plan/YYMMDD_slug","workPhaseId":"<bound goalplan only>"}\'`',
+  A: '`cxc orchestrate B --attest \'{"from":"A","to":"B","did":"audit loop closed: blockers folded into plan","auditOutput":"<reviewer verdict tail>","auditVerdict":"pass|near-pass","auditResidual":"<near-pass only: residual blockers + disposition>","workPhaseId":"<bound goalplan only>"}\'`',
+  B: '`cxc orchestrate C --attest \'{"from":"B","to":"C","did":"implementation completed and verifier reviewed it","workPhaseId":"<bound goalplan only>"}\'`',
+  C: '`cxc orchestrate D --attest \'{"from":"C","to":"D","did":"checks passed","checkOutput":"<test tail>","exitCode":0,"testReceiptPath":"<bound goalplan only: cxc receipt test output path>","workPhaseId":"<bound goalplan only>"}\'`',
+  D: '`cxc orchestrate reset` after the DONE summary is recorded',
+};
+
+/** win32 cannot pass this JSON inline (002 B1), so point at the file flag there. */
+export function stopNextCommand(phase: Phase, platform: NodeJS.Platform = process.platform): string | undefined {
+  const posix = STOP_NEXT_COMMAND[phase];
+  if (posix === undefined || platform !== "win32") return posix;
+  const json = /--attest '(\{.*\})'/.exec(posix)?.[1];
+  const verb = /cxc orchestrate (\S+)/.exec(posix)?.[1];
+  if (!json || !verb) return posix;
+  // Backtick-quoted for the Stop reason renderer, same as the POSIX table entries.
+  const q = String.fromCharCode(96);
+  const write = q + "'" + json + "' | Set-Content -Encoding utf8 .codexclaw/attest.json" + q;
+  const run = q + "cxc orchestrate " + verb + " --attest-file .codexclaw/attest.json" + q;
+  return write + " then " + run;
+}
+
+/**
+ * L6 — build the Stop `{decision:"block",reason}` envelope (NOT the UserPromptSubmit
+ * additionalContext shape). The reason nudges the agent to advance the current phase.
+ *
+ * 040 — an OPTIONAL work context enriches the reason with the next concrete task, the
+ * evidence it must produce, and the goalplan ledger path. The phase-only call
+ * (`work` omitted/null) is byte-identical to the shipped reason — enrichment lines are
+ * appended only when a goalplan resolved, and never replace the phase command.
+ */
+export interface StopWorkContext {
+  /**
+   * 060 wp6: the Stop block names EVERY runnable item, not just the first one.
+   *
+   * `nextTaskTitle` told an agent about one task while `cxc loop ready` listed several, so
+   * the terminal and the Stop block disagreed about what could run. Both now read the same
+   * two helpers.
+   */
+  readyWorkPhases: { id: string; title: string }[];
+  readyTasks: { workPhaseId: string; id: string; title: string }[];
+  expectedEvidence: string | null;
+  /** Partial waits and a global deadlock are different states, so they are separate lines. */
+  waitingOn: string[];
+  ledgerPath: string | null;
+}
+
+export function buildStopBlock(
+  phase: Phase,
+  work?: StopWorkContext | null,
+  friction?: "retry" | "escalate" | "stop" | null,
+  sessionId?: string | null,
+): string {
+  const label = STAGE_LABELS[phase] ?? phase;
+  // G3 (260707 fork-FSM fix): mutating verbs now REQUIRE --session, so the
+  // continuation command must carry the session id or it would instruct a
+  // failing command. Insert it right after the verb (before ` --attest`/end).
+  // 260724 WP1 ORDERING (A-round H2): this regex matches the LITERAL
+  // `cxc orchestrate <verb>` template, so it must run BEFORE the invocation
+  // resolution below — resolveCxcInDirective is applied LAST, on the fully
+  // assembled reason.
+  let nextCommand = stopNextCommand(phase) ?? "`cxc orchestrate status`";
+  if (sessionId) {
+    nextCommand = nextCommand.replace(
+      /cxc orchestrate (\w+)/,
+      `cxc orchestrate $1 --session ${sessionId}`,
+    );
+  }
+  const lines = [
+    `[codexclaw — continue PABCD] You are mid-cycle at ${phase} (${label}) with an active goal.`,
+    "Do the real work of this phase, then self-advance with the concrete next command:",
+    nextCommand,
+  ];
+  if (work) {
+    // ENRICHMENT ONLY — appended lines; never replaces the phase command above.
+    if (work.readyWorkPhases.length > 0) {
+      lines.push(`Ready work phases: ${work.readyWorkPhases.map((wp) => `${wp.id} (${wp.title})`).join(", ")}`);
+    }
+    if (work.readyTasks.length > 0) {
+      lines.push(`Ready tasks: ${work.readyTasks.map((t) => `${t.workPhaseId}/${t.id} (${t.title})`).join("; ")}`);
+    }
+    if (work.waitingOn.length > 0) lines.push(`Waiting on: ${work.waitingOn.join("; ")}`);
+    if (work.expectedEvidence) lines.push(`Required evidence: ${work.expectedEvidence}`);
+    if (work.ledgerPath) lines.push(`Record progress in: ${work.ledgerPath}`);
+  }
+  // 080: friction is an ADVISORY line only (read after the arming guard); it never changes
+  // whether Stop blocks. `escalate`/`stop` signal a repeated tool failure worth a rethink.
+  if (friction === "escalate" || friction === "stop") {
+    lines.push(
+      `Friction signal (${friction}): a tool failure has recurred — review .codexclaw/friction.jsonl and change approach rather than repeating the same command.`,
+    );
+  }
+  lines.push("C→D requires checkOutput+exitCode. D is not a resting state; close the cycle back to IDLE.");
+  // 260724 WP1: emit-time invocation resolution, AFTER the --session insertion
+  // above. Safe per resolveCxcInDirective: the only cxc commands in the reason
+  // (STOP_NEXT_COMMAND entries) are backticked; enrichment/friction lines are
+  // paths and prose with no "`cxc " prefix.
+  const reason = resolveCxcInDirective(lines.join("\n"));
+  return `${JSON.stringify({ decision: "block", reason })}\n`;
+}
+
+/**
+ * 040 — resolve the goalplan work context for the Stop block reason. PURE + fail-safe:
+ * keys STRICTLY on the session-bound `state.slug` (persisted by `cxc goalplan init
+ * --session`, 030.3). No directory scan, no DB access — a missing slug or absent/
+ * unreadable goalplan returns null, so `buildStopBlock(phase, null)` is byte-identical
+ * to the shipped reason. The A-gate (Copernicus) rejected any dir-scan fallback because
+ * GoalplanHostLink has no session binding and could enrich the wrong goal.
+ */
+export function readStopWorkContext(cwd: string, state: State): StopWorkContext | null {
+  const slug = state.slug;
+  if (!slug) return null; // no session-bound slug -> exactly today's behavior
+  const plan = readGoalplan(cwd, slug);
+  if (!plan) return null;
+
+  // 060 wp6: `cxc loop ready` refuses an invalid graph, and this path used to enrich from
+  // one anyway. A plan with two tasks sharing an id would list the id twice, once per copy,
+  // and the agent could not tell which one it was being sent to. Same gate, same order.
+  const integrity = [
+    ...goalplanDefinitionIntegrityReasons(plan),
+    ...goalplanDependencyCompletionReasons(plan),
+  ];
+  if (integrity.length > 0) {
+    return {
+      readyWorkPhases: [],
+      readyTasks: [],
+      expectedEvidence: null,
+      waitingOn: [`the plan is not a valid graph: ${integrity.join("; ")}`],
+      ledgerPath: `.codexclaw/goalplans/${slug}/ledger.jsonl`,
+    };
+  }
+
+  const phases = readyWorkPhases(plan);
+  const tasks = readyTasks(plan);
+  const unmet = unmetCriteria(plan);
+  const deadlock = dependencyDeadlock(plan);
+  // A global deadlock and a partial wait are different states. The deadlock reasons say
+  // nothing can run at all; the wait reasons say something is blocked while other work
+  // remains runnable. Reporting only one of them hides half the picture.
+  const waitingOn = deadlock ? deadlock.reasons : dependencyWaitReasons(plan);
+  if (phases.length === 0 && tasks.length === 0 && unmet.length === 0 && waitingOn.length === 0) {
+    return null; // nothing remaining -> no enrichment
+  }
+  return {
+    readyWorkPhases: phases.map((wp) => ({ id: wp.id, title: wp.title })),
+    readyTasks: tasks.map((entry) => ({
+      workPhaseId: entry.workPhaseId,
+      id: entry.task.id,
+      title: entry.task.title,
+    })),
+    expectedEvidence: unmet[0]?.expectedEvidence ?? null,
+    waitingOn,
+    ledgerPath: `.codexclaw/goalplans/${slug}/ledger.jsonl`,
+  };
+}
+
+/**
+ * GOAL-IDLE-CONTINUE-01 (260709) — the Stop block for "goal ACTIVE but no PABCD cycle
+ * in flight". The old guard 2a released this state silently, so a session could park an
+ * active goal at IDLE forever (019f4407: goal created, FSM never entered, turn ended).
+ * The reason names the two honest exits: arm the next work-phase (`orchestrate P`), or
+ * close the goal for real (`update_goal complete` — gated by GOAL-COMPLETE-GATE-01 when
+ * a goalplan is bound — or `blocked` for external blockers). When a goalplan is bound,
+ * the remaining work is named; when it is bound but unregistered (empty), the block says
+ * to fill it; when none is bound, it points at `cxc loop init`.
+ */
+export function buildGoalIdleBlock(
+  cwd: string,
+  state: State,
+  sessionId: string,
+  platform: NodeJS.Platform = process.platform,
+): string {
+  // Same PowerShell constraint as loopArmDirective: inline JSON cannot survive
+  // argument parsing, so win32 gets the write-then-attest pair instead.
+  const startNext = platform === "win32"
+    ? `Either start the next work-phase now: write the JSON with \`'{"from":"IDLE","to":"P","did":"<diff-level plan for the next work-phase>"}' | Set-Content -Encoding utf8 .codexclaw/attest.json\` then run \`cxc orchestrate P --session ${sessionId} --attest-file .codexclaw/attest.json\``
+    : `Either start the next work-phase now: \`cxc orchestrate P --session ${sessionId} --attest '{"from":"IDLE","to":"P","did":"<diff-level plan for the next work-phase>"}'\``;
+  const lines = [
+    "[codexclaw — goal continuation] A host goal is ACTIVE but no PABCD cycle is in flight.",
+    "GOAL-IDLE-CONTINUE-01: IDLE is not the end while the goal is active (LOOP-CONTINUE-01). Do not end the turn here.",
+    startNext,
+    'or close the goal honestly: `update_goal` status "complete" (only when the recorded criteria are proven — the E8 gate checks a bound goalplan) or status "blocked" for an external blocker.',
+    "LOOP-UNIT-CHAIN-01: work-phases chain HETEROGENEOUS units in one session — an independent feature/plan discovered mid-loop is simply the NEXT work-phase (append it to the goalplan, then orchestrate P). \"Needs its own PABCD\" is a plan statement, not a session boundary; do not close the goal while naming remaining features that fit the objective.",
+  ];
+  const plan = state.slug ? readGoalplan(cwd, state.slug) : null;
+  const work = readStopWorkContext(cwd, state);
+  if (work) {
+    if (work.readyWorkPhases.length > 0) {
+      lines.push(`Ready work phases: ${work.readyWorkPhases.map((wp) => `${wp.id} (${wp.title})`).join(", ")}`);
+    }
+    if (work.readyTasks.length > 0) {
+      lines.push(`Ready tasks: ${work.readyTasks.map((t) => `${t.workPhaseId}/${t.id} (${t.title})`).join("; ")}`);
+    }
+    if (work.waitingOn.length > 0) lines.push(`Waiting on: ${work.waitingOn.join("; ")}`);
+    if (work.expectedEvidence) lines.push(`Required evidence: ${work.expectedEvidence}`);
+    if (work.ledgerPath) lines.push(`Record progress in: ${work.ledgerPath}`);
+  } else if (plan && plan.workPhases.length === 0 && plan.criteria.length === 0) {
+    lines.push(
+      `The bound goalplan '${state.slug}' is EMPTY: register workPhases[]/criteria[] in .codexclaw/goalplans/${state.slug}/goalplan.json (schema in $cxc-loop) so remaining work is durable and the E8 gate can pass.`,
+    );
+  } else if (!state.slug) {
+    lines.push(
+      `No goalplan is bound to this session: run \`cxc loop init --objective "<the goal objective>" --session ${sessionId}\` and register workPhases[]/criteria[] before the next work-phase.`,
+    );
+  }
+  // 260724 WP1: emit-time invocation resolution. Safe per resolveCxcInDirective:
+  // both cxc commands here (`cxc orchestrate P ...`, `cxc loop init ...`) are
+  // backticked and already carry their session id; "$cxc-loop" and goalplan
+  // paths carry no "`cxc " prefix.
+  return `${JSON.stringify({ decision: "block", reason: resolveCxcInDirective(lines.join("\n")) })}\n`;
+}
+
+export function buildPlateauDivergeBlock(phase: Phase, plateau: PlateauCheck, cwd?: string, sessionId?: string): string {
+  const label = STAGE_LABELS[phase] ?? phase;
+  const values = plateau.values.length > 0 ? plateau.values.join(" -> ") : "n/a";
+  const candidates = cwd && sessionId ? readDivergenceCandidates(cwd, sessionId) : [];
+  const streak = discardStreak(candidates);
+  const discarded = candidates
+    .filter((candidate) => candidate.status === "discarded")
+    .sort((a, b) => a.ts.localeCompare(b.ts))
+    .slice(-5);
+  const lines = [
+    `[codexclaw — objective plateau] You are mid-cycle at ${phase} (${label}) with an active maximize goal.`,
+    `The latest ${PLATEAU_METRIC_RECORDS} ${plateau.metricName ?? "objective"} metric value(s) are non-improving: ${values}.`,
+    "Step back and re-plan with divergence: record at least two grounded candidate approaches, choose the collapse point, then continue PABCD.",
+    "Do not ask the user while the goal is active; record assumptions or an unresolved-tie note for later review.",
+  ];
+  if (streak.changeClass && streak.length >= 3) {
+    lines.unshift(
+      `FORBIDDEN: another ${streak.changeClass} candidate — ${streak.length} consecutive ${streak.changeClass} candidates were discarded. Your next candidates MUST be state-space-redesign or evaluator-change, or the next work-phase MUST target the evaluation gate itself (LOOP-PHASE-DEATH-01 / GATE-ORACLE-VALIDITY-01).`,
+    );
+  }
+  if (discarded.length > 0) {
+    lines.push(
+      "Recent discarded candidates:",
+      ...discarded.map((candidate) => `${candidate.title} [${candidate.changeClass ?? "unclassified"}]`),
+    );
+  }
+  lines.push(
+    "Anchor rule (LOOP-CANDIDATE-ANCHOR-01): source candidates from domain-state evidence (logs, trajectories, instance analysis) — a candidate list of threshold/guard tweaks on existing levers is parameter-space anchoring; regenerate. Quote the previous cycle's D conclusion before proposing (LOOP-CONTINUITY-01). Record each candidate WITH its changeClass. Check whether evaluation instances are fixed/enumerable (LOOP-INSTANCE-CHECK-01).",
+  );
+  const reason = lines.join("\n");
+  return `${JSON.stringify({ decision: "block", reason })}\n`;
+}
+
+function objectivePlateau(cwd: string, sessionId: string): PlateauCheck {
+  try {
+    if (readObjectiveKind(cwd, sessionId) !== "maximize") return { flat: false, metricName: null, values: [] };
+    return checkObjectivePlateau(cwd, sessionId, {
+      minRecords: PLATEAU_METRIC_RECORDS,
+      noiseFloor: PLATEAU_NOISE_FLOOR,
+    });
+  } catch {
+    return { flat: false, metricName: null, values: [] };
+  }
+}
+
+/**
+ * Stop handler — L6 active continuation with a bounded stagnation guard so the loop
+ * ALWAYS terminates. Blocks (keeps the agent going) only when a PABCD cycle is genuinely
+ * in flight under an active goal, OR when an ACTIVE goal is parked with no in-flight
+ * cycle (GOAL-IDLE-CONTINUE-01: arming nudge). Releases via any of: no active goal,
+ * phase I (interview firewall), context pressure, or the MAX_STOP_BLOCKS cap.
+ *
+ * 260709 (lazygap loop-enforcement patch):
+ *  - guard 1 (`stop_hook_active` → unconditional release) is REMOVED. Under the old
+ *    guard an armed HOTL loop got exactly ONE forced continuation per turn — the
+ *    second Stop of the chain carried stop_hook_active and released even after real
+ *    phase progress, which is the "step-by-step cut" the loop doctrine forbids.
+ *    Termination stays total: the per-phase MAX_STOP_BLOCKS stagnation cap (reset on
+ *    every real transition) bounds every continuation chain that stops progressing.
+ *  - GOAL-IDLE-CONTINUE-01: an ACTIVE goal with no in-flight cycle used to release
+ *    silently (guard 2a), so "goal armed but PABCD never entered" (019f4407) ended
+ *    turns freely. It now gets the same bounded block, naming the arming command
+ *    (`cxc orchestrate P --session <id>`), the goalplan's remaining work when one is
+ *    bound, and the honest close-out path (update_goal complete gated by E8 / blocked).
+ *    Side effect by design: the counter write creates the session state file, so the
+ *    suggested orchestrate command passes the G2 unknown-session guard afterwards.
+ */
+export function handleStop(
+  payload: StopPayload,
+  platform: NodeJS.Platform = process.platform,
+): string {
+  if (payload.hook_event_name !== "Stop") return "";
+
+  const state = readState(payload.cwd, payload.session_id);
+  // guard 2a': the autonomous Stop loop is PABCD-only. The Interview is HITL-only and
+  // is NEVER driven by Stop — even if a session is sitting at phase=I when a goal is
+  // (or becomes) active, the loop does not continue the interview. This matches the
+  // goal firewall (Interview never fires under a goal) on the Stop surface too.
+  if (state.phase === "I") return "";
+
+  const goalActive = getGoalActiveStatus(payload.session_id) === "active";
+  const inFlight = state.orchestrationActive && state.phase !== "IDLE";
+
+  // guard 2a (amended by GOAL-IDLE-CONTINUE-01): with no cycle in flight a plain
+  // interactive session releases exactly as before; an ACTIVE goal instead gets a
+  // bounded arming block — "IDLE is not the end while work remains" (LOOP-CONTINUE-01).
+  if (!inFlight) {
+    if (!goalActive) return "";
+    // bail: don't pile on during context-pressure/compaction recovery.
+    if (isContextPressureTail(readTranscriptTail(payload.transcript_path))) return "";
+    if (bumpStopCounter(payload.cwd, state) === "release") return "";
+    return buildGoalIdleBlock(payload.cwd, state, payload.session_id, platform);
+  }
+
+  // C-RENDER-GROUNDING-01 advisory: when phase === C and render-artifact files were
+  // modified this cycle but no render-observation tool was recorded, emit a SOFT WARNING.
+  // This fires for BOTH interactive and goal sessions — it is an advisory, NOT a block.
+  // FAIL-OPEN: any read error in the render ledger yields false (no advisory, never blocks).
+  const renderAdvisory = renderGroundingAdvisoryForStop(payload.cwd, state.phase);
+
+  // guard 2b: only an ACTIVE goal arms the autonomous loop (interactive sessions pause).
+  if (!goalActive) {
+    // Interactive session: no block. Emit the render advisory as additionalContext if applicable.
+    if (renderAdvisory) return buildContextOutput("Stop", renderAdvisory);
+    return "";
+  }
+  // bail: don't pile on during context-pressure/compaction recovery.
+  if (isContextPressureTail(readTranscriptTail(payload.transcript_path))) return "";
+
+  if (bumpStopCounter(payload.cwd, state) === "release") return "";
+  const plateau = objectivePlateau(payload.cwd, payload.session_id);
+  if (plateau.flat) return buildPlateauDivergeBlock(state.phase, plateau, payload.cwd, payload.session_id);
+  // 040: enrich the block reason with goalplan-derived remaining work (text-only, after
+  // every release guard + the cap). null context => byte-identical shipped reason.
+  // 080: a HIGH friction signal adds an advisory escalate line to the SAME block — it is
+  // read ONLY here, after the goal-active arming guard + the cap, so it never changes when
+  // Stop blocks vs releases (arming is unchanged). FAIL-OPEN: null verdict => no line.
+  const block = buildStopBlock(state.phase, readStopWorkContext(payload.cwd, state), peakFrictionVerdict(payload.cwd), payload.session_id);
+  // Goal-mode block: if the render advisory applies, append it to the block reason.
+  if (renderAdvisory) {
+    try {
+      const parsed = JSON.parse(block.trimEnd()) as { decision: string; reason: string };
+      parsed.reason = `${parsed.reason}\n\n${renderAdvisory}`;
+      return `${JSON.stringify(parsed)}\n`;
+    } catch {
+      // FAIL-OPEN: return the original block if parse fails
+    }
+  }
+  return block;
+}
+
+/**
+ * C-RENDER-GROUNDING-01 advisory check for Stop handler. Returns the advisory text
+ * when ALL conditions hold: (1) phase === C, (2) render-artifact files modified,
+ * (3) no render-observation recorded. Returns null otherwise. FAIL-OPEN.
+ */
+export function renderGroundingAdvisoryForStop(cwd: string, phase: Phase): string | null {
+  try {
+    if (phase !== "C") return null;
+    if (!hasRenderArtifactModified(cwd)) return null;
+    if (hasRenderObservation(cwd)) return null;
+    return renderGroundingAdvisory();
+  } catch {
+    return null; // FAIL-OPEN
+  }
+}
+
+/**
+ * L18 — post-answer rescan reinjection (INTERVIEW-SCAN-01 guidance). Injected as
+ * PostToolUse additionalContext right after a `request_user_input` answer is captured,
+ * so the main session actually runs the contradiction-rescan round instead of letting
+ * the I-directive fade with transcript distance. Only fires in an interactive I-phase
+ * (never under an active/unreadable goal — the Interview goal firewall).
+ */
+export const RESCAN_REINJECT_DIRECTIVE = [
+  "[codexclaw: INTERVIEW — post-answer rescan]",
+  "An answer was recorded. Apply this pointer and $codexclaw:cxc-interview only within exact user limits and permissions. No-delegation means no dispatch.",
+  "INTERVIEW-SCAN-01: rescan contradictions before the next question or advancement. If required work or tracker writes are forbidden, report them as unmet; do not record a completed scan or claim readiness.",
+  "Only when dispatch is authorized: give each read-only Mind the current plan/tracker position; cap 3, lowest-scoring dimensions first. Discover spawn_agent if needed.",
+  "Minds return contradictions only, never ask, edit or write state. Inline reasoning is not evidence that independent Minds ran.",
+  "Triage high contradictions into user questions and low/medium into OPEN ASSUMPTIONS; record only actual authorized work with `cxc scan record --session <id> [--contradictions N] [--high N]`.",
+].join("\n");
+
+/**
+ * PostToolUse handler (L12 WP4) — capture a `request_user_input` round into the
+ * durable interview ledger. PURE side-effect recorder: it never blocks or emits a
+ * decision (PostToolUse runs AFTER the tool already executed). After capturing, when
+ * the session is in an interactive I-phase (no active goal), it reinjects the rescan
+ * directive as additionalContext so the Mind loop actually runs after every answer
+ * (L18). Only acts on the request_user_input tool; everything else is a no-op.
+ *
+ * Goal-mode note: the PreToolUse interview deny is a SEPARATE hook that fires before
+ * the tool runs, so when a goal is active the call is denied and never reaches here —
+ * no conflict. When goal mode is inactive (interactive interview), this records the
+ * question + answer for replay/evidence.
+ */
+export function handlePostToolUse(
+  payload: PostToolUsePayload,
+  deps: { goalStatus?: () => "active" | "inactive" | "unreadable" } = {},
+): string {
+  if (payload.hook_event_name !== "PostToolUse") return "";
+  if (payload.tool_name !== "request_user_input") return "";
+  captureInterviewAnswers({
+    cwd: payload.cwd,
+    sessionId: payload.session_id,
+    turnId: payload.turn_id ?? "",
+    toolInput: payload.tool_input,
+    toolResponse: payload.tool_response,
+  });
+  // L18: reinject the rescan directive only for an interactive interview. Goal
+  // active/unreadable suppresses the whole Interview (firewall) -> stay silent.
+  try {
+    const status = deps.goalStatus ? deps.goalStatus() : getGoalActiveStatus(payload.session_id);
+    if (suppressesInterview(status)) return "";
+    const state = readState(payload.cwd, payload.session_id);
+    if (state.phase !== "I") return "";
+    return `${JSON.stringify({
+      hookSpecificOutput: {
+        hookEventName: "PostToolUse",
+        // 260724 WP1: emit-time invocation resolution (constant untouched). Safe
+        // per resolveCxcInDirective: the single cxc command (`cxc scan record ...`)
+        // is backticked; the rest is prose.
+        additionalContext: resolveCxcInDirective(RESCAN_REINJECT_DIRECTIVE),
+      },
+    })}\n`;
+  } catch {
+    return ""; // FAIL-OPEN: capture succeeded; reinjection is best-effort
+  }
+}
+
+/**
+ * PostToolUse friction CAPTURE for shell tools (lazygap_impl 080.1). Matcher `^Bash$`
+ * (both exec_command and shell_command normalize to "Bash"). HEURISTIC by necessity:
+ * codex-rs PostToolUse carries no error/exit_code, only a TRUNCATED `tool_response`
+ * text, and apply_patch failures never reach PostToolUse — so this scans the response
+ * text for failure markers and records a friction signature when it looks like a
+ * failure. It is NOT complete tool-failure observability. Side-effect only (returns "").
+ */
+export function handleBashFrictionCapture(payload: PostToolUsePayload): string {
+  if (payload.hook_event_name !== "PostToolUse") return "";
+  if (payload.tool_name !== "Bash") return "";
+  const text = typeof payload.tool_response === "string"
+    ? payload.tool_response
+    : (() => {
+        try {
+          return JSON.stringify(payload.tool_response ?? "");
+        } catch {
+          return "";
+        }
+      })();
+  if (looksLikeFailure(text)) {
+    recordFriction(payload.cwd, "Bash", text);
+  }
+  return "";
+}
+
+/**
+ * PostCompact handler (lazygap_impl 050) — side-effect-only compaction recovery.
+ *
+ * After a context compaction, codexclaw would otherwise re-surface only the SHORT stage
+ * header on the next same-phase prompt (mode-3), because `lastInjectedPhase` still equals
+ * the current phase. This resets ONLY that cursor so the first NON-SUPPRESSED same-phase
+ * prompt upgrades to the FULL phase directive (mode-2: `phase !== lastInjectedPhase`).
+ *
+ * It does NOT touch phase, flags, the stagnation counter, the goalplan, or the goal DB, and
+ * it does NOT bypass the context-pressure suppression (which correctly runs first) — so it
+ * does not guarantee re-inject on the immediately next prompt, only that the first eligible
+ * one is the full directive. Returns "" always: PostCompact output cannot inject context
+ * (codex-rs honors only universal fields), so this is a pure local-state side effect.
+ */
+export function handlePostCompact(payload: PostCompactPayload): string {
+  if (payload.hook_event_name !== "PostCompact") return "";
+  const state = readState(payload.cwd, payload.session_id);
+  // No-op unless an orchestrated cycle is in flight; nothing to recover otherwise.
+  if (!state.orchestrationActive || state.phase === "IDLE") return "";
+  if (state.lastInjectedPhase === null) return ""; // already reset; avoid a redundant write
+  writeState(payload.cwd, { ...state, lastInjectedPhase: null });
+  return "";
+}

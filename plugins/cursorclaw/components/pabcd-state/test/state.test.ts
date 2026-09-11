@@ -1,0 +1,688 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync, rmSync, writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync, appendFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import {
+  readState,
+  writeState,
+  appendLedger,
+  defaultState,
+  sanitizeKey,
+  STATE_DIR,
+  SESSIONS_SUBDIR,
+  LEDGER_FILE,
+  INTERVIEWS_SUBDIR,
+  appendInterviewEvent,
+  readInterviewEvents,
+  ensureState,
+  isCanonicalSessionId,
+  type State,
+} from "../src/state.ts";
+
+function freshCwd(): string {
+  return mkdtempSync(join(tmpdir(), "codexclaw-state-"));
+}
+
+test("SessionStart ensureState: fresh session creates the exact default IDLE state without temp files", () => {
+  const cwd = freshCwd();
+  try {
+    assert.equal(ensureState(cwd, "session-start-fresh"), true);
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    const stateFile = join(dir, "session-start-fresh.json");
+    const persisted = JSON.parse(readFileSync(stateFile, "utf8"));
+    assert.deepEqual(persisted, {
+      phase: "IDLE",
+      sessionId: "session-start-fresh",
+      slug: "",
+      updatedAt: persisted.updatedAt,
+      flags: { interview: false, auditPassed: false, checkPassed: false },
+      supersededBy: null,
+      injectedTurns: [],
+      lastInjectedPhase: null,
+      orchestrationActive: false,
+      interview: null,
+      stopBlockPhase: null,
+      stopBlockCount: 0,
+      stopBlockWorkPhaseId: null,
+      stopMetricCursor: 0,
+      stopBlockTotal: 0,
+      loopArmSeen: false,
+      idleEditNudges: 0,
+      memoryWriteRequested: false,
+      memoryWriteTurn: null,
+      memoryWriteGrant: false,
+      unverifiedSubagents: [],
+      unverifiedCorrupt: false,
+      phaseEntrySource: null,
+      planUnit: null,
+      planEpoch: null,
+      checkEpoch: null,
+      dcloseRecovery: null,
+    });
+    assert.equal(Number.isNaN(Date.parse(persisted.updatedAt)), false);
+    assert.deepEqual(readdirSync(dir).filter((name) => name.endsWith(".tmp")), []);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("050: a corrupt snapshot is rejected rather than coerced", () => {
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    // dirty:"yes" used to coerce to false, restoring as a "clean" identity that
+    // compared equal to a clean tree and refused a B>C that should have passed.
+    writeFileSync(join(dir, "corrupt.json"), JSON.stringify({
+      phase: "B",
+      sessionId: "corrupt",
+      phaseEntrySource: { kind: "resolved", commitSha: "abc", dirty: "yes", capturedAt: "2026-01-01T00:00:00Z" },
+    }));
+    assert.equal(readState(cwd, "corrupt").phaseEntrySource, null);
+
+    // dirty with nothing to compare against is equally unusable
+    writeFileSync(join(dir, "nohash.json"), JSON.stringify({
+      phase: "B",
+      sessionId: "nohash",
+      phaseEntrySource: { kind: "resolved", commitSha: "abc", dirty: true, capturedAt: "2026-01-01T00:00:00Z" },
+    }));
+    assert.equal(readState(cwd, "nohash").phaseEntrySource, null);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("050: a snapshot found outside B is dropped on read", () => {
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    const snapshot = { kind: "resolved", commitSha: "abc", dirty: false, capturedAt: "2026-01-01T00:00:00Z" };
+    writeFileSync(join(dir, "stray.json"), JSON.stringify({ phase: "P", sessionId: "stray", phaseEntrySource: snapshot }));
+    assert.equal(readState(cwd, "stray").phaseEntrySource, null);
+    writeFileSync(join(dir, "atb.json"), JSON.stringify({ phase: "B", sessionId: "atb", phaseEntrySource: snapshot }));
+    assert.ok(readState(cwd, "atb").phaseEntrySource, "B keeps its own snapshot");
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+
+test("SessionStart ensureState: existing valid state is resume-safe and byte-for-byte unchanged", () => {
+  const cwd = freshCwd();
+  try {
+    const existing = {
+      ...defaultState("session-start-valid"),
+      phase: "B" as const,
+      slug: "resume-me",
+      orchestrationActive: true,
+      stopBlockPhase: "B" as const,
+      stopBlockCount: 2,
+    };
+    writeState(cwd, existing);
+    const stateFile = join(cwd, STATE_DIR, SESSIONS_SUBDIR, "session-start-valid.json");
+    const before = readFileSync(stateFile);
+    assert.equal(ensureState(cwd, "session-start-valid"), false);
+    assert.deepEqual(readFileSync(stateFile), before);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("SessionStart ensureState: existing corrupt bytes are preserved and noncanonical IDs are rejected", () => {
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    const corruptFile = join(dir, "session-start-corrupt.json");
+    const corrupt = Buffer.from("{ not valid json \u0000", "utf8");
+    writeFileSync(corruptFile, corrupt);
+    assert.equal(ensureState(cwd, "session-start-corrupt"), false);
+    assert.deepEqual(readFileSync(corruptFile), corrupt);
+
+    for (const noncanonicalId of ["  padded  ", "../unsafe/session", "세션"]) {
+      assert.throws(
+        () => ensureState(cwd, noncanonicalId),
+        { name: "TypeError", message: "sessionId must be a canonical state key" },
+      );
+      assert.equal(existsSync(join(dir, `${sanitizeKey(noncanonicalId)}.json`)), false);
+    }
+    assert.deepEqual(readdirSync(dir).filter((name) => name.endsWith(".tmp")), []);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("readState: missing dir -> default (carries sessionId, phase IDLE)", () => {
+  const cwd = freshCwd();
+  try {
+    const s = readState(cwd, "sess-1");
+    assert.equal(s.phase, "IDLE");
+    assert.equal(s.sessionId, "sess-1");
+    assert.equal(s.flags.interview, false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("readState: corrupt JSON -> default, never throws", () => {
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "sess-2.json"), "{ not json ");
+    const s = readState(cwd, "sess-2");
+    assert.equal(s.phase, "IDLE");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("readState: invalid phase value -> default", () => {
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "sess-z.json"), JSON.stringify({ phase: "Z", sessionId: "sess-z" }));
+    const s = readState(cwd, "sess-z");
+    assert.equal(s.phase, "IDLE");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("write -> read roundtrip + flags merge", () => {
+  const cwd = freshCwd();
+  try {
+    const next: State = { ...defaultState("sess-3"), phase: "P", flags: { interview: true, auditPassed: false, checkPassed: false } };
+    writeState(cwd, next);
+    const s = readState(cwd, "sess-3");
+    assert.equal(s.phase, "P");
+    // HIGH-1: flags.interview is DERIVED from the tracker, not the persisted flag.
+    // No tracker -> not ready -> false even though true was written.
+    assert.equal(s.flags.interview, false);
+    assert.equal(s.flags.auditPassed, false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("session isolation: two sessionIds in one cwd do not clobber (Finding C)", () => {
+  const cwd = freshCwd();
+  try {
+    writeState(cwd, { ...defaultState("alpha"), phase: "B", flags: { interview: true, auditPassed: true, checkPassed: false } });
+    writeState(cwd, { ...defaultState("beta"), phase: "P", flags: { interview: true, auditPassed: false, checkPassed: false } });
+    const a = readState(cwd, "alpha");
+    const b = readState(cwd, "beta");
+    assert.equal(a.phase, "B");
+    assert.equal(b.phase, "P");
+    assert.notEqual(a.phase, b.phase);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("appendLedger: creates ledger.jsonl with sessionId-tagged NDJSON lines", () => {
+  const cwd = freshCwd();
+  try {
+    appendLedger(cwd, { ts: new Date().toISOString(), sessionId: "alpha", from: "P", to: "A", reason: "plan approved" });
+    appendLedger(cwd, { ts: new Date().toISOString(), sessionId: "beta", from: "A", to: "B", reason: "audit passed" });
+    const ledgerPath = join(cwd, STATE_DIR, LEDGER_FILE);
+    assert.ok(existsSync(ledgerPath));
+    const lines = readFileSync(ledgerPath, "utf8").trim().split("\n");
+    assert.equal(lines.length, 2);
+    const first = JSON.parse(lines[0]);
+    assert.equal(first.sessionId, "alpha");
+    assert.equal(first.to, "A");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("sanitizeKey: strips unsafe chars, falls back to 'missing'", () => {
+  assert.equal(sanitizeKey("019f/13ab:cd"), "019f-13ab-cd");
+  assert.equal(sanitizeKey(""), "missing");
+  assert.equal(sanitizeKey("///"), "missing");
+});
+
+test("isCanonicalSessionId: accepts exact state keys and rejects rewritten identities", () => {
+  assert.equal(isCanonicalSessionId("019f4a8a-b1a1-7113-b72a-460a39a8f096"), true);
+  assert.equal(isCanonicalSessionId("session_1.example"), true);
+  for (const value of ["", "  session-1  ", "../session-1", "세션-1", "-session-1"]) {
+    assert.equal(isCanonicalSessionId(value), false, value);
+  }
+});
+
+test("readState: unknown persisted keys are dropped (strict reconstruction)", () => {
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "uk.json"), JSON.stringify({ phase: "P", sessionId: "uk", evil: "x", flags: { interview: true, bogus: 1 } }));
+    const s = readState(cwd, "uk");
+    assert.equal(s.phase, "P");
+    assert.equal(Object.prototype.hasOwnProperty.call(s, "evil"), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(s.flags, "bogus"), false);
+    // flags.interview is derived from the tracker; no tracker here -> false.
+    assert.equal(s.flags.interview, false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("260714 wp3: loopArmSeen/idleEditNudges strict reconstruction (old files read false/0)", () => {
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    // old file without the fields -> defaults
+    writeFileSync(join(dir, "old.json"), JSON.stringify({ phase: "P", sessionId: "old" }));
+    const old = readState(cwd, "old");
+    assert.equal(old.loopArmSeen, false);
+    assert.equal(old.idleEditNudges, 0);
+    // valid values roundtrip
+    writeState(cwd, { ...defaultState("rt"), loopArmSeen: true, idleEditNudges: 7 });
+    const rt = readState(cwd, "rt");
+    assert.equal(rt.loopArmSeen, true);
+    assert.equal(rt.idleEditNudges, 7);
+    // invalid values coerce to defaults
+    writeFileSync(join(dir, "bad.json"), JSON.stringify({ phase: "P", sessionId: "bad", loopArmSeen: "yes", idleEditNudges: -3 }));
+    const bad = readState(cwd, "bad");
+    assert.equal(bad.loopArmSeen, false);
+    assert.equal(bad.idleEditNudges, 0);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("writeState: no orphan .tmp left after a successful write", () => {
+  const cwd = freshCwd();
+  try {
+    writeState(cwd, defaultState("clean"));
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    const leftovers = readdirSync(dir).filter((f) => f.endsWith(".tmp"));
+    assert.deepEqual(leftovers, []);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("injectedTurns: defaults to [] on fresh state", () => {
+  const cwd = freshCwd();
+  try {
+    const s = readState(cwd, "it-1");
+    assert.deepEqual(s.injectedTurns, []);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("injectedTurns: roundtrips through write -> read", () => {
+  const cwd = freshCwd();
+  try {
+    writeState(cwd, { ...defaultState("it-2"), injectedTurns: ["t1", "t2"] });
+    const s = readState(cwd, "it-2");
+    assert.deepEqual(s.injectedTurns, ["t1", "t2"]);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("injectedTurns: invalid persisted value -> [] (strict reconstruct)", () => {
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "it-3.json"), JSON.stringify({ phase: "P", sessionId: "it-3", injectedTurns: [1, 2, "ok"] }));
+    const s = readState(cwd, "it-3");
+    assert.deepEqual(s.injectedTurns, []);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("lastInjectedPhase + orchestrationActive: defaults", () => {
+  const cwd = freshCwd();
+  try {
+    const s = readState(cwd, "li-1");
+    assert.equal(s.lastInjectedPhase, null);
+    assert.equal(s.orchestrationActive, false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("lastInjectedPhase + orchestrationActive: roundtrip", () => {
+  const cwd = freshCwd();
+  try {
+    writeState(cwd, {
+      ...defaultState("li-2"),
+      phase: "B",
+      lastInjectedPhase: "B",
+      orchestrationActive: true,
+    });
+    const s = readState(cwd, "li-2");
+    assert.equal(s.lastInjectedPhase, "B");
+    assert.equal(s.orchestrationActive, true);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("lastInjectedPhase: invalid persisted value -> null; orchestrationActive non-bool -> false", () => {
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(
+      join(dir, "li-3.json"),
+      JSON.stringify({ phase: "P", sessionId: "li-3", lastInjectedPhase: "Z", orchestrationActive: "yes" }),
+    );
+    const s = readState(cwd, "li-3");
+    assert.equal(s.lastInjectedPhase, null);
+    assert.equal(s.orchestrationActive, false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("readState: IDLE phase forces orchestrationActive false", () => {
+  const cwd = freshCwd();
+  try {
+    writeState(cwd, {
+      ...defaultState("li-idle"),
+      lastInjectedPhase: "IDLE",
+      orchestrationActive: true,
+    });
+    const s = readState(cwd, "li-idle");
+    assert.equal(s.phase, "IDLE");
+    assert.equal(s.lastInjectedPhase, null);
+    assert.equal(s.orchestrationActive, false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+// ── L8: interview tracker round-trip + Phase-1 field preservation ──
+import { DIMENSIONS as IV_DIMENSIONS } from "../src/interview.ts";
+
+test("L8: readState round-trips a full InterviewTracker and preserves Phase-1 fields", () => {
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    const dims = {};
+    for (const d of IV_DIMENSIONS) dims[d] = { level: "max", known: ["k"], unknown: [], confidence: 1, EVIL: 1 };
+    writeFileSync(
+      join(dir, "iv-1.json"),
+      JSON.stringify({
+        phase: "P",
+        sessionId: "iv-1",
+        orchestrationActive: true,
+        injectedTurns: ["t1"],
+        interview: { roundId: 9, dimensions: dims, contradictions: [], assumptions: [{ id: "a", text: "x", recorded: true }], EVIL: "drop" },
+      }),
+    );
+    const s = readState(cwd, "iv-1");
+    // Phase-1 fields preserved
+    assert.equal(s.phase, "P");
+    assert.equal(s.orchestrationActive, true);
+    assert.deepEqual(s.injectedTurns, ["t1"]);
+    // tracker round-tripped
+    assert.equal(s.interview?.roundId, 9);
+    assert.equal(s.interview?.dimensions.goal.level, "max");
+    // unknown nested keys dropped (strict reconstruct)
+    assert.equal("EVIL" in (s.interview?.dimensions.goal ?? {}), false);
+    assert.equal("EVIL" in (s.interview ?? {}), false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("L8: fresh session reads interview: null", () => {
+  const cwd = freshCwd();
+  try {
+    assert.equal(readState(cwd, "fresh").interview, null);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("L8 HIGH-1: persisted flags.interview:true with a non-ready tracker reads as false (no flag-trust)", () => {
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    // a tracker that is NOT ready (default low dims) but a forged true flag
+    writeFileSync(
+      join(dir, "forge.json"),
+      JSON.stringify({ phase: "I", sessionId: "forge", flags: { interview: true }, interview: { roundId: 1, dimensions: {}, contradictions: [], assumptions: [] } }),
+    );
+    const s = readState(cwd, "forge");
+    assert.equal(s.flags.interview, false, "derived flag must ignore the forged persisted true");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+// ── 131/D2': interview scan-evidence JSONL ledger ──
+
+test("131: appendInterviewEvent writes parseable scan events; readInterviewEvents counts them", () => {
+  const cwd = freshCwd();
+  try {
+    appendInterviewEvent(cwd, { ts: new Date().toISOString(), sessionId: "iv", event: "scan_started", roundId: 1, contradictionCount: 3, highContradictionCount: 1 });
+    appendInterviewEvent(cwd, { ts: new Date().toISOString(), sessionId: "iv", event: "scan_completed", roundId: 1, contradictionCount: 0, highContradictionCount: 0 });
+    const events = readInterviewEvents(cwd, "iv");
+    assert.equal(events.length, 2);
+    assert.equal(events[0].event, "scan_started");
+    assert.equal(events[1].event, "scan_completed");
+    // file lives under .codexclaw/interviews/
+    assert.ok(existsSync(join(cwd, STATE_DIR, INTERVIEWS_SUBDIR, "iv.jsonl")));
+    // missing session -> []
+    assert.deepEqual(readInterviewEvents(cwd, "nope"), []);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("G3 (L20): readInterviewEvents returns scan-only rows from a MIXED ledger (Q/A rows ignored)", () => {
+  const cwd = freshCwd();
+  try {
+    // a real session interleaves Q/A capture rows and scan rows in the SAME file.
+    appendInterviewEvent(cwd, { ts: new Date().toISOString(), sessionId: "mix", event: "scan_started", roundId: 1, contradictionCount: 2, highContradictionCount: 1 });
+    const file = join(cwd, STATE_DIR, INTERVIEWS_SUBDIR, "mix.jsonl");
+    // hand-write Q/A capture rows (interview-ledger shape) into the shared ledger.
+    const qa = [
+      { ts: new Date().toISOString(), sessionId: "mix", turnId: "t1", event: "question_asked", questionId: "q1", eventId: "t1:q1:question_asked", question: "Goal?" },
+      { ts: new Date().toISOString(), sessionId: "mix", turnId: "t1", event: "answer_recorded", questionId: "q1", eventId: "t1:q1:answer_recorded", answers: ["ship it"] },
+    ];
+    appendFileSync(file, qa.map((e) => JSON.stringify(e)).join("\n") + "\n");
+    appendInterviewEvent(cwd, { ts: new Date().toISOString(), sessionId: "mix", event: "scan_completed", roundId: 1, contradictionCount: 0, highContradictionCount: 0 });
+
+    const events = readInterviewEvents(cwd, "mix");
+    assert.equal(events.length, 2, "only the 2 scan rows must be returned, not the Q/A rows");
+    assert.deepEqual(events.map((e) => e.event), ["scan_started", "scan_completed"]);
+    // every returned row must carry the structural scan fields.
+    for (const e of events) {
+      assert.equal(typeof e.roundId, "number");
+      assert.equal(typeof e.contradictionCount, "number");
+    }
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+// --- wp05 defect #13: hard links need NTFS; FAT32/exFAT/shares answer EPERM ---
+
+test("ensureState falls back when linkSync answers EPERM", () => {
+  const cwd = freshCwd();
+  try {
+    const created = ensureState(cwd, "fat32-eperm", () => {
+      throw Object.assign(new Error("EPERM"), { code: "EPERM" });
+    });
+    assert.equal(created, true);
+    const path = join(cwd, STATE_DIR, SESSIONS_SUBDIR, "fat32-eperm.json");
+    assert.ok(existsSync(path), "the wx fallback must publish the state file");
+    assert.equal(JSON.parse(readFileSync(path, "utf8")).phase, "IDLE");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("the fallback maps EEXIST to false", () => {
+  const cwd = freshCwd();
+  try {
+    // Someone else won the race: the file already exists, so the wx write throws EEXIST.
+    assert.equal(ensureState(cwd, "fat32-race"), true);
+    const second = ensureState(cwd, "fat32-race", () => {
+      throw Object.assign(new Error("ENOTSUP"), { code: "ENOTSUP" });
+    });
+    assert.equal(second, false);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("EEXIST from linkSync still returns false without touching the fallback", () => {
+  const cwd = freshCwd();
+  try {
+    let fallbackReached = false;
+    const result = ensureState(cwd, "ntfs-race", () => {
+      fallbackReached = true;
+      throw Object.assign(new Error("EEXIST"), { code: "EEXIST" });
+    });
+    assert.equal(result, false);
+    assert.equal(fallbackReached, true, "the stub itself ran");
+    assert.ok(!existsSync(join(cwd, STATE_DIR, SESSIONS_SUBDIR, "ntfs-race.json")), "EEXIST must not publish");
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("a non-link error still propagates", () => {
+  const cwd = freshCwd();
+  try {
+    assert.throws(() => ensureState(cwd, "hard-failure", () => {
+      throw Object.assign(new Error("EIO"), { code: "EIO" });
+    }), /EIO/);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test("wp5: valid D-close marker restores with its IDLE check epoch", () => {
+  const cwd = freshCwd();
+  try {
+    writeState(cwd, {
+      ...defaultState("marker-valid"),
+      checkEpoch: "c-valid",
+      dcloseRecovery: {
+        sessionId: "marker-valid",
+        checkEpoch: "c-valid",
+        closedWorkPhaseId: "wp-1",
+        nextWorkPhaseId: "wp-2",
+      },
+    });
+    const restored = readState(cwd, "marker-valid");
+    assert.equal(restored.checkEpoch, "c-valid");
+    assert.deepEqual(restored.dcloseRecovery, {
+      sessionId: "marker-valid",
+      checkEpoch: "c-valid",
+      closedWorkPhaseId: "wp-1",
+      nextWorkPhaseId: "wp-2",
+    });
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("wp5: a marker without the successor field restores as legacy", () => {
+  // §50: an absent key is a pre-§48 marker. Folding it into an explicit null would let
+  // recovery force "no successor" onto a plan whose commit already activated one,
+  // nulling a correct cursor. The flag keeps the two apart so recovery can refuse.
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "marker-legacy.json"), `${JSON.stringify({
+      ...defaultState("marker-legacy"),
+      checkEpoch: "c-legacy",
+      dcloseRecovery: {
+        sessionId: "marker-legacy",
+        checkEpoch: "c-legacy",
+        closedWorkPhaseId: "wp-1",
+      },
+    })}\n`);
+
+    const restored = readState(cwd, "marker-legacy");
+
+    assert.deepEqual(restored.dcloseRecovery, {
+      sessionId: "marker-legacy",
+      checkEpoch: "c-legacy",
+      closedWorkPhaseId: "wp-1",
+      nextWorkPhaseId: null,
+      legacy: true,
+    });
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
+test("wp5: a malformed successor value restores as legacy instead of an explicit null", () => {
+  // §51: promoting a corrupt value to null would give it the authority of "this close had
+  // no successor", letting a damaged marker skip a real one. Treat unreadable intent the
+  // same way as a pre-field marker.
+  const cwd = freshCwd();
+  try {
+    const dir = join(cwd, STATE_DIR, SESSIONS_SUBDIR);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "marker-malformed.json"), `${JSON.stringify({
+      ...defaultState("marker-malformed"),
+      checkEpoch: "c-malformed",
+      dcloseRecovery: {
+        sessionId: "marker-malformed",
+        checkEpoch: "c-malformed",
+        closedWorkPhaseId: "wp-1",
+        nextWorkPhaseId: 7,
+      },
+    })}\n`);
+
+    const restored = readState(cwd, "marker-malformed");
+
+    assert.equal(restored.dcloseRecovery?.legacy, true);
+    assert.equal(restored.dcloseRecovery?.nextWorkPhaseId, null);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+test("wp5: an explicit null successor restores without the legacy flag", () => {
+  // The counterpart: a §48 marker that honestly recorded "no successor" must NOT be
+  // refused, because its history is unambiguous.
+  const cwd = freshCwd();
+  try {
+    writeState(cwd, {
+      ...defaultState("marker-null-next"),
+      checkEpoch: "c-null-next",
+      dcloseRecovery: {
+        sessionId: "marker-null-next",
+        checkEpoch: "c-null-next",
+        closedWorkPhaseId: "wp-1",
+        nextWorkPhaseId: null,
+      },
+    });
+
+    const restored = readState(cwd, "marker-null-next");
+
+    assert.equal(restored.dcloseRecovery?.nextWorkPhaseId, null);
+    assert.equal(restored.dcloseRecovery?.legacy, undefined);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+test("wp5: foreign D-close marker is dropped and cannot retain an IDLE epoch", () => {
+  const cwd = freshCwd();
+  try {
+    writeState(cwd, {
+      ...defaultState("marker-owner"),
+      checkEpoch: "c-foreign",
+      dcloseRecovery: {
+        sessionId: "other-session",
+        checkEpoch: "c-foreign",
+        closedWorkPhaseId: "wp-1",
+        nextWorkPhaseId: "wp-2",
+      },
+    });
+    const restored = readState(cwd, "marker-owner");
+    assert.equal(restored.dcloseRecovery, null);
+    assert.equal(restored.checkEpoch, null);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});

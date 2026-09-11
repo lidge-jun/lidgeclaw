@@ -1,0 +1,5 @@
+interface:
+  display_name: "cxc-search"
+  short_description: "Codex-native search ladder (discover, prove, deep research with Aside lane) and Korean intent guard."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,5 @@
+interface:
+  display_name: "cxc-loop"
+  short_description: "Scoped HOTL completion with explicit scope limits."
+policy:
+  allow_implicit_invocation: true

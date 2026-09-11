@@ -1,0 +1,303 @@
+// Activation orchestration. All external dependencies (codex runner, codexHome path) are injected
+// so this layer never resolves the real ~/.codex by default — see cli.ts for the production binding.
+
+import { createHash } from "node:crypto";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import {
+  DECLARED_FEATURES,
+  SOFT_FEATURES,
+  featuresToEnable,
+  readDeclaredState,
+  type CodexRunner,
+  type DeclaredFeature,
+} from "./features.ts";
+import { autoEnabledManagedKeys, managedKeyId } from "./managed-keys.ts";
+import { readTableKey, setTableKey } from "./toml-edit.ts";
+
+export const INSTALL_MANIFEST = ".codexclaw-install.json";
+
+export interface FlagRecord {
+  priorEnabled: boolean;
+  // true when codexclaw turned this flag on (so deactivate should turn it back off).
+  enabledByCodexclaw: boolean;
+  // true when the enable command failed (e.g. soft under-dev flag unavailable).
+  enableFailed: boolean;
+  /**
+   * 260829: why the enable failed. Before this, a soft failure recorded only the
+   * boolean, so neither the user nor a later diagnosis could tell whether codex was
+   * missing, the key was unknown to this build, or something else went wrong.
+   * Absent on success and on flags that were never attempted.
+   */
+  failure?: { exitCode: number; message: string };
+}
+
+/**
+ * A non-feature config.toml key codexclaw wrote (managed-keys.ts whitelist).
+ *
+ * `priorValue` is what deactivate restores; null means the key did not exist and
+ * should be removed. `appliedValue` is what we wrote, so the uninstall path can ask
+ * "is my value still there" per key instead of hashing the whole file.
+ */
+export interface TableKeyRecord {
+  table: string;
+  key: string;
+  priorValue: string | null;
+  appliedValue: string;
+  /** False when the key already held the target value, so we changed nothing. */
+  setByCodexclaw: boolean;
+}
+
+export interface InstallManifest {
+  /** 1 = flags only (pre-260829). 2 adds `tableKeys`. Readers accept both. */
+  version: 1 | 2;
+  activatedAt: string;
+  configPath: string;
+  backupPath: string | null;
+  postActivateHash: string | null;
+  flags: Record<string, FlagRecord>;
+  /** Keyed by "<table>.<key>". Absent/empty on a v1 manifest. */
+  tableKeys?: Record<string, TableKeyRecord>;
+}
+
+/**
+ * Runtime shape check for a parsed manifest. This repo has no `tsc` step, so a cast
+ * would let a hand-edited or truncated manifest reach the revert logic as `undefined`
+ * lookups. A malformed manifest is treated as absent by the caller (safe no-op).
+ */
+export function parseInstallManifest(text: string): InstallManifest | null {
+  let raw: unknown;
+  try {
+    raw = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) return null;
+  const o = raw as Record<string, unknown>;
+  if (o.version !== 1 && o.version !== 2) return null;
+  if (typeof o.configPath !== "string") return null;
+  if (typeof o.flags !== "object" || o.flags === null || Array.isArray(o.flags)) return null;
+
+  const flags: Record<string, FlagRecord> = {};
+  for (const [key, value] of Object.entries(o.flags as Record<string, unknown>)) {
+    if (typeof value !== "object" || value === null) return null;
+    const rec = value as Record<string, unknown>;
+    flags[key] = {
+      priorEnabled: rec.priorEnabled === true,
+      enabledByCodexclaw: rec.enabledByCodexclaw === true,
+      enableFailed: rec.enableFailed === true,
+    };
+    // Lenient on purpose: a malformed `failure` drops that one field instead of
+    // rejecting the manifest. The parser's contract is "malformed = absent (safe
+    // no-op)", and voiding a whole manifest over warning metadata would cost the
+    // revert capability the manifest exists to provide.
+    const f = (value as Record<string, unknown>).failure;
+    if (typeof f === "object" && f !== null && !Array.isArray(f)) {
+      const fr = f as Record<string, unknown>;
+      if (typeof fr.exitCode === "number") {
+        flags[key].failure = {
+          exitCode: fr.exitCode,
+          message: typeof fr.message === "string" ? fr.message : "",
+        };
+      }
+    }
+  }
+
+  const tableKeys: Record<string, TableKeyRecord> = {};
+  if (o.tableKeys !== undefined) {
+    if (typeof o.tableKeys !== "object" || o.tableKeys === null || Array.isArray(o.tableKeys)) return null;
+    for (const [id, value] of Object.entries(o.tableKeys as Record<string, unknown>)) {
+      if (typeof value !== "object" || value === null) return null;
+      const rec = value as Record<string, unknown>;
+      if (typeof rec.table !== "string" || typeof rec.key !== "string") return null;
+      if (typeof rec.appliedValue !== "string") return null;
+      if (rec.priorValue !== null && typeof rec.priorValue !== "string") return null;
+      tableKeys[id] = {
+        table: rec.table,
+        key: rec.key,
+        priorValue: rec.priorValue as string | null,
+        appliedValue: rec.appliedValue,
+        setByCodexclaw: rec.setByCodexclaw === true,
+      };
+    }
+  }
+
+  return {
+    version: o.version,
+    activatedAt: typeof o.activatedAt === "string" ? o.activatedAt : "",
+    configPath: o.configPath,
+    backupPath: typeof o.backupPath === "string" ? o.backupPath : null,
+    postActivateHash: typeof o.postActivateHash === "string" ? o.postActivateHash : null,
+    flags,
+    tableKeys,
+  };
+}
+
+export interface ActivateDeps {
+  run: CodexRunner;
+  codexHome: string;
+  // Defaults to <codexHome>/config.toml; injectable for tests.
+  configPath?: string;
+  // Returns an ISO timestamp; injectable for deterministic tests.
+  now?: () => string;
+}
+
+function hashOrNull(path: string): string | null {
+  if (!existsSync(path)) return null;
+  return createHash("sha256").update(readFileSync(path)).digest("hex");
+}
+
+/**
+ * The manifest from an earlier activation, or null when there is none / it is malformed.
+ * Used only to carry a managed key's ORIGINAL `priorValue` across a re-run.
+ */
+function readPriorManifest(codexHome: string): InstallManifest | null {
+  const path = manifestPath(codexHome);
+  try {
+    if (!existsSync(path)) return null;
+    return parseInstallManifest(readFileSync(path, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * PURE (260709 dev2 switch, audit blocker 3): `codex features enable multi_agent_v2`
+ * rewrites the flag as a SCALAR (`multi_agent_v2 = true` under `[features]`),
+ * REPLACING an existing `[features.multi_agent_v2]` table and silently dropping
+ * tuning keys such as `max_concurrent_threads_per_session` (codex-rs
+ * config/edit.rs). Given the pre-enable and post-enable config contents, return the
+ * repaired post content (scalar removed, table restored with the requested `enabled`
+ * value plus preserved non-`enabled` keys) — or null when no repair is needed.
+ */
+export function preserveMultiAgentV2Table(preConfig: string, postConfig: string, enabled = true): string | null {
+  const lineEnding = preConfig.includes("\r\n") ? "\r\n" : "\n";
+  // Post still carries the table form -> nothing was clobbered.
+  if (/^\[features\.multi_agent_v2\]\s*$/m.test(postConfig)) return null;
+  // Pre had no table -> nothing to preserve.
+  const tableMatch = /^\[features\.multi_agent_v2\][^\S\r\n]*(?:\r?\n|$)((?:(?![^\S\r\n]*\[)[^\r\n]*(?:\r?\n|$))*)/m.exec(preConfig);
+  if (!tableMatch) return null;
+  const preservedLines = tableMatch[1]
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0 && !l.startsWith("#") && !/^enabled\s*=/.test(l));
+  if (preservedLines.length === 0) return null;
+  // The clobbered scalar form: `multi_agent_v2 = true/false` (dotted or bare key line).
+  const scalarRe = new RegExp(`^(?:features\\.)?multi_agent_v2\\s*=\\s*${enabled ? "true" : "false"}\\s*$`, "m");
+  if (!scalarRe.test(postConfig)) return null;
+  const withoutScalar = postConfig
+    .replace(scalarRe, "")
+    .replace(/(?:\r?\n){3,}/g, lineEnding.repeat(2));
+  const table = `${lineEnding}[features.multi_agent_v2]${lineEnding}enabled = ${enabled ? "true" : "false"}${lineEnding}${preservedLines.join(lineEnding)}${lineEnding}`;
+  return `${withoutScalar.replace(/(?:\r?\n)*$/, lineEnding)}${table}`;
+}
+
+export function manifestPath(codexHome: string): string {
+  return join(codexHome, INSTALL_MANIFEST);
+}
+
+export function activate(deps: ActivateDeps): InstallManifest {
+  const { run, codexHome } = deps;
+  const configPath = deps.configPath ?? join(codexHome, "config.toml");
+  const now = deps.now ?? (() => new Date().toISOString());
+
+  mkdirSync(codexHome, { recursive: true });
+
+  const priorState = readDeclaredState(run);
+  const pending = featuresToEnable(priorState);
+
+  // Back up config.toml before any change (timestamped; codexclaw's own safeguard).
+  let backupPath: string | null = null;
+  // The file exactly as it was before codexclaw touched anything. Managed-key prior
+  // values are read from HERE, not from the post-`features enable` file, so what the
+  // manifest promises to restore is the user's pre-install state.
+  const preInstallConfig = existsSync(configPath) ? readFileSync(configPath, "utf8") : "";
+  if (existsSync(configPath)) {
+    backupPath = `${configPath}.codexclaw-${now().replace(/[:.]/g, "-")}.bak`;
+    copyFileSync(configPath, backupPath);
+  }
+
+  // A re-run of `cxc enable` must not record OUR value as the prior one. Same guard as
+  // config-set.ts:139-141: the first recording of a key wins forever.
+  const priorManifest = readPriorManifest(codexHome);
+
+  const flags: Record<string, FlagRecord> = {};
+  for (const key of DECLARED_FEATURES) {
+    flags[key] = {
+      priorEnabled: priorState.get(key) === true,
+      enabledByCodexclaw: false,
+      enableFailed: false,
+    };
+  }
+
+  for (const key of pending) {
+    const res = run(["features", "enable", key]);
+    if (res.exitCode === 0) {
+      flags[key].enabledByCodexclaw = true;
+    } else {
+      flags[key].enableFailed = true;
+      flags[key].failure = {
+        exitCode: res.exitCode,
+        message: res.stderr.trim().slice(0, 500),
+      };
+      if (!SOFT_FEATURES.has(key)) {
+        throw new Error(
+          `codex features enable ${key} failed (exit ${res.exitCode}): ${res.stderr.trim()}`,
+        );
+      }
+      // Soft flag: activation continues, but cli.ts renders an explicit warning from
+      // the recorded failure. Failing the whole activation here would also drop skills,
+      // hooks and MCP registration over one upstream flag — worse than the warning.
+    }
+  }
+
+  // --- Auto-enabled managed keys, AFTER the feature pass.
+  //
+  // `codex features enable` rewrites config.toml from its own fresh read, so writing our
+  // key first would race that rewrite. deactivate.ts:14-18 records the mirror-image
+  // ordering for the same reason.
+  //
+  // Only entries that opted in (managed-keys.ts autoEnable) are written; the list itself
+  // is not a licence. Every write is recorded in `tableKeys` with the value from BEFORE
+  // this install, which is what makes deactivate's existing per-key revert exact.
+  const tableKeys: Record<string, TableKeyRecord> = {};
+  for (const entry of autoEnabledManagedKeys()) {
+    const id = managedKeyId(entry);
+    // null = the key did not exist -> deactivate removes the line. "true" = the user had
+    // already turned it on -> deactivate leaves their true in place. The distinction only
+    // survives if it is read from the pre-install content.
+    const priorValue = readTableKey(preInstallConfig, entry.table, entry.key);
+    const carried = priorManifest?.tableKeys?.[id];
+    const content = existsSync(configPath) ? readFileSync(configPath, "utf8") : "";
+    const res = setTableKey(content, entry.table, entry.key, true);
+    if (res.action === "unsupported-value") {
+      // The key holds a value form toml-edit refuses to rewrite. Leave it to its owner
+      // and record nothing: an unrecorded key is one deactivate will not touch either.
+      continue;
+    }
+    if (res.changed) writeFileSync(configPath, res.content, "utf8");
+    tableKeys[id] = {
+      table: entry.table,
+      key: entry.key,
+      priorValue: carried ? carried.priorValue : priorValue,
+      appliedValue: "true",
+      // False when the key already read true: we changed nothing, so we own nothing and
+      // deactivate must not revert it (decideKeyRestore skips !setByCodexclaw).
+      setByCodexclaw: carried ? carried.setByCodexclaw || res.changed : res.changed,
+    };
+  }
+
+  const manifest: InstallManifest = {
+    version: 2,
+    activatedAt: now(),
+    configPath,
+    backupPath,
+    postActivateHash: hashOrNull(configPath),
+    flags,
+    tableKeys,
+  };
+  writeFileSync(manifestPath(codexHome), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  return manifest;
+}
+
+export type { DeclaredFeature };

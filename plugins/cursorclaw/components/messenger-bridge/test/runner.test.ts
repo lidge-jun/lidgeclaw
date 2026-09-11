@@ -1,0 +1,292 @@
+/** runner.test.ts — buildExecArgs / parseExecEvent (pure) + runTurn against a fake codex bin. */
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { appendBoundedOutput, buildExecArgs, MAX_RUNNER_OUTPUT_BYTES, parseExecEvent, runTurn } from "../src/runner.ts";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const FAKE = join(here, "fixtures", "fake-codex.mjs");
+const REAL_EVENTS = join(here, "fixtures", "codex-exec-tool-events.jsonl");
+chmodSync(FAKE, 0o755);
+
+function withMode(mode: string, fn: () => Promise<void>): Promise<void> {
+  const prev = process.env.FAKE_CODEX_MODE;
+  process.env.FAKE_CODEX_MODE = mode;
+  return fn().finally(() => {
+    if (prev === undefined) delete process.env.FAKE_CODEX_MODE;
+    else process.env.FAKE_CODEX_MODE = prev;
+  });
+}
+
+test("buildExecArgs: new run reads prompt from stdin (not in argv)", () => {
+  const args = buildExecArgs({ prompt: "hello", model: "gpt-5.5" });
+  assert.deepEqual(args, [
+    "exec",
+    "-m",
+    "gpt-5.5",
+    "--dangerously-bypass-approvals-and-sandbox",
+    "--skip-git-repo-check",
+    "--json",
+  ]);
+  assert.ok(!args.includes("hello"));
+});
+
+test("buildExecArgs: resume guards SESSION_ID + PROMPT behind -- (flag-injection safe)", () => {
+  const args = buildExecArgs({ threadId: "th-9", prompt: "again", model: null });
+  assert.deepEqual(args, [
+    "exec",
+    "resume",
+    "--dangerously-bypass-approvals-and-sandbox",
+    "--skip-git-repo-check",
+    "--json",
+    "--",
+    "th-9",
+    "again",
+  ]);
+  // A dash-prefixed prompt lands after `--`, never parsed as a flag.
+  const evil = buildExecArgs({ threadId: "t", prompt: "-c model=x", model: null });
+  const sep = evil.indexOf("--");
+  assert.ok(sep >= 0 && evil[sep + 2] === "-c model=x");
+});
+
+test("buildExecArgs: fullAccess=false drops the bypass flag", () => {
+  const args = buildExecArgs({ prompt: "x", fullAccess: false });
+  assert.ok(!args.includes("--dangerously-bypass-approvals-and-sandbox"));
+});
+
+test("parseExecEvent: recognizes each event kind, ignores noise", () => {
+  assert.deepEqual(parseExecEvent('{"type":"thread.started","thread_id":"t1"}'), {
+    kind: "thread",
+    threadId: "t1",
+  });
+  assert.deepEqual(
+    parseExecEvent('{"type":"item.completed","item":{"type":"agent_message","text":"hi"}}'),
+    { kind: "message", text: "hi" },
+  );
+  assert.deepEqual(
+    parseExecEvent('{"type":"item.started","item":{"id":"cmd-1","type":"command_execution","command":"ls -la"}}'),
+    { kind: "tool_call", phase: "started", callId: "cmd-1", name: "$ ls -la", input: "" },
+  );
+  assert.deepEqual(
+    parseExecEvent('{"type":"item.completed","item":{"type":"reasoning","text":"checking options"}}'),
+    { kind: "thinking", text: "checking options" },
+  );
+  assert.deepEqual(
+    parseExecEvent('{"type":"item.started","item":{"id":"call-1","type":"mcp_tool_call","tool_name":"read","arguments":{"path":"a.ts"}}}'),
+    { kind: "tool_call", phase: "started", callId: "call-1", name: "read", input: '{"path":"a.ts"}' },
+  );
+  assert.deepEqual(
+    parseExecEvent('{"type":"item.completed","item":{"type":"patch","changes":[{"file":"a.ts","operation":"delete"}]}}'),
+    { kind: "file_change", path: "a.ts", action: "delete" },
+  );
+  assert.deepEqual(parseExecEvent('{"type":"turn.completed","usage":{"input_tokens":3}}'), {
+    kind: "done",
+    usage: { input_tokens: 3 },
+  });
+  assert.deepEqual(parseExecEvent('{"type":"turn.failed","error":{"message":"boom"}}'), {
+    kind: "fail",
+    message: "boom",
+  });
+  assert.equal(parseExecEvent("not json"), null);
+  assert.equal(parseExecEvent(""), null);
+  assert.equal(
+    parseExecEvent('{"type":"item.completed","item":{"type":"agent_message","text":"  "}}'),
+    null,
+  );
+});
+
+test("parseExecEvent: real Codex command and MCP lifecycle fields remain correlated", () => {
+  const events = readFileSync(REAL_EVENTS, "utf8")
+    .trim()
+    .split("\n")
+    .map(parseExecEvent)
+    .filter((event) => event?.kind === "tool_call");
+  assert.deepEqual(events, [
+    { kind: "tool_call", phase: "started", callId: "item_command", name: "$ /bin/zsh -lc 'echo cxc-fixture'", input: "" },
+    { kind: "tool_call", phase: "completed", callId: "item_command", name: "$ /bin/zsh -lc 'echo cxc-fixture'", input: "", outcome: "success", resultSummary: "cxc-fixture" },
+    { kind: "tool_call", phase: "started", callId: "item_mcp", name: "codexclaw.subagents_get", input: "{}" },
+    { kind: "tool_call", phase: "completed", callId: "item_mcp", name: "codexclaw.subagents_get", input: "{}", outcome: "success", resultSummary: '{"content":[{"type":"text","text":"redacted fixture result"}]}' },
+  ]);
+});
+
+test("parseExecEvent: completion detail is bounded, neutral when unsupported, and ids distinguish repeated names", () => {
+  const long = "x".repeat(400);
+  const completed = parseExecEvent(JSON.stringify({
+    type: "item.completed",
+    item: { id: "a", type: "tool_call", name: "read", input: {}, output: `${long}\nsecret` },
+  }));
+  assert.equal(completed?.kind, "tool_call");
+  if (completed?.kind === "tool_call") {
+    assert.equal(completed.callId, "a");
+    assert.equal(completed.phase, "completed");
+    assert.equal(completed.outcome, undefined);
+    assert.equal(completed.resultSummary?.length, 300);
+    assert.equal(completed.resultSummary?.includes("\n"), false);
+  }
+  assert.deepEqual(
+    parseExecEvent('{"type":"item.started","item":{"id":"b","type":"tool_call","name":"read","input":{}}}'),
+    { kind: "tool_call", phase: "started", callId: "b", name: "read", input: "{}" },
+  );
+  assert.equal(parseExecEvent('{"type":"item.completed","item":{"type":"tool_call","name":"read"}}'), null);
+});
+
+test("runTurn: new run captures thread id, streams events, returns text", async () => {
+  await withMode("ok", async () => {
+    const events: string[] = [];
+    const result = await runTurn({
+      workdir: here,
+      prompt: "1+1?",
+      codexBin: FAKE,
+      onEvent: (e) => events.push(e.kind),
+    });
+    assert.equal(result.ok, true);
+    assert.equal(result.threadId, "thread-fresh-1");
+    assert.match(result.text, /reply to: 1\+1\?/);
+    assert.deepEqual(result.usage, { input_tokens: 10, output_tokens: 5 });
+    assert.ok(events.includes("thread"));
+    assert.ok(events.includes("thinking"));
+    assert.ok(events.includes("tool_call"));
+    assert.ok(events.includes("file_change"));
+    assert.ok(events.includes("message"));
+    assert.ok(events.includes("done"));
+  });
+});
+
+test("runTurn: turn.failed surfaces as ok:false with the message", async () => {
+  await withMode("fail", async () => {
+    const result = await runTurn({ workdir: here, prompt: "x", codexBin: FAKE });
+    assert.equal(result.ok, false);
+    assert.equal(result.error, "model refused");
+  });
+});
+
+test("runTurn: resume with lost rollout triggers the re-seed fallback branch", async () => {
+  await withMode("lost", async () => {
+    const status: string[] = [];
+    const result = await runTurn({
+      workdir: here,
+      prompt: "hi",
+      threadId: "dead-thread",
+      codexBin: FAKE,
+      reseedBlock: "[context re-seed] prior turns...",
+      onEvent: (e) => {
+        if (e.kind === "status") status.push(e.label);
+      },
+    });
+    // Fake returns "lost" for BOTH the resume and the re-seed new-run (mode is
+    // global), so the final result is still a failure — but the re-seed status
+    // must have been emitted, proving the fallback branch executed.
+    assert.ok(status.includes("re-seeding session"));
+    assert.equal(result.ok, false);
+  });
+});
+
+test("runTurn: timeout terminates the child and reports timeout", async () => {
+  await withMode("hang", async () => {
+    const result = await runTurn({
+      workdir: here,
+      prompt: "x",
+      codexBin: FAKE,
+      timeoutMs: 500,
+    });
+    assert.equal(result.ok, false);
+    assert.match(String(result.error), /timed out/);
+  });
+});
+
+test("runTurn: oversized single JSONL records are discarded before parsing or streaming", async () => {
+  await withMode("oversize", async () => {
+    const messages: string[] = [];
+    const statuses: string[] = [];
+    const result = await runTurn({
+      workdir: here,
+      prompt: "x",
+      codexBin: FAKE,
+      onEvent: (event) => {
+        if (event.kind === "message") messages.push(event.text);
+        if (event.kind === "status") statuses.push(event.label);
+      },
+    });
+    assert.equal(result.ok, true);
+    assert.ok(Buffer.byteLength(result.text) <= MAX_RUNNER_OUTPUT_BYTES);
+    assert.match(result.text, /oversized Codex event discarded/);
+    assert.ok(Buffer.byteLength(result.text) < 1_000, "discarded bytes must not be replaced with dummy payload");
+    assert.deepEqual(messages, []);
+    assert.ok(statuses.includes("oversized Codex event discarded"));
+  });
+});
+
+test("runTurn: an oversized tool record does not suppress the later final message", async () => {
+  await withMode("oversize-tool", async () => {
+    const result = await runTurn({ workdir: here, prompt: "keep-final", codexBin: FAKE });
+    assert.equal(result.ok, true);
+    assert.match(result.text, /reply to: keep-final/);
+    assert.match(result.text, /oversized Codex event discarded/);
+  });
+});
+
+// Process groups and signal-0 liveness probes are POSIX concepts; Windows kills a
+// tree with taskkill /T instead, which terminate-child.test.ts covers. Report the
+// gap as a skip rather than returning early, which would pass while asserting nothing.
+test("runTurn: timeout kills a process group after the direct child has exited", {
+  skip: process.platform === "win32" ? "POSIX process groups; Windows tree-kill is covered by terminate-child.test.ts" : false,
+}, async () => {
+  const dir = mkdtempSync(join(tmpdir(), "cxc-runner-pgid-"));
+  const pidFile = join(dir, "pid");
+  const previous = process.env.FAKE_CODEX_PID_FILE;
+  process.env.FAKE_CODEX_PID_FILE = pidFile;
+  try {
+    await withMode("grandchild-pipe", async () => {
+      const result = await Promise.race([
+        runTurn({ workdir: here, prompt: "x", codexBin: FAKE, timeoutMs: 300 }),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error("runner remained stuck on inherited pipe")), 3_000)),
+      ]);
+      assert.equal(result.ok, false);
+      assert.match(String(result.error), /timed out/);
+    });
+    assert.ok(existsSync(pidFile));
+    const pid = Number(readFileSync(pidFile, "utf8"));
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    assert.throws(() => process.kill(pid, 0));
+  } finally {
+    if (previous === undefined) delete process.env.FAKE_CODEX_PID_FILE;
+    else process.env.FAKE_CODEX_PID_FILE = previous;
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("buildExecArgs: effort appends -c model_reasoning_effort in both branches; default omitted", () => {
+  const fresh = buildExecArgs({ prompt: "p", effort: "high" });
+  const ci = fresh.indexOf("-c");
+  assert.ok(ci > -1);
+  assert.equal(fresh[ci + 1], "model_reasoning_effort=high");
+
+  const none = buildExecArgs({ prompt: "p", effort: "default" });
+  assert.equal(none.includes("-c"), false);
+  const absent = buildExecArgs({ prompt: "p" });
+  assert.equal(absent.includes("-c"), false);
+
+  const resume = buildExecArgs({ prompt: "p", threadId: "t-1", effort: "minimal", model: "m1" });
+  const sep = resume.indexOf("--");
+  const cIdx = resume.indexOf("-c");
+  assert.ok(cIdx > -1 && cIdx < sep, "effort flag must precede -- in resume argv");
+  assert.equal(resume[cIdx + 1], "model_reasoning_effort=minimal");
+});
+
+test("runner output accumulation is byte-bounded and marks pathological truncation", () => {
+  const normal = appendBoundedOutput("hello", "world");
+  assert.deepEqual(normal, { text: "hello\nworld", truncated: false });
+  const huge = appendBoundedOutput("", "한".repeat(MAX_RUNNER_OUTPUT_BYTES));
+  assert.equal(huge.truncated, true);
+  assert.ok(Buffer.byteLength(huge.text) <= MAX_RUNNER_OUTPUT_BYTES);
+  assert.match(huge.text, /output truncated/);
+
+  const nearLimit = "x".repeat(MAX_RUNNER_OUTPUT_BYTES - 1);
+  const boundary = appendBoundedOutput(nearLimit, "한글");
+  assert.equal(boundary.truncated, true);
+  assert.ok(Buffer.byteLength(boundary.text) <= MAX_RUNNER_OUTPUT_BYTES);
+  assert.ok(!boundary.text.includes("�"), "UTF-8 clipping must end on a code-point boundary");
+});

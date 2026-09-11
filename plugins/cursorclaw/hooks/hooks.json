@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "./scripts/session-start.sh"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "./scripts/passthrough-allow.sh"
+      }
+    ],
+    "stop": [
+      {
+        "command": "./scripts/passthrough-allow.sh"
+      }
+    ]
+  }
+}

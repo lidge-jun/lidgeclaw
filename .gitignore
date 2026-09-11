@@ -1,0 +1,28 @@
+node_modules/
+dist/
+__pycache__/
+.codexclaw/
+# Retired local review receipts, design experiments, and generated PDF exports.
+/.omo/evidence/
+/mockup-scroll-motion/
+/output/pdf/
+/devlog/_fin/logo-candidates/
+/devlog/_fin/logo-fusion/
+/devlog/_fin/logo-i2i-half/
+/devlog/_fin/logo-references/
+/devlog/_fin/260711_docs_site_upgrade/
+/dev/references/v2-ultra-ab-diff.html
+/architecture-analysis-report.md
+*.log
+.DS_Store
+# reference clone (not part of codexclaw source)
+devlog/.lazycodex/
+
+# ouroboros reference clone (Pass 8 interview research)
+devlog/_plan/260630_ouroboros_interview_research/.ouroboros/
+
+# embedded tool repo, not codexclaw source
+devlog/_fin/260630_ouroboros_interview_research/.ouroboros/
+
+# cursorclaw local state
+.cursorclaw/

@@ -1,0 +1,103 @@
+---
+created: 2026-06-30
+tags: [codexclaw, contradiction, truth-table, drift, sot]
+aliases: [Contradiction Register, codexclaw drift register, structure truth table]
+---
+
+# Contradiction Register (SOT)
+
+> cli-jaw keeps a `CAPABILITY_TRUTH_TABLE.md` so claims never drift from code. This is
+> codexclaw's equivalent: a single place that records where a *document claims* one
+> thing and the *code/another doc* says another, with file:line evidence. It is the
+> input to the L14 interview and to any future status-sync gate.
+>
+> Sourced from a 2026-06-30 three-agent read-only sweep (skill↔runtime, doc-status,
+> code-structure). Each row is "claim (file:line) vs reality (file:line)". Resolving a
+> row means making the surfaces agree, then deleting the row or marking it RESOLVED in
+> the same change.
+
+Severity legend: **HIGH** = false capability or false-DONE that misleads execution ·
+**MED** = stale/contradictory status across surfaces · **LOW** = count/label drift.
+
+---
+
+## A. Skill claim vs runtime code (model-autonomy honesty)
+
+| # | Severity | Claim | Reality |
+| --- | --- | --- | --- |
+| A1 | RESOLVED (L14) | ~~`loop/SKILL.md`, `goalplan/SKILL.md`: Stop re-enters next work-phase `P`~~ | FIXED 2026-06-30: `loop`/`goalplan`/`dev` SKILL now state the AGENT runs `cxc orchestrate P`; `handleStop` only blocks (`hook.ts:391-415`) |
+| A2 | RESOLVED (L14) | ~~`loop/SKILL.md`: auto-advances `I -> P`~~ | FIXED 2026-06-30: docs state no auto-advance; the agent advances every phase via explicit command |
+| A3 | RESOLVED (L14) | ~~`loop/SKILL.md`: Stop blocks only on "concrete pending work"~~ | FIXED 2026-06-30: loop SKILL now describes the coarse state-signal guard (goal + in-flight + stagnation), not a content check |
+| A4 | RESOLVED (L17) | ~~`interview/SKILL.md:25-32`: `PostToolUse` auto-capture is "planned runtime / until that runtime lands"~~ | FIXED 2026-06-30: `interview/SKILL.md` now carries a "Runtime Status (shipped)" section; `cli.ts:81-90` + `hook.ts:419-439` confirm `post-tool-use` dispatches to `handlePostToolUse` and captures `request_user_input` results |
+| A5 | RESOLVED (L17) | ~~`pabcd/SKILL.md:16`: interview trigger covers "요구사항 정리", "스펙 정리해줘", "any variation"~~ | FIXED 2026-06-30: `pabcd/SKILL.md` Interview Trigger now splits **hook auto-trigger** (narrow: `interview`/`인터뷰`/`orchestrate i`, matching `detectTrigger()` `hook.ts:64-75`) from **agent judgment** (broad phrasings). Doc-fix chosen over widening `detectTrigger` (Carson MED-risk: broad regex would mis-fire). |
+| A6 | RESOLVED (L15+L16) | ~~`cxc-dev` routes to `dev-*` but no enforcement~~ | FIXED 2026-06-30: L16 made the dev routing table STRICT (DEV-ROUTE-01: MUST read the router before writing) and documented the E6 dev-only-implicit decision; L15 pre-loads the matching `cxc-*` skill as a subagent spawn attachment. Routing is now a STRICT main-agent rule + a subagent attachment, not weak prose. (No hook enforces skill load — `00_philosophy.md` §1 — so the main-agent side is self-enforced wording.) |
+
+Cluster verdict: the skill prose describes an *enforced* loop/interview runtime that the
+hooks do not implement. This is the central L14 honesty gap (`20_pabcd_dispatch_doctrine.md`
+§1, §4). Either wire the arming branches or downgrade the prose to guidance.
+
+---
+
+## B. Status drift across documents (false-DONE / split-brain)
+
+| # | Severity | Surface A | Surface B |
+| --- | --- | --- | --- |
+| B1 | RESOLVED (L13+L18) | ~~L11 INDEX impl-DONE vs 110 doc "no docs-site scaffold"~~ | Two-axis columns make it honest: INDEX L11 = `DONE / PLANNED` (decision closed, docs-site impl genuinely pending — the user builds the site separately). 110 doc leading token `DONE` == INDEX decision-state; gate `checkStatusSync` passes. No split-brain. |
+| B2 | RESOLVED (L13+L18) | ~~L12 impl DONE vs PLANNED across INDEX/README/roadmap~~ | INDEX L12 = `DONE / DONE`; runtime shipped via 121/122 (interview capture + rescan). 120 doc leading token `DONE` == decision-state; gate-guarded. |
+| B3 | RESOLVED (L13+L18) | ~~L9 impl DONE vs "runtime deferred"~~ | INDEX L9 = `DONE / DONE`; runtime shipped via 091/092/093 (spawn-wrapper/catalog/operator CLI). 090 doc leading token `DONE` == decision-state; impl truth carried by sub-loop docs; gate-guarded. |
+| B4 | RESOLVED (L9.1) | ~~README L9 wrapper "planned" vs 091 DONE~~ | 091 spawn-wrapper shipped+tested; README is user-owned and tracks the two-axis split. Sub-loop doc is authoritative. |
+| B5 | RESOLVED (INDEX fix) | ~~structure/INDEX pre-fix called subagents/provider stubs~~ | INDEX CLI Surface now lists `cxc subagents`/`cxc provider` as live (093 shipped); fixed 2026-06-30. |
+| B6 | RESOLVED (L19 follow-up) | ~~100_L10 doc lists `cxc chat-search` in-scope vs RETIRED~~ | 2026-06-30: added a dated SUPERSEDED-IN-PART banner to 100_L10 pointing at the L13/WP1 retirement; original decision text kept for history; live surface is `structure/INDEX.md`. |
+| B7 | RESOLVED (L19 follow-up) | ~~110_L11 live-command list includes `chat-search`~~ | 2026-06-30: struck through `chat-search` in the 110 command list with a RETIRED (L13/WP1) note. |
+
+Cluster verdict: L9/L11/L12 are the recurring false-DONE trio. The fix is the two-axis
+status rule (`00_philosophy.md` §3): keep decision and impl on separate columns and never
+let an INDEX impl-DONE outrun the loop doc's own "no runtime shipped" admission.
+
+**L18 resolution (E8 gate, 2026-06-30):** `plugins/codexclaw/scripts/gate.mjs` `checkStatusSync`
+now mechanically enforces the decision-axis rule (INDEX decision-state == loop-doc leading
+`Status:` token, LOCKED enum), and `gate.test.mjs` makes `npm test` fail on drift. The B-cluster
+is now gate-guarded: B1/B2/B3 impl-axis truth is carried by the two-axis columns + sub-loop docs
+(091/092/093, 121/122 shipped L9/L12 runtime; L11 impl genuinely PLANNED — docs-site not built),
+and B4-B7 were prose fixes already landed. The gate caught + I fixed the last live drift this loop:
+`140_L14...md` header was stale PLANNED (L14 shipped in 7283712) — flipped to DONE. Gate green on
+the live tree (8/8 gate tests). NOTE: the gate compares the DECISION axis token-for-token; impl
+honesty for "runtime deferred" parentheticals is governed by sub-loop docs + `checkForbiddenClaims`,
+not the status-token diff (a phrase-scan there false-positives on L9/L12 whose runtime later shipped).
+
+---
+
+## C. Code / config structure (dead code, packaging, counts)
+
+| # | Severity | Claim | Reality |
+| --- | --- | --- | --- |
+| C1 | PARTIAL (L15) | ~~`spawn-wrapper.ts` builder is test-only~~ | L15 added the skill-routing builder (`SURFACE_SKILL`, `buildSpawnItems`, `resolveSpawnPayloadWithSkills`) + tests. The builder is now the documented dispatch contract (E5); a `^spawn_agent$` PreToolUse caller (E3) is the L15.2 follow-up. Until that hook ships, the production caller is the main agent following the doctrine, not a hook. |
+| A7 | RESOLVED (L17) | `hook.ts handleStop`: the autonomous Stop loop blocked any non-IDLE active-goal phase incl. `phase === "I"`, emitting an `I`-specific continuation block — contradicting "Stop never drives the Interview" (Noether verification audit, post-Carson) | FIXED 2026-06-30: added guard 2a' in `handleStop` (`hook.ts`): `if (state.phase === "I") return ""`. Stop now releases at phase=I under an active goal. Test `hook-continuation.test.ts` "L17 firewall: Stop NEVER drives an active-goal phase=I session" + interview/SKILL.md wording corrected. |
+| C2 | RESOLVED (L17) | ~~`minds.ts:2` "5-Mind contradiction dispatcher surface" imported only by `test/minds.test.ts`~~ | FIXED 2026-06-30: `hook.ts:24` imports `MIND_DISPATCH_DIRECTIVE` from `minds.ts`; `interviewDirective()` (`hook.ts:126`) now emits the Mind-dispatch contract into the production Interview directive. Test `hook-continuation.test.ts:115` asserts the directive carries the contract. minds.ts is now on the live hook path (E4 directive). |
+| C3 | DOCUMENTED (L17) | `triage.ts:2` "severity triage + assumption transition" | `triageContradiction`/`autoResolveToAssumption` are pure helpers the main session calls when acting on the Mind-dispatch directive (C2). Reachable-via-directive, not dead: the I-phase directive instructs the agent to triage rescan findings. Not hook-invoked by design (no host triage event); kept as documented helpers per `structure/30` honesty rule. |
+| C4 | DOCUMENTED (L17) | `rescan-coordinator.ts:2` "interactive-interview signal helper" | Same as C3: rescan-coordinator computes the "more interview vs proceed" signal the agent surfaces at the end of a rescan. Reachable-via-directive (the Mind-dispatch contract references the rescan loop), not wired to `handleStop` by design — goal-active suppresses Interview entirely, so a Stop-time rescan would contradict the firewall. Documented helper. |
+| C5 | RESOLVED (L14) | ~~`freeze.ts:124` `GOAL_ACTIVATION_DIRECTIVE` test-only~~ | FIXED 2026-06-30: now emitted by the production path `runFreeze` (`freeze-cli.ts`) when the interview is ready, surfaced via `cxc freeze` (`bin/codexclaw.mjs`) |
+| C6 | LOW | `config-guard/src/cli.ts:18` exports `assertNotRealCodexHome` | imported only by `test/activate.test.ts:9` |
+| C11 | DOCUMENTED (260802) | `hook.ts` `QUESTION_SHAPE_DIRECTIVE` reads as a live question-shape contract | Dead by decision, not by oversight: `rg` finds it only in `test/hook-continuation.test.ts`, never in an emission path. Its content is already injected verbatim by `PHASE_DIRECTIVES.I` ("background + 2-3 concrete options (recommendation FIRST) + one impact/tradeoff sentence per option"), so wiring it would add no instruction, and deleting it would churn a passing test for no behavioral gain. Kept as the standing cautionary example: a constant can carry exactly the right words for months and still never reach the model. WP4 (260802) therefore asserts the interview grounding rules on hook STDOUT rather than on the constant — a reviewer proved by mutation that content-only assertions let the injection wiring be severed silently. See `devlog/_plan/260802_interview_answer_capture/030_directive_discipline.md`. |
+| C7 | RESOLVED (L18) | ~~`structure/INDEX.md` (pre-fix) "manifest wires five hook JSON files" vs `plugin.json:20-26` declares six~~ | FIXED 2026-06-30: INDEX says "six"; **locked** by `gate.mjs checkCounts` (manifest `hooks[]` length == `hooks/*.json` count) with a negative-control test. Drift now fails `npm test`. |
+| C8 | RESOLVED (L19) | ~~build compiles every `src/*.ts` -> `dist/*.js` and `.gitignore:2` ignores `dist/`; several runtime `dist/*.js` that `bin`/`hook` load are untracked~~ | FIXED 2026-06-30: force-added the 4 runtime-reached untracked dist files (`pabcd-state/dist/{interview-ledger,orchestrate-cli,orchestrate-grammar}.js`, `subagent-config/dist/cli.js`); `packaging.test.mjs` walks the import graph from the 6 runtime entrypoints (5 cli.js + mcp.js) and FAILS `npm test` if any reached dist file is untracked. `gui/dist` (dev-server only) + `rescan-coordinator.js` (not runtime-reached) intentionally excluded. Follow-up: a src↔dist freshness test (build.test proves only post-build idempotency). |
+| C9 | RESOLVED (L18) | ~~component test surface looks uniform~~ | DOCUMENTED 2026-06-30: `structure/INDEX.md` Quality Gate section records that the root `package.json` `test` glob is the single source of test discovery and component packages intentionally do NOT each carry a local `test` script (the glob already covers `provider-bridge`/`subagent-config`). Intentional asymmetry, not drift. |
+| C10 | LOW (flaky) | `subagent-config/test/mcp.test.ts:57` MCP stdio roundtrip assumed reliable | timed out at the original 8s ceiling (now 30s, a hang detector rather than a flake absorber — see the comment at `subagent-config/test/mcp.test.ts:26`) when the full `npm test` runs concurrently with `npm run build` (process/IO contention). Single-file + standalone `npm test` runs are green (5/5, 332/332). **Disposition updated 2026-08-25:** the old note offered "an explicit timeout" as a candidate fix, which `TEST-FLAKE-RERUN-01` now forbids — raising a timeout to make a test pass is not a fix. The remaining honest options are build/test serialization (removing the contention) or removing the real-process dependency from the assertion. "Environmental" here also needs the `TEST-FLAKE-ATTRIBUTION-01` triple before it is treated as settled. Canonical policy: `dev-testing` `references/ci-pipeline.md` §5. |
+
+Cluster verdict: the dead-code rows (C1-C6) are mostly the *same* L14 story — wrappers,
+minds/triage/rescan helpers, and the goal-activation directive were built as tested pure
+functions but never wired into a production path. They are not waste to delete; they are
+the staged pieces L14 is meant to connect. C8 is a real packaging/deploy contract gap
+(the cli-jaw "dist is what runs, not src" lesson) and deserves its own decision.
+
+---
+
+## How to use this register
+
+1. Before marking any loop DONE, scan this file for an open row touching that loop.
+2. When you resolve a contradiction, edit both surfaces in the same commit and update or
+   remove the row here.
+3. A future status-sync gate (`20_pabcd_dispatch_doctrine.md` §7) should mechanize rows
+   in clusters B and C7/C9.
+4. Cluster A and C1-C6 feed directly into the L14 interview — they are the contradictions
+   to surface to the user as questions before implementing.

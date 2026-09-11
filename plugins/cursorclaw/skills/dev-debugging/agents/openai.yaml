@@ -1,0 +1,5 @@
+interface:
+  display_name: "cxc-dev-debugging"
+  short_description: "Phases 0-4 systematic root-cause debugging method (any language)."
+policy:
+  allow_implicit_invocation: false

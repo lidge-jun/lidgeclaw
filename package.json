@@ -1,0 +1,30 @@
+{
+  "name": "cursorclaw",
+  "version": "0.1.0",
+  "private": true,
+  "description": "cli-jaw-style dev discipline + multi-model subagents for the Cursor agent runtime (fork of codexclaw).",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lidge-jun/cursorclaw.git"
+  },
+  "license": "MIT",
+  "bin": {
+    "cursorclaw": "bin/cursorclaw.mjs",
+    "crc": "bin/cursorclaw.mjs"
+  },
+  "workspaces": [
+    "plugins/cursorclaw/components/*",
+    "plugins/cursorclaw/gui",
+    "cli"
+  ],
+  "scripts": {
+    "build": "node plugins/cursorclaw/scripts/build.mjs",
+    "gate": "node plugins/cursorclaw/scripts/gate.mjs",
+    "test": "node plugins/cursorclaw/scripts/test.mjs \"plugins/cursorclaw/components/pabcd-state/test/*.test.ts\" \"plugins/cursorclaw/components/config-guard/test/*.test.ts\" \"plugins/cursorclaw/components/cxc-ops/test/*.test.ts\" \"plugins/cursorclaw/components/recall/test/*.test.ts\" \"plugins/cursorclaw/components/provider-bridge/test/*.test.ts\" \"plugins/cursorclaw/components/subagent-config/test/*.test.ts\" \"plugins/cursorclaw/components/messenger-bridge/test/*.test.ts\" \"plugins/cursorclaw/components/skill-search/test/*.test.ts\" \"plugins/cursorclaw/components/bg-wake/test/*.test.ts\" \"plugins/cursorclaw/gui/test/*.test.ts\" \"plugins/cursorclaw/test/*.test.mjs\" \".github/scripts/pr-labeler.test.cjs\" \".github/scripts/closed-pr-branch-cleanup.test.cjs\"",
+    "smoke": "node plugins/cursorclaw/scripts/platform-smoke.mjs"
+  },
+  "overrides": {
+    "postcss": "^8.5.23"
+  }
+}

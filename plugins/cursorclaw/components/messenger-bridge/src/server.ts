@@ -1,0 +1,366 @@
+/**
+ * server.ts — cxc serve HTTP server (messenger-bridge Phase 1).
+ *
+ * One loopback port serving: the built GUI (static, SPA fallback), a JSON API
+ * (route registry — later phases append routes without touching this file),
+ * and /api/health. Static resolution is confined to guiDir (path-traversal
+ * guard). No third-party deps: node:http only.
+ */
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
+import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
+import { homedir } from "node:os";
+import { dirname, extname, join, normalize, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
+import type { BridgeDb } from "./db.ts";
+import { apiCompatRoutes } from "./api-compat.ts";
+import { connectRoutes } from "./connect-routes.ts";
+import { agentRoutes } from "./agent-routes.ts";
+import type { MetricsSnapshot } from "./metrics.ts";
+import type { BridgeEvent } from "./event-log.ts";
+import { BodyTooLargeError, localRequestRejection, readBoundedJson } from "./local-http.ts";
+
+export interface ApiCtx {
+  db: BridgeDb;
+  cwd: string;
+  version: string;
+  // Present when cxc serve runs a live bridge; absent in GUI-only/dev mode.
+  controller?: BridgeControllerLike;
+}
+
+/** The subset of BridgeController the API routes use (kept structural to avoid a cycle). */
+export interface BridgeControllerLike {
+  reload: () => Promise<void>;
+  stop: () => void;
+  activeKind: () => "telegram" | "discord" | null;
+  adapterStatus: () => string;
+  openHandshake: (kind: "telegram" | "discord", seconds: number) => void;
+  handshakeState: (kind: "telegram" | "discord") => { open: boolean; pairedChatId: string | null };
+  agentStatuses?: () => Array<{ agentId: number; name: string; kind: "telegram" | "discord"; status: string }>;
+  metricsSnapshot?: () => MetricsSnapshot;
+  recentEvents?: (n: number) => BridgeEvent[];
+  handleTelegramWebhook?: (secret: string, req: IncomingMessage, res: ServerResponse) => Promise<boolean>;
+}
+
+export interface ApiResponse {
+  status: number;
+  body: unknown;
+}
+
+export interface ApiRoute {
+  method: string;
+  path: string;
+  handler: (ctx: ApiCtx, body: unknown, url: URL) => ApiResponse | Promise<ApiResponse>;
+}
+
+export interface BridgeServerOptions {
+  db: BridgeDb;
+  cwd: string;
+  guiDir: string;
+  version: string;
+  controller?: BridgeControllerLike;
+  extraRoutes?: ApiRoute[];
+  /** Override for tests; defaults to the component-root README.md. */
+  readmePath?: string;
+}
+
+/** Component-root README.md, valid from both src/ and compiled dist/. */
+export function defaultReadmePath(): string {
+  return resolve(dirname(fileURLToPath(import.meta.url)), "..", "README.md");
+}
+
+const CONTENT_TYPES: Record<string, string> = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".ico": "image/x-icon",
+  ".map": "application/json; charset=utf-8",
+  ".woff2": "font/woff2",
+};
+
+const GUI_MISSING_PAGE =
+  "codexclaw serve: GUI build missing.\nRun: npm run build (in plugins/codexclaw/gui), then reload.\n";
+
+function healthRoute(): ApiRoute {
+  return {
+    method: "GET",
+    path: "/api/health",
+    handler: (ctx) => ({
+      status: 200,
+      body: {
+        ok: true,
+        version: ctx.version,
+        activeChannel: ctx.db.getActiveChannel()?.kind ?? null,
+      },
+    }),
+  };
+}
+
+/** Base route set: health + GUI API parity + channel connect/manage + agents. */
+export function baseRoutes(): ApiRoute[] {
+  return [
+    healthRoute(),
+    ...apiCompatRoutes(),
+    ...connectRoutes(),
+    ...agentRoutes(),
+    ...observabilityRoutes(),
+    ...bindingManagementRoutes(),
+  ];
+}
+
+function observabilityRoutes(): ApiRoute[] {
+  return [
+    {
+      method: "GET",
+      path: "/api/metrics",
+      handler: (ctx) => {
+        const snap = ctx.controller?.metricsSnapshot?.();
+        return { status: 200, body: snap ?? { error: "metrics not available" } };
+      },
+    },
+    {
+      method: "GET",
+      path: "/api/events",
+      handler: (ctx, _body, url) => {
+        const n = Number.parseInt(url.searchParams.get("n") ?? "50", 10);
+        const events = ctx.controller?.recentEvents?.(Number.isFinite(n) ? n : 50) ?? [];
+        return { status: 200, body: { events } };
+      },
+    },
+    {
+      method: "GET",
+      path: "/api/agents/statuses",
+      handler: (ctx) => {
+        const statuses = ctx.controller?.agentStatuses?.();
+        if (!statuses) return { status: 501, body: { error: "agent statuses not available" } };
+        return { status: 200, body: { statuses } };
+      },
+    },
+  ];
+}
+
+function bindingManagementRoutes(): ApiRoute[] {
+  return [
+    {
+      method: "POST",
+      path: "/api/bindings/reset",
+      handler: (ctx, body) => {
+        const id = parseBindingId(body);
+        if (id === null) return { status: 400, body: { error: "id must be a number" } };
+        if (!ctx.db.getBinding(id)) return { status: 404, body: { error: "binding not found" } };
+        ctx.db.resetBindingSession(id);
+        return { status: 200, body: { ok: true, binding: ctx.db.getBinding(id) } };
+      },
+    },
+    {
+      method: "POST",
+      path: "/api/bindings/cwd",
+      handler: (ctx, body) => {
+        const id = parseBindingId(body);
+        if (id === null) return { status: 400, body: { error: "id must be a number" } };
+        if (!ctx.db.getBinding(id)) return { status: 404, body: { error: "binding not found" } };
+        const raw = parseCwd(body);
+        if (raw === null) return { status: 400, body: { error: "cwd must be a non-empty string" } };
+        const real = resolveDirectory(raw);
+        if (!real) return { status: 400, body: { error: `not a directory: ${raw}` } };
+        ctx.db.setBindingWorkdir(id, real);
+        ctx.db.resetBindingSession(id);
+        return { status: 200, body: { ok: true, binding: ctx.db.getBinding(id) } };
+      },
+    },
+  ];
+}
+
+function parseBindingId(body: unknown): number | null {
+  const value = (body as Record<string, unknown> | null)?.id;
+  if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) return null;
+  return value;
+}
+
+function parseCwd(body: unknown): string | null {
+  const value = (body as Record<string, unknown> | null)?.cwd;
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function resolveDirectory(input: string): string | null {
+  const expanded =
+    input === "~"
+      ? homedir()
+      : input.startsWith("~/") || input.startsWith("~\\")
+        ? join(homedir(), input.slice(2))
+        : input;
+  try {
+    const real = realpathSync(resolve(expanded));
+    return statSync(real).isDirectory() ? real : null;
+  } catch {
+    return null;
+  }
+}
+
+function sendJson(res: ServerResponse, status: number, body: unknown): void {
+  const payload = JSON.stringify(body);
+  res.writeHead(status, {
+    "content-type": "application/json; charset=utf-8",
+    "content-length": Buffer.byteLength(payload),
+  });
+  res.end(payload);
+}
+
+interface CachedStaticFile { data: Buffer; contentType: string; etag: string; mtimeMs: number; size: number }
+
+function cachedStaticFile(path: string, cache: Map<string, CachedStaticFile>, immutable: boolean): CachedStaticFile {
+  const stat = statSync(path);
+  const existing = cache.get(path);
+  if (immutable && existing && existing.mtimeMs === stat.mtimeMs && existing.size === stat.size) return existing;
+  const data = readFileSync(path);
+  const value = {
+    data,
+    contentType: CONTENT_TYPES[extname(path)] ?? "application/octet-stream",
+    etag: `\"${createHash("sha256").update(data).digest("base64url").slice(0, 22)}\"`,
+    mtimeMs: stat.mtimeMs,
+    size: stat.size,
+  };
+  if (immutable) cache.set(path, value);
+  return value;
+}
+
+function serveStatic(
+  req: IncomingMessage,
+  res: ServerResponse,
+  guiDir: string,
+  pathname: string,
+  cache: Map<string, CachedStaticFile>,
+): void {
+  const root = resolve(guiDir);
+  const indexFile = join(root, "index.html");
+  const requested = normalize(pathname).replace(/^([/\\])+/, "");
+  const candidate = resolve(root, requested === "" ? "index.html" : requested);
+  const inside = candidate === root || candidate.startsWith(root + sep);
+
+  if (inside && existsSync(candidate) && statSync(candidate).isFile()) {
+    const immutable = pathname.startsWith("/assets/");
+    const file = cachedStaticFile(candidate, cache, immutable);
+    if (req.headers["if-none-match"] === file.etag) {
+      res.writeHead(304, { etag: file.etag });
+      res.end();
+      return;
+    }
+    res.writeHead(200, {
+      "content-type": file.contentType,
+      "content-length": file.data.length,
+      etag: file.etag,
+      "cache-control": immutable ? "public, max-age=31536000, immutable" : "no-cache",
+    });
+    res.end(req.method === "HEAD" ? undefined : file.data);
+    return;
+  }
+  // SPA fallback: any non-file path serves the app shell.
+  if (existsSync(indexFile)) {
+    const file = cachedStaticFile(indexFile, cache, false);
+    res.writeHead(200, {
+      "content-type": file.contentType,
+      "content-length": file.data.length,
+      etag: file.etag,
+      "cache-control": "no-cache",
+    });
+    res.end(req.method === "HEAD" ? undefined : file.data);
+    return;
+  }
+  res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
+  res.end(GUI_MISSING_PAGE);
+}
+
+export function createBridgeServer(opts: BridgeServerOptions): Server {
+  const ctx: ApiCtx = {
+    db: opts.db,
+    cwd: opts.cwd,
+    version: opts.version,
+    controller: opts.controller,
+  };
+  const routes: ApiRoute[] = [...baseRoutes(), ...(opts.extraRoutes ?? [])];
+  const staticCache = new Map<string, CachedStaticFile>();
+
+  return createServer((req, res) => {
+    void handle(req, res).catch((err: unknown) => {
+      const message = err instanceof Error ? err.message : String(err);
+      if (!res.headersSent) sendJson(res, 500, { error: message });
+      else res.end();
+    });
+  });
+
+  async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
+    const url = new URL(req.url ?? "/", "http://localhost");
+    const pathname = url.pathname;
+
+    if (pathname.startsWith("/webhook/telegram/")) {
+      if (req.method !== "POST") {
+        sendJson(res, 405, { error: "method not allowed" });
+        return;
+      }
+      const secret = webhookSecret(pathname);
+      const handled = await ctx.controller?.handleTelegramWebhook?.(secret, req, res);
+      if (!handled && !res.writableEnded) sendJson(res, 404, { error: "telegram webhook not found" });
+      return;
+    }
+
+    if (pathname.startsWith("/api/")) {
+      const rejection = localRequestRejection(req);
+      if (rejection) {
+        sendJson(res, 403, { error: `forbidden: ${rejection}` });
+        return;
+      }
+      const route = routes.find((r) => r.method === req.method && r.path === pathname);
+      if (!route) {
+        sendJson(res, 404, { error: `no route: ${req.method} ${pathname}` });
+        return;
+      }
+      let body: unknown = null;
+      if (req.method === "POST" || req.method === "PUT" || req.method === "PATCH") {
+        try {
+          body = await readBoundedJson(req);
+        } catch (err) {
+          sendJson(res, err instanceof BodyTooLargeError ? 413 : 400, {
+            error: err instanceof Error ? err.message : String(err),
+          });
+          return;
+        }
+      }
+      const result = await route.handler(ctx, body, url);
+      sendJson(res, result.status, result.body);
+      return;
+    }
+
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      sendJson(res, 405, { error: "method not allowed" });
+      return;
+    }
+    // Docs route: exact match, fixed file, ahead of the SPA fallback which
+    // would otherwise swallow it with index.html.
+    if (pathname === "/readme") {
+      const readmeFile = opts.readmePath ?? defaultReadmePath();
+      if (existsSync(readmeFile) && statSync(readmeFile).isFile()) {
+        const data = readFileSync(readmeFile);
+        res.writeHead(200, { "content-type": "text/markdown; charset=utf-8", "content-length": data.length });
+        res.end(req.method === "HEAD" ? undefined : data);
+      } else {
+        sendJson(res, 404, { error: "readme not found" });
+      }
+      return;
+    }
+    serveStatic(req, res, opts.guiDir, pathname, staticCache);
+  }
+}
+
+function webhookSecret(pathname: string): string {
+  const raw = pathname.slice("/webhook/telegram/".length).split("/", 1)[0] ?? "";
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
