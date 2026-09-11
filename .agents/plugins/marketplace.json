@@ -1,7 +1,7 @@
 {
   "name": "cursorclaw",
   "interface": {
-    "displayName": "Codexclaw"
+    "displayName": "Cursorclaw"
   },
   "plugins": [
     {
