@@ -22,7 +22,7 @@ import { tmpdir } from "node:os";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pluginRoot = resolve(here, "..");
-const manifestPath = join(pluginRoot, ".codex-plugin", "plugin.json");
+const manifestPath = join(pluginRoot, ".cursor-plugin", "plugin.json");
 
 // This suite drives the COMPILED dist entrypoints, so it needs a prior `npm run build`
 // (the project verify protocol builds before testing). It deliberately does NOT invoke

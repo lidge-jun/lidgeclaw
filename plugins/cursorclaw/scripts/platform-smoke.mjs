@@ -18,7 +18,7 @@ import { fileURLToPath } from "node:url";
 // NOT `new URL(...).pathname`: on Windows that yields "/C:/Users/..." with a leading
 // slash, which spawnSync cannot resolve. fileURLToPath is the only correct spelling,
 // and this is the campaign's Windows-verification script.
-export const CLI = fileURLToPath(new URL("../../../bin/codexclaw.mjs", import.meta.url));
+export const CLI = fileURLToPath(new URL("../../../bin/cursorclaw.mjs", import.meta.url));
 const failures = [];
 
 function check(name, fn) {

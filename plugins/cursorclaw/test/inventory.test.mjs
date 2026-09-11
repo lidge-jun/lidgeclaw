@@ -27,7 +27,7 @@ const repoRoot = resolve(pluginRoot, "..", "..");
 // Copy the payload plus repo-root docs into a scratch tree we can safely corrupt.
 function scratch() {
   const dir = mkdtempSync(join(tmpdir(), "cxc-inventory-"));
-  const plugin = join(dir, "plugins", "codexclaw");
+  const plugin = join(dir, "plugins", "cursorclaw");
   cpSync(pluginRoot, plugin, { recursive: true });
   for (const f of ["README.md", "README.ko.md", "README.zh.md", "package.json"]) {
     cpSync(join(repoRoot, f), join(dir, f));
@@ -36,7 +36,7 @@ function scratch() {
 }
 
 function manifestPath(plugin) {
-  return join(plugin, ".codex-plugin", "plugin.json");
+  return join(plugin, ".cursor-plugin", "plugin.json");
 }
 
 function patchManifest(plugin, fn) {

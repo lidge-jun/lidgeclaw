@@ -450,7 +450,7 @@ if (isMain) switch (cmd) {
   case "--version":
   case "-v": {
     try {
-      const manifestPath = join(here, "..", "plugins", "cursorclaw", ".codex-plugin", "plugin.json");
+      const manifestPath = join(here, "..", "plugins", "cursorclaw", ".cursor-plugin", "plugin.json");
       console.log(JSON.parse(readFileSync(manifestPath, "utf8")).version ?? "unknown");
       process.exit(0);
     } catch (err) {

@@ -7,14 +7,17 @@
 <h1 align="center">cursorclaw</h1>
 
 <p align="center">
-  Development discipline and multi-model subagent guidance for <strong>Cursor</strong>,<br>
-  forked from <a href="https://github.com/lidge-jun/codexclaw">codexclaw</a> (Codex runtime).
+  <img src="https://img.shields.io/badge/runtime-Cursor-black" alt="Cursor runtime">
+  <img src="https://img.shields.io/badge/skills-29-blue" alt="29 skills">
+  <img src="https://img.shields.io/badge/hooks-7-blue" alt="7 hooks">
+  <img src="https://img.shields.io/badge/tests-0_passing-lightgrey" alt="0 tests passing">
+  <img src="https://img.shields.io/badge/upstream-codexclaw-red" alt="upstream codexclaw">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT"></a>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/runtime-Cursor-black" alt="Cursor runtime">
-  <img src="https://img.shields.io/badge/upstream-codexclaw-red" alt="upstream codexclaw">
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
+  Development discipline and multi-model subagent guidance for <strong>Cursor</strong>,<br>
+  forked from <a href="https://github.com/lidge-jun/codexclaw">codexclaw</a> (Codex runtime).
 </p>
 
 ---

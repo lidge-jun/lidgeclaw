@@ -4,12 +4,12 @@
  * shipped payload and writes them into all three README variants.
  *
  * Badge sources:
- *   skills  -> count of SKILL.md-containing dirs under plugins/codexclaw/skills/
+ *   skills  -> count of SKILL.md-containing dirs under plugins/cursorclaw/skills/
  *   hooks   -> plugin.json hooks array length
  *
  * Usage:
- *   node plugins/codexclaw/scripts/sync-readme-badges.mjs          # check (exit 1 on drift)
- *   node plugins/codexclaw/scripts/sync-readme-badges.mjs --write  # fix (rewrite files)
+ *   node plugins/cursorclaw/scripts/sync-readme-badges.mjs          # check (exit 1 on drift)
+ *   node plugins/cursorclaw/scripts/sync-readme-badges.mjs --write  # fix (rewrite files)
  */
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -31,7 +31,7 @@ export function countSkills() {
 
 export function countHooks() {
   const manifest = JSON.parse(
-    readFileSync(join(PLUGIN_ROOT, ".codex-plugin", "plugin.json"), "utf8"),
+    readFileSync(join(PLUGIN_ROOT, ".cursor-plugin", "plugin.json"), "utf8"),
   );
   return manifest.hooks.length;
 }

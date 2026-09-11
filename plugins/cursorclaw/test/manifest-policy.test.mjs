@@ -76,7 +76,7 @@ test("S3: implicit set is exactly {dev,+7}; other dev-* routers are on-demand", 
 });
 
 test("L3: PreToolUse goal-budget hook is registered in the plugin manifest", () => {
-  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8"));
+  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8"));
   const goalHook = manifest.hooks.find((h) => h.includes("pre-tool-use-guarding-goal-budget"));
   assert.ok(goalHook, "pre-tool-use-guarding-goal-budget hook not in manifest.hooks");
   const hookJson = JSON.parse(readFileSync(join(pluginRoot, goalHook), "utf8"));
@@ -89,7 +89,7 @@ test("L3: PreToolUse goal-budget hook is registered in the plugin manifest", () 
 });
 
 test("MEMORY-WRITE-GATE-01: the memory-write hook is registered and pins both write surfaces", () => {
-  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8"));
+  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8"));
   const rel = manifest.hooks.find((h) => h.includes("pre-tool-use-guarding-memory-write"));
   assert.ok(rel, "pre-tool-use-guarding-memory-write hook not in manifest.hooks");
   const hookJson = JSON.parse(readFileSync(join(pluginRoot, rel), "utf8"));

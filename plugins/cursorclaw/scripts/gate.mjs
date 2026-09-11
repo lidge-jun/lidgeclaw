@@ -18,7 +18,7 @@
  *    scans SKILL.md and nested reference markdown plus declared SOT structure markdown; lines
  *    that NEGATE the phrase ("no hook enforces ...") or CITE it as an example/violation
  *    are exempt, since those are the opposite of a false assertion.
- *  - checkCounts reads the real manifest at `.codex-plugin/plugin.json`.
+ *  - checkCounts reads the real manifest at `.cursor-plugin/plugin.json`.
  */
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { join, dirname, relative, sep } from "node:path";
@@ -159,7 +159,7 @@ function walkSkillMds(dir, out, inReferences = false) {
 export function checkForbiddenClaims(repoRoot = REPO_ROOT) {
   const violations = [];
   const files = [];
-  const skillsDir = join(repoRoot, "plugins", "codexclaw", "skills");
+  const skillsDir = join(repoRoot, "plugins", "cursorclaw", "skills");
   if (existsSync(skillsDir)) walkSkillMds(skillsDir, files);
   // structure/*.md is declared SOT (E7 doctrine) and must be held to the same honesty bar.
   const structureDir = join(repoRoot, "structure");
@@ -196,7 +196,7 @@ export function checkForbiddenClaims(repoRoot = REPO_ROOT) {
  *  - bypass: omit the `검증 명령` marker, reword the line, or move the doc out of `_plan/`.
  *  - residual risk: a doc can still name a dead verifier and go unreported.
  *  - final enforcement layer: none. This is an early warning, not enforcement.
- *  - the marketplace payload is only `plugins/codexclaw/`, so `devlog/` does not ship;
+ *  - the marketplace payload is only `plugins/cursorclaw/`, so `devlog/` does not ship;
  *    in an installed plugin this check finds nothing and stays silent by construction.
  *
  * PARSING (deliberately narrow — free-prose scanning produced self-matches):
@@ -280,14 +280,38 @@ export function checkVerifierClaims(repoRoot = REPO_ROOT) {
 
 export function checkCounts(repoRoot = REPO_ROOT) {
   const violations = [];
-  const manifestPath = join(repoRoot, "plugins", "codexclaw", ".codex-plugin", "plugin.json");
-  const hooksDir = join(repoRoot, "plugins", "codexclaw", "hooks");
+  const manifestPath = join(repoRoot, "plugins", "cursorclaw", ".cursor-plugin", "plugin.json");
+  const hooksConfigPath = join(repoRoot, "plugins", "cursorclaw", "hooks", "hooks.json");
   if (!existsSync(manifestPath)) return { ok: false, violations: [`missing manifest: ${manifestPath}`] };
+  if (!existsSync(hooksConfigPath)) {
+    return { ok: false, violations: [`missing Cursor hooks config: ${hooksConfigPath}`] };
+  }
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-  const declared = Array.isArray(manifest.hooks) ? manifest.hooks.length : 0;
-  const onDisk = existsSync(hooksDir) ? readdirSync(hooksDir).filter((f) => f.endsWith(".json")).length : 0;
-  if (declared !== onDisk) {
-    violations.push(`hook count mismatch: plugin.json declares ${declared}, hooks/ has ${onDisk} JSON file(s)`);
+  const hooksConfig = JSON.parse(readFileSync(hooksConfigPath, "utf8"));
+  const requiredEvents = [
+    "sessionStart",
+    "beforeSubmitPrompt",
+    "preToolUse",
+    "postToolUse",
+    "preCompact",
+    "stop",
+    "subagentStop",
+  ];
+  const declaredPath = typeof manifest.hooks === "string" ? manifest.hooks : null;
+  if (!declaredPath || !declaredPath.includes("hooks.json")) {
+    violations.push(`plugin.json hooks must point at hooks/hooks.json (got ${JSON.stringify(manifest.hooks)})`);
+  }
+  const events = hooksConfig.hooks && typeof hooksConfig.hooks === "object" ? Object.keys(hooksConfig.hooks) : [];
+  for (const ev of requiredEvents) {
+    if (!events.includes(ev)) violations.push(`hooks/hooks.json missing required Cursor event: ${ev}`);
+  }
+  // Codex-era provenance retained under hooks/codex-legacy/*.json — must stay present.
+  const legacyDir = join(repoRoot, "plugins", "cursorclaw", "hooks", "codex-legacy");
+  const legacyCount = existsSync(legacyDir)
+    ? readdirSync(legacyDir).filter((f) => f.endsWith(".json")).length
+    : 0;
+  if (legacyCount < 1) {
+    violations.push("hooks/codex-legacy/ has no Codex provenance JSON files");
   }
   return { ok: violations.length === 0, violations };
 }
@@ -301,7 +325,7 @@ export function checkCounts(repoRoot = REPO_ROOT) {
 export function checkInventory(repoRoot = REPO_ROOT) {
   const violations = [];
   try {
-    const pluginRoot = join(repoRoot, "plugins", "codexclaw");
+    const pluginRoot = join(repoRoot, "plugins", "cursorclaw");
     const result = inventoryCheck({ pluginRoot, repoRoot });
     violations.push(...result.violations);
   } catch (err) {

@@ -10,7 +10,7 @@
  * post-build directory, including modules outside the current runtime graph.
  *
  * Entrypoint roots (Aquinas A-gate, 2026-06-30): every dist file Codex executes directly.
- *  - the 5 component cli.js entries (bin/codexclaw.mjs spawns these; hooks invoke pabcd-state
+ *  - the 5 component cli.js entries (bin/cursorclaw.mjs spawns these; hooks invoke pabcd-state
  *    + provider-bridge cli.js)
  *  - subagent-config mcp.js (.mcp.json MCP server entry)
  * pabcd-state hook.js is reached transitively from cli.js, not a direct root.
@@ -88,7 +88,7 @@ test("L19: runtime entrypoints and matching project/payload licensing artifacts 
   }
   const project = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
   const lock = JSON.parse(readFileSync(join(repoRoot, "package-lock.json"), "utf8"));
-  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8"));
+  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8"));
   assert.equal(project.license, "MIT");
   assert.equal(manifest.license, project.license);
   assert.equal(lock.packages[""].license, project.license);
@@ -127,7 +127,7 @@ test("L19: the runtime graph reaches the known transitive modules (walker sanity
 });
 
 test("L19: every compiler output is git-tracked for archive/marketplace parity", () => {
-  const tracked = new Set(execFileSync("git", ["ls-files", "-z", "--", "plugins/codexclaw/components"], {
+  const tracked = new Set(execFileSync("git", ["ls-files", "-z", "--", "plugins/cursorclaw/components"], {
     cwd: repoRoot, encoding: "utf8", timeout: 10000,
   }).split("\0"));
   const missing = [];

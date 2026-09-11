@@ -17,11 +17,11 @@
  *  - Compare SETS in both directions and report the symmetric difference by name.
  *
  * Usage:
- *   node plugins/codexclaw/scripts/inventory.mjs --check
- *   node plugins/codexclaw/scripts/inventory.mjs --check --tests <measured-total>
- *   node plugins/codexclaw/scripts/inventory.mjs --write [--tests <n>]
- *   node plugins/codexclaw/scripts/inventory.mjs --hash
- *   node plugins/codexclaw/scripts/inventory.mjs --published
+ *   node plugins/cursorclaw/scripts/inventory.mjs --check
+ *   node plugins/cursorclaw/scripts/inventory.mjs --check --tests <measured-total>
+ *   node plugins/cursorclaw/scripts/inventory.mjs --write [--tests <n>]
+ *   node plugins/cursorclaw/scripts/inventory.mjs --hash
+ *   node plugins/cursorclaw/scripts/inventory.mjs --published
  */
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
@@ -35,7 +35,7 @@ export const INVENTORY_PATH = join(PLUGIN_ROOT, "inventory.json");
 export const SCHEMA_VERSION = 1;
 
 function readManifest(pluginRoot = PLUGIN_ROOT) {
-  return JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8"));
+  return JSON.parse(readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8"));
 }
 
 export function collectSkills(pluginRoot = PLUGIN_ROOT) {
@@ -54,20 +54,20 @@ export function collectSkills(pluginRoot = PLUGIN_ROOT) {
 }
 
 export function collectHooks(pluginRoot = PLUGIN_ROOT) {
-  const manifest = readManifest(pluginRoot);
-  return manifest.hooks
-    .map((ref) => {
-      const file = ref.replace(/^\.\/hooks\//, "");
-      const full = join(pluginRoot, "hooks", file);
-      if (!existsSync(full)) return { file, event: null, component: null, matcher: null };
-      const json = JSON.parse(readFileSync(full, "utf8"));
-      const event = Object.keys(json.hooks ?? {})[0] ?? null;
-      const group = event ? json.hooks[event]?.[0] : null;
-      const command = group?.hooks?.[0]?.command ?? "";
-      const component = /components\/([a-z0-9-]+)\//.exec(command)?.[1] ?? null;
-      return { file, event, component, matcher: group?.matcher ?? null };
-    })
-    .sort((a, b) => a.file.localeCompare(b.file));
+  const hooksPath = join(pluginRoot, "hooks", "hooks.json");
+  if (!existsSync(hooksPath)) return [];
+  const json = JSON.parse(readFileSync(hooksPath, "utf8"));
+  const events = json.hooks && typeof json.hooks === "object" ? json.hooks : {};
+  return Object.keys(events)
+    .sort()
+    .map((event) => {
+      const entries = Array.isArray(events[event]) ? events[event] : [];
+      const command = entries[0]?.command ?? "";
+      const component = /cursor-bridge\.mjs/.test(command)
+        ? "cursor-bridge"
+        : /components\/([a-z0-9-]+)\//.exec(command)?.[1] ?? null;
+      return { file: "hooks.json", event, component, matcher: entries[0]?.matcher ?? null };
+    });
 }
 
 export function collectComponents(pluginRoot = PLUGIN_ROOT) {
@@ -146,20 +146,31 @@ export function checkSets(pluginRoot = PLUGIN_ROOT, repoRoot = REPO_ROOT) {
   const violations = [];
   const manifest = readManifest(pluginRoot);
 
-  const manifestHooks = manifest.hooks.map((h) => h.replace(/^\.\/hooks\//, ""));
-  const dupeHooks = duplicates(manifestHooks);
-  if (dupeHooks.length) {
-    violations.push("duplicate manifest hook entries: " + dupeHooks.join(", "));
-  }
-
-  const hooksDir = join(pluginRoot, "hooks");
-  const fsHooks = readdirSync(hooksDir).filter((f) => f.endsWith(".json"));
-  const hookDiff = symmetricDifference(manifestHooks, fsHooks);
-  for (const f of hookDiff.onlyInA) {
-    violations.push("hook declared in manifest but missing on disk: " + f);
-  }
-  for (const f of hookDiff.onlyInB) {
-    violations.push("hook file on disk but not declared in manifest: " + f);
+  // Cursor: manifest.hooks is a path string to hooks/hooks.json (not a Codex hooks[] list).
+  if (typeof manifest.hooks === "string") {
+    const hooksPath = join(pluginRoot, manifest.hooks.replace(/^\.\//, ""));
+    if (!existsSync(hooksPath)) {
+      violations.push("hook config declared in manifest but missing on disk: " + manifest.hooks);
+    }
+  } else if (Array.isArray(manifest.hooks)) {
+    const manifestHooks = manifest.hooks.map((h) => h.replace(/^\.\/hooks\//, ""));
+    const dupeHooks = duplicates(manifestHooks);
+    if (dupeHooks.length) {
+      violations.push("duplicate manifest hook entries: " + dupeHooks.join(", "));
+    }
+    const hooksDir = join(pluginRoot, "hooks");
+    const fsHooks = existsSync(hooksDir)
+      ? readdirSync(hooksDir).filter((f) => f.endsWith(".json"))
+      : [];
+    const hookDiff = symmetricDifference(manifestHooks, fsHooks);
+    for (const f of hookDiff.onlyInA) {
+      violations.push("hook declared in manifest but missing on disk: " + f);
+    }
+    for (const f of hookDiff.onlyInB) {
+      violations.push("hook file on disk but not declared in manifest: " + f);
+    }
+  } else {
+    violations.push("plugin.json hooks must be a string path or array");
   }
 
   const fsSkills = collectSkills(pluginRoot).map((s) => s.folder);

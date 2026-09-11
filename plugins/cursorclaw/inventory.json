@@ -1,295 +1,169 @@
 {
   "schemaVersion": 1,
   "plugin": {
-    "name": "codexclaw",
-    "manifestVersion": "0.2.24+codex.20260908031619",
-    "packageVersion": "0.2.24"
+    "name": "cursorclaw",
+    "manifestVersion": "0.2.0",
+    "packageVersion": "0.2.0"
   },
   "skills": [
     {
       "folder": "ast-grep",
-      "name": "cxc-ast-grep"
+      "name": "ast-grep"
     },
     {
       "folder": "dev",
-      "name": "cxc-dev"
+      "name": "dev"
     },
     {
       "folder": "dev-architecture",
-      "name": "cxc-dev-architecture"
+      "name": "dev-architecture"
     },
     {
       "folder": "dev-backend",
-      "name": "cxc-dev-backend"
+      "name": "dev-backend"
     },
     {
       "folder": "dev-code-reviewer",
-      "name": "cxc-dev-code-reviewer"
+      "name": "dev-code-reviewer"
     },
     {
       "folder": "dev-data",
-      "name": "cxc-dev-data"
+      "name": "dev-data"
     },
     {
       "folder": "dev-debugging",
-      "name": "cxc-dev-debugging"
+      "name": "dev-debugging"
     },
     {
       "folder": "dev-devops",
-      "name": "cxc-dev-devops"
+      "name": "dev-devops"
     },
     {
       "folder": "dev-diagram-viewer",
-      "name": "cxc-dev-diagram-viewer"
+      "name": "dev-diagram-viewer"
     },
     {
       "folder": "dev-frontend",
-      "name": "cxc-dev-frontend"
+      "name": "dev-frontend"
     },
     {
       "folder": "dev-scaffolding",
-      "name": "cxc-dev-scaffolding"
+      "name": "dev-scaffolding"
     },
     {
       "folder": "dev-security",
-      "name": "cxc-dev-security"
+      "name": "dev-security"
     },
     {
       "folder": "dev-testing",
-      "name": "cxc-dev-testing"
+      "name": "dev-testing"
     },
     {
       "folder": "dev-uiux-design",
-      "name": "cxc-dev-uiux-design"
+      "name": "dev-uiux-design"
     },
     {
       "folder": "dev-visualizer",
-      "name": "cxc-dev-visualizer"
+      "name": "dev-visualizer"
     },
     {
       "folder": "goalplan",
-      "name": "cxc-goalplan"
+      "name": "goalplan"
     },
     {
       "folder": "interview",
-      "name": "cxc-interview"
+      "name": "interview"
     },
     {
       "folder": "kwrite",
-      "name": "cxc-kwrite"
+      "name": "kwrite"
     },
     {
       "folder": "loop",
-      "name": "cxc-loop"
+      "name": "loop"
     },
     {
       "folder": "lunasearch",
-      "name": "cxc-lunasearch"
+      "name": "lunasearch"
     },
     {
       "folder": "orchestrate",
-      "name": "cxc-orchestrate"
+      "name": "orchestrate"
     },
     {
       "folder": "pabcd",
-      "name": "cxc-pabcd"
+      "name": "pabcd"
     },
     {
       "folder": "qa",
-      "name": "cxc-qa"
+      "name": "qa"
     },
     {
       "folder": "recall",
-      "name": "cxc-recall"
+      "name": "recall"
     },
     {
       "folder": "remote",
-      "name": "cxc-remote"
+      "name": "remote"
     },
     {
       "folder": "repo-map",
-      "name": "cxc-repo-map"
+      "name": "repo-map"
     },
     {
       "folder": "search",
-      "name": "cxc-search"
+      "name": "search"
     },
     {
       "folder": "skill-hub",
-      "name": "cxc-skill-hub"
+      "name": "skill-hub"
     },
     {
       "folder": "worktree-guardian",
-      "name": "cxc-worktree-guardian"
+      "name": "worktree-guardian"
     }
   ],
   "hooks": [
     {
-      "file": "post-compact-injecting-bg-terminal-affordance.json",
-      "event": "PostCompact",
-      "component": "cxc-ops",
+      "file": "hooks.json",
+      "event": "beforeSubmitPrompt",
+      "component": "cursor-bridge",
       "matcher": null
     },
     {
-      "file": "post-compact-injecting-recall-context.json",
-      "event": "PostCompact",
-      "component": "recall",
+      "file": "hooks.json",
+      "event": "postToolUse",
+      "component": "cursor-bridge",
       "matcher": null
     },
     {
-      "file": "post-compact-resetting-reinject-cursor.json",
-      "event": "PostCompact",
-      "component": "pabcd-state",
+      "file": "hooks.json",
+      "event": "preCompact",
+      "component": "cursor-bridge",
       "matcher": null
     },
     {
-      "file": "post-tool-use-capturing-interview-answers.json",
-      "event": "PostToolUse",
-      "component": "pabcd-state",
-      "matcher": "^request_user_input$"
-    },
-    {
-      "file": "post-tool-use-tracking-render-observations.json",
-      "event": "PostToolUse",
-      "component": "pabcd-state",
-      "matcher": "^(view_image|browser:control-in-app-browser|chrome:control-chrome|computer-use:computer-use|apply_patch)$"
-    },
-    {
-      "file": "pre-tool-use-attaching-skills.json",
-      "event": "PreToolUse",
-      "component": "subagent-config",
-      "matcher": "^(collaboration[._]?)?spawn_agent$"
-    },
-    {
-      "file": "pre-tool-use-guarding-goal-budget.json",
-      "event": "PreToolUse",
-      "component": "pabcd-state",
-      "matcher": "^create_goal$"
-    },
-    {
-      "file": "pre-tool-use-guarding-goal-complete.json",
-      "event": "PreToolUse",
-      "component": "pabcd-state",
-      "matcher": "^update_goal$"
-    },
-    {
-      "file": "pre-tool-use-guarding-interview-in-goal.json",
-      "event": "PreToolUse",
-      "component": "pabcd-state",
-      "matcher": "^request_user_input$"
-    },
-    {
-      "file": "pre-tool-use-guarding-managed-worktree-deletion.json",
-      "event": "PreToolUse",
-      "component": "pabcd-state",
-      "matcher": "^Bash$"
-    },
-    {
-      "file": "pre-tool-use-guarding-memory-write.json",
-      "event": "PreToolUse",
-      "component": "pabcd-state",
-      "matcher": "^(memories[._]?add_ad_hoc_note|apply_patch|Write|Edit|Bash)$"
-    },
-    {
-      "file": "pre-tool-use-linting-apply-patch.json",
-      "event": "PreToolUse",
-      "component": "pabcd-state",
-      "matcher": "^(apply_patch|Write|Edit)$"
-    },
-    {
-      "file": "session-start-adopting-background-completions.json",
-      "event": "SessionStart",
-      "component": "bg-wake",
+      "file": "hooks.json",
+      "event": "preToolUse",
+      "component": "cursor-bridge",
       "matcher": null
     },
     {
-      "file": "session-start-announcing-map-affordance.json",
-      "event": "SessionStart",
-      "component": "cxc-ops",
+      "file": "hooks.json",
+      "event": "sessionStart",
+      "component": "cursor-bridge",
       "matcher": null
     },
     {
-      "file": "session-start-announcing-subagent-fallback.json",
-      "event": "SessionStart",
-      "component": "subagent-config",
+      "file": "hooks.json",
+      "event": "stop",
+      "component": "cursor-bridge",
       "matcher": null
     },
     {
-      "file": "session-start-bootstrapping-pabcd-state.json",
-      "event": "SessionStart",
-      "component": "pabcd-state",
-      "matcher": null
-    },
-    {
-      "file": "session-start-detecting-managed-worktree.json",
-      "event": "SessionStart",
-      "component": "pabcd-state",
-      "matcher": null
-    },
-    {
-      "file": "session-start-ensuring-provider-bridge.json",
-      "event": "SessionStart",
-      "component": "provider-bridge",
-      "matcher": null
-    },
-    {
-      "file": "session-start-healing-declared-features.json",
-      "event": "SessionStart",
-      "component": "config-guard",
-      "matcher": null
-    },
-    {
-      "file": "session-start-injecting-recall-context.json",
-      "event": "SessionStart",
-      "component": "recall",
-      "matcher": null
-    },
-    {
-      "file": "stop-checking-pabcd-continuation.json",
-      "event": "Stop",
-      "component": "pabcd-state",
-      "matcher": null
-    },
-    {
-      "file": "stop-waking-on-background-completion.json",
-      "event": "Stop",
-      "component": "bg-wake",
-      "matcher": null
-    },
-    {
-      "file": "subagent-stop-observing-review.json",
-      "event": "SubagentStop",
-      "component": "pabcd-state",
-      "matcher": ".*"
-    },
-    {
-      "file": "subagent-stop-verifying-evidence.json",
-      "event": "SubagentStop",
-      "component": "pabcd-state",
-      "matcher": "^(executor|worker)$"
-    },
-    {
-      "file": "user-prompt-submit-checking-pabcd-trigger.json",
-      "event": "UserPromptSubmit",
-      "component": "pabcd-state",
-      "matcher": null
-    },
-    {
-      "file": "user-prompt-submit-delivering-background-completions.json",
-      "event": "UserPromptSubmit",
-      "component": "bg-wake",
-      "matcher": null
-    },
-    {
-      "file": "user-prompt-submit-detecting-recall-intent.json",
-      "event": "UserPromptSubmit",
-      "component": "recall",
-      "matcher": null
-    },
-    {
-      "file": "user-prompt-submit-guiding-worktree-rename.json",
-      "event": "UserPromptSubmit",
-      "component": "pabcd-state",
+      "file": "hooks.json",
+      "event": "subagentStop",
+      "component": "cursor-bridge",
       "matcher": null
     }
   ],

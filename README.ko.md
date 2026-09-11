@@ -2,9 +2,18 @@
 
 # cursorclaw
 
+<p align="center">
+  <img src="https://img.shields.io/badge/runtime-Cursor-black" alt="Cursor runtime">
+  <img src="https://img.shields.io/badge/skills-29-blue" alt="29 skills">
+  <img src="https://img.shields.io/badge/hooks-7-blue" alt="7 hooks">
+  <img src="https://img.shields.io/badge/tests-0_passing-lightgrey" alt="0 tests passing">
+  <img src="https://img.shields.io/badge/upstream-codexclaw-red" alt="upstream codexclaw">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT"></a>
+</p>
+
 [codexclaw](https://github.com/lidge-jun/codexclaw)의 **Cursor 런타임 포크**입니다. Codex 플러그인 대신 Cursor 플러그인(skills / rules / agents / commands / hooks)으로 같은 개발 규율(dev 스킬 패밀리, PABCD, 서브에이전트 역할)을 담습니다.
 
-현재 **0.1.0 스캐폴드** 단계입니다. 자세한 이식 표는 [PORTING.md](PORTING.md), 업스트림 핀은 [UPSTREAM.lock](UPSTREAM.lock)을 보세요.
+**0.2.0** 패리티 패키징: 전체 스킬, Codex급 훅 팬아웃, 에이전트/커맨드, dogfood `.cursor/` 배선, `crc` CLI. 자세한 표는 [PORTING.md](PORTING.md), 업스트림 핀은 [UPSTREAM.lock](UPSTREAM.lock).
 
 ## 설치
 

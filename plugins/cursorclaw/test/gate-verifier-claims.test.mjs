@@ -96,7 +96,7 @@ test("WP1: a tree without devlog/ (installed payload shape) passes silently", ()
 });
 
 test("WP1: `node --test <missing>` WARNs unless that exact path is marked 신규", () => {
-  const missing = "plugins/codexclaw/test/not-yet.test.mjs";
+  const missing = "plugins/cursorclaw/test/not-yet.test.mjs";
   const bare = fixture(`검증 명령: \`node --test ${missing}\`.\n`);
   try {
     assert.equal(checkVerifierClaims(bare).warnings.length, 1);
@@ -113,8 +113,8 @@ test("WP1: `node --test <missing>` WARNs unless that exact path is marked 신규
 
 test("WP1: 신규 on a DIFFERENT path does not exempt this one", () => {
   const root = fixture([
-    "| `plugins/codexclaw/test/other.test.mjs` | 신규 테스트 |", "",
-    "검증 명령: `node --test plugins/codexclaw/test/missing.test.mjs`.", "",
+    "| `plugins/cursorclaw/test/other.test.mjs` | 신규 테스트 |", "",
+    "검증 명령: `node --test plugins/cursorclaw/test/missing.test.mjs`.", "",
   ].join("\n"));
   try {
     assert.equal(checkVerifierClaims(root).warnings.length, 1, "exemption is path-bound, not document-wide");
@@ -123,9 +123,9 @@ test("WP1: 신규 on a DIFFERENT path does not exempt this one", () => {
 
 test("WP1: an existing test path and a glob are both silent", () => {
   const root = fixture([
-    "검증 명령: `node --test plugins/codexclaw/test/ok.test.mjs`.", "",
-    "검증 명령: `node --test plugins/codexclaw/test/*.test.mjs`.", "",
-  ].join("\n"), { extra: { "plugins/codexclaw/test/ok.test.mjs": "// present\n" } });
+    "검증 명령: `node --test plugins/cursorclaw/test/ok.test.mjs`.", "",
+    "검증 명령: `node --test plugins/cursorclaw/test/*.test.mjs`.", "",
+  ].join("\n"), { extra: { "plugins/cursorclaw/test/ok.test.mjs": "// present\n" } });
   try {
     assert.deepEqual(checkVerifierClaims(root).warnings, []);
   } finally { rmSync(root, { recursive: true, force: true }); }

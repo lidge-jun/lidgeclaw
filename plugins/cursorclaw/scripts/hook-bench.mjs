@@ -6,10 +6,10 @@
  * and records per-hook/per-event: invocation count, no-op rate, wall time p50/p95/p99.
  *
  * Usage:
- *   node plugins/codexclaw/scripts/hook-bench.mjs              # run benchmark
- *   node plugins/codexclaw/scripts/hook-bench.mjs --json        # machine-readable output
- *   node plugins/codexclaw/scripts/hook-bench.mjs --iterations N  # custom iteration count
- *   node plugins/codexclaw/scripts/hook-bench.mjs --plugin-root PATH  # installed payload
+ *   node plugins/cursorclaw/scripts/hook-bench.mjs              # run benchmark
+ *   node plugins/cursorclaw/scripts/hook-bench.mjs --json        # machine-readable output
+ *   node plugins/cursorclaw/scripts/hook-bench.mjs --iterations N  # custom iteration count
+ *   node plugins/cursorclaw/scripts/hook-bench.mjs --plugin-root PATH  # installed payload
  *
  * This is synthetic entrypoint replay, not host matcher/trust activation.
  * Empty output does not prove that a hook performed no state changes.
@@ -27,7 +27,7 @@ const HARNESS_SHA256 = createHash("sha256")
   .update(readFileSync(fileURLToPath(import.meta.url))).digest("hex");
 
 function loadHooks(pluginRoot = PLUG_ROOT) {
-  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8"));
+  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8"));
   const hookFiles = manifest.hooks || [];
   const hooks = [];
   for (const relPath of hookFiles) {

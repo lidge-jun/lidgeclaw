@@ -1,7 +1,7 @@
 /**
- * win-exec-bin.test.mjs - spawn resolution contract for bin/codexclaw.mjs (wp06).
+ * win-exec-bin.test.mjs - spawn resolution contract for bin/cursorclaw.mjs (wp06).
  *
- * bin/codexclaw.mjs has no build step, so it carries its own copy of the three
+ * bin/cursorclaw.mjs has no build step, so it carries its own copy of the three
  * Windows spawn rules (050 section 2). This suite is that copy's contract:
  * PATHEXT resolution, the ComSpec route for .cmd/.bat, and metacharacter
  * escaping. Every case drives the platform and env as parameters, so the whole

@@ -6,7 +6,7 @@ import { pluginRoot, tempRoot, put, putJson, readJson, isolatedEnv, syncNode } f
 
 export function benchmarkFixture(t, body = 'process.stdout.write("{}\\n");') {
   const root = tempRoot(t, "cxc-bench-payload-");
-  putJson(root, ".codex-plugin/plugin.json", { name: "fixture", version: "1.0.0", hooks: ["./hooks/fixture.json"] });
+  putJson(root, ".cursor-plugin/plugin.json", { name: "fixture", version: "1.0.0", hooks: ["./hooks/fixture.json"] });
   putJson(root, "hooks/fixture.json", { hooks: { PreToolUse: [{ hooks: [{ type: "command",
     command: 'node "${PLUGIN_ROOT}/entry.mjs"', timeout: 2 }] }] } });
   put(root, "entry.mjs", body);
@@ -15,7 +15,7 @@ export function benchmarkFixture(t, body = 'process.stdout.write("{}\\n");') {
 
 export function compiledHookFixture(t, hookFile) {
   const root = tempRoot(t, "cxc-compiled-hook-");
-  const manifest = readJson(join(pluginRoot, ".codex-plugin/plugin.json"));
+  const manifest = readJson(join(pluginRoot, ".cursor-plugin/plugin.json"));
   const selected = manifest.hooks.find(path => path.replace(/^\.\//, "") === `hooks/${hookFile}`);
   assert.ok(selected, `hook must be selected by actual manifest: ${hookFile}`);
   const hook = readJson(join(pluginRoot, selected));

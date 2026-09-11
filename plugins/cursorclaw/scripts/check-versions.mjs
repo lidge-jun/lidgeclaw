@@ -11,7 +11,7 @@
  * and never affects precedence, so a literal string equality check would make the
  * legitimate release impossible.
  *
- *   node plugins/codexclaw/scripts/check-versions.mjs 0.2.0
+ *   node plugins/cursorclaw/scripts/check-versions.mjs 0.2.0
  */
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -43,7 +43,7 @@ export function collectSurfaces(repoRoot = REPO_ROOT, pluginRoot = PLUGIN_ROOT) 
   const surfaces = [];
   surfaces.push(["package.json", join(repoRoot, "package.json"), readJson(join(repoRoot, "package.json")).version, false]);
 
-  const manifestPath = join(pluginRoot, ".codex-plugin", "plugin.json");
+  const manifestPath = join(pluginRoot, ".cursor-plugin", "plugin.json");
   surfaces.push(["plugin.json", manifestPath, readJson(manifestPath).version, true]);
 
   const componentsDir = join(pluginRoot, "components");

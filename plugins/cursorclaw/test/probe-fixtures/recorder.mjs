@@ -150,7 +150,7 @@ export function recordFixture(t, scenario = "success") {
   put(root, "prompt.txt", "Harmless synthetic fixture.\n");
   put(root, "approval.md", "Synthetic fixture only; no real approval or model evidence.\n");
   const version = "1.0.0+codex.fixture-one";
-  putJson(installed, ".codex-plugin/plugin.json", { name: "codexclaw", version });
+  putJson(installed, ".cursor-plugin/plugin.json", { name: "cursorclaw", version });
   put(installed, "components/fixture/dist/cli.js", "// fixture dist\n");
   put(installed, "bin/cxc.mjs", scriptSource(f, fakeDispatcher));
   put(base, "external.mjs", `import {writeFileSync} from "node:fs";

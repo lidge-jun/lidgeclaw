@@ -58,7 +58,7 @@ test("shipped skill catalog exactly matches on-disk SKILL.md folders", () => {
 test("top-level README skill and hook badges match the shipped payload", () => {
   const skillCount = shippedSkillFolders().length;
   const manifest = JSON.parse(
-    readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8"),
+    readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8"),
   );
   assert.ok(Array.isArray(manifest.hooks), "plugin manifest hooks must be an array");
 

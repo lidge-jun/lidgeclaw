@@ -5,7 +5,7 @@
  * ONLY freshness contract. Three layers:
  *   1. Existence + `help` smoke (headed "payload dispatcher").
  *   2. Command-set parity with the repo-root bin (M2 anti-drift guard): every
- *      COMMAND_TABLE verb must be a `case "<verb>":` in bin/codexclaw.mjs
+ *      COMMAND_TABLE verb must be a `case "<verb>":` in bin/cursorclaw.mjs
  *      (root may carry repo-checkout extras: gui, map, help).
  *   3. CR-B sandbox sim: copy the payload to a tmpdir, strip PATH of any repo
  *      cxc, and prove the fresh-install lifecycle end-to-end — status, hook
@@ -27,7 +27,7 @@ const payloadBin = join(payloadRoot, "bin", "cxc.mjs");
 const rootBin = join(repoRoot, "bin", "codexclaw.mjs");
 
 test("payload bin exists and `help` exits 0 headed as the payload dispatcher", () => {
-  assert.ok(existsSync(payloadBin), "plugins/codexclaw/bin/cxc.mjs must exist");
+  assert.ok(existsSync(payloadBin), "plugins/cursorclaw/bin/cursorclaw.mjs must exist");
   const res = spawnSync(process.execPath, [payloadBin, "help"], { encoding: "utf8" });
   assert.equal(res.status, 0, `stderr: ${res.stderr}`);
   assert.match(res.stdout, /payload dispatcher/);

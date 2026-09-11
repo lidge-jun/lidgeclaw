@@ -52,10 +52,10 @@ for (const command of ["loop", "scan", "receipt", "config"]) {
   });
 }
 
-// There are TWO entry points — bin/codexclaw.mjs and plugins/codexclaw/bin/cxc.mjs —
+// There are TWO entry points — bin/cursorclaw.mjs and plugins/cursorclaw/bin/cursorclaw.mjs —
 // and fixing only one is exactly the mistake this case exists to catch.
 test("--version prints the plugin version from both entry points", () => {
-  const entries = [cli, join(repoRoot, "plugins", "codexclaw", "bin", "cxc.mjs")];
+  const entries = [cli, join(repoRoot, "plugins", "cursorclaw", "bin", "cxc.mjs")];
   for (const entry of entries) {
     for (const flag of ["--version", "-v", "version"]) {
       const res = spawnSync("node", [entry, flag], { cwd: repoRoot, encoding: "utf8" });

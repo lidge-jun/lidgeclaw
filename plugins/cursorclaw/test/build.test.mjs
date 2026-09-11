@@ -45,7 +45,7 @@ test("build is idempotent (run twice -> byte-identical dist)", () => {
 
 test("every manifest-referenced dist + skill path exists post-build", () => {
   runBuild();
-  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8"));
+  const manifest = JSON.parse(readFileSync(join(pluginRoot, ".cursor-plugin", "plugin.json"), "utf8"));
   // hooks[*] reference compiled cli.js entries via ${PLUGIN_ROOT}; resolve each hook json's command.
   for (const rel of manifest.hooks) {
     const hookJson = JSON.parse(readFileSync(join(pluginRoot, rel), "utf8"));

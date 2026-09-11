@@ -96,8 +96,8 @@ function prepare(spec) {
   const installed = json(real(join(root, "install.json")));
   const pluginRoot = real(installed.installedPath || installed.path || "");
   if (!inside(codexHome, pluginRoot)) throw new Error("installed root outside isolated CODEX_HOME");
-  const manifest = json(join(pluginRoot, ".codex-plugin", "plugin.json"));
-  if (manifest.name !== "codexclaw" || manifest.version !== spec.expectedVersion) throw new Error("manifest identity mismatch");
+  const manifest = json(join(pluginRoot, ".cursor-plugin", "plugin.json"));
+  if (manifest.name !== "cursorclaw" || manifest.version !== spec.expectedVersion) throw new Error("manifest identity mismatch");
   const timeoutMs = spec.timeoutMs ?? 180000;
   if (!Number.isInteger(timeoutMs) || timeoutMs < 1000 || timeoutMs > 600000) throw new Error("invalid timeout");
   execArgs(spec.serviceTier, "final.txt");

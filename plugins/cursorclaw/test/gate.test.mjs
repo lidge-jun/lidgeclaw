@@ -38,7 +38,7 @@ test("L18: forbidden-claims regex catches false enforcement but a gate-ok escape
   // a true, hook-backed claim with the escape comment must NOT be flagged by the corpus scan
   const dir = mkdtempSync(join(tmpdir(), "gate-fc-"));
   try {
-    const sd = join(dir, "plugins", "codexclaw", "skills", "x");
+    const sd = join(dir, "plugins", "cursorclaw", "skills", "x");
     mkdirSync(sd, { recursive: true });
     writeFileSync(join(sd, "SKILL.md"), "ok line\nThe hook automatically loads the dev skill. <!-- gate-ok: verified false-example w/ escape -->\n");
     const res = checkForbiddenClaims(dir);
@@ -49,7 +49,7 @@ test("L18: forbidden-claims regex catches false enforcement but a gate-ok escape
 test("L18: checkForbiddenClaims FIRES on a false claim with no escape (negative control)", () => {
   const dir = mkdtempSync(join(tmpdir(), "gate-fc2-"));
   try {
-    const sd = join(dir, "plugins", "codexclaw", "skills", "x");
+    const sd = join(dir, "plugins", "cursorclaw", "skills", "x");
     mkdirSync(sd, { recursive: true });
     writeFileSync(join(sd, "SKILL.md"), "The hook automatically injects the dev skill.\n");
     const res = checkForbiddenClaims(dir);
@@ -112,25 +112,25 @@ test("L18: checkStatusSync FIRES on a non-LOCKED status token (negative control)
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("L18: checkCounts FIRES on hook-count mismatch (negative control)", () => {
+test("L18: checkCounts FIRES when Cursor hooks.json is missing required events", () => {
   const dir = mkdtempSync(join(tmpdir(), "gate-cc-"));
   try {
-    const cp = join(dir, "plugins", "codexclaw", ".codex-plugin");
-    const hd = join(dir, "plugins", "codexclaw", "hooks");
+    const cp = join(dir, "plugins", "cursorclaw", ".cursor-plugin");
+    const hd = join(dir, "plugins", "cursorclaw", "hooks");
     mkdirSync(cp, { recursive: true });
     mkdirSync(hd, { recursive: true });
-    writeFileSync(join(cp, "plugin.json"), JSON.stringify({ hooks: ["./hooks/a.json", "./hooks/b.json"] }));
-    writeFileSync(join(hd, "a.json"), "{}");
+    writeFileSync(join(cp, "plugin.json"), JSON.stringify({ hooks: "./hooks/hooks.json" }));
+    writeFileSync(join(hd, "hooks.json"), JSON.stringify({ version: 1, hooks: { sessionStart: [] } }));
     const res = checkCounts(dir);
     assert.equal(res.ok, false);
-    assert.match(res.violations[0], /hook count mismatch/);
+    assert.match(res.violations.join("\n"), /missing required Cursor event/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("reference relocation retains false-enforcement detection", () => {
   const dir = mkdtempSync(join(tmpdir(), "gate-reference-"));
   try {
-    const refs = join(dir, "plugins", "codexclaw", "skills", "x", "references", "nested");
+    const refs = join(dir, "plugins", "cursorclaw", "skills", "x", "references", "nested");
     mkdirSync(refs, { recursive: true });
     const path = join(refs, "method.md");
     writeFileSync(path, "The hook automatically injects the dev skill.\n");

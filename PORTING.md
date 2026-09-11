@@ -18,6 +18,7 @@ Ship the **same** development discipline on Cursor that codexclaw ships on Codex
 | Commands | orchestrate / status / doctor / map / interview / install-dev |
 | State | `.cursorclaw/` with legacy `.codexclaw/` migration |
 | CLI | `crc` / `cursorclaw` |
+| Tooling | gate/inventory retargeted to Cursor `hooks.json` + `.cursor-plugin` |
 
 ## Known Cursor I/O deltas (not missing features — host shape differences)
 
