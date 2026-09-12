@@ -239,7 +239,7 @@ test("a heal claims ownership in the manifest so cxc disable can revert it", () 
   writeFileSync(configPath, "[features]\n");
   // A manifest where the soft flag FAILED at activation: the exact divergence B-2 named.
   writeFileSync(
-    join(home, ".cursorclaw-install.json"),
+    join(home, ".codexclaw-install.json"),
     JSON.stringify({
       version: 2,
       activatedAt: "2026-08-29T00:00:00.000Z",
@@ -260,7 +260,7 @@ test("a heal claims ownership in the manifest so cxc disable can revert it", () 
   };
   const out = selfHealDeclaredFeatures(makeRealSelfHealDeps(home, run));
   assert.equal(out[0].action, "healed");
-  const manifest = JSON.parse(readFileSync(join(home, ".cursorclaw-install.json"), "utf8"));
+  const manifest = JSON.parse(readFileSync(join(home, ".codexclaw-install.json"), "utf8"));
   assert.equal(manifest.flags[SOFT].enabledByCursorclaw, true, "a heal must be recorded as codexclaw-owned");
   assert.equal(manifest.flags[SOFT].enableFailed, false);
   assert.equal(manifest.flags[SOFT].failure, undefined);
@@ -276,7 +276,7 @@ test("a heal with no manifest is a silent no-op, not an error", () => {
     return { stdout: "", stderr: "", exitCode: 0 };
   };
   assert.equal(selfHealDeclaredFeatures(makeRealSelfHealDeps(home, run))[0].action, "healed");
-  assert.equal(existsSync(join(home, ".cursorclaw-install.json")), false, "self-heal must not fabricate a manifest");
+  assert.equal(existsSync(join(home, ".codexclaw-install.json")), false, "self-heal must not fabricate a manifest");
 });
 
 test("an opt-out that lands mid-round is not clobbered by the cache write", () => {

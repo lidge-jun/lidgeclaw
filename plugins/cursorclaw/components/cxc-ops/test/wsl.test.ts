@@ -114,11 +114,11 @@ const MOUNTS = [
 
 test("filesystemTier picks the LONGEST covering mount", () => {
   assert.equal(
-    filesystemTier("/mnt/c/proj/.cursorclaw", { platform: "linux", procMounts: MOUNTS }),
+    filesystemTier("/mnt/c/proj/.codexclaw", { platform: "linux", procMounts: MOUNTS }),
     "drvfs",
   );
   assert.equal(
-    filesystemTier("/home/u/proj/.cursorclaw", { platform: "linux", procMounts: MOUNTS }),
+    filesystemTier("/home/u/proj/.codexclaw", { platform: "linux", procMounts: MOUNTS }),
     "native",
   );
 });

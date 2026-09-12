@@ -17,7 +17,7 @@ const roster = (id: string) => JSON.stringify([
 function fixture(t: {after: (cb:()=>void)=>void}) {
   const root=mkdtempSync(join(tmpdir(),'cxc-live-catalog-'));
   t.after(()=>rmSync(root,{recursive:true,force:true}));
-  const env={...process.env,CURSOR_HOME:join(root,'codex'),CURSORCLAW_HOME:join(root,'cxc')};
+  const env={...process.env,CURSOR_HOME:join(root,'codex'),CODEXCLAW_HOME:join(root,'cxc')};
   mkdirSync(env.CURSOR_HOME);
   return {root,env};
 }
@@ -53,7 +53,7 @@ test('coalesces concurrent refreshes; malformed payload without cache never inve
   const runOcx=()=>{calls++;return new Promise<string>(resolve=>release=resolve);};
   const a=readCatalog({env,runOcx,forceRefresh:true}),b=readCatalog({env,runOcx,forceRefresh:true});
   release('[]');await Promise.all([a,b]);assert.equal(calls,1);
-  rmSync(join(env.CURSORCLAW_HOME,'model-catalog.json'));
+  rmSync(join(env.CODEXCLAW_HOME,'model-catalog.json'));
   const bad=await readCatalog({env,runOcx:async()=> 'not JSON'});
   assert.equal(bad.status,'unavailable');assert.deepEqual(bad.entries,[]);
 });
@@ -69,7 +69,7 @@ test('native fallback honors configured model_catalog_json and arbitrary IDs; ex
   assert.equal(native.source,'native');assert.deepEqual(native.entries[0].reasoningEfforts,['high']);
   const explicit={...env,CODEX_MODELS_CACHE_PATH:join(env.CURSOR_HOME,'models_cache.json')};
   assert.equal(readNativeCatalog(explicit)?.[0].id,'stale-default');
-  rmSync(join(env.CURSORCLAW_HOME,'model-catalog.json'));
+  rmSync(join(env.CODEXCLAW_HOME,'model-catalog.json'));
   const failed=await readCatalog({env,runOcx:async()=>{throw new Error('OCX unavailable');}});
   assert.equal(failed.source,'ocx');assert.equal(failed.status,'unavailable');
 });

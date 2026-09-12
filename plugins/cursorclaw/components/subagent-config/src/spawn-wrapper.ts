@@ -13,7 +13,7 @@
  *  - the role prompt is injected INLINE in the message ("TASK: ..."), since plugin
  *    install dirs are not a config layer.
  *  - model selection is not emitted by the v2 builder. The durable per-role model in
- *    `.cursorclaw/subagents.json` is honored only by the v1 PreToolUse hook path.
+ *    `.codexclaw/subagents.json` is honored only by the v1 PreToolUse hook path.
  *  - an explicit `promptOverride` REPLACES the TOML instructions.
  *
  * Zero third-party deps (node:* only) so the build's type-strip stays sound.
@@ -335,7 +335,7 @@ export function taskNameForRole(role: RoleName, task: string): string {
  * Concrete Codex `spawn_agent` payload (the subset codexclaw controls).
  * This builder emits a v2-compatible fresh-context shape (`task_name` + `fork_turns`).
  * Model/effort routing is intentionally not included here: the PreToolUse spawn hook
- * injects the configured `.cursorclaw/subagents.json` model AND reasoning_effort on
+ * injects the configured `.codexclaw/subagents.json` model AND reasoning_effort on
  * BOTH surfaces (260710 parity) when the caller omitted them and the spawn is not a
  * full-history fork. `fork_turns: "none"` here keeps that injection legal on V2.
  */
@@ -395,7 +395,7 @@ export function buildSpawnPayload(input: BuildSpawnPayloadInput): SpawnPayload {
 }
 
 /**
- * Production entry point: resolve the role config from `.cursorclaw/subagents.json`,
+ * Production entry point: resolve the role config from `.codexclaw/subagents.json`,
  * read the role TOML developer_instructions, and build the spawn payload. Never throws.
  */
 export function resolveSpawnPayload(cwd: string, role: RoleName, task: string, agentsDir: string, env: NodeJS.ProcessEnv = process.env): SpawnPayload {

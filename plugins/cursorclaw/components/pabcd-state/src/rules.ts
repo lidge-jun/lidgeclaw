@@ -1,7 +1,7 @@
 /**
  * rules.ts — SessionStart project-rule injector (lazygap_impl 060.1).
  *
- * Daemon-free: reads project rule blocks from `.cursorclaw/rules/*.md` (or a root
+ * Daemon-free: reads project rule blocks from `.codexclaw/rules/*.md` (or a root
  * `AGENTS.md` fallback), concatenates + dedups + caps length, and emits a SessionStart
  * `additionalContext` envelope so the rules surface as developer context at session start.
  *
@@ -12,7 +12,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-export const RULES_DIR = ".cursorclaw/rules";
+export const RULES_DIR = ".codexclaw/rules";
 export const RULES_FALLBACK = "AGENTS.md";
 /** Cap the injected context so a large rules dir cannot bloat every session. */
 export const RULES_MAX_CHARS = 8000;

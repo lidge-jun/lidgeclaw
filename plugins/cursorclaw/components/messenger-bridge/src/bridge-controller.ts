@@ -90,7 +90,7 @@ export class BridgeController {
     this.opts = opts;
     this.db = opts.db;
     this.log = opts.log ?? (() => {});
-    this.events = new EventLog({ path: join(opts.workdir, ".cursorclaw", "bridge-events.jsonl") });
+    this.events = new EventLog({ path: join(opts.workdir, ".codexclaw", "bridge-events.jsonl") });
   }
 
   /** Shared AgentService accessor (heartbeat scheduler rides the same queues

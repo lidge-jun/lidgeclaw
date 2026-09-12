@@ -36,7 +36,7 @@ const event =
   "";
 
 const banner =
-  "zclaw (lidgeclaw) is armed for ZCode. Shared skills with cursorclaw — use `dev` for C0–C5 classification; full PABCD for C4. State prefers `.cursorclaw/` (legacy `.codexclaw/` still migrates).";
+  "zclaw (lidgeclaw) is armed for ZCode. Shared skills with cursorclaw — use `dev` for C0–C5 classification; full PABCD for C4. State: `.codexclaw/`.";
 
 if (event === "SessionStart" || event === "session-start") {
   emit({

@@ -37,20 +37,20 @@ interface Fixture {
 
 function fixture(opts: Fixture = {}): string {
   const cwd = mkdtempSync(join(tmpdir(), "cxc-fgg-"));
-  mkdirSync(join(cwd, ".cursorclaw", "sessions"), { recursive: true });
-  mkdirSync(join(cwd, ".cursorclaw", "evidence"), { recursive: true });
-  mkdirSync(join(cwd, ".cursorclaw", "goalplans", SLUG), { recursive: true });
+  mkdirSync(join(cwd, ".codexclaw", "sessions"), { recursive: true });
+  mkdirSync(join(cwd, ".codexclaw", "evidence"), { recursive: true });
+  mkdirSync(join(cwd, ".codexclaw", "goalplans", SLUG), { recursive: true });
 
   if (!opts.omitSession) {
     writeFileSync(
-      join(cwd, ".cursorclaw", "sessions", `${SESSION}.json`),
+      join(cwd, ".codexclaw", "sessions", `${SESSION}.json`),
       JSON.stringify({ sessionId: SESSION, slug: opts.slug ?? SLUG }),
     );
   }
 
   const writeReceipt = (name: string, spec: SourceIdentityLite | "missing" | "empty" | undefined): string | undefined => {
     if (spec === undefined || spec === "missing") return undefined;
-    const rel = join(".cursorclaw", "evidence", name);
+    const rel = join(".codexclaw", "evidence", name);
     writeFileSync(join(cwd, rel), spec === "empty" ? "" : JSON.stringify({ kind: "test", sourceIdentity: spec }));
     return rel;
   };
@@ -60,7 +60,7 @@ function fixture(opts: Fixture = {}): string {
 
   if (!opts.omitPlan) {
     writeFileSync(
-      join(cwd, ".cursorclaw", "goalplans", SLUG, "goalplan.json"),
+      join(cwd, ".codexclaw", "goalplans", SLUG, "goalplan.json"),
       JSON.stringify({
         objective: "o",
         slug: SLUG,
@@ -168,7 +168,7 @@ test("every break in the session-to-plan chain fails open", () => {
 
 test("a corrupt goalplan fails open rather than trapping the spawn", () => {
   const cwd = fixture({ testReceipt: "missing" });
-  writeFileSync(join(cwd, ".cursorclaw", "goalplans", SLUG, "goalplan.json"), "{not json");
+  writeFileSync(join(cwd, ".codexclaw", "goalplans", SLUG, "goalplan.json"), "{not json");
   assert.equal(check(cwd).ok, true);
 });
 

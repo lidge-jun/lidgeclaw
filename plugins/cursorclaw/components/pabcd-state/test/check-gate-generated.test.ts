@@ -40,7 +40,7 @@ function repo(): string {
 
 /** Write a receipt the way `crc receipt test` does, into the evidence root. */
 function writeReceipt(root: string, generatedPaths?: string[]): string {
-  const dir = join(root, ".cursorclaw", "evidence", SESSION);
+  const dir = join(root, ".codexclaw", "evidence", SESSION);
   mkdirSync(dir, { recursive: true });
   const path = join(dir, "test-receipt.json");
   writeFileSync(
@@ -132,7 +132,7 @@ test("declaring a path cannot launder a change outside it", () => {
 test("a malformed generatedPaths list degrades to no exclusions, not a rejection", () => {
   const root = repo();
   try {
-    const dir = join(root, ".cursorclaw", "evidence", SESSION);
+    const dir = join(root, ".codexclaw", "evidence", SESSION);
     mkdirSync(dir, { recursive: true });
     const path = join(dir, "test-receipt.json");
     writeFileSync(

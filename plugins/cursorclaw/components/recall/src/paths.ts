@@ -2,7 +2,7 @@
  * paths.ts — session-root path resolution for the recall component.
  *
  * Cursorclaw dual-reads Cursor and Codex homes so migrated users keep history.
- * Derived recall index lives under ~/.cursorclaw (see index-db.ts), never inside
+ * Derived recall index lives under ~/.codexclaw (see index-db.ts), never inside
  * the corpus home.
  */
 import { existsSync, readdirSync } from "node:fs";

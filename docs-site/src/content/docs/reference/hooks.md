@@ -124,7 +124,7 @@ Hooks run only after you trust them in Codex. See
 ## Missing session binding
 
 An ordinary Codex fork has its own native thread ID. A missing SessionStart
-message or missing `.cursorclaw/sessions/<id>.json` must not be repaired by copying
+message or missing `.codexclaw/sessions/<id>.json` must not be repaired by copying
 an ID from inherited chat history or by choosing the newest session file.
 
 From the current Codex terminal tool, run `cxc session current --json`. It reads

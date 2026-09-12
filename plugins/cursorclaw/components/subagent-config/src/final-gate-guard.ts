@@ -116,11 +116,11 @@ export function checkFinalGatePrereqs(
     if (!packetText.includes(FINAL_GATE_MARKER)) return { ok: true };
     if (!sessionId) return { ok: true };
 
-    const state = readJson(join(cwd, ".cursorclaw", "sessions", `${sanitizeKey(sessionId)}.json`));
+    const state = readJson(join(cwd, ".codexclaw", "sessions", `${sanitizeKey(sessionId)}.json`));
     const slug = typeof state?.slug === "string" ? state.slug : "";
     if (!slug) return { ok: true };
 
-    const plan = readJson(join(cwd, ".cursorclaw", "goalplans", slug, "goalplan.json"));
+    const plan = readJson(join(cwd, ".codexclaw", "goalplans", slug, "goalplan.json"));
     if (!plan) return { ok: true };
     const gate = typeof plan.finalGate === "object" && plan.finalGate !== null
       ? (plan.finalGate as Record<string, unknown>)
@@ -180,7 +180,7 @@ export function checkFinalGatePrereqs(
         "[cursorclaw — final gate] This spawn is marked as the final gate, but its prerequisites are not in place:",
         ...missing.map((m) => `  - ${m}`),
         ...stale.map((s) => `  - ${s}`),
-        "Run the checks, record their receipts under .cursorclaw/evidence/, then dispatch the gate reviewer.",
+        "Run the checks, record their receipts under .codexclaw/evidence/, then dispatch the gate reviewer.",
       ].join("\n"),
     };
   } catch {

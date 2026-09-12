@@ -832,7 +832,7 @@ function goalplanPath(cwd: string, slug: string): string {
 
 const dAttest = (id: string) => JSON.stringify({
   from: "C", to: "D", did: "ran the suite", checkOutput: "722 pass", exitCode: 0, workPhaseId: "wp-1",
-  testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
+  testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
 });
 
 test("D-close is refused while the active work-phase still has open tasks, and writes nothing", () => {
@@ -1447,7 +1447,7 @@ test("recovery is refused when the fixed target gained an open task after its ma
         : wp
     ),
   });
-  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const retry = runOrchestrateCli(args);
   assert.equal(retry.code, 1);
@@ -1462,7 +1462,7 @@ test("recovery is refused when the fixed target gained an open task after its ma
     // have to infer it from a file a later edit may have touched.
     nextWorkPhaseId: "wp-2",
   });
-  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.deepEqual(goalplanLedgerRows(cwd, slug).filter((row) => row.event === "workphase_done"), []);
 });
 
@@ -1524,7 +1524,7 @@ test("recovery is refused when the fixed target lost a dependency after its mark
       wp.id === "wp-1" ? { ...wp, dependsOn: ["wp-2"] } : wp
     ),
   });
-  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const retry = runOrchestrateCli(args);
   assert.equal(retry.code, 1);
@@ -1539,7 +1539,7 @@ test("recovery is refused when the fixed target lost a dependency after its mark
     // have to infer it from a file a later edit may have touched.
     nextWorkPhaseId: "wp-2",
   });
-  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.deepEqual(goalplanLedgerRows(cwd, slug).filter((row) => row.event === "workphase_done"), []);
 });
 
@@ -1574,7 +1574,7 @@ test("recovery is refused when a pending task is hidden under the already-closed
         : wp
     ),
   });
-  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const retry = runOrchestrateCli(args);
 
@@ -1583,7 +1583,7 @@ test("recovery is refused when a pending task is hidden under the already-closed
   assert.match(retry.output, /The recovery marker was kept/);
   assert.equal(readState(cwd, id).phase, "C");
   assert.notEqual(readState(cwd, id).dcloseRecovery, null);
-  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
 });
 
 for (const forgery of [
@@ -1665,7 +1665,7 @@ test("a marker naming its own target as successor points at reset, not at a plan
       nextWorkPhaseId: "wp-1",
     },
   })}\n`);
-  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const result = runOrchestrateCli(parsedDclose(cwd, id));
 
@@ -1673,7 +1673,7 @@ test("a marker naming its own target as successor points at reset, not at a plan
   assert.match(result.output, /names that same work-phase as its successor/);
   assert.match(result.output, new RegExp(`crc orchestrate reset --session ${id}`));
   assert.doesNotMatch(result.output, /restore that work-phase/);
-  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.equal(readState(cwd, id).phase, "C");
   assert.equal(readState(cwd, id).dcloseRecovery?.nextWorkPhaseId, "wp-1");
 });
@@ -1850,7 +1850,7 @@ test("an absent target refuses a running successor whose dependency is unmet", (
   ];
   plan.activeWorkPhaseId = null;
   writeGoalplan(cwd, plan);
-  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
   writeState(cwd, {
     ...defaultState(id),
     slug,
@@ -1868,7 +1868,7 @@ test("an absent target refuses a running successor whose dependency is unmet", (
   assert.equal(result.code, 1, result.output);
   assert.match(result.output, /now waits for another work-phase/);
   // Fail closed: no plan write, no ledger row, and the marker stays for a real repair.
-  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.equal(readState(cwd, id).dcloseRecovery?.nextWorkPhaseId, "wp-2");
 });
 test("an absent target restores the cursor onto a stranded running successor", () => {
@@ -1936,13 +1936,13 @@ test("recovery settles when the recorded successor already finished its own cycl
       wp.id === "wp-2" ? { ...wp, status: "done" as const } : wp
     ),
   });
-  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const retry = runOrchestrateCli(args);
 
   assert.equal(retry.code, 0, retry.output);
   // No plan write: the close this marker describes is already reflected.
-  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.equal(readState(cwd, id).phase, "IDLE");
   assert.equal(readState(cwd, id).dcloseRecovery, null);
   // And wp-2 keeps exactly one started row from its own activation.
@@ -1989,14 +1989,14 @@ test("recovery is refused when the marker predates the successor field", () => {
       closedWorkPhaseId: "wp-1",
     },
   })}\n`);
-  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const result = runOrchestrateCli(parsedDclose(cwd, id));
 
   assert.equal(result.code, 1);
   assert.match(result.output, /predates the successor field/);
   assert.match(result.output, /The marker was kept/);
-  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.equal(readState(cwd, id).phase, "C");
   assert.equal(readState(cwd, id).dcloseRecovery?.legacy, true);
   assert.deepEqual(goalplanLedgerRows(cwd, slug).filter((row) => row.event === "workphase_done"), []);
@@ -2035,14 +2035,14 @@ test("recovery is refused when the recorded successor left the plan", () => {
     ...crashed,
     workPhases: crashed.workPhases.filter((wp) => wp.id !== "wp-2"),
   });
-  const before = readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8");
+  const before = readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8");
 
   const retry = runOrchestrateCli(args);
 
   assert.equal(retry.code, 1);
   assert.match(retry.output, /successor wp-2, which is no longer in the plan/);
   assert.match(retry.output, /The recovery marker was kept/);
-  assert.equal(readFileSync(join(cwd, ".cursorclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
+  assert.equal(readFileSync(join(cwd, ".codexclaw/goalplans", slug, "goalplan.json"), "utf8"), before);
   assert.equal(readState(cwd, id).phase, "C");
   assert.equal(readState(cwd, id).dcloseRecovery?.nextWorkPhaseId, "wp-2");
   assert.deepEqual(
@@ -2506,7 +2506,7 @@ test("one session closes two consecutive cycles with distinct close keys", () =>
     checkOutput: "tests passed",
     exitCode: 0,
     workPhaseId: "wp-2",
-    testReceiptPath: `.cursorclaw/evidence/${id}/test-receipt.json`,
+    testReceiptPath: `.codexclaw/evidence/${id}/test-receipt.json`,
   });
   const secondArgs = parseOrchestrateCliArgs(
     ["d", "--session", id, "--cwd", cwd, "--attest", secondAttest],

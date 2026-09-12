@@ -74,7 +74,7 @@ replaces the inline template, not the registered native developer instructions.
 
 ## Model / prompt override status
 
-The shipped TOML `model = "default"` is a plugin sentinel, not a native model name. The `.cursorclaw/subagents.json`
+The shipped TOML `model = "default"` is a plugin sentinel, not a native model name. The `.codexclaw/subagents.json`
 store, MCP/GUI roundtrip, and `resolveSpawnConfig(cwd, role)` resolver are shipped; S8/S10
 tests prove persistence and resolver behavior. The store also carries a per-role `effort`
 override (codex wire values low/medium/high/xhigh; null = inherit).

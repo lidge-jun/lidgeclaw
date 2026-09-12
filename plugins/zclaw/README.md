@@ -4,6 +4,8 @@ ZCode plugin surface of **[lidgeclaw](../..)**.
 
 Skills, agents, and commands are **shared** with `plugins/cursorclaw` via relative symlinks — one skill tree, two runtimes.
 
+Host-unique: `.zcode-plugin/` and `hooks/zcode-bridge.mjs`. Common state dir remains `.codexclaw/` (aligned with codexclaw).
+
 ## Layout
 
 ```text

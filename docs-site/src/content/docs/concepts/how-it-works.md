@@ -1,10 +1,10 @@
 ---
 title: How It Works
-description: How the codexclaw plugin manifest wires skills, hooks, MCP, and the CLI to the .cursorclaw file state.
+description: How the codexclaw plugin manifest wires skills, hooks, MCP, and the CLI to the .codexclaw file state.
 ---
 
 codexclaw is one plugin manifest that registers four kinds of surface with the Codex runtime,
-mostly backed by project-local state under `.cursorclaw/`.
+mostly backed by project-local state under `.codexclaw/`.
 
 ```mermaid
 flowchart LR
@@ -13,9 +13,9 @@ flowchart LR
   B --> D["Hooks"]
   B --> E["MCP server"]
   B --> F["cxc CLI"]
-  D --> G[".cursorclaw/sessions/&lt;id&gt;.json"]
-  D --> H[".cursorclaw/ledger.jsonl"]
-  E --> I[".cursorclaw/subagents.json"]
+  D --> G[".codexclaw/sessions/&lt;id&gt;.json"]
+  D --> H[".codexclaw/ledger.jsonl"]
+  E --> I[".codexclaw/subagents.json"]
   J["optional opencodex"] --> K["detect-only provider status"]
   K --> D
   F --> L["component CLIs"]
@@ -57,7 +57,7 @@ Full matchers and timeouts are in the [Hooks reference](/codexclaw/reference/hoo
 ## MCP server
 
 The subagent-config MCP server exposes `subagents_get`, `subagents_set`, and `catalog_list`. It
-reads and writes role → model/prompt config in `.cursorclaw/subagents.json`. See the
+reads and writes role → model/prompt config in `.codexclaw/subagents.json`. See the
 [MCP Tools reference](/codexclaw/reference/api-mcp/).
 
 ## CLI
@@ -83,7 +83,7 @@ dashboard GUI is a separate workspace package.
 | Component | Role |
 |---|---|
 | `config-guard` | Enable/disable/status for declared Codex feature flags. |
-| `cxc-ops` | `doctor` and scoped `.cursorclaw/` reset helpers. |
+| `cxc-ops` | `doctor` and scoped `.codexclaw/` reset helpers. |
 | `pabcd-state` | IPABCD state machine, hooks, goal gates, and phase CLI. |
 | `provider-bridge` | Read-only `ocx` provider detection. |
 | `subagent-config` | MCP tools and per-role model/prompt store. |
@@ -93,7 +93,7 @@ dashboard GUI is a separate workspace package.
 
 ## File state
 
-All durable state lives under the project `.cursorclaw/` directory — session JSON, the append-only
+All durable state lives under the project `.codexclaw/` directory — session JSON, the append-only
 transition ledger, the interview scan-evidence ledger, subagent config, and, when `cxc serve` is
-opted in, `.cursorclaw/bridge.db`. Recall also keeps a rebuildable user-level search cache under
-`~/.cursorclaw`. See the [State Model](/codexclaw/concepts/state-model/).
+opted in, `.codexclaw/bridge.db`. Recall also keeps a rebuildable user-level search cache under
+`~/.codexclaw`. See the [State Model](/codexclaw/concepts/state-model/).

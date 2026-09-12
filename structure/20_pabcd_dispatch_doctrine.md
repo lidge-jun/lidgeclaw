@@ -20,7 +20,7 @@ aliases: [PABCD Dispatch Doctrine, cli-jaw lineage, codexclaw orchestration phil
 ## 0. The translation table (cli-jaw -> codexclaw)
 
 cli-jaw is a multi-runtime server with employees, a dashboard, and a DB. codexclaw is
-a single Codex plugin with hooks and `.cursorclaw/` files. The doctrine survives the
+a single Codex plugin with hooks and `.codexclaw/` files. The doctrine survives the
 move; the machinery does not.
 
 | cli-jaw concept | codexclaw translation |
@@ -28,10 +28,10 @@ move; the machinery does not.
 | Boss agent | the main Codex session (you) |
 | Employee (`cli-jaw dispatch --agent`) | a Codex `spawn_agent` subagent (`explorer`/`worker`) |
 | Employee registry (server) | role TOMLs in `plugins/cursorclaw/agents/` (prompt sources only) |
-| `cli-jaw orchestrate I/P/A/B/C/D` (HTTP) | `cxc orchestrate I/P/A/B/C/D` (agent-gated CLI over `.cursorclaw/`) |
+| `cli-jaw orchestrate I/P/A/B/C/D` (HTTP) | `cxc orchestrate I/P/A/B/C/D` (agent-gated CLI over `.codexclaw/`) |
 | `--attest` gate (`orchestrator/attestation.ts`) | `cxc orchestrate <phase> --attest` (same JSON gate) |
 | Shared Plan auto-inject (server pipeline) | main agent inlines the plan into each spawn (no server to inject it) |
-| Worklog `## Plan` SSOT | `.cursorclaw/` session files + devlog evidence path |
+| Worklog `## Plan` SSOT | `.codexclaw/` session files + devlog evidence path |
 | Goal autonomy (`src/goal/`) | native Codex goal DB, read-only to codexclaw |
 
 The honesty rule from `00_philosophy.md` §1 governs every row: where cli-jaw enforced
@@ -132,7 +132,7 @@ codexclaw translation:
   `cxc evidence resolve` requires a valid receipt (there is no override flag; the honest
   escape is `update_goal {status:"blocked"}`). The symptom this replaced: a read-only
   packet sent to a `worker` produced endless identical SubagentStop blocks, because the
-  child could never create a file under the parent's `.cursorclaw/evidence/`. If you see
+  child could never create a file under the parent's `.codexclaw/evidence/`. If you see
   a subagent repeating the same answer against the same directive, check the dispatch
   lane first — it is almost always a read-only packet on a `worker`.
 - **Architect consultation in formal P.** Main evidence -> architect proposal -> main
@@ -157,7 +157,7 @@ codexclaw translation:
   surfaces: (1) a spawn issued BY a subagent (stdin `agent_id` present) is DENIED
   unless the message carries `CXC-SUBSPAWN-ALLOWED`; (2) every spawn message gets the
   `[CXC-LEAF-GUARD]` block. For a non-full-history fork, configured role `model` and
-  `reasoning_effort` from `.cursorclaw/subagents.json` are independently injected when
+  `reasoning_effort` from `.codexclaw/subagents.json` are independently injected when
   the caller omits them; otherwise each omitted field inherits. Recursion is a
   deliberate per-dispatch grant, never a default. Evidence + design:
   `devlog/_plan/260709_multi_agent_v2_switch/060_leaf_agent_hardening.md`.
@@ -291,15 +291,15 @@ keeps them strictly separated (`00_philosophy.md` §4):
 Per `00_philosophy.md` §2, these cli-jaw surfaces are non-goals — do not port them:
 
 - No *orchestration* server, no employees-as-processes, no multi-runtime registry.
-  (The opt-in loopback messenger bridge — `cxc serve` + `.cursorclaw/bridge.db`,
+  (The opt-in loopback messenger bridge — `cxc serve` + `.codexclaw/bridge.db`,
   2026-07-03 — is a scoped exception recorded in `00_philosophy.md` §2; it relays
   chat messages to stock `codex exec` and never dispatches subagents.)
 - No goal *write* path: codexclaw reads the native goal DB; only the main session
   calls `create_goal`.
 - No `cli-jaw dispatch` HTTP path; subagents are Codex-native `spawn_agent` calls.
-- No memory/chat/project/worklog server stores; `.cursorclaw/` files (including the
+- No memory/chat/project/worklog server stores; `.codexclaw/` files (including the
   bridge's project-local `bridge.db`) are the only durable state (user-level
-  `~/.cursorclaw` holds rebuildable derived caches only — recall FTS index, ast-grep
+  `~/.codexclaw` holds rebuildable derived caches only — recall FTS index, ast-grep
   runtime — per the 2026-07-02 owner re-scope).
 - No provider mutation; the provider bridge is detect-only.
 

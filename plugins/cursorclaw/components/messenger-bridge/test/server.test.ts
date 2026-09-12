@@ -213,7 +213,7 @@ test("GUI API parity: subagents GET defaults + POST persists", async () => {
     });
     assert.equal(post.status, 200);
     const saved = JSON.parse(
-      readFileSync(join(h.cwd, ".cursorclaw", "subagents.json"), "utf8"),
+      readFileSync(join(h.cwd, ".codexclaw", "subagents.json"), "utf8"),
     ) as { roles: Record<string, { mode: string; model: string | null }> };
     assert.equal(saved.roles.explorer?.mode, "model");
     assert.equal(saved.roles.explorer?.model, "gpt-5.5");

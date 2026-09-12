@@ -133,7 +133,7 @@ export function emitTrace(
   env: Record<string, string | undefined> = process.env as Record<string, string | undefined>,
 ): string | null {
   if (!isTracingEnabled(env)) return null;
-  const dir = join(outputDir, ".cursorclaw", "traces");
+  const dir = join(outputDir, ".codexclaw", "traces");
   mkdirSync(dir, { recursive: true });
   const path = join(dir, "activations.jsonl");
   writeFileSync(path, JSON.stringify(trace) + "\n", { flag: "a" });
@@ -144,7 +144,7 @@ export function emitTrace(
  * Read all traces from the JSONL file. Returns empty array when file is missing.
  */
 export function readTraces(outputDir: string): ActivationTrace[] {
-  const path = join(outputDir, ".cursorclaw", "traces", "activations.jsonl");
+  const path = join(outputDir, ".codexclaw", "traces", "activations.jsonl");
   if (!existsSync(path)) return [];
   const lines = readFileSync(path, "utf8").split("\n").filter((l) => l.trim().length > 0);
   return lines.map((l) => JSON.parse(l) as ActivationTrace);

@@ -78,7 +78,7 @@ test("re-enabling does not stampede completions that finished while off", () => 
 
 test("listRecords tolerates junk in the directory", () => {
   const cwd = workspace();
-  writeFileSync(join(cwd, ".cursorclaw", "bg", "x.json"), "nope", "utf8");
+  writeFileSync(join(cwd, ".codexclaw", "bg", "x.json"), "nope", "utf8");
   assert.deepEqual(listRecords(cwd), []);
 });
 

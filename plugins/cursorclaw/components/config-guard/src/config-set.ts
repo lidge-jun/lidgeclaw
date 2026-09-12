@@ -98,7 +98,7 @@ export function applyManagedKey(
     }
     let backupPath: string | null = null;
     if (res.changed) {
-      backupPath = `${configPath}.cursorclaw-${now().replace(/[:.]/g, "-")}.bak`;
+      backupPath = `${configPath}.codexclaw-${now().replace(/[:.]/g, "-")}.bak`;
       copyFileSync(configPath, backupPath);
       writeFileSync(configPath, res.content, "utf8");
     }
@@ -129,7 +129,7 @@ export function applyManagedKey(
   let backupPath: string | null = null;
   if (res.changed) {
     if (existsSync(configPath)) {
-      backupPath = `${configPath}.cursorclaw-${now().replace(/[:.]/g, "-")}.bak`;
+      backupPath = `${configPath}.codexclaw-${now().replace(/[:.]/g, "-")}.bak`;
       copyFileSync(configPath, backupPath);
     }
     writeFileSync(configPath, res.content, "utf8");

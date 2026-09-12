@@ -68,7 +68,7 @@ test("bridge.db file mode is 600", { skip: process.platform === "win32" }, () =>
   const cwd = tempCwd();
   try {
     const db = openBridgeDb(cwd);
-    const mode = statSync(join(cwd, ".cursorclaw", "bridge.db")).mode & 0o777;
+    const mode = statSync(join(cwd, ".codexclaw", "bridge.db")).mode & 0o777;
     assert.equal(mode, 0o600);
     db.close();
   } finally {
@@ -209,7 +209,7 @@ test("listBindingsForChat returns all topic rows for the current chat and agent 
     db.getOrCreateAgentBinding(agent.id, "telegram", "43", "/tmp/other", "1");
     db.getOrCreateBinding("telegram", "42", "/tmp/legacy", "1");
 
-    const raw = new DatabaseSync(join(cwd, ".cursorclaw", "bridge.db"));
+    const raw = new DatabaseSync(join(cwd, ".codexclaw", "bridge.db"));
     raw.prepare("UPDATE bindings SET updated_at = ? WHERE id = ?").run("2026-07-07T00:00:00.000Z", plain.id);
     raw.prepare("UPDATE bindings SET updated_at = ? WHERE id = ?").run("2026-07-07T00:02:00.000Z", topic1.id);
     raw.prepare("UPDATE bindings SET updated_at = ? WHERE id = ?").run("2026-07-07T00:01:00.000Z", topic2.id);
@@ -359,7 +359,7 @@ test("agent pairing codes store only hashes and consume once before expiry", () 
     const expiresAt = db.createAgentPairingCode(agent.id, hash, 60);
     assert.ok(expiresAt > Date.now());
 
-    const raw = new DatabaseSync(join(cwd, ".cursorclaw", "bridge.db"));
+    const raw = new DatabaseSync(join(cwd, ".codexclaw", "bridge.db"));
     const stored = raw.prepare("SELECT code_hash, expires_at, consumed_at FROM agent_pairing_codes").get() as {
       code_hash: string;
       expires_at: number;
@@ -405,7 +405,7 @@ test("sweepExpiredPairingCodes drops consumed and expired rows, keeps live ones"
 
     assert.equal(db.sweepExpiredPairingCodes(), 2);
 
-    const raw = new DatabaseSync(join(cwd, ".cursorclaw", "bridge.db"));
+    const raw = new DatabaseSync(join(cwd, ".codexclaw", "bridge.db"));
     const rows = raw.prepare("SELECT code_hash FROM agent_pairing_codes").all() as Array<{ code_hash: string }>;
     raw.close();
     assert.deepEqual(rows.map((row) => row.code_hash), [sha256Hex("live")]);
@@ -426,7 +426,7 @@ test("deleteAgent removes owned pairing codes", () => {
 
     db.deleteAgent(doomed.id);
 
-    const raw = new DatabaseSync(join(cwd, ".cursorclaw", "bridge.db"));
+    const raw = new DatabaseSync(join(cwd, ".codexclaw", "bridge.db"));
     const rows = raw.prepare("SELECT agent_id FROM agent_pairing_codes ORDER BY agent_id").all() as Array<{ agent_id: number }>;
     raw.close();
     assert.deepEqual(rows.map((row) => row.agent_id), [kept.id]);

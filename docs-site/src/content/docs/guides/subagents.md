@@ -4,7 +4,7 @@ description: Configure per-role subagent models and prompts through codexclaw's 
 ---
 
 codexclaw lets you assign a model and prompt override to each subagent role, persisted in
-`.cursorclaw/subagents.json` and exposed over MCP.
+`.codexclaw/subagents.json` and exposed over MCP.
 
 ## Roles
 
@@ -99,7 +99,7 @@ Settings alone do not establish that a native host delivered every failure code.
 Claim the returned attempt with `action:claim` and `attemptId`. Only `action:spawn`
 authorizes one call; include its marker at the start of the native task message.
 Report creation/completion or failure, and inspect `action:status` after a lost
-response. Records live under `.cursorclaw/dispatches/<session>/<dispatch>.json`.
+response. Records live under `.codexclaw/dispatches/<session>/<dispatch>.json`.
 
 Quota/model availability failures can select the fallback. Policy, permission,
 authentication and cancellation failures stop. Ambiguous creation or ongoing work

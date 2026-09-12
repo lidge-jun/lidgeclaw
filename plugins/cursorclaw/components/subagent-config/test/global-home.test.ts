@@ -8,11 +8,11 @@ import { cxcHome, globalStorePath, setRole, readSettings } from '../src/store.ts
 
 test('explicit CXC home is independent of Codex home and never imports legacy preferences', t => {
   const root = mkdtempSync(join(tmpdir(), 'cxc-home-'));t.after(()=>rmSync(root,{recursive:true,force:true}));
-  const env={CURSOR_HOME:join(root,'codex'),CURSORCLAW_HOME:join(root,'cxc')};
+  const env={CURSOR_HOME:join(root,'codex'),CODEXCLAW_HOME:join(root,'cxc')};
   mkdirSync(join(env.CURSOR_HOME,'codexclaw'),{recursive:true});
   writeFileSync(join(env.CURSOR_HOME,'codexclaw/subagents.json'),JSON.stringify({roles:{explorer:{mode:'model',model:'legacy'}}}));
-  assert.equal(cxcHome(env),env.CURSORCLAW_HOME);
-  assert.equal(globalStorePath(env),join(env.CURSORCLAW_HOME,'subagents.json'));
+  assert.equal(cxcHome(env),env.CODEXCLAW_HOME);
+  assert.equal(globalStorePath(env),join(env.CODEXCLAW_HOME,'subagents.json'));
   assert.equal(readSettings(root,'global',env).roles.explorer.model,null);
   setRole(root,'reviewer',{effort:'high'},'global',env);
   assert.equal(JSON.parse(readFileSync(globalStorePath(env),'utf8')).roles.reviewer.effort,'high');
@@ -21,7 +21,7 @@ test('explicit CXC home is independent of Codex home and never imports legacy pr
 test('legacy global set/reset writes canonical data, preserves other roles, and never resurrects reset roles', t => {
   const home=mkdtempSync(join(tmpdir(),'cxc-legacy-'));t.after(()=>rmSync(home,{recursive:true,force:true}));
   const env={...process.env,HOME:home,USERPROFILE:home,CURSOR_HOME:join(home,'codex')};
-  delete env.CURSORCLAW_HOME;
+  delete env.CODEXCLAW_HOME;
   const script=`
     import assert from 'node:assert/strict';
     import {mkdirSync,writeFileSync,readFileSync,existsSync} from 'node:fs';

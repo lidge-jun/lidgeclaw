@@ -31,7 +31,7 @@ test("Vite API rejects browser-simple CSRF and bounds JSON bodies", async () => 
       body: JSON.stringify({ role: "reviewer", promptOverride: "local" }),
     });
     assert.equal(legitimate.status, 200);
-    assert.match(readFileSync(join(cwd, ".cursorclaw", "subagents.json"), "utf8"), /local/);
+    assert.match(readFileSync(join(cwd, ".codexclaw", "subagents.json"), "utf8"), /local/);
 
     const oversized = await fetch(`${base}/api/subagents`, {
       method: "POST",

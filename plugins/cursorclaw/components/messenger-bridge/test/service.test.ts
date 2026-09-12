@@ -9,10 +9,10 @@ test("buildPlist embeds the serve command, keepalive, and log paths", () => {
     cliPath: "/repo/bin/codexclaw.mjs",
     workdir: "/work/dir",
     port: 7717,
-    outLog: "/home/.cursorclaw/serve.out.log",
-    errLog: "/home/.cursorclaw/serve.err.log",
+    outLog: "/home/.codexclaw/serve.out.log",
+    errLog: "/home/.codexclaw/serve.err.log",
   });
-  assert.match(xml, /<string>com\.cursorclaw\.serve<\/string>/);
+  assert.match(xml, /<string>com\.codexclaw\.serve<\/string>/);
   assert.match(xml, /<string>\/usr\/bin\/node<\/string>/);
   assert.match(xml, /<string>\/repo\/bin\/codexclaw\.mjs<\/string>/);
   assert.match(xml, /<string>serve<\/string>/);
@@ -41,15 +41,15 @@ test("servicePaths derive from a given home", () => {
   const p = servicePaths("/Users/jun");
   if (process.platform === "darwin") {
     assert.equal(p.plist, `/Users/jun/Library/LaunchAgents/${SERVICE_LABEL}.plist`);
-    assert.equal(p.outLog, "/Users/jun/.cursorclaw/serve.out.log");
-    assert.equal(p.stateDir, "/Users/jun/.cursorclaw");
+    assert.equal(p.outLog, "/Users/jun/.codexclaw/serve.out.log");
+    assert.equal(p.stateDir, "/Users/jun/.codexclaw");
   } else {
     // servicePaths joins with platform separators on every OS, so the literal
     // POSIX shape above only holds on darwin; elsewhere assert structure.
     assert.ok(p.plist.endsWith(`${SERVICE_LABEL}.plist`));
-    assert.ok(p.stateDir.includes(".cursorclaw"));
-    assert.ok(p.outLog.includes(".cursorclaw"));
-    assert.ok(p.errLog.includes(".cursorclaw"));
+    assert.ok(p.stateDir.includes(".codexclaw"));
+    assert.ok(p.outLog.includes(".codexclaw"));
+    assert.ok(p.errLog.includes(".codexclaw"));
   }
 });
 

@@ -20,7 +20,7 @@ function fixture(t: TestContext) {
   mkdirSync(cwd);
   mkdirSync(home);
   const env = { CODEX_THREAD_ID: CHILD, CURSOR_HOME: home };
-  const dir = join(cwd, ".cursorclaw", "sessions");
+  const dir = join(cwd, ".codexclaw", "sessions");
   const path = join(dir, `${CHILD}.json`);
   return { root, cwd, home, env, dir, path };
 }
@@ -56,7 +56,7 @@ test("current resolves a root fork without creating state or changing parent byt
   const parentBytes = '{ "sessionId": "' + PARENT + '", "phase": "B", "loopArmSeen": true }\n';
   writeFileSync(join(f.dir, `${PARENT}.json`), parentBytes);
   const before = snapshot(f.root);
-  assert.deepEqual(resolveNativeSession(f.cwd, f.env), { ok: true, sessionId: CHILD, cwd: f.cwd, dbPath });
+  assert.deepEqual(resolveNativeSession(f.cwd, f.env), { ok: true, sessionId: CHILD, cwd: f.cwd, dbPath, source: "CODEX_THREAD_ID" });
   const { code, body } = jsonResult(["current"], f);
   assert.equal(code, 0);
   assert.equal(body.sessionId, CHILD);
@@ -76,7 +76,7 @@ test("current with no state directory is read-only; bind creates only the child 
   const before = snapshot(f.root);
   assert.equal(jsonResult(["current"], f).code, 0);
   assert.deepEqual(snapshot(f.root), before);
-  assert.equal(existsSync(join(f.cwd, ".cursorclaw")), false);
+  assert.equal(existsSync(join(f.cwd, ".codexclaw")), false);
   const first = jsonResult(["bind"], f);
   assert.equal(first.code, 0);
   assert.equal(first.body.created, true);
@@ -101,7 +101,7 @@ test("current with no state directory is read-only; bind creates only the child 
     assert.equal(readFileSync(f.path, "utf8"), resumed);
     assert.deepEqual(readFileSync(parentPath), parent);
   }
-  assert.deepEqual(readdirSync(join(f.cwd, ".cursorclaw")), ["sessions"]);
+  assert.deepEqual(readdirSync(join(f.cwd, ".codexclaw")), ["sessions"]);
   assert.deepEqual(readdirSync(f.dir).sort(), [`${CHILD}.json`, `${PARENT}.json`]);
 });
 
@@ -121,7 +121,7 @@ for (const id of [undefined, "", "invalid-private-id", `${CHILD}\n`, ` ${CHILD}`
   test(`absent or invalid native ID is refused (${JSON.stringify(id)})`, t => {
     const f = fixture(t);
     nativeDb(f.home, f.cwd);
-    const env = { ...f.env, CODEX_THREAD_ID: id };
+    const env = { ...f.env, CODEX_THREAD_ID: id, CURSORCLAW_SESSION_ID: undefined, CURSOR_CONVERSATION_ID: undefined };
     assert.equal(resolveNativeSession(f.cwd, env).ok, false);
     for (const command of ["current", "bind"]) {
       const result = runSessionCli([command, "--json"], f.cwd, env);
@@ -129,9 +129,65 @@ for (const id of [undefined, "", "invalid-private-id", `${CHILD}\n`, ` ${CHILD}`
       assert.equal(JSON.parse(result.output).hooksVerified, false);
       assert.doesNotMatch(result.output, /invalid-private-id/);
     }
-    assert.equal(existsSync(join(f.cwd, ".cursorclaw")), false);
+    assert.equal(existsSync(join(f.cwd, ".codexclaw")), false);
   });
 }
+
+test("Cursor conversation id binds without Codex SQLite", t => {
+  const f = fixture(t);
+  const env = {
+    CURSOR_CONVERSATION_ID: CHILD,
+    CURSORCLAW_SESSION_ID: undefined,
+    CODEX_THREAD_ID: undefined,
+    CURSOR_HOME: f.home,
+  };
+  const before = snapshot(f.root);
+  assert.deepEqual(resolveNativeSession(f.cwd, env), {
+    ok: true,
+    sessionId: CHILD,
+    cwd: f.cwd,
+    dbPath: null,
+    source: "CURSOR_CONVERSATION_ID",
+  });
+  const current = runSessionCli(["current", "--json"], f.cwd, env);
+  assert.equal(current.code, 0);
+  assert.equal(JSON.parse(current.output).source, "CURSOR_CONVERSATION_ID");
+  assert.equal(JSON.parse(current.output).dbPath, null);
+  assert.deepEqual(snapshot(f.root), before);
+  const bound = runSessionCli(["bind", "--json"], f.cwd, env);
+  assert.equal(bound.code, 0);
+  assert.equal(JSON.parse(bound.output).created, true);
+  assert.equal(JSON.parse(bound.output).source, "CURSOR_CONVERSATION_ID");
+  assert.equal(JSON.parse(readFileSync(f.path, "utf8")).sessionId, CHILD);
+});
+
+test("CURSORCLAW_SESSION_ID wins labeling and disagrees with host conversation id", t => {
+  const f = fixture(t);
+  const plugin = runSessionCli(["bind", "--json"], f.cwd, {
+    CURSORCLAW_SESSION_ID: CHILD,
+    CURSOR_CONVERSATION_ID: CHILD,
+    CODEX_THREAD_ID: undefined,
+  });
+  assert.equal(plugin.code, 0);
+  assert.equal(JSON.parse(plugin.output).source, "CURSORCLAW_SESSION_ID");
+  const clash = resolveNativeSession(f.cwd, {
+    CURSORCLAW_SESSION_ID: CHILD,
+    CURSOR_CONVERSATION_ID: PARENT,
+    CODEX_THREAD_ID: undefined,
+  });
+  assert.equal(clash.ok, false);
+});
+
+test("invalid CODEX_THREAD_ID does not fall back to Cursor env", t => {
+  const f = fixture(t);
+  nativeDb(f.home, f.cwd);
+  assert.equal(resolveNativeSession(f.cwd, {
+    ...f.env,
+    CODEX_THREAD_ID: "not-a-uuid",
+    CURSOR_CONVERSATION_ID: CHILD,
+  }).ok, false);
+  assert.equal(existsSync(join(f.cwd, ".codexclaw")), false);
+});
 
 for (const [name, row] of Object.entries({
   "missing row": { id: PARENT },
@@ -156,7 +212,7 @@ for (const [name, row] of Object.entries({
     const result = jsonResult(["bind"], f);
     assert.equal(result.code, 1);
     assert.doesNotMatch(JSON.stringify(result.body), /PRIVATE_TRANSCRIPT/);
-    assert.equal(existsSync(join(f.cwd, ".cursorclaw")), false);
+    assert.equal(existsSync(join(f.cwd, ".codexclaw")), false);
   });
 }
 
@@ -170,7 +226,7 @@ test("highest numeric database wins and CODEX_SQLITE_HOME takes precedence", t =
   const f = fixture(t);
   nativeDb(f.home, f.cwd, "9", { archived: 1 });
   const dbPath = nativeDb(f.home, f.cwd, "10");
-  assert.deepEqual(resolveNativeSession(f.cwd, f.env), { ok: true, sessionId: CHILD, cwd: f.cwd, dbPath });
+  assert.deepEqual(resolveNativeSession(f.cwd, f.env), { ok: true, sessionId: CHILD, cwd: f.cwd, dbPath, source: "CODEX_THREAD_ID" });
   const otherHome = join(f.root, "override");
   mkdirSync(otherHome);
   nativeDb(otherHome, f.cwd, "1", { archived: 1 });
@@ -225,10 +281,10 @@ for (const target of ["root", "sessions", "file", "dangling-file", "root-file", 
     const externalFile = join(external, "private.json");
     writeFileSync(externalFile, '{"sessionId":"' + CHILD + '","phase":"B"}');
     const before = snapshot(external);
-    if (target === "root") symlinkSync(external, join(f.cwd, ".cursorclaw"), "dir");
-    else if (target === "root-file") writeFileSync(join(f.cwd, ".cursorclaw"), "private");
+    if (target === "root") symlinkSync(external, join(f.cwd, ".codexclaw"), "dir");
+    else if (target === "root-file") writeFileSync(join(f.cwd, ".codexclaw"), "private");
     else if (target === "sessions" || target === "sessions-file") {
-      mkdirSync(join(f.cwd, ".cursorclaw"));
+      mkdirSync(join(f.cwd, ".codexclaw"));
       if (target === "sessions") symlinkSync(external, f.dir, "dir");
       else writeFileSync(f.dir, "private");
     } else {
@@ -248,7 +304,7 @@ for (const args of [[], ["other"], ["--json", "current"], ["current", "--session
     const f = fixture(t);
     nativeDb(f.home, f.cwd);
     assert.equal(runSessionCli(args, f.cwd, f.env).code, 1);
-    assert.equal(existsSync(join(f.cwd, ".cursorclaw")), false);
+    assert.equal(existsSync(join(f.cwd, ".codexclaw")), false);
   });
 }
 

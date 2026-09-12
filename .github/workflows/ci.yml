@@ -80,5 +80,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: receipts-${{ matrix.os }}-crlf${{ matrix.autocrlf }}
-          path: .cursorclaw/evidence/
+          path: .codexclaw/evidence/
           if-no-files-found: warn

@@ -4,7 +4,7 @@
  * Remote-first: no local vendoring. Sources: jaw (default; cli-jaw-skills
  * registry raw), hermes (bundled-skills catalog raw), clawhub (single tree API
  * call), gh (explicit only; shells out to the gh CLI). Catalogs are cached
- * 1h under $CURSORCLAW_HOME ?? ~/.cursorclaw/skill-cache with stale fallback.
+ * 1h under $CODEXCLAW_HOME ?? ~/.codexclaw/skill-cache with stale fallback.
  *
  * argv (after the bin dispatcher strips "skill"):
  *   search <query...> [--source jaw|hermes|clawhub|gh|all] [--limit N] [--json] [--refresh]

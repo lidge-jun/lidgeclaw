@@ -263,7 +263,7 @@ jobs:
           [ "$kind" = prerelease ] && flags="--allow-deferred"
           node bin/codexclaw.mjs release verify --version "$VERSION" \
             --actual-inventory-hash "${{ steps.inventory.outputs.hash }}" $flags
-          cp ".cursorclaw/release/candidate-${VERSION}.json" dist-artifacts/
+          cp ".codexclaw/release/candidate-${VERSION}.json" dist-artifacts/
 
       # npm publishers get Sigstore provenance from Trusted Publishing; this
       # artifact is a tarball, so the equivalent is an explicit attestation

@@ -14,7 +14,7 @@
  * dispatcher did not provide (FAILSAFE-SPAN-01). Parity policy (260710, both surfaces):
  *  - leaf-topology guard (D1 recursion deny + D2 constraint block) applies to v1 AND
  *    v2 spawns — the spawner's agent_id/agent_type stamp is surface-neutral.
- *  - `.cursorclaw/subagents.json` model AND reasoning-effort routing applies to v1 AND
+ *  - `.codexclaw/subagents.json` model AND reasoning-effort routing applies to v1 AND
  *    v2 spawns: each field is injected independently when the caller omitted it and
  *    the spawn is not a full-history fork (upstream rejects overrides there).
  *  - v2-shaped spawns additionally get SKILL.md body INLINING: upstream never parses
@@ -438,7 +438,7 @@ const REVIEW_KEYWORDS = [
  * The agent_type alone cannot tell reviewer from explorer, so review-intent
  * executor is canonical; worker is its legacy built-in alias (both resolve to the executor role).
  * keywords in the message upgrade the explorer surface to "reviewer" — this is
- * what lets a reviewer-specific model in .cursorclaw/subagents.json take effect
+ * what lets a reviewer-specific model in .codexclaw/subagents.json take effect
  * on hook-path dispatches.
  */
 export function inferRole(agentType: unknown, message: string): RoleName {

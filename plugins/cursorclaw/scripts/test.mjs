@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 const home = mkdtempSync(join(tmpdir(), 'cxc-test-home-'));
 try {
   const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', ...process.argv.slice(2)], {
-    stdio: 'inherit', env: { ...process.env, CURSORCLAW_HOME: home },
+    stdio: 'inherit', env: { ...process.env, CODEXCLAW_HOME: home },
   });
   if (result.error) throw result.error;
   process.exitCode = result.status ?? 1;

@@ -66,7 +66,7 @@ may use parsed CLI/data output as its channel.
 
 ## 3. Evidence contract
 
-Artifacts live under `.cursorclaw/evidence/<sessionId>/qa/<scenario-id>/`:
+Artifacts live under `.codexclaw/evidence/<sessionId>/qa/<scenario-id>/`:
 
 - `invocation.txt` — the exact command(s)/steps, copy-pasteable.
 - the artifact(s) — capture, screenshot, response, transcript.
@@ -93,7 +93,7 @@ Rules:
 - `NA` is legal only when the class structurally cannot apply to the surface
   (e.g. viewport class on a headless API), always with a recorded reason.
 - This directory is shared with the SubagentStop receipt gate's root
-  (`.cursorclaw/evidence/`); main-session QA artifacts do not interact with
+  (`.codexclaw/evidence/`); main-session QA artifacts do not interact with
   worker receipts (the gate validates only the worker's own
   `EVIDENCE_RECORDED:` marker path).
 - A worker that CANNOT write there was dispatched wrong, not gated wrong: read-only
@@ -105,11 +105,11 @@ After every scenario is done, emit the aggregate receipt:
 
 ```
 node plugins/cursorclaw/skills/qa/scripts/validate-evidence.mjs \
-  .cursorclaw/evidence/<sessionId>/qa/ --emit-receipt
+  .codexclaw/evidence/<sessionId>/qa/ --emit-receipt
 ```
 
 It validates every `verdict.json`, confirms they all describe the same tree,
-and writes `.cursorclaw/evidence/<sessionId>/qa-receipt.json`. Any failure
+and writes `.codexclaw/evidence/<sessionId>/qa-receipt.json`. Any failure
 leaves no receipt behind, including deleting one an earlier run produced —
 a receipt that outlives the QA it attests to is worse than none.
 
@@ -177,7 +177,7 @@ claim until repaired (LOOP-REPAIR-01 counts apply) or the criterion is
 re-scoped through a P-phase amendment, never silently. This is E7 discipline:
 no hook reads verdict.json. The E2 touchpoint: QA delegated to a registered `executor`
 subagent rides the existing SubagentStop receipt gate (legacy `worker` also supported) — the executor cannot
-finish without a non-empty receipt under `.cursorclaw/evidence/`.
+finish without a non-empty receipt under `.codexclaw/evidence/`.
 
 ## v2 candidates (deliberately not shipped)
 

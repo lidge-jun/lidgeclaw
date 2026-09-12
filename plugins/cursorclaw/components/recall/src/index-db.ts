@@ -2,7 +2,7 @@
  * index-db.ts — sidecar FTS index for instant full-history chat recall.
  *
  * The index is a rebuildable DERIVED CACHE owned by codexclaw. It lives outside
- * ~/.cursor (source of truth, never written) at $CURSORCLAW_HOME ?? ~/.cursorclaw,
+ * ~/.cursor (source of truth, never written) at $CODEXCLAW_HOME ?? ~/.codexclaw,
  * under recall/index.sqlite. Deleting it costs only a rebuild.
  *
  * Sync model: msgs is the content table; msgs_fts (unicode61) and msgs_tri
@@ -18,8 +18,8 @@ import { openDbReadOnly, openDbReadWrite, type RwDb } from "./sqlite.ts";
 export const INDEX_SCHEMA_VERSION = "2";
 
 export function cursorclawHome(env: Record<string, string | undefined> = process.env): string {
-  const fromEnv = (env["CURSORCLAW_HOME"] || env["CURSORCLAW_HOME"]);
-  return fromEnv && fromEnv.trim() !== "" ? fromEnv : join(homedir(), ".cursorclaw");
+  const fromEnv = env["CODEXCLAW_HOME"];
+  return fromEnv && fromEnv.trim() !== "" ? fromEnv : join(homedir(), ".codexclaw");
 }
 
 export function indexPath(env: Record<string, string | undefined> = process.env): string {

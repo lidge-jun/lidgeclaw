@@ -31,7 +31,7 @@
 | **cursorclaw** | Cursor | `plugins/cursorclaw/` |
 | **zclaw** | ZCode | `plugins/zclaw/` |
 
-Skills live once under `plugins/cursorclaw/skills/`; zclaw mounts them via relative symlinks. Workflow inspiration remains [OMO / oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent). Credits: [NOTICE.md](NOTICE.md).
+**Common layer** (aligned with [codexclaw](https://github.com/lidge-jun/codexclaw)): skills, components, `structure/`, and `.codexclaw/` state. **Unique-but-shared** when content exists: agents and commands live under `plugins/cursorclaw/` and zclaw mounts them via relative symlinks (same pattern as skills). **Host-unique**: manifests and hook bridges. Full table: [PORTING.md](PORTING.md). Workflow inspiration remains [OMO / oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent). Credits: [NOTICE.md](NOTICE.md).
 
 ## Install
 

@@ -46,7 +46,7 @@ identity-hash algorithm safety-pin) and rerun `cxc doctor`.
 ### E1 — PreToolUse deny (the hardest runtime lever)
 Already used twice: `^create_goal$` budget guard and `^request_user_input$`
 interview-in-goal deny. Use E1 when an action must be *forbidden* under a condition you
-can detect from tool name + input + `.cursorclaw/` state. Fail-closed for security paths;
+can detect from tool name + input + `.codexclaw/` state. Fail-closed for security paths;
 fail-open elsewhere so codexclaw never bricks Codex. This is the only tier that can stop
 a specific action cold.
 

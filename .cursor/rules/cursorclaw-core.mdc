@@ -10,9 +10,9 @@ This environment runs **cursorclaw**, the Cursor surface of the **lidgeclaw** um
 ## What is armed
 
 - **Hooks** (plugin + this repo `.cursor/hooks.json`): sessionStart, beforeSubmitPrompt, preToolUse, postToolUse, preCompact, stop, subagentStop — full Codex-era component fan-out via `scripts/cursor-bridge.mjs`.
-- **Skills**: every folder under `plugins/cursorclaw/skills/` (and dogfood symlinks in `.cursor/skills/`). Skill `name` matches the folder name. Shared with `plugins/zclaw/skills/` via symlinks.
+- **Skills**: plugin `plugins/cursorclaw/skills/` (folder name == skill `name`). Shared with `plugins/zclaw/skills/` via symlinks. Do not also mirror into `~/.cursor/skills/` — Cursor would list each skill twice.
 - **CLI**: `crc` / `cursorclaw` / `lidgeclaw` (`node bin/cursorclaw.mjs`).
-- **State**: `.cursorclaw/` (legacy `.codexclaw/` is migrated automatically).
+- **State**: `.codexclaw/` (Cursor + ZCode share this project-local dir).
 
 ## Discipline
 

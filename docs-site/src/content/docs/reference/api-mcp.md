@@ -44,7 +44,7 @@ active.
 
 ## Storage
 
-`subagents_get` and `subagents_set` read and write `.cursorclaw/subagents.json`.
+`subagents_get` and `subagents_set` read and write `.codexclaw/subagents.json`.
 `catalog_list` reads the Codex model cache and returns native entries first, then `ocx`-backed
 entries when present. There is no network service; the MCP server is a local stdio process started
 by Codex.

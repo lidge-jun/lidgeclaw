@@ -10,10 +10,10 @@ import { resolveSpawnConfig } from '../../components/subagent-config/src/store.t
 
 test('Vite scoped query, effort persistence and trust metadata match spawn resolution; global CSRF rejected', async () => {
   const cwd = mkdtempSync(join(tmpdir(), 'cxc-vite-scope-'));
-  const saved = { CODEXCLAW_ROOT: process.env.CODEXCLAW_ROOT, CURSOR_HOME: process.env.CURSOR_HOME, CURSORCLAW_HOME: process.env.CURSORCLAW_HOME };
+  const saved = { CODEXCLAW_ROOT: process.env.CODEXCLAW_ROOT, CURSOR_HOME: process.env.CURSOR_HOME, CODEXCLAW_HOME: process.env.CODEXCLAW_HOME };
   process.env.CODEXCLAW_ROOT = cwd;
   process.env.CURSOR_HOME = join(cwd, 'codex');
-  process.env.CURSORCLAW_HOME = join(cwd, 'cxc');
+  process.env.CODEXCLAW_HOME = join(cwd, 'cxc');
   const middleware = codexclawApiMiddleware();
   const server = createServer((req, res) => middleware(req, res, () => { res.writeHead(404).end(); }));
   await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -34,7 +34,7 @@ test('Vite scoped query, effort persistence and trust metadata match spawn resol
     assert.equal(readFileSync(globalPath, 'utf8'), before);
     await post({ role: 'explorer', effort: null });
     execFileSync('git', ['init', '-q', cwd]);
-    execFileSync('git', ['-C', cwd, 'add', '-f', '.cursorclaw/subagents.json']);
+    execFileSync('git', ['-C', cwd, 'add', '-f', '.codexclaw/subagents.json']);
     const effective = await (await fetch(`${base}/api/subagents`)).json();
     assert.equal(effective.sources.explorer, 'global');
     assert.equal(effective.roles.explorer.effort, resolveSpawnConfig(cwd, 'explorer').effort);

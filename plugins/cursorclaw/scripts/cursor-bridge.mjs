@@ -12,7 +12,6 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
-  renameSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
@@ -21,8 +20,7 @@ import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 
 const PLUGIN_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const MODERN_STATE = ".cursorclaw";
-const LEGACY_STATE = ".codexclaw";
+const STATE_DIR = ".codexclaw";
 const MAX_STDIN = 2_000_000;
 
 const event = process.argv[2] || "";
@@ -122,19 +120,16 @@ function resolveCwd(cursor) {
   return process.cwd();
 }
 
-function ensureDualStateDir(cwd) {
-  const modern = join(cwd, MODERN_STATE);
-  const legacy = join(cwd, LEGACY_STATE);
+function ensureStateDir(cwd) {
   try {
-    if (!existsSync(modern) && existsSync(legacy)) renameSync(legacy, modern);
-    else mkdirSync(modern, { recursive: true });
+    mkdirSync(join(cwd, STATE_DIR), { recursive: true });
   } catch {
     /* fail-open */
   }
 }
 
 function pendingPath(cwd, sessionId) {
-  return join(cwd, MODERN_STATE, "pending-injections", `${sessionId}.txt`);
+  return join(cwd, STATE_DIR, "pending-injections", `${sessionId}.txt`);
 }
 
 function stashInjection(cwd, sessionId, text) {
@@ -315,8 +310,8 @@ function readPluginVersion() {
 function banner(version) {
   return [
     `cursorclaw ${version} loaded for Cursor (full Codex-parity hook fan-out).`,
-    "Skills: plugin skills/ (names match folders). CLI: crc / cursorclaw.",
-    `State: ${MODERN_STATE}/ (legacy ${LEGACY_STATE}/ migrated on use).`,
+    "Skills: plugin skills/ (names match folders). CLI: crc / cursorclaw / lidgeclaw.",
+    `State: ${STATE_DIR}/ (shared with zclaw under the lidgeclaw umbrella).`,
     "Hooks: sessionStart, beforeSubmitPrompt, pre/postToolUse, preCompact, stop, subagentStop.",
   ].join("\n");
 }
@@ -369,7 +364,7 @@ function main() {
   const cursor = parseJson(raw) || {};
   const cwd = resolveCwd(cursor);
   const sessionId = canonicalSessionId(cursor.session_id || cursor.conversation_id || "");
-  ensureDualStateDir(cwd);
+  ensureStateDir(cwd);
 
   // Always flush pending injections on first tool use, then run gates.
   if (event === "preToolUse") {
@@ -394,7 +389,7 @@ function main() {
     return safeExit({
       env: {
         CURSORCLAW_SESSION_ID: sessionId,
-        CURSORCLAW_STATE_DIR: join(cwd, MODERN_STATE),
+        CURSORCLAW_STATE_DIR: join(cwd, STATE_DIR),
         CURSORCLAW_PLUGIN_ROOT: PLUGIN_ROOT,
       },
       additional_context: additional,

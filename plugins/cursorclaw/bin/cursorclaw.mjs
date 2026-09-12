@@ -39,9 +39,9 @@ export const COMMAND_TABLE = Object.freeze({
   // `config` splits by subcommand: `interview` belongs to pabcd-state (which owns
   // cursorclaw.json), everything else to config-guard (which owns ~/.cursor/config.toml).
   config: "config-guard",
-  doctor: "crc-ops",
-  reset: "crc-ops",
-  hooks: "crc-ops",
+  doctor: "cxc-ops",
+  reset: "cxc-ops",
+  hooks: "cxc-ops",
   session: "pabcd-state",
   orchestrate: "pabcd-state",
   freeze: "pabcd-state",

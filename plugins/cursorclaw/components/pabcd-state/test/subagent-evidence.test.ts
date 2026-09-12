@@ -42,8 +42,8 @@ function payload(cwd: string, over: Partial<SubagentStopPayload> = {}): Subagent
 }
 
 function writeEvidence(cwd: string, rel: string, body = "ok"): string {
-  const abs = join(cwd, ".cursorclaw", "evidence", rel);
-  mkdirSync(join(cwd, ".cursorclaw", "evidence"), { recursive: true });
+  const abs = join(cwd, ".codexclaw", "evidence", rel);
+  mkdirSync(join(cwd, ".codexclaw", "evidence"), { recursive: true });
   writeFileSync(abs, body);
   return abs;
 }
@@ -69,7 +69,7 @@ test("010: worker with a valid receipt is released and attempts cleared", () => 
   // prime an attempt to prove it gets cleared on success.
   runSubagentStopGate(payload(cwd));
   const out = runSubagentStopGate(
-    payload(cwd, { last_assistant_message: "done.\nEVIDENCE_RECORDED: .cursorclaw/evidence/proof.md" }),
+    payload(cwd, { last_assistant_message: "done.\nEVIDENCE_RECORDED: .codexclaw/evidence/proof.md" }),
   );
   assert.equal(out, "");
   assert.equal(readAttempts(cwd, "s1", "a1"), 0);
@@ -77,7 +77,7 @@ test("010: worker with a valid receipt is released and attempts cleared", () => 
 
 test("010: receipt pointing outside the evidence root is rejected", () => {
   const cwd = tmp();
-  // a real non-empty file, but OUTSIDE .cursorclaw/evidence
+  // a real non-empty file, but OUTSIDE .codexclaw/evidence
   mkdirSync(join(cwd, "elsewhere"), { recursive: true });
   writeFileSync(join(cwd, "elsewhere", "x.md"), "data");
   const out = runSubagentStopGate(
@@ -96,10 +96,10 @@ test("010: symlinked receipt inside the root is rejected", (t) => {
   const cwd = tmp();
   const target = join(cwd, "secret.md");
   writeFileSync(target, "data");
-  mkdirSync(join(cwd, ".cursorclaw", "evidence"), { recursive: true });
-  const link = join(cwd, ".cursorclaw", "evidence", "link.md");
+  mkdirSync(join(cwd, ".codexclaw", "evidence"), { recursive: true });
+  const link = join(cwd, ".codexclaw", "evidence", "link.md");
   symlinkSync(target, link);
-  assert.equal(hasValidReceipt(cwd, ".cursorclaw/evidence/link.md"), false);
+  assert.equal(hasValidReceipt(cwd, ".codexclaw/evidence/link.md"), false);
 });
 
 test("010: receipt reached through a linked directory inside the root is rejected", (t) => {
@@ -112,22 +112,22 @@ test("010: receipt reached through a linked directory inside the root is rejecte
   const cwd = tmp();
   const outside = mkdtempSync(join(tmpdir(), "cxc-subev-outside-"));
   writeFileSync(join(outside, "secret.md"), "data");
-  mkdirSync(join(cwd, ".cursorclaw", "evidence"), { recursive: true });
-  symlinkDirSync(outside, join(cwd, ".cursorclaw", "evidence", "linked"));
+  mkdirSync(join(cwd, ".codexclaw", "evidence"), { recursive: true });
+  symlinkDirSync(outside, join(cwd, ".codexclaw", "evidence", "linked"));
   // Lexically inside the evidence root; the realpath lands outside it.
-  assert.equal(hasValidReceipt(cwd, ".cursorclaw/evidence/linked/secret.md"), false);
+  assert.equal(hasValidReceipt(cwd, ".codexclaw/evidence/linked/secret.md"), false);
 });
 
 test("010: empty receipt file is not valid", () => {
   const cwd = tmp();
   writeEvidence(cwd, "empty.md", "");
-  assert.equal(hasValidReceipt(cwd, ".cursorclaw/evidence/empty.md"), false);
+  assert.equal(hasValidReceipt(cwd, ".codexclaw/evidence/empty.md"), false);
 });
 
 /**
  * EVIDENCE-TERMINAL-01. The old contract blocked forever past the cap, which trapped
  * exactly the population it could not help: a read-only child cannot create a file
- * under the parent's .cursorclaw/evidence/, so it could never satisfy the demand and
+ * under the parent's .codexclaw/evidence/, so it could never satisfy the demand and
  * never stopped being asked (a real transcript shows 15+ identical blocks).
  *
  * This test DISAGREES with both the shipped behavior (blocks at 4,5,6) and with the
@@ -185,7 +185,7 @@ test("010: a late valid receipt resolves the tombstone so the parent is not stuc
   assert.equal(readState(cwd, "s1").unverifiedSubagents.length, 1);
   writeEvidence(cwd, "late.md", "the real check output");
   const out = runSubagentStopGate(
-    payload(cwd, { last_assistant_message: "EVIDENCE_RECORDED: .cursorclaw/evidence/late.md" }),
+    payload(cwd, { last_assistant_message: "EVIDENCE_RECORDED: .codexclaw/evidence/late.md" }),
   );
   assert.equal(out, "");
   assert.equal(readState(cwd, "s1").unverifiedSubagents.length, 0);
@@ -298,7 +298,7 @@ test("010: a corrupt attempt counter terminates instead of extending the budget"
     // Reach the real (digest-bearing) counter path by spending one attempt first,
     // then corrupting whatever file the implementation actually wrote.
     runSubagentStopGate(payload(cwd));
-    const dir = join(cwd, ".cursorclaw", "evidence-attempts");
+    const dir = join(cwd, ".codexclaw", "evidence-attempts");
     const name = readdirSync(dir).find((n) => n.endsWith(".json"));
     assert.ok(name, "the gate must have written a counter");
     writeFileSync(join(dir, name), JSON.stringify({ attempts: bad }));
@@ -308,7 +308,7 @@ test("010: a corrupt attempt counter terminates instead of extending the budget"
 
 test("010: unreadable session state DENIES completion (cannot rule out a failure)", () => {
   const cwd = tmp();
-  const dir = join(cwd, ".cursorclaw", "sessions");
+  const dir = join(cwd, ".codexclaw", "sessions");
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "s1.json"), "{ this is not json");
   const deny = applyGoalCompleteGuard({
@@ -343,8 +343,8 @@ test("010: a session that never delegated anything still completes normally", ()
 test("010: a held lock is never broken — acquisition exhausts instead", async () => {
   const { withSessionLock } = await import("../src/state.ts");
   const cwd = tmp();
-  mkdirSync(join(cwd, ".cursorclaw", "sessions"), { recursive: true });
-  const lockPath = join(cwd, ".cursorclaw", "sessions", "s1.json.lock");
+  mkdirSync(join(cwd, ".codexclaw", "sessions"), { recursive: true });
+  const lockPath = join(cwd, ".codexclaw", "sessions", "s1.json.lock");
   writeFileSync(lockPath, "12345");
   assert.throws(() => withSessionLock(cwd, "s1", () => "entered"), "must not enter a held lock");
   assert.equal(existsSync(lockPath), true, "the other holder's lock must survive");
@@ -353,7 +353,7 @@ test("010: a held lock is never broken — acquisition exhausts instead", async 
 test("010: a lock is released after a successful critical section", async () => {
   const { withSessionLock } = await import("../src/state.ts");
   const cwd = tmp();
-  const lockPath = join(cwd, ".cursorclaw", "sessions", "s1.json.lock");
+  const lockPath = join(cwd, ".codexclaw", "sessions", "s1.json.lock");
   assert.equal(withSessionLock(cwd, "s1", () => "ok"), "ok");
   assert.equal(existsSync(lockPath), false, "the lock must not leak");
 });
@@ -372,9 +372,9 @@ test("010: a storage error (ENOTDIR) denies completion, unlike a genuine absence
     return;
   }
   const cwd = tmp();
-  // Make `.cursorclaw/sessions` a FILE so the session path lookup fails with ENOTDIR.
-  mkdirSync(join(cwd, ".cursorclaw"), { recursive: true });
-  writeFileSync(join(cwd, ".cursorclaw", "sessions"), "not a directory");
+  // Make `.codexclaw/sessions` a FILE so the session path lookup fails with ENOTDIR.
+  mkdirSync(join(cwd, ".codexclaw"), { recursive: true });
+  writeFileSync(join(cwd, ".codexclaw", "sessions"), "not a directory");
   const deny = applyGoalCompleteGuard({
     hook_event_name: "PreToolUse",
     session_id: "s1",
@@ -403,8 +403,8 @@ test("010: an unrecordable verdict marker denies completion", async () => {
 test("010: an UNREADABLE marker directory also denies (not read as absent)", () => {
   const cwd = tmp();
   // Make the marker directory a FILE so readdir fails with ENOTDIR.
-  mkdirSync(join(cwd, ".cursorclaw"), { recursive: true });
-  writeFileSync(join(cwd, ".cursorclaw", "evidence-unrecordable"), "not a directory");
+  mkdirSync(join(cwd, ".codexclaw"), { recursive: true });
+  writeFileSync(join(cwd, ".codexclaw", "evidence-unrecordable"), "not a directory");
   const deny = applyGoalCompleteGuard({
     hook_event_name: "PreToolUse",
     session_id: "s1",
@@ -426,7 +426,7 @@ test("020: one receipt cannot clear every turn an agent failed", async () => {
     }
   }
   assert.equal(readState(cwd, sid).unverifiedSubagents.length, 2);
-  const receipt = ".cursorclaw/evidence/one.md";
+  const receipt = ".codexclaw/evidence/one.md";
   writeEvidence(cwd, "one.md", "verified turn 1 only");
   const ambiguous = runEvidenceCli({ verb: "resolve", sessionId: sid, agentId: "a1", receipt, cwd });
   assert.equal(ambiguous.code, 1, "an agent-wide resolve must refuse when several turns are unverified");
@@ -449,7 +449,7 @@ test("020: one receipt cannot clear every turn an agent failed", async () => {
  */
 test("010: a readable-but-unwritable marker directory denies completion", (t) => {
   const cwd = tmp();
-  const dir = join(cwd, ".cursorclaw", "evidence-unrecordable");
+  const dir = join(cwd, ".codexclaw", "evidence-unrecordable");
   mkdirSync(dir, { recursive: true });
   // chmod is advisory on Windows: 0o500 leaves the directory writable, so the
   // "unwritable" premise never holds and the guard correctly sees nothing wrong
@@ -484,7 +484,7 @@ test("010: a readable-but-unwritable marker directory denies completion", (t) =>
 
 test("010: a tombstone is never committed over unreadable state", () => {
   const cwd = tmp();
-  const dir = join(cwd, ".cursorclaw", "sessions");
+  const dir = join(cwd, ".codexclaw", "sessions");
   mkdirSync(dir, { recursive: true });
   // Spend the budget first, so the NEXT stop takes the terminal branch.
   for (let i = 0; i < MAX_ATTEMPTS; i++) runSubagentStopGate(payload(cwd));
@@ -519,8 +519,8 @@ test("010: a verdict survives a transient failure followed by recovery", () => {
   // The terminal stop happens, but its durable records are then WIPED, simulating a
   // failure at terminal time; afterwards the filesystem is perfectly healthy again.
   runSubagentStopGate(payload(cwd));
-  rmSync(join(cwd, ".cursorclaw", "sessions"), { recursive: true, force: true });
-  rmSync(join(cwd, ".cursorclaw", "evidence-unrecordable"), { recursive: true, force: true });
+  rmSync(join(cwd, ".codexclaw", "sessions"), { recursive: true, force: true });
+  rmSync(join(cwd, ".codexclaw", "evidence-unrecordable"), { recursive: true, force: true });
   const deny = applyGoalCompleteGuard({
     hook_event_name: "PreToolUse",
     session_id: "s1",
@@ -542,7 +542,7 @@ test("010: resolving with a receipt clears the spent budget too", async () => {
     verb: "resolve",
     sessionId: sid,
     agentId: "a1",
-    receipt: ".cursorclaw/evidence/done.md",
+    receipt: ".codexclaw/evidence/done.md",
     cwd,
   });
   assert.equal(res.code, 0, res.output);
@@ -575,12 +575,12 @@ test("010: resolving one turn leaves another turn's spent budget intact", async 
     sessionId: sid,
     agentId: "a1",
     turnId: "t1",
-    receipt: ".cursorclaw/evidence/t1.md",
+    receipt: ".codexclaw/evidence/t1.md",
     cwd,
   });
   assert.equal(res.code, 0, res.output);
   // Wipe the tombstone list so ONLY the fallback counter signal can deny.
-  rmSync(join(cwd, ".cursorclaw", "sessions"), { recursive: true, force: true });
+  rmSync(join(cwd, ".codexclaw", "sessions"), { recursive: true, force: true });
   const deny = applyGoalCompleteGuard({
     hook_event_name: "PreToolUse",
     session_id: sid,
@@ -630,12 +630,12 @@ test("010: resolving a turn does not erase a live absent-turn verdict", async ()
     sessionId: sid,
     agentId: "a1",
     turnId: "t1",
-    receipt: ".cursorclaw/evidence/ok.md",
+    receipt: ".codexclaw/evidence/ok.md",
     cwd,
   });
   assert.equal(res.code, 0, res.output);
   // Wipe the tombstone list so ONLY the counter signal can speak.
-  rmSync(join(cwd, ".cursorclaw", "sessions"), { recursive: true, force: true });
+  rmSync(join(cwd, ".codexclaw", "sessions"), { recursive: true, force: true });
   const deny = applyGoalCompleteGuard({
     hook_event_name: "PreToolUse",
     session_id: sid,

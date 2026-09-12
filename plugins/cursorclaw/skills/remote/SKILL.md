@@ -28,7 +28,7 @@ mutating request MUST send BOTH headers, or the server answers 403:
    Not running? Foreground: `crc serve --port 7717 --cwd <project>`.
    Daemon (macOS launchd): `cd <project>` FIRST (install binds the current
    working directory as `--cwd`), then `crc service install --port 7717`.
-   Check with `crc service status`; logs at `~/.cursorclaw/serve.{out,err}.log`.
+   Check with `crc service status`; logs at `~/.codexclaw/serve.{out,err}.log`.
    There is no `serve status` subcommand.
    On Linux, use systemd user units. On Windows, use Task Scheduler. See
    platform-specific sections in `references/telegram.md` and `references/discord.md`.

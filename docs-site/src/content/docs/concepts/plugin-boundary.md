@@ -20,7 +20,7 @@ A single Codex plugin that provides:
 :::note[Scoped loopback exception]
 `cxc serve` is the one server-shaped exception to the no-server rule: it binds to
 `127.0.0.1`, serves the dashboard and JSON API on the same origin, and stores bridge state in
-the project-local `.cursorclaw/bridge.db`. It is optional; nothing else in codexclaw depends on it
+the project-local `.codexclaw/bridge.db`. It is optional; nothing else in codexclaw depends on it
 running.
 :::
 

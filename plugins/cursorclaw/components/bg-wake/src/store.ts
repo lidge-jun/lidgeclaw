@@ -2,7 +2,7 @@
  * store.ts — filesystem substrate for the bg registry.
  *
  * Layout (contract 010, "파일 레이아웃"):
- *   <cwd>/.cursorclaw/bg/
+ *   <cwd>/.codexclaw/bg/
  *     disabled        wake off flag; body is the ISO time it was set
  *     enabled-at      ISO time of the last 'bg on'; wake ignores tasks that ended before it
  *     <id>.json       record
@@ -24,7 +24,7 @@ export const ENABLED_AT_FILE = "enabled-at";
 export const LEDGER_FILE = "ledger.jsonl";
 
 export function bgDir(cwd: string): string {
-  return join(cwd, ".cursorclaw", BG_DIRNAME);
+  return join(cwd, ".codexclaw", BG_DIRNAME);
 }
 export function recordPath(cwd: string, id: string): string {
   return join(bgDir(cwd), id + ".json");

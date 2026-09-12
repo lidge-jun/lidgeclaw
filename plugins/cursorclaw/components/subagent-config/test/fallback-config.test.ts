@@ -9,7 +9,7 @@ import { updateSettings } from "../src/settings-api.ts";
 
 for (const role of ROLES) test(`${role}: fallback stores independently, follows scopes and clears`, () => {
   const cwd = mkdtempSync(join(tmpdir(), "cxc-fallback-config-"));
-  const env = { CURSORCLAW_HOME: join(cwd, "global") };
+  const env = { CODEXCLAW_HOME: join(cwd, "global") };
   setRole(cwd, role, { mode: "model", model: "primary/a", effort: "high", fallback: { model: "secondary/b", effort: "low" } }, "global", env);
   assert.deepEqual(readConfig(cwd, "project", env).roles[role].fallback, { model: "secondary/b", effort: "low" });
   setRole(cwd, role, { fallback: { effort: null } }, "project", env);
@@ -22,9 +22,9 @@ for (const role of ROLES) test(`${role}: fallback stores independently, follows 
 });
 test("invalid fallback updates preserve file bytes; exact provider IDs stay distinct", () => {
   const cwd = mkdtempSync(join(tmpdir(), "cxc-fallback-invalid-"));
-  const env = { CURSORCLAW_HOME: join(cwd, "global") };
+  const env = { CODEXCLAW_HOME: join(cwd, "global") };
   setRole(cwd, "executor", { mode: "model", model: "xai/grok-4.6", fallback: { model: "cursor/grok-4.6", effort: null } }, "project", env);
-  const path = join(cwd, ".cursorclaw/subagents.json"); const before = readFileSync(path, "utf8");
+  const path = join(cwd, ".codexclaw/subagents.json"); const before = readFileSync(path, "utf8");
   for (const fallback of [{ model: "xai/grok-4.6" }, { model: " " }, { model: 42 }, { effort: "bogus" }, []]) {
     assert.throws(() => setRole(cwd, "executor", { fallback } as never, "project", env));
     assert.equal(readFileSync(path, "utf8"), before);
@@ -33,9 +33,9 @@ test("invalid fallback updates preserve file bytes; exact provider IDs stay dist
   assert.equal(readConfig(cwd, "project", env).roles.executor.fallback?.model, "xai/grok-4.6");
 });
 test("legacy JSON has no fallback, and effort-only creation without model is rejected", () => {
-  const cwd = mkdtempSync(join(tmpdir(), "cxc-fallback-old-")); const env = { CURSORCLAW_HOME: join(cwd, "global") };
+  const cwd = mkdtempSync(join(tmpdir(), "cxc-fallback-old-")); const env = { CODEXCLAW_HOME: join(cwd, "global") };
   setRole(cwd, "executor", { mode: "default" }, "project", env);
-  writeFileSync(join(cwd, ".cursorclaw/subagents.json"), JSON.stringify({ roles: { executor: { mode: "model", model: "old/model", effort: "high" } } }));
+  writeFileSync(join(cwd, ".codexclaw/subagents.json"), JSON.stringify({ roles: { executor: { mode: "model", model: "old/model", effort: "high" } } }));
   assert.equal(readConfig(cwd, "project", env).roles.executor.fallback, null);
   assert.equal(defaultRole().fallback, null);
   assert.throws(() => setRole(cwd, "executor", { fallback: { effort: "low" } }, "project", env), /model/);

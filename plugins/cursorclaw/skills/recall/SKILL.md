@@ -133,7 +133,7 @@ alternate root covers the rare multi-root case without a registry or rerank laye
 
 The sidecar index self-refreshes on every query (changed files only). `crc chat index
 --status` shows freshness; `--rebuild` drops and re-ingests after schema-level doubts.
-Deleting `~/.cursorclaw/recall/index.sqlite` is always safe (rebuildable cache).
+Deleting `~/.codexclaw/recall/index.sqlite` is always safe (rebuildable cache).
 
 ## Automatic session-start injection
 

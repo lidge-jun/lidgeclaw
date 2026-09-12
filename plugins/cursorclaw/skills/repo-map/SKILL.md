@@ -75,7 +75,7 @@ environments no manual install is needed:
 2. `uv` on PATH — the script runs via `uv run --with-requirements`, and deps
    resolve into uv's own rebuildable cache automatically (first run pays a short
    resolve; later runs are warm).
-3. An existing venv at `$CURSORCLAW_HOME|~/.cursorclaw/venvs/repomap` — a user-level
+3. An existing venv at `$CODEXCLAW_HOME|~/.codexclaw/venvs/repomap` — a user-level
    rebuildable derived cache (philosophy §2). Auto-created only when
    `CURSORCLAW_MAP_BOOTSTRAP=1` is set (opt-in network install).
 4. Bare `python3` — works when deps are already installed; otherwise degrades to
@@ -99,7 +99,7 @@ The pinned parser stack matters: `tree-sitter-language-pack==0.9.0` and
 RepoMap stores derived tag cache data under:
 
 ```text
-.cursorclaw/cache/repomap/tags.v1
+.codexclaw/cache/repomap/tags.v1
 ```
 
 Set `CURSORCLAW_REPOMAP_CACHE` to override the location. The cache is rebuildable

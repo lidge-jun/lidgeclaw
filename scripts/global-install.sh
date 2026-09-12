@@ -4,14 +4,14 @@
 # Installs (idempotent):
 #   Cursor (--target cursor|all):
 #     1. Plugin copy → ~/.cursor/plugins/local/cursorclaw
-#     2. Skill symlinks → ~/.cursor/skills/<name>
+#     2. Skills via the plugin only (cleans stale ~/.cursor/skills mirrors)
 #     3. User hooks → ~/.cursor/hooks.json
 #     4. Core rule → ~/.cursor/rules/cursorclaw-core.mdc
 #     5. PATH CLI → ~/.local/bin/{crc,cursorclaw,lidgeclaw,lc}
 #   ZCode (--target zcode|all):
 #     1. Marketplace tree → ~/.zcode/cli/plugins/marketplaces/lidgeclaw
 #     2. Register in known_marketplaces.json (directory source)
-#     3. Skill symlinks → ~/.zcode/skills/<name> (optional convenience)
+#     3. Skills via the zclaw plugin only (no ~/.zcode/skills mirror)
 #
 # Usage:
 #   scripts/global-install.sh
@@ -64,13 +64,13 @@ while [ "$i" -lt "${#ARGS[@]}" ]; do
       echo "=== cursorclaw (Cursor) ==="
       echo "plugin:  $PLUGIN_DST $([ -d "$PLUGIN_DST" ] && echo OK || echo MISSING)"
       echo "hooks:   $HOOKS_FILE $([ -f "$HOOKS_FILE" ] && echo OK || echo MISSING)"
-      echo "skills:  $(find "$SKILLS_DST" -maxdepth 1 -type l 2>/dev/null | wc -l | tr -d ' ') symlinks"
+      echo "skills:  plugin-scoped under $PLUGIN_DST/skills (no user-skill mirror)"
       echo "rule:    $RULES_DST/cursorclaw-core.mdc $([ -f "$RULES_DST/cursorclaw-core.mdc" ] && echo OK || echo MISSING)"
       echo "crc:     $BIN_DIR/crc $([ -x "$BIN_DIR/crc" ] && echo OK || echo MISSING)"
       echo "lidge:   $BIN_DIR/lidgeclaw $([ -x "$BIN_DIR/lidgeclaw" ] && echo OK || echo MISSING)"
       echo "=== zclaw (ZCode) ==="
       echo "market:  $ZCODE_MARKET_DST $([ -d "$ZCODE_MARKET_DST" ] && echo OK || echo MISSING)"
-      echo "zskills: $(find "$ZCODE_SKILLS_DST" -maxdepth 1 -type l 2>/dev/null | wc -l | tr -d ' ') symlinks"
+      echo "zskills: plugin-scoped under marketplaces/lidgeclaw/plugins/zclaw/skills"
       if [ -f "$ZCODE_KNOWN" ]; then
         python3 - "$ZCODE_KNOWN" <<'PY'
 import json, sys
@@ -111,14 +111,22 @@ install_cursor() {
     rsync -a "$PLUGIN_SRC/hooks/codex-legacy/" "$PLUGIN_DST/hooks/codex-legacy/"
   fi
 
-  echo "[lidgeclaw/cursorclaw] linking skills → $SKILLS_DST"
-  mkdir -p "$SKILLS_DST"
-  for d in "$PLUGIN_DST/skills"/*; do
-    [ -d "$d" ] || continue
-    [ -f "$d/SKILL.md" ] || continue
-    name="$(basename "$d")"
-    ln -sfn "$d" "$SKILLS_DST/$name"
-  done
+  echo "[lidgeclaw/cursorclaw] skills stay plugin-scoped (no ~/.cursor/skills mirror)"
+  # Remove stale mirrors from older installs that caused duplicate skill discovery.
+  if [ -d "$SKILLS_DST" ]; then
+    for d in "$PLUGIN_DST/skills"/*; do
+      [ -d "$d" ] || continue
+      [ -f "$d/SKILL.md" ] || continue
+      name="$(basename "$d")"
+      link="$SKILLS_DST/$name"
+      if [ -L "$link" ]; then
+        target="$(readlink "$link" || true)"
+        case "$target" in
+          *cursorclaw/skills*|*plugins/local/cursorclaw*) rm -f "$link" ;;
+        esac
+      fi
+    done
+  fi
 
   echo "[lidgeclaw/cursorclaw] installing core rule → $RULES_DST"
   mkdir -p "$RULES_DST"
@@ -179,7 +187,7 @@ EOF
     chmod +x "$BIN_DIR/$name"
   done
 
-  mkdir -p "$HOME/.cursorclaw" "$HOME/.lidgeclaw"
+  mkdir -p "$HOME/.codexclaw" "$HOME/.lidgeclaw"
   python3 - <<PY
 import json, time
 from pathlib import Path
@@ -192,7 +200,7 @@ stamp = {
   "bridge": "$BRIDGE",
   "version": json.loads(Path("$PLUGIN_DST/.cursor-plugin/plugin.json").read_text())["version"],
 }
-Path("$HOME/.cursorclaw/install.json").write_text(json.dumps(stamp, indent=2) + "\n")
+Path("$HOME/.codexclaw/install.json").write_text(json.dumps(stamp, indent=2) + "\n")
 Path("$HOME/.lidgeclaw/install-cursor.json").write_text(json.dumps(stamp, indent=2) + "\n")
 print(json.dumps(stamp, indent=2))
 PY
@@ -254,14 +262,15 @@ known_path.write_text(json.dumps(data, indent=2) + "\n")
 print("registered", entry["id"], "→", market_path)
 PY
 
-  echo "[lidgeclaw/zclaw] linking skills → $ZCODE_SKILLS_DST"
-  mkdir -p "$ZCODE_SKILLS_DST"
-  for d in "$ZCODE_MARKET_DST/plugins/zclaw/skills"/*; do
-    [ -d "$d" ] || continue
-    [ -f "$d/SKILL.md" ] || continue
-    name="$(basename "$d")"
-    ln -sfn "$d" "$ZCODE_SKILLS_DST/$name"
-  done
+  echo "[lidgeclaw/zclaw] skills stay plugin-scoped (no ~/.zcode/skills mirror)"
+  if [ -d "$ZCODE_SKILLS_DST" ]; then
+    for d in "$ZCODE_MARKET_DST/plugins/zclaw/skills"/*; do
+      [ -d "$d" ] || continue
+      [ -f "$d/SKILL.md" ] || continue
+      name="$(basename "$d")"
+      rm -f "$ZCODE_SKILLS_DST/$name"
+    done
+  fi
 
   mkdir -p "$HOME/.lidgeclaw"
   python3 - <<PY

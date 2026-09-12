@@ -12,7 +12,7 @@ const id = "11111111-1111-4111-8111-111111111111";
 const other = "22222222-2222-4222-8222-222222222222";
 const cli = fileURLToPath(new URL("../src/cli.ts", import.meta.url));
 const payload = fileURLToPath(new URL("../../../bin/cursorclaw.mjs", import.meta.url));
-const rootBin = fileURLToPath(new URL("../../../../../bin/codexclaw.mjs", import.meta.url));
+const rootBin = fileURLToPath(new URL("../../../../../bin/cursorclaw.mjs", import.meta.url));
 function fixture(t: { after: (fn: () => void) => void }) {
   const base = mkdtempSync(join(tmpdir(), "cxc-native-status-"));
   const cwd = join(base, "work"), home = join(base, "home");
@@ -22,10 +22,18 @@ function fixture(t: { after: (fn: () => void) => void }) {
   db.prepare("INSERT INTO threads VALUES (?, ?, 0, 'vscode')").run(id, cwd);
   db.close();
   t.after(() => rmSync(base, { recursive: true, force: true }));
-  const env = { ...process.env, CURSOR_HOME: home, CODEX_SQLITE_HOME: home, CODEX_THREAD_ID: id };
-  const run = (args: string[], binary = cli, overrides: NodeJS.ProcessEnv = {}) => spawnSync(process.execPath, [binary, ...args], {
-    cwd, env: { ...env, ...overrides }, encoding: "utf8", timeout: 10000,
-  });
+  const env: NodeJS.ProcessEnv = { ...process.env, CURSOR_HOME: home, CODEX_SQLITE_HOME: home, CODEX_THREAD_ID: id };
+  delete env.CURSORCLAW_SESSION_ID;
+  delete env.CURSOR_CONVERSATION_ID;
+  const run = (args: string[], binary = cli, overrides: NodeJS.ProcessEnv = {}) => {
+    const merged: NodeJS.ProcessEnv = { ...env, ...overrides };
+    for (const key of Object.keys(overrides)) {
+      if (overrides[key] === undefined) delete merged[key];
+    }
+    return spawnSync(process.execPath, [binary, ...args], {
+      cwd, env: merged, encoding: "utf8", timeout: 10000,
+    });
+  };
   return { cwd, home, run };
 }
 
@@ -35,14 +43,14 @@ test("status does not invent IDLE for explicit missing state", t => {
   assert.equal(r.status, 1, r.stderr);
   assert.equal(JSON.parse(r.stdout).phase, null);
   assert.equal(JSON.parse(r.stdout).stateExists, false);
-  assert.equal(existsSync(join(cwd, ".cursorclaw")), false);
+  assert.equal(existsSync(join(cwd, ".codexclaw")), false);
 });
 
 test("implicit status selects the native root fork, not a newer parent file", t => {
   const { cwd, run } = fixture(t);
   writeState(cwd, { ...defaultState(id), phase: "P" });
   writeState(cwd, { ...defaultState(other), phase: "B" });
-  const parent = join(cwd, ".cursorclaw", "sessions", `${other}.json`);
+  const parent = join(cwd, ".codexclaw", "sessions", `${other}.json`);
   utimesSync(parent, new Date(2000000000000), new Date(2000000000000));
   const before = readFileSync(parent);
   const r = run(["orchestrate", "status", "--json"]);
@@ -73,7 +81,7 @@ test("invalid native environment or newer unsupported DB fails without fallback"
   const r = run(["orchestrate", "status", "--json"]);
   assert.equal(r.status, 1, r.stderr);
   assert.equal(JSON.parse(r.stdout).phase, null);
-  assert.equal(existsSync(join(cwd, ".cursorclaw", "sessions", `${id}.json`)), false);
+  assert.equal(existsSync(join(cwd, ".codexclaw", "sessions", `${id}.json`)), false);
 });
 
 test("plain terminal retains read-only latest-state fallback", t => {
@@ -102,5 +110,21 @@ test("repository and installed-payload dispatch session recovery end to end", t 
     assert.equal(JSON.parse(status.stdout).phase, "IDLE");
     assert.equal(JSON.parse(status.stdout).sessionId, id);
   }
-  assert.ok(existsSync(resolve(cwd, ".cursorclaw", "sessions", `${id}.json`)));
+  assert.ok(existsSync(resolve(cwd, ".codexclaw", "sessions", `${id}.json`)));
+});
+
+test("Cursor conversation id selects status without Codex SQLite or latest-file", t => {
+  const { cwd, run } = fixture(t);
+  writeState(cwd, { ...defaultState(id), phase: "P" });
+  writeState(cwd, { ...defaultState(other), phase: "B" });
+  const parent = join(cwd, ".codexclaw", "sessions", `${other}.json`);
+  utimesSync(parent, new Date(2000000000000), new Date(2000000000000));
+  const r = run(["orchestrate", "status", "--json"], cli, {
+    CODEX_THREAD_ID: undefined,
+    CURSOR_CONVERSATION_ID: id,
+  });
+  assert.equal(r.status, 0, r.stderr + r.stdout);
+  assert.equal(JSON.parse(r.stdout).sessionId, id);
+  assert.equal(JSON.parse(r.stdout).phase, "P");
+  assert.equal(JSON.parse(r.stdout).selection, "native");
 });

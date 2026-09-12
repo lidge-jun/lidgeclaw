@@ -123,7 +123,7 @@ export function generateBundle(opts: {
 
   // 4. PABCD session identifiers (no objective/prompt text)
   if (opts.projectRoot) {
-    const sessDir = join(opts.projectRoot, ".cursorclaw", "sessions");
+    const sessDir = join(opts.projectRoot, ".codexclaw", "sessions");
     if (existsSync(sessDir) && statSync(sessDir).isDirectory()) {
       const files = readdirSync(sessDir).filter(f => f.endsWith(".json"));
       const summaries = files.map(f => {

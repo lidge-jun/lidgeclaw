@@ -13,11 +13,11 @@ import type { FetchText } from "../src/types.ts";
 
 function isolateCache(t: { after: (fn: () => void) => void }) {
   const dir = mkdtempSync(join(tmpdir(), "cxc-skcli-"));
-  const prev = process.env.CURSORCLAW_HOME;
-  process.env.CURSORCLAW_HOME = dir;
+  const prev = process.env.CODEXCLAW_HOME;
+  process.env.CODEXCLAW_HOME = dir;
   t.after(() => {
-    if (prev === undefined) delete process.env.CURSORCLAW_HOME;
-    else process.env.CURSORCLAW_HOME = prev;
+    if (prev === undefined) delete process.env.CODEXCLAW_HOME;
+    else process.env.CODEXCLAW_HOME = prev;
     rmSync(dir, { recursive: true, force: true });
   });
 }

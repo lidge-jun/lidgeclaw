@@ -8,31 +8,58 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 // Native protocol SessionSource + state::extract::enum_to_string: unit
 // variants are lowercase strings; custom/internal/subagent are JSON objects.
 const ROOT_SOURCES = new Set(["cli", "vscode", "exec", "mcp"]);
+// Match cursor-bridge.mjs canonicalSessionId accept shape (pre-hash).
+const CURSOR_SESSION_ID = /^[A-Za-z0-9._-]+$/;
 
 export type NativeSessionResult =
-  | { ok: true; sessionId: string; cwd: string; dbPath: string }
+  | { ok: true; sessionId: string; cwd: string; dbPath: string | null; source: string }
   | { ok: false; error: string };
 
-/** CLI-only corroboration. Never use as a hook's identity resolver: subagent
- * hook session_id is the root ID, unlike the child's native CODEX_THREAD_ID.
- * Protects accidental cross-session writes, not hostile same-user DB/env edits.
- */
-export function resolveNativeSession(cwd: string, env: NodeJS.ProcessEnv = process.env): NativeSessionResult {
-  const sessionId = env.CODEX_THREAD_ID;
-  if (sessionId === undefined) {
-    return { ok: false, error: "CODEX_THREAD_ID is absent. Run this command inside the native Codex session." };
+function resolveCanonicalCwd(cwd: string): { ok: true; cwd: string } | { ok: false; error: string } {
+  try {
+    const canonicalCwd = realpathSync(cwd);
+    if (!lstatSync(canonicalCwd).isDirectory()) throw new Error();
+    return { ok: true, cwd: canonicalCwd };
+  } catch {
+    return { ok: false, error: "Cannot resolve the working directory. Run from the native session's directory." };
   }
+}
+
+function resolveCursorSession(cwd: string, env: NodeJS.ProcessEnv): NativeSessionResult {
+  const fromPlugin = env.CURSORCLAW_SESSION_ID;
+  const fromHost = env.CURSOR_CONVERSATION_ID;
+  if (fromPlugin !== undefined && fromHost !== undefined && fromPlugin !== fromHost) {
+    return {
+      ok: false,
+      error: "CURSORCLAW_SESSION_ID and CURSOR_CONVERSATION_ID disagree. Use the SessionStart-bound id.",
+    };
+  }
+  const sessionId = fromPlugin ?? fromHost;
+  const source = fromPlugin !== undefined ? "CURSORCLAW_SESSION_ID" : "CURSOR_CONVERSATION_ID";
+  if (sessionId === undefined) {
+    return {
+      ok: false,
+      error: "CODEX_THREAD_ID is absent and no Cursor session id is set. Run inside a Codex or Cursor session.",
+    };
+  }
+  if (typeof sessionId !== "string" || !CURSOR_SESSION_ID.test(sessionId) || sessionId.length === 0 || sessionId.length > 128) {
+    return { ok: false, error: `${source} must be an unmodified Cursor session id.` };
+  }
+  const canonical = resolveCanonicalCwd(cwd);
+  if (!canonical.ok) return canonical;
+  // Cursor has no Codex threads SQLite row for conversation ids. Hooks already
+  // keyed .codexclaw/sessions/<id>.json by this id; CLI recovery must match.
+  return { ok: true, sessionId, cwd: canonical.cwd, dbPath: null, source };
+}
+
+function resolveCodexSession(cwd: string, env: NodeJS.ProcessEnv, sessionId: string): NativeSessionResult {
   if (sessionId.length !== 36 || !UUID.test(sessionId)) {
     return { ok: false, error: "CODEX_THREAD_ID must be an unmodified native UUID." };
   }
 
-  let canonicalCwd: string;
-  try {
-    canonicalCwd = realpathSync(cwd);
-    if (!lstatSync(canonicalCwd).isDirectory()) throw new Error();
-  } catch {
-    return { ok: false, error: "Cannot resolve the working directory. Run from the native session's directory." };
-  }
+  const canonical = resolveCanonicalCwd(cwd);
+  if (!canonical.ok) return canonical;
+  const canonicalCwd = canonical.cwd;
 
   let dbPath: string;
   try {
@@ -77,7 +104,7 @@ export function resolveNativeSession(cwd: string, env: NodeJS.ProcessEnv = proce
       } catch {
         return { ok: false, error: "Cannot resolve the native session's working directory." };
       }
-      return { ok: true, sessionId, cwd: canonicalCwd, dbPath };
+      return { ok: true, sessionId, cwd: canonicalCwd, dbPath, source: "CODEX_THREAD_ID" };
     } finally {
       db.close();
     }
@@ -86,4 +113,26 @@ export function resolveNativeSession(cwd: string, env: NodeJS.ProcessEnv = proce
     // never try an older database after the newest schema/open/query fails.
     return { ok: false, error: "Cannot read the newest native state database or its threads schema. Check database access and Node SQLite support." };
   }
+}
+
+/** CLI-only corroboration. Never use as a hook's identity resolver: subagent
+ * hook session_id is the root ID, unlike the child's native CODEX_THREAD_ID.
+ * Protects accidental cross-session writes, not hostile same-user DB/env edits.
+ *
+ * Cursor Agent has no CODEX_THREAD_ID / threads SQLite row. When that env is
+ * absent, accept CURSORCLAW_SESSION_ID (SessionStart) or CURSOR_CONVERSATION_ID
+ * (host). A present but invalid CODEX_THREAD_ID still fails closed — no Cursor
+ * fallback after a native validation miss.
+ */
+export function resolveNativeSession(cwd: string, env: NodeJS.ProcessEnv = process.env): NativeSessionResult {
+  const sessionId = env.CODEX_THREAD_ID;
+  if (sessionId !== undefined) return resolveCodexSession(cwd, env, sessionId);
+  return resolveCursorSession(cwd, env);
+}
+
+/** True when status should prefer host-verified identity over latest-file. */
+export function hasHostSessionIdentity(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env.CODEX_THREAD_ID !== undefined
+    || env.CURSORCLAW_SESSION_ID !== undefined
+    || env.CURSOR_CONVERSATION_ID !== undefined;
 }

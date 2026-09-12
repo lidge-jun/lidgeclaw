@@ -5,9 +5,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cacheDir, cachedFetchText } from "../src/cache.ts";
 
-test("cacheDir honors CURSORCLAW_HOME and defaults to ~/.cursorclaw", () => {
-  assert.equal(cacheDir({ CURSORCLAW_HOME: "/tmp/cxh" }), join("/tmp/cxh", "skill-cache"));
-  assert.ok(cacheDir({}).endsWith(join(".cursorclaw", "skill-cache")));
+test("cacheDir honors CODEXCLAW_HOME and defaults to ~/.codexclaw", () => {
+  assert.equal(cacheDir({ CODEXCLAW_HOME: "/tmp/cxh" }), join("/tmp/cxh", "skill-cache"));
+  assert.ok(cacheDir({}).endsWith(join(".codexclaw", "skill-cache")));
 });
 
 test("fresh cache within TTL is served without fetching", async (t) => {

@@ -1,7 +1,7 @@
 /**
  * db.ts — bridge state substrate (messenger-bridge Phase 1).
  *
- * One SQLite database per project at `<cwd>/.cursorclaw/bridge.db`, opened with
+ * One SQLite database per project at `<cwd>/.codexclaw/bridge.db`, opened with
  * node:sqlite DatabaseSync (zero third-party deps, per the build soundness
  * contract in scripts/build.mjs). The file holds bot tokens, so it is chmod
  * 600 on open. Transactions use exec BEGIN/COMMIT/ROLLBACK — DatabaseSync has
@@ -1035,7 +1035,7 @@ ALTER TABLE agents ADD COLUMN tool_progress TEXT NOT NULL DEFAULT 'new'
 
 /** Open (creating if needed) the project-scoped bridge DB with 600 perms. */
 export function openBridgeDb(cwd: string): BridgeDb {
-  const dir = join(cwd, ".cursorclaw");
+  const dir = join(cwd, ".codexclaw");
   mkdirSync(dir, { recursive: true, mode: 0o700 });
   const file = join(dir, "bridge.db");
   const db = new BridgeDb(file);

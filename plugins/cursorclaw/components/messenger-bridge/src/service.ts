@@ -14,7 +14,7 @@ import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, platform } from "node:os";
 import { join } from "node:path";
 
-export const SERVICE_LABEL = "com.cursorclaw.serve";
+export const SERVICE_LABEL = "com.codexclaw.serve";
 const SYSTEMD_UNIT = "codexclaw-serve.service";
 const TASK_NAME = "codexclaw-serve";
 
@@ -40,7 +40,7 @@ interface ServiceOps {
 }
 
 function stateDir(home = homedir()): string {
-  return join(home, ".cursorclaw");
+  return join(home, ".codexclaw");
 }
 
 function logPaths(home = homedir()): { outLog: string; errLog: string } {

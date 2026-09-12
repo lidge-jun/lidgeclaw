@@ -13,9 +13,9 @@ test("060.1: no rules dir and no AGENTS.md => empty string (no injection)", () =
   assert.equal(buildRulesContext(tmp()), "");
 });
 
-test("060.1: .cursorclaw/rules/*.md are concatenated into a SessionStart envelope", () => {
+test("060.1: .codexclaw/rules/*.md are concatenated into a SessionStart envelope", () => {
   const cwd = tmp();
-  const dir = join(cwd, ".cursorclaw", "rules");
+  const dir = join(cwd, ".codexclaw", "rules");
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "a.md"), "Rule A: always test.");
   writeFileSync(join(dir, "b.md"), "Rule B: small commits.");
@@ -33,7 +33,7 @@ test("060.1: AGENTS.md fallback used only when no rules dir blocks", () => {
 
 test("060.1: duplicate rule blocks are deduped", () => {
   const cwd = tmp();
-  const dir = join(cwd, ".cursorclaw", "rules");
+  const dir = join(cwd, ".codexclaw", "rules");
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "a.md"), "Same block.");
   writeFileSync(join(dir, "b.md"), "Same block.");
@@ -43,7 +43,7 @@ test("060.1: duplicate rule blocks are deduped", () => {
 
 test("060.1: oversized rules are length-capped", () => {
   const cwd = tmp();
-  const dir = join(cwd, ".cursorclaw", "rules");
+  const dir = join(cwd, ".codexclaw", "rules");
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "big.md"), "x".repeat(RULES_MAX_CHARS + 5000));
   const ctx = JSON.parse(buildRulesContext(cwd).trim()).hookSpecificOutput.additionalContext;
@@ -52,7 +52,7 @@ test("060.1: oversized rules are length-capped", () => {
 
 test("060.1: buildRulesContextFromRaw resolves cwd from the payload", () => {
   const cwd = tmp();
-  const dir = join(cwd, ".cursorclaw", "rules");
+  const dir = join(cwd, ".codexclaw", "rules");
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "a.md"), "Payload-cwd rule.");
   const raw = JSON.stringify({ hook_event_name: "SessionStart", cwd });

@@ -10,7 +10,7 @@
  *  - codexclaw NEVER writes the host goal DB. The `host` link here is PROVENANCE only:
  *    `host.armed` records that the MAIN session armed a goal at the freeze boundary; no
  *    code in this module ever calls create_goal / writes goals_1.sqlite.
- *  - All state is project-local under `.cursorclaw/goalplans/<slug>/`.
+ *  - All state is project-local under `.codexclaw/goalplans/<slug>/`.
  *  - readGoalplan returns null (never throws) on absent/unreadable — callers degrade,
  *    never trap a session.
  *  - The coupling to the Stop loop is one-directional and loose: a goalplan ENRICHES a

@@ -64,16 +64,16 @@ This is the single most common source of "false DONE" in this repo. Treat any
 - codexclaw is **loaded by Codex**; it does not patch or replace Codex binaries.
 - Hooks **append context or deny tool calls**; they never swallow or rewrite the
   user's prompt.
-- State is **project-local `.cursorclaw/`** files only — no jaw-style server, no shared
+- State is **project-local `.codexclaw/`** files only — no jaw-style server, no shared
   database, no network service. One scoped exception (owner directive 2026-07-02,
   `devlog/_fin/260702_codex_recall/`): user-level **rebuildable derived caches** under
-  `~/.cursorclaw` (recall's FTS index; ast-grep runtime precedent). A cache is never a
+  `~/.codexclaw` (recall's FTS index; ast-grep runtime precedent). A cache is never a
   source of truth — deleting it only costs a rebuild — and durable state stays
   project-local.
 - The messenger bridge is a **second scoped exception** (owner-approved plan,
   2026-07-03, `devlog/_fin/260703_messenger_bridge_active/`): `cxc serve` runs an
   opt-in, loopback-only (`127.0.0.1`) bridge process with a project-local
-  `.cursorclaw/bridge.db` (`node:sqlite`) for channel/binding/job state. It is not a
+  `.codexclaw/bridge.db` (`node:sqlite`) for channel/binding/job state. It is not a
   jaw-style orchestrator: it never dispatches subagents, never writes the goal DB,
   and nothing else in codexclaw depends on it running. The no-server invariant
   still bans *required*, *non-loopback*, or *orchestration* servers.
@@ -141,7 +141,7 @@ contract). Recording that dropped idea here keeps a future maintainer from
   time (the "B-opt2" pattern), mapped onto the two built-in agent types codex offers:
   `explorer` (read-only) and `worker` (scoped write).
 - **The store owns the model; the TOML owns the prompt.** `model = "default"` is an
-  inherit sentinel. The durable per-role model lives in `.cursorclaw/subagents.json`;
+  inherit sentinel. The durable per-role model lives in `.codexclaw/subagents.json`;
   default mode omits the `model` key so the subagent inherits the main model, and an
   explicit `promptOverride` replaces the TOML body.
 - **Routing should travel as an attachment, not a hope.** When a subagent is dispatched

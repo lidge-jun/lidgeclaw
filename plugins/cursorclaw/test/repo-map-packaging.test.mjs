@@ -83,7 +83,7 @@ test("dispatcher bootstrap ladder: help bypass, env override, uv rung, venv rung
   const deps = {
     scriptPath: "/s/repomap.py",
     reqsPath: "/s/requirements.txt",
-    venvPython: "/h/.cursorclaw/venvs/repomap/bin/python3",
+    venvPython: "/h/.codexclaw/venvs/repomap/bin/python3",
     hasUv: true,
     hasVenv: true,
   };
@@ -110,15 +110,15 @@ test("dispatcher bootstrap ladder: help bypass, env override, uv rung, venv rung
   const bare = selectRepoMapCommand(["."], {}, { ...deps, hasUv: false, hasVenv: false }, "linux");
   assert.equal(bare.cmd, "python3");
   assert.ok(bare.args.includes("-B"));
-  // Venv location honors CURSORCLAW_HOME and defaults under ~/.cursorclaw.
+  // Venv location honors CODEXCLAW_HOME and defaults under ~/.codexclaw.
   // Expected paths are built with join() to match the platform output of the
   // production helper (win32 join() yields backslash separators).
   assert.equal(
     repoMapVenvPython({}, "/h", "linux"),
-    join("/h", ".cursorclaw", "venvs", "repomap", "bin", "python3"),
+    join("/h", ".codexclaw", "venvs", "repomap", "bin", "python3"),
   );
   assert.equal(
-    repoMapVenvPython({ CURSORCLAW_HOME: "/custom" }, "/h", "linux"),
+    repoMapVenvPython({ CODEXCLAW_HOME: "/custom" }, "/h", "linux"),
     join("/custom", "venvs", "repomap", "bin", "python3"),
   );
 });
@@ -131,21 +131,21 @@ test("wp06: the venv interpreter is Scripts\\python.exe on win32 and bin/python3
   // its pip, and rmSync'd the venv it had just created.
   assert.equal(
     repoMapVenvPython({}, "/h", "win32"),
-    join("/h", ".cursorclaw", "venvs", "repomap", "Scripts", "python.exe"),
+    join("/h", ".codexclaw", "venvs", "repomap", "Scripts", "python.exe"),
   );
   assert.equal(
-    repoMapVenvPython({ CURSORCLAW_HOME: "/custom" }, "/h", "win32"),
+    repoMapVenvPython({ CODEXCLAW_HOME: "/custom" }, "/h", "win32"),
     join("/custom", "venvs", "repomap", "Scripts", "python.exe"),
   );
   assert.equal(
     repoMapVenvPython({}, "/h", "linux"),
-    join("/h", ".cursorclaw", "venvs", "repomap", "bin", "python3"),
+    join("/h", ".codexclaw", "venvs", "repomap", "bin", "python3"),
   );
   // runRepoMap derives venvDir as dirname(dirname(venvPython)); both shapes must
   // still point at .../venvs/repomap so the bootstrap writes the right directory.
   for (const platform of ["win32", "linux"]) {
     const py = repoMapVenvPython({}, "/h", platform);
-    assert.equal(dirname(dirname(py)), join("/h", ".cursorclaw", "venvs", "repomap"));
+    assert.equal(dirname(dirname(py)), join("/h", ".codexclaw", "venvs", "repomap"));
   }
 });
 
@@ -155,7 +155,7 @@ test("wp06: the final interpreter rung is py -3 on win32 and python3 on linux", 
   const deps = {
     scriptPath: "/s/repomap.py",
     reqsPath: "/s/requirements.txt",
-    venvPython: "/h/.cursorclaw/venvs/repomap/bin/python3",
+    venvPython: "/h/.codexclaw/venvs/repomap/bin/python3",
     hasUv: false,
     hasVenv: false,
   };

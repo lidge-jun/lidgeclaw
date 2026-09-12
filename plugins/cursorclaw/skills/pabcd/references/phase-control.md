@@ -13,8 +13,8 @@ and, once you escape them, splits the value at its first space — and every gat
 edge needs a `did` narrative, which has spaces. Write the JSON first, then attest:
 
 ```powershell
-'<json>' | Set-Content -Encoding utf8 .cursorclaw/attest.json
-cxc orchestrate A --session <id> --attest-file .cursorclaw/attest.json
+'<json>' | Set-Content -Encoding utf8 .codexclaw/attest.json
+cxc orchestrate A --session <id> --attest-file .codexclaw/attest.json
 ```
 
 Accepted prefixes include `$codexclaw:cxc-orchestrate`, `$crc-pabcd`,
@@ -71,7 +71,7 @@ Copy-paste objects. Replace the values; keep every key:
 {"from":"P","to":"A","did":"wrote the diff-level plan at <path>","planUnit":"devlog/_plan/260825_slug","workPhaseId":"wp1"}
 {"from":"A","to":"B","did":"folded 2 blockers, rebutted 1","auditOutput":"<pasted reviewer verdict tail>","auditVerdict":"near-pass","auditResidual":"GO-WITH-FIXES; blocker 1 folded, blocker 2 rebutted because ...","workPhaseId":"wp1"}
 {"from":"B","to":"C","did":"implemented <files>; <n> tests added","workPhaseId":"wp1"}
-{"from":"C","to":"D","did":"verified at <sha>","checkOutput":"<pasted tail of the command>","exitCode":0,"testReceiptPath":".cursorclaw/evidence/<session>/test-receipt.json","workPhaseId":"wp1"}
+{"from":"C","to":"D","did":"verified at <sha>","checkOutput":"<pasted tail of the command>","exitCode":0,"testReceiptPath":".codexclaw/evidence/<session>/test-receipt.json","workPhaseId":"wp1"}
 ```
 
 Omit `workPhaseId` when no goalplan is bound, and `testReceiptPath` when the

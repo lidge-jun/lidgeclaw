@@ -65,14 +65,14 @@ no accumulated knowns and no recorded gaps comes out vague no matter how the pro
 The loop that prevents it:
 
 1. Answers are captured automatically by the `PostToolUse` hook into
-   `.cursorclaw/interviews/<sessionId>.jsonl`.
+   `.codexclaw/interviews/<sessionId>.jsonl`.
 2. Fold them into the tracker before asking again:
    `crc scan record --session <id> --derive --map <questionId>=<goal|constraint|success|ontology>`.
    Each answered question becomes a `known[]` fact on its dimension; each asked-but-unanswered
    one becomes an explicit `unknown[]` gap, and answering it later retires the gap.
    Unmapped questions are skipped rather than guessed, so pass `--map` for every question that
    should count.
-3. Read `.cursorclaw/sessions/<id>.json` back and let the weakest dimension choose the next
+3. Read `.codexclaw/sessions/<id>.json` back and let the weakest dimension choose the next
    question. This is also what makes Mind routing adaptive: `selectMinds` ranks by dimension
    level, so with an empty tracker all four tie and it degrades to a fixed order.
 
@@ -196,7 +196,7 @@ the persisted I->P edge is not Plan entry (ORCH-MANDATE-01, canonical in `loop`)
 The interview runtime is shipped, not planned:
 
 - `PostToolUse` auto-capture for `request_user_input` records each question/answer
-  round to `.cursorclaw/interviews/<sessionId>.jsonl` (`handlePostToolUse`,
+  round to `.codexclaw/interviews/<sessionId>.jsonl` (`handlePostToolUse`,
   `captureInterviewAnswers`).
 - L18: after each captured answer, the same PostToolUse hook REINJECTS the rescan
   directive as `additionalContext` (`RESCAN_REINJECT_DIRECTIVE`) when the session is

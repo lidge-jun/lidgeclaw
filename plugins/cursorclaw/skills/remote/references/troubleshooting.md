@@ -40,7 +40,7 @@ Telegram returned `retry_after`; normal calls wait and retry once. Draft progres
 suspends until `retry_after` and repeated draft failures disable draft progress
 for that turn. Fix:
 ```bash
-tail -n 80 ~/.cursorclaw/serve.err.log
+tail -n 80 ~/.codexclaw/serve.err.log
 curl -sS http://127.0.0.1:7717/api/agents/statuses
 ```
 Wait the indicated window, then smoke test `/status`.
@@ -60,7 +60,7 @@ curl -sS -X POST http://127.0.0.1:7717/api/agents/update \
   -H 'content-type: application/json' -H 'x-codexclaw-local: 1' \
   --data "{\"id\":1,\"webhookUrl\":\"$WEBHOOK_URL\"}"
 curl -sS http://127.0.0.1:7717/api/agents/statuses
-tail -n 120 ~/.cursorclaw/serve.out.log
+tail -n 120 ~/.codexclaw/serve.out.log
 ```
 In Telegram groups, mention `@BotUsername` or disable mention-only:
 ```bash

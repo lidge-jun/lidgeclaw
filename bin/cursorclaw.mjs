@@ -7,7 +7,7 @@
  *   cursorclaw uninstall|disable   revert flags cursorclaw enabled (config-guard)
  *   cursorclaw status              show declared feature-flag state (config-guard)
  *   cursorclaw doctor              run plugin health checks (crc-ops)
- *   cursorclaw reset               remove scoped .cursorclaw state/generated files (crc-ops)
+ *   cursorclaw reset               remove scoped .codexclaw state/generated files (crc-ops)
  *   cursorclaw orchestrate         drive IPABCD state with agent-gated attest evidence
  *   cursorclaw freeze              freeze the interview plan + surface the goal-activation handoff
  *   cursorclaw metric              record/show objective metrics for emergence-harness loops
@@ -51,7 +51,7 @@ const cxcOpsCli = join(
   "plugins",
   "cursorclaw",
   "components",
-  "crc-ops",
+  "cxc-ops",
   "dist",
   "cli.js",
 );
@@ -270,7 +270,7 @@ const TOP_LEVEL_HELP = [
   "  disable | uninstall            revert flags cursorclaw enabled when safe",
   "  status                         show declared feature-flag state",
   "  doctor                         run plugin health checks",
-  "  reset                          remove scoped .cursorclaw state/generated files",
+  "  reset                          remove scoped .codexclaw state/generated files",
   "  hooks retrust                  re-trust plugin hook hashes after editing hook JSONs",
   "",
   "PABCD / loop:",
@@ -325,7 +325,7 @@ function renderUnknownTopLevelCommand(cmd) {
  *   1. CODEXCLAW_PYTHON env override -> that interpreter, verbatim.
  *   2. `uv` on PATH -> `uv run --with-requirements <reqs> python -B script ...`
  *      (deps resolve into uv's own rebuildable cache; no venv to manage).
- *   3. existing venv at $CURSORCLAW_HOME|~/.cursorclaw/venvs/repomap -> its python.
+ *   3. existing venv at $CODEXCLAW_HOME|~/.codexclaw/venvs/repomap -> its python.
  *      The venv is only auto-created when CODEXCLAW_MAP_BOOTSTRAP=1 (opt-in network).
  *   4. bare python3 -> repomap.py itself degrades to an exit-3 install hint.
  *
@@ -367,7 +367,7 @@ export function selectRepoMapCommand(args, env, deps, platform = process.platfor
  * platform is a parameter so the packaging test can assert both shapes from one OS.
  */
 export function repoMapVenvPython(env, home, platform = process.platform) {
-  const base = env.CURSORCLAW_HOME && env.CURSORCLAW_HOME.trim() !== "" ? env.CURSORCLAW_HOME : join(home, ".cursorclaw");
+  const base = env.CODEXCLAW_HOME && env.CODEXCLAW_HOME.trim() !== "" ? env.CODEXCLAW_HOME : join(home, ".codexclaw");
   return platform === "win32"
     ? join(base, "venvs", "repomap", "Scripts", "python.exe")
     : join(base, "venvs", "repomap", "bin", "python3");

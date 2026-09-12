@@ -301,7 +301,7 @@ export function applySteeringBatch(
         entry,
         warning:
           `the batch was applied but its ledger entry could not be written to `
-          + `.cursorclaw/goalplans/${slug}/ledger.jsonl `
+          + `.codexclaw/goalplans/${slug}/ledger.jsonl `
           + `(${err instanceof Error ? err.message : String(err)}). `
           + `Re-running is a no-op because the key is recorded.`,
       };

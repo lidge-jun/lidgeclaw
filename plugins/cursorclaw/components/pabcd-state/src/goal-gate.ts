@@ -244,7 +244,7 @@ export function applyGoalCompleteGuard(payload: PreToolUsePayload): string {
     const marker = unrecordableVerdictStatus(payload.cwd, payload.session_id);
     if (marker.present || marker.unreadable) {
       return goalCompleteDenyEnvelope(
-        `GOAL-COMPLETE-GATE-01: a delegated subagent failed evidence verification but the verdict could not be confirmed (see .cursorclaw/evidence-unrecordable/). Re-verify that work and clear the marker, or use update_goal status "blocked".`,
+        `GOAL-COMPLETE-GATE-01: a delegated subagent failed evidence verification but the verdict could not be confirmed (see .codexclaw/evidence-unrecordable/). Re-verify that work and clear the marker, or use update_goal status "blocked".`,
       );
     }
     // Independent durable signal: a retry counter still at the cap means an agent
@@ -286,7 +286,7 @@ export function applyGoalCompleteGuard(payload: PreToolUsePayload): string {
         if (!verdict.ok) {
           const reasons = verdict.reasons.slice(0, 4).join("; ");
           return goalCompleteDenyEnvelope(
-            `GOAL-COMPLETE-GATE-01: the session-bound goalplan '${state.slug}' fails the E8 quality/integrity gate: ${reasons}. Repair invalid dependency, outcome, and criteria references first; then finish remaining work and record fresh capturedEvidence in .cursorclaw/goalplans/${state.slug}/goalplan.json (check with \`crc loop validate --session ${payload.session_id} --slug "${state.slug}"\`), or use update_goal status "blocked" if an external blocker prevents completion. Do not shrink the objective to escape the gate (LOOP-CONTINUE-01).`,
+            `GOAL-COMPLETE-GATE-01: the session-bound goalplan '${state.slug}' fails the E8 quality/integrity gate: ${reasons}. Repair invalid dependency, outcome, and criteria references first; then finish remaining work and record fresh capturedEvidence in .codexclaw/goalplans/${state.slug}/goalplan.json (check with \`crc loop validate --session ${payload.session_id} --slug "${state.slug}"\`), or use update_goal status "blocked" if an external blocker prevents completion. Do not shrink the objective to escape the gate (LOOP-CONTINUE-01).`,
           );
         }
       } else {

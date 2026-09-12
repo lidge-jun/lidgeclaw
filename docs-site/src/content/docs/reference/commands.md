@@ -121,7 +121,7 @@ cxc scan record --session <id> [--contradictions N] [--high N]
 
 `scan record` records one interview contradiction-scan round. It performs both halves of the
 recording contract: it appends a `scan_completed` event to the per-session interview ledger
-(`.cursorclaw/interviews/<id>.jsonl`) and increments the tracker's `scanRounds` /
+(`.codexclaw/interviews/<id>.jsonl`) and increments the tracker's `scanRounds` /
 `lastScanRoundId` counters via session state. Recorded rounds are what the I→P readiness gate
 reads, so scans count toward the gate without an override. `--session` is required; there is no
 latest-session fallback for mutating commands.

@@ -6,7 +6,6 @@ import {
   appendFileSync,
   linkSync,
   rmSync,
-  renameSync,
   statSync,
 } from "node:fs";
 import { randomUUID } from "node:crypto";
@@ -240,20 +239,7 @@ export interface LedgerEntry {
   closedWorkPhaseId?: string | null;
 }
 
-export const STATE_DIR = ".cursorclaw";
-/** Upstream codexclaw project state dir; migrated once into STATE_DIR when present. */
-export const LEGACY_STATE_DIR = ".codexclaw";
-
-export function migrateLegacyProjectState(cwd: string): void {
-  const modern = join(cwd, STATE_DIR);
-  const legacy = join(cwd, LEGACY_STATE_DIR);
-  if (existsSync(modern) || !existsSync(legacy)) return;
-  try {
-    renameSync(legacy, modern);
-  } catch {
-    // fail-open: readers still prefer STATE_DIR; bridge may also migrate
-  }
-}
+export const STATE_DIR = ".codexclaw";
 
 export const SESSIONS_SUBDIR = "sessions";
 export const LEDGER_FILE = "ledger.jsonl";
@@ -338,7 +324,6 @@ export function defaultState(sessionId: string, slug = ""): State {
 }
 
 function sessionsDir(cwd: string): string {
-  migrateLegacyProjectState(cwd);
   return join(cwd, STATE_DIR, SESSIONS_SUBDIR);
 }
 
@@ -347,7 +332,7 @@ function statePath(cwd: string, sessionId: string): string {
 }
 
 /**
- * #48: session files live at `<cwd>/.cursorclaw/sessions/<id>.json`, so the SAME
+ * #48: session files live at `<cwd>/.codexclaw/sessions/<id>.json`, so the SAME
  * `--session` id resolves to different state depending on where the process was
  * started. A Codex thread whose cwd is one tree while its work is in another then
  * interviews one FSM and orchestrates the other, and `status` reports IDLE for a
@@ -714,7 +699,7 @@ export type InterviewScanEvent = "scan_started" | "scan_completed" | "rescan_com
 
 /**
  * The complete set of scan-event kinds. The per-session interview ledger
- * (`.cursorclaw/interviews/<id>.jsonl`) is SHARED with Q/A capture events
+ * (`.codexclaw/interviews/<id>.jsonl`) is SHARED with Q/A capture events
  * (`question_asked`/`answer_recorded`, written by interview-ledger.ts), so the scan
  * reader must filter to these kinds — a blind parse would misread Q/A rows as scan
  * evidence (L20 / G3).

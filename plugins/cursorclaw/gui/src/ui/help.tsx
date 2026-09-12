@@ -86,7 +86,7 @@ export const HELP_CONTENT: Record<HelpTopicId, HelpEntry> = {
           <li>모델 목록은 OCX에서 활성화한 모델을 조회합니다. 실패하면 이전 목록 또는 오류 상태를 표시합니다. Refresh models로 다시 조회할 수 있습니다.</li>
           <li>화면의 effort 선택지는 해당 모델이 지원하는 값으로 제한됩니다. CLI와 MCP 저장 검증은 모델별 지원 범위를 검사하지 않습니다.</li>
           <li>프롬프트를 입력한 뒤 Save prompt를 누르면 해당 역할의 프롬프트에 반영됩니다.</li>
-          <li>프로젝트 설정은 <code>.cursorclaw/subagents.json</code>, 전역 설정은 <code>~/.cursorclaw/subagents.json</code>에 저장됩니다.</li>
+          <li>프로젝트 설정은 <code>.codexclaw/subagents.json</code>, 전역 설정은 <code>~/.codexclaw/subagents.json</code>에 저장됩니다.</li>
         </ul>
       </>
     ),

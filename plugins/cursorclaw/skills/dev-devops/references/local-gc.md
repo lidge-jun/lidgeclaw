@@ -80,7 +80,7 @@ A scheduled local job produces a **dry-run report** and deletes nothing. Deletio
 separate human-approved invocation. On macOS use a LaunchAgent; wrap the command in
 `perl -e 'alarm shift; exec @ARGV' <seconds>` and `shlock` where `timeout` and
 `flock` are absent (the case on a stock macOS install; check with `command -v`). The report, written to
-`~/.cursorclaw/worktree-gc/<YYYY-MM-DD>.md` (latest also at `.../latest.md`), contains: one
+`~/.codexclaw/worktree-gc/<YYYY-MM-DD>.md` (latest also at `.../latest.md`), contains: one
 §2 table per repository, the dirty list, the reboot-fragile list, disk usage per root,
 and the snapshot path it would use.
 

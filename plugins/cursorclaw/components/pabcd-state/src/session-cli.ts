@@ -105,7 +105,7 @@ export function runSessionCli(argv: string[], cwd: string, env: NodeJS.ProcessEn
     cwd: identity.cwd,
     sourceCwd,
     ...(sourceIdentity ? { sourceIdentity } : {}),
-    source: "CODEX_THREAD_ID",
+    source: identity.source,
     dbPath: identity.dbPath,
     statePath: join(identity.cwd, STATE_DIR, SESSIONS_SUBDIR, `${identity.sessionId}.json`),
     stateExists: state.stateExists,

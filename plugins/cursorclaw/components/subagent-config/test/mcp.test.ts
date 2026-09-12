@@ -83,8 +83,8 @@ test("MCP: subagents_set then subagents_get roundtrips through the store file", 
   assert.equal(cfg.roles.reviewer.mode, "model");
   assert.equal(cfg.roles.reviewer.model, "gpt-5.5");
   // and it actually hit disk
-  assert.ok(existsSync(join(cwd, ".cursorclaw", "subagents.json")));
-  const onDisk = JSON.parse(readFileSync(join(cwd, ".cursorclaw", "subagents.json"), "utf8"));
+  assert.ok(existsSync(join(cwd, ".codexclaw", "subagents.json")));
+  const onDisk = JSON.parse(readFileSync(join(cwd, ".codexclaw", "subagents.json"), "utf8"));
   assert.equal(onDisk.roles.reviewer.model, "gpt-5.5");
 });
 

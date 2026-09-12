@@ -59,7 +59,7 @@ function smallText(value: unknown, field: string): string {
 }
 function directory(cwd: string, sessionId: string): string {
   let dir = cwd;
-  for (const part of [".cursorclaw", "dispatches", sessionId]) {
+  for (const part of [".codexclaw", "dispatches", sessionId]) {
     dir = join(dir, part);
     if (existsSync(dir)) {
       if (!lstatSync(dir).isDirectory() || lstatSync(dir).isSymbolicLink()) throw new Error("dispatch directory must not be a symlink");
@@ -194,7 +194,7 @@ export function managedSpawn(cwd: string, sessionId: string, message: string): {
   const match = /^\[CXC-DISPATCH:([a-zA-Z0-9_-]+):([a-zA-Z0-9_-]+)\](?:\r?\n|$)/m.exec(message);
   if (!match) return null;
   id(sessionId, "sessionId"); id(match[1], "dispatchId"); id(match[2], "attemptId");
-  const path = join(cwd, ".cursorclaw", "dispatches", sessionId, `${match[1]}.json`);
+  const path = join(cwd, ".codexclaw", "dispatches", sessionId, `${match[1]}.json`);
   const d = readState(path, sessionId, match[1]);
   const a = d.attempts.at(-1)!;
   if (a.id !== match[2] || !a.claimed || a.status !== "claimed" || d.status !== "active") throw new Error("managed spawn attempt is not claimed or no longer current");

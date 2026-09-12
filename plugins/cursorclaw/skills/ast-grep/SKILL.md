@@ -90,7 +90,7 @@ catch, bare except, relational YAML rules) and the reproduced pitfall table live
 
 The helper resolves `sg` in priority order: `CURSORCLAW_AST_GREP_SG_PATH`
 override (`OMO_AST_GREP_SG_PATH` fallback) → cursorclaw runtime
-(`$CURSOR_HOME/runtime/ast-grep` or `~/.cursorclaw/runtime/ast-grep`) → a cached
+(`$CURSOR_HOME/runtime/ast-grep` or `~/.codexclaw/runtime/ast-grep`) → a cached
 binary under the skill `bin/` → `PATH` → Homebrew defaults. When `sg` is missing,
 `doctor`/`install` exit with a clear install hint rather than crashing. See
 `references/install.md`. Provisioning is lazy, evidence-bound, and idempotent.

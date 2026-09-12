@@ -109,7 +109,7 @@ test("emitTrace: disabled tracing produces no file", () => {
     const tb = new TraceBuilder("sess-5", "turn-5");
     const result = emitTrace(tb.build(), dir, {});
     assert.equal(result, null);
-    assert.equal(existsSync(join(dir, ".cursorclaw", "traces")), false);
+    assert.equal(existsSync(join(dir, ".codexclaw", "traces")), false);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

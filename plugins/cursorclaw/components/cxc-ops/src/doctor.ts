@@ -158,9 +158,9 @@ export function buildDeclaredFeaturesCheck(res: { status: number | null; stdout:
 }
 
 function checkPabcdHealth(projectRoot: string): CheckResult {
-  const stateDir = join(projectRoot, ".cursorclaw", "sessions");
+  const stateDir = join(projectRoot, ".codexclaw", "sessions");
   if (!isDir(stateDir)) {
-    return { name: "pabcd-state", severity: "PASS", evidence: "no .cursorclaw/sessions/ directory (clean state)" };
+    return { name: "pabcd-state", severity: "PASS", evidence: "no .codexclaw/sessions/ directory (clean state)" };
   }
   const files = readdirSync(stateDir).filter(f => f.endsWith(".json"));
   const corrupt: string[] = [];
@@ -179,7 +179,7 @@ function checkPabcdHealth(projectRoot: string): CheckResult {
  *
  * The dangerous configuration is not "using WSL" - it is running codex on the
  * Windows side and codexclaw on the Linux side against one checkout, so two
- * runtimes write `.cursorclaw/` through two filesystem drivers. The steering lock
+ * runtimes write `.codexclaw/` through two filesystem drivers. The steering lock
  * (mkdir) and the state publish (link) both assume more than drvfs guarantees.
  *
  * Probes arrive through `WslDeps` so both branches are reachable from any CI OS.
@@ -190,17 +190,17 @@ export function checkWslResidency(cwd: string, deps: WslDeps = {}): CheckResult 
   }
   const root = automountRoot(deps);
   // The joiner follows the PROBED platform, not the host: node's path.join emits
-  // backslashes on win32, and a /mnt/c/proj\.cursorclaw never matches a posix
+  // backslashes on win32, and a /mnt/c/proj\.codexclaw never matches a posix
   // mount prefix. In production these agree; under injected deps they need not.
   const joiner = (deps.platform ?? process.platform) === "win32" ? join : posixPath.join;
-  const stateDir = joiner(cwd, ".cursorclaw");
+  const stateDir = joiner(cwd, ".codexclaw");
   const tier = filesystemTier(stateDir, deps);
   if (tier === "drvfs" || tier === "9p") {
     return {
       name: "wsl",
       severity: "WARN",
       evidence:
-        `.cursorclaw state lives on ${tier} (${stateDir}, automount root ${root}). ` +
+        `.codexclaw state lives on ${tier} (${stateDir}, automount root ${root}). ` +
         "File locking and atomic publish are weaker there than on a native Linux " +
         "filesystem, and a Windows-side codex writing the same tree can interleave.",
       repair:

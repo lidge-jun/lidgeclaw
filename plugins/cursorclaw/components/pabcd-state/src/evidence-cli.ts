@@ -9,7 +9,7 @@
  *
  * Resolution is EVIDENCE-BACKED, not an acknowledgement: `--receipt` is required and
  * is validated through the same `hasValidReceipt` contract the gate itself uses
- * (inside .cursorclaw/evidence, not a symlink, a regular non-empty file). A bare
+ * (inside .codexclaw/evidence, not a symlink, a regular non-empty file). A bare
  * "I acknowledge this" would just relocate the laundering it exists to prevent.
  *
  * There is deliberately NO `--override` flag. A CLI flag cannot authenticate a human:
@@ -66,7 +66,7 @@ export function runEvidenceCli(args: EvidenceResolveArgs): { output: string; cod
   const receipt = args.receipt ?? "";
   if (!hasValidReceipt(args.cwd, receipt)) {
     return {
-      output: `evidence resolve: receipt failed the evidence-root guard (must be a real, non-empty, non-symlink file inside .cursorclaw/evidence): ${receipt}`,
+      output: `evidence resolve: receipt failed the evidence-root guard (must be a real, non-empty, non-symlink file inside .codexclaw/evidence): ${receipt}`,
       code: 1,
     };
   }

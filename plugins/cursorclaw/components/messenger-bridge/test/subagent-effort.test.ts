@@ -19,7 +19,7 @@ async function startServer(cwd: string) {
     server.listen(0, '127.0.0.1', () => console.log(server.address().port));
     process.on('SIGTERM', () => server.close(() => { db.close(); process.exit(0); }));
   `;
-  const child = spawn(process.execPath, ["--input-type=module", "-e", script, cwd], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, CURSOR_HOME: join(cwd, "test-codex-home"), CURSORCLAW_HOME: join(cwd, "test-cxc-home") } });
+  const child = spawn(process.execPath, ["--input-type=module", "-e", script, cwd], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, CURSOR_HOME: join(cwd, "test-codex-home"), CODEXCLAW_HOME: join(cwd, "test-cxc-home") } });
   let stderr = "";
   child.stderr.on("data", chunk => { stderr += chunk; });
   const exit = once(child, "exit");
@@ -58,7 +58,7 @@ test("serve persists effort across GET and process restart, preserves models, ac
       assert.deepEqual(await res.json(), snapshot(effort));
       assert.deepEqual(await (await fetch(`${server.base}/api/subagents`)).json(), snapshot(effort));
     }
-    const storePath = join(cwd, ".cursorclaw/subagents.json");
+    const storePath = join(cwd, ".codexclaw/subagents.json");
     assert.deepEqual(JSON.parse(readFileSync(storePath, "utf8")), { roles: snapshot("xhigh").roles });
     await server.stop();
     server = await startServer(cwd);

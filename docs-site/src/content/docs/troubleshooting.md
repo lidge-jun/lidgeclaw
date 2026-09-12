@@ -42,8 +42,8 @@ If it still blocks unexpectedly, reset the phase and confirm no goal is active.
 
 ## Stale state references
 
-- The shipped state layout is `.cursorclaw/sessions/<sessionId>.json`. If a tool or doc references
-  `.cursorclaw/state.json`, that is stale — see the [State Model](/codexclaw/concepts/state-model/).
+- The shipped state layout is `.codexclaw/sessions/<sessionId>.json`. If a tool or doc references
+  `.codexclaw/state.json`, that is stale — see the [State Model](/codexclaw/concepts/state-model/).
 
 ## Build or test failures
 

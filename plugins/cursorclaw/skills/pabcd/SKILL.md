@@ -8,7 +8,7 @@ metadata:
 
 # PABCD Workflow
 
-A Cursor-native reimplementation of the IPABCD development loop (Interview + Plan / Audit / Build / Check / Done). There is no external orchestrator server. State lives in `.cursorclaw/sessions/<sessionId>.json` plus `.cursorclaw/ledger.jsonl`; transitions are driven by the `pabcd-state` hook component, the chat-side `orchestrate` surface (human free-pass), and the live `crc orchestrate` terminal CLI (agent-gated).
+A Cursor-native reimplementation of the IPABCD development loop (Interview + Plan / Audit / Build / Check / Done). There is no external orchestrator server. State lives in `.codexclaw/sessions/<sessionId>.json` plus `.codexclaw/ledger.jsonl`; transitions are driven by the `pabcd-state` hook component, the chat-side `orchestrate` surface (human free-pass), and the live `crc orchestrate` terminal CLI (agent-gated).
 
 > **C0/C1 work (small in-place patches):** See `dev` §0.0 Work Classifier and §0.1 Patch Fast-Path first — full PABCD is mandatory for C4 and conditional for C3, never the baseline for every task.
 
@@ -153,9 +153,9 @@ Interview sub-modes and Catalog Discovery rules live in `$crc-interview`
 
 ## State
 
-- `.cursorclaw/sessions/<sessionId>.json` — current phase (IDLE/I/P/A/B/C/D), derived flags, injection dedupe, and bounded interview tracker.
-- `.cursorclaw/ledger.jsonl` — append-only audit trail of transitions.
-- `.cursorclaw/interviews/<sessionId>.jsonl` — shipped append-only Interview Q/A capture (and scan-evidence) ledger, written by the PostToolUse `request_user_input` hook.
+- `.codexclaw/sessions/<sessionId>.json` — current phase (IDLE/I/P/A/B/C/D), derived flags, injection dedupe, and bounded interview tracker.
+- `.codexclaw/ledger.jsonl` — append-only audit trail of transitions.
+- `.codexclaw/interviews/<sessionId>.jsonl` — shipped append-only Interview Q/A capture (and scan-evidence) ledger, written by the PostToolUse `request_user_input` hook.
 
 ## Repository Root
 

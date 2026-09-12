@@ -12,7 +12,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT"></a>
 </p>
 
-**lidgeclaw**는 [codexclaw](https://github.com/lidge-jun/codexclaw) 계열 규율을 **Cursor(`cursorclaw`) + ZCode(`zclaw`)** 두 런타임에 담는 우산 저장소입니다. 스킬은 `plugins/cursorclaw/skills/` 한곳에 두고 zclaw가 심볼릭 링크로 공유합니다.
+**lidgeclaw**는 [codexclaw](https://github.com/lidge-jun/codexclaw) 계열 규율을 **Cursor(`cursorclaw`) + ZCode(`zclaw`)** 두 런타임에 담는 우산 저장소입니다. **공통 레이어**(skills / components / `structure/` / `.codexclaw/` 상태)는 codexclaw와 맞추고, **고유 레이어** 중 공유 가능한 agents·commands·skills는 `plugins/cursorclaw/`에 두고 zclaw가 심볼릭 링크로 마운트합니다. 훅 브리지·매니페스트만 호스트 고유입니다. 표: [PORTING.md](PORTING.md).
 
 ## 설치
 

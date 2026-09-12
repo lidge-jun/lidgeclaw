@@ -158,7 +158,7 @@ function findVerdictFiles(root) {
   return out.sort();
 }
 
-/** `.cursorclaw/evidence/<sessionId>/qa/` -> `.cursorclaw/evidence/<sessionId>/`. */
+/** `.codexclaw/evidence/<sessionId>/qa/` -> `.codexclaw/evidence/<sessionId>/`. */
 function receiptPathFor(qaDir) {
   const resolved = resolve(qaDir);
   return join(basename(resolved) === "qa" ? dirname(resolved) : resolved, "qa-receipt.json");
@@ -236,7 +236,7 @@ if (isDirect) {
   const args = process.argv.slice(2);
   const dir = args.find((a) => !a.startsWith("--"));
   if (!dir) {
-    console.error("usage: validate-evidence.mjs <.cursorclaw/evidence/<sessionId>/qa/> [--emit-receipt]");
+    console.error("usage: validate-evidence.mjs <.codexclaw/evidence/<sessionId>/qa/> [--emit-receipt]");
     process.exit(2);
   }
   const result = validateEvidence(dir, { emitReceipt: args.includes("--emit-receipt") });

@@ -12,7 +12,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT"></a>
 </p>
 
-**lidgeclaw** 是 [codexclaw](https://github.com/lidge-jun/codexclaw) 纪律的伞仓：同一套 skills，两个运行时 —— **cursorclaw**（Cursor）与 **zclaw**（ZCode）。skills 以 `plugins/cursorclaw/skills/` 为源，zclaw 通过符号链接共享。
+**lidgeclaw** 是 [codexclaw](https://github.com/lidge-jun/codexclaw) 纪律的伞仓：两个运行时 —— **cursorclaw**（Cursor）与 **zclaw**（ZCode）。**公共层**（skills / components / `structure/` / `.codexclaw/` 状态）与 codexclaw 对齐；可共享的 **宿主特有内容**（agents、commands、skills）以 `plugins/cursorclaw/` 为源，zclaw 用符号链接挂载；钩子桥接与清单仍为宿主独有。详见 [PORTING.md](PORTING.md)。
 
 ## 安装
 

@@ -40,18 +40,18 @@ Just describe a coding task. `cxc-dev` is implicit, so it engages automatically:
 work (C0-C5), reminds you to search before writing, and holds completion until verification runs.
 
 To drive the PABCD loop explicitly, use the orchestrate grammar in chat or the `cxc orchestrate`
-CLI — both write the same `.cursorclaw` file state. See the
+CLI — both write the same `.codexclaw` file state. See the
 [PABCD Workflow](/codexclaw/guides/pabcd/) guide.
 
 ## Where state lives
 
-codexclaw writes session-scoped state under the project's `.cursorclaw/` directory:
+codexclaw writes session-scoped state under the project's `.codexclaw/` directory:
 
 | Path | Purpose |
 |---|---|
-| `.cursorclaw/sessions/<sessionId>.json` | Per-session phase, flags, and orchestration state. |
-| `.cursorclaw/ledger.jsonl` | Append-only transition ledger. |
-| `.cursorclaw/interviews/<id>.jsonl` | Interview scan-evidence ledger. |
-| `.cursorclaw/subagents.json` | Subagent role → model/prompt config. |
+| `.codexclaw/sessions/<sessionId>.json` | Per-session phase, flags, and orchestration state. |
+| `.codexclaw/ledger.jsonl` | Append-only transition ledger. |
+| `.codexclaw/interviews/<id>.jsonl` | Interview scan-evidence ledger. |
+| `.codexclaw/subagents.json` | Subagent role → model/prompt config. |
 
 See the [State Model](/codexclaw/concepts/state-model/) for the full schema.

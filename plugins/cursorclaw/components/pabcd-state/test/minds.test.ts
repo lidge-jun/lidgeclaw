@@ -20,10 +20,10 @@ test("L9.1: all five Mind ids exist with fixed prompts", () => {
   }
 });
 
-test("L9.3: dispatch directive states main owns loop + hook is injector-only + .cursorclaw surface", () => {
+test("L9.3: dispatch directive states main owns loop + hook is injector-only + .codexclaw surface", () => {
   assert.match(MIND_DISPATCH_DIRECTIVE, /OWN this interview loop/i);
   assert.match(MIND_DISPATCH_DIRECTIVE, /hook only injects directives/i);
-  assert.match(MIND_DISPATCH_DIRECTIVE, /\.cursorclaw\//);
+  assert.match(MIND_DISPATCH_DIRECTIVE, /\.codexclaw\//);
   assert.match(MIND_DISPATCH_DIRECTIVE, /if you are yourself a subagent/i); // T7
 });
 

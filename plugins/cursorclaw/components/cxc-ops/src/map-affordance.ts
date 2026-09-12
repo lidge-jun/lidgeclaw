@@ -237,7 +237,7 @@ function recoveryPath(stdin: string, event: string, create: boolean): string | n
       || typeof p.cwd !== "string" || !isAbsolute(p.cwd)
       || typeof p.session_id !== "string" || !p.session_id.trim() || p.session_id.length > 256
       || (p.agent_id != null && p.agent_id !== "") || (p.agent_type != null && p.agent_type !== "")) return null;
-    const state = join(realpathSync(p.cwd), ".cursorclaw");
+    const state = join(realpathSync(p.cwd), ".codexclaw");
     const dir = join(state, "affordance-recovery");
     for (const path of [state, dir]) {
       let st;

@@ -11,7 +11,7 @@ function fixture(t: { after: (fn: () => void) => void }) {
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const cwd = join(root, 'project');
   mkdirSync(cwd);
-  return { cwd, env: { ...process.env, CURSOR_HOME: join(root, 'codex'), CURSORCLAW_HOME: join(root, 'cxc') }, root };
+  return { cwd, env: { ...process.env, CURSOR_HOME: join(root, 'codex'), CODEXCLAW_HOME: join(root, 'cxc') }, root };
 }
 
 test('role precedence, explicit null, reset, sparse writes, and project independence', t => {
@@ -21,7 +21,7 @@ test('role precedence, explicit null, reset, sparse writes, and project independ
   assert.equal(readSettings(cwd, 'project', env).sources.explorer, 'global');
   assert.equal(resolveSpawnConfig(cwd, 'explorer', env).effort, 'high');
   setRole(cwd, 'reviewer', { effort: 'low' }, 'project', env);
-  const path = join(cwd, '.cursorclaw/subagents.json');
+  const path = join(cwd, '.codexclaw/subagents.json');
   assert.deepEqual(Object.keys(JSON.parse(readFileSync(path, 'utf8')).roles), ['reviewer']);
   setRole(cwd, 'explorer', { effort: null }, 'project', env);
   assert.equal(readSettings(cwd, 'project', env).roles.explorer.model, 'global-model');
@@ -40,7 +40,7 @@ test('role precedence, explicit null, reset, sparse writes, and project independ
 test('existing complete role configs mask global settings without migration', t => {
   const { cwd, env } = fixture(t);
   setRole(cwd, 'executor', { mode: 'model', model: 'terra', effort: null }, 'project', env);
-  const path = join(cwd, '.cursorclaw/subagents.json');
+  const path = join(cwd, '.codexclaw/subagents.json');
   const original = readFileSync(path, 'utf8');
   setRole(cwd, 'executor', { effort: 'high' }, 'global', env);
   assert.equal(resolveSpawnConfig(cwd, 'executor', env).model, 'terra');
@@ -53,7 +53,7 @@ test('untrusted tracked project falls back to global; project trust still binds 
   execFileSync('git', ['init', '-q', cwd]);
   setRole(cwd, 'executor', { mode: 'model', model: 'global' }, 'global', env);
   setRole(cwd, 'executor', { model: 'project' }, 'project', env);
-  execFileSync('git', ['-C', cwd, 'add', '-f', '.cursorclaw/subagents.json']);
+  execFileSync('git', ['-C', cwd, 'add', '-f', '.codexclaw/subagents.json']);
   assert.equal(resolveSpawnConfig(cwd, 'executor', env).model, 'global');
   assert.equal(readSettings(cwd, 'project', env).sources.executor, 'global');
   assert.equal(readSettings(cwd, 'project', env).overrides.executor, true);
@@ -83,8 +83,8 @@ test('scoped writes preserve unrelated data and reject invalid effort/scope with
 test('legacy all-default roles remain explicit overrides until reset', t => {
   const { cwd, env } = fixture(t);
   const role = { mode: 'default', model: null, effort: null, promptOverride: null };
-  mkdirSync(join(cwd, '.cursorclaw'));
-  writeFileSync(join(cwd, '.cursorclaw/subagents.json'), JSON.stringify({ roles: { explorer: role, reviewer: role, executor: role } }));
+  mkdirSync(join(cwd, '.codexclaw'));
+  writeFileSync(join(cwd, '.codexclaw/subagents.json'), JSON.stringify({ roles: { explorer: role, reviewer: role, executor: role } }));
   setRole(cwd, 'explorer', { effort: 'high' }, 'global', env);
   assert.equal(readSettings(cwd, 'project', env).sources.explorer, 'project');
   assert.equal(readSettings(cwd, 'project', env).roles.explorer.effort, null);
@@ -105,7 +105,7 @@ test('malformed persisted state is not overwritten during an edit or reset', t =
 test('architect inherits without migrating legacy files and preserves sibling overrides', t => {
   const { cwd, env } = fixture(t);
   setRole(cwd, 'reviewer', { mode: 'model', model: 'reviewer-local', effort: 'low' }, 'project', env);
-  const path = join(cwd, '.cursorclaw/subagents.json');
+  const path = join(cwd, '.codexclaw/subagents.json');
   const before = readFileSync(path, 'utf8');
   assert.equal(resolveSpawnConfig(cwd, 'architect', env).usesMainModel, true);
   assert.equal(readFileSync(path, 'utf8'), before);

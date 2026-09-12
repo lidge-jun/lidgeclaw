@@ -1,7 +1,6 @@
 node_modules/
 dist/
 __pycache__/
-.codexclaw/
 # Retired local review receipts, design experiments, and generated PDF exports.
 /.omo/evidence/
 /mockup-scroll-motion/
@@ -24,5 +23,5 @@ devlog/_plan/260630_ouroboros_interview_research/.ouroboros/
 # embedded tool repo, not codexclaw source
 devlog/_fin/260630_ouroboros_interview_research/.ouroboros/
 
-# cursorclaw local state
-.cursorclaw/
+# lidgeclaw project-local state (shared by cursorclaw + zclaw)
+.codexclaw/

@@ -4,7 +4,7 @@
  * The scan-evidence ledger (state.ts appendInterviewEvent) records that a
  * contradiction scan ran. THIS module records the other half of the interview
  * loop: the actual questions asked via `request_user_input` and the answers the
- * user selected. Both share the per-session `.cursorclaw/interviews/<id>.jsonl`
+ * user selected. Both share the per-session `.codexclaw/interviews/<id>.jsonl`
  * file, distinguished by the `event` discriminator.
  *
  * Event ids are DERIVED from `(sessionId, turnId, questionId, eventKind)` so a

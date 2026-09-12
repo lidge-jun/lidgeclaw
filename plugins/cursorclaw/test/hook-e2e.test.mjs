@@ -121,7 +121,7 @@ function runHookAsync(distAbs, hookEvent, payload, extraEnv = {}) {
 
 function emptyCodexHome() {
   const dir = mkdtempSync(join(tmpdir(), "ccx-home-"));
-  return { dir, env: { CURSOR_HOME: dir, CURSORCLAW_HOME: join(dir, "cxc"), CODEX_SQLITE_HOME: dir } };
+  return { dir, env: { CURSOR_HOME: dir, CODEXCLAW_HOME: join(dir, "cxc"), CODEX_SQLITE_HOME: dir } };
 }
 
 test("WP7/G19: every manifest hook command resolves to an existing dist entrypoint", () => {
@@ -160,7 +160,7 @@ test("SessionStart state bootstrap: fresh compiled hook creates exact IDLE state
     assert.equal(started.status, 0, started.stderr);
     assert.equal(started.stdout, "", "bootstrap is side-effect-only");
 
-    const statePath = join(cwd, ".cursorclaw", "sessions", `${sessionId}.json`);
+    const statePath = join(cwd, ".codexclaw", "sessions", `${sessionId}.json`);
     const initial = JSON.parse(readFileSync(statePath, "utf8"));
     assert.deepEqual(initial, {
       phase: "IDLE",
@@ -235,7 +235,7 @@ test("SessionStart state bootstrap: valid and corrupt resumed state remain byte-
   ]) {
     const cwd = mkdtempSync(join(tmpdir(), "ccx-session-resume-"));
     try {
-      const sessionsDir = join(cwd, ".cursorclaw", "sessions");
+      const sessionsDir = join(cwd, ".codexclaw", "sessions");
       mkdirSync(sessionsDir, { recursive: true });
       const statePath = join(sessionsDir, `${fixture.sessionId}.json`);
       writeFileSync(statePath, fixture.bytes);
@@ -269,7 +269,7 @@ test("SessionStart state bootstrap: concurrent compiled hooks publish one comple
       assert.equal(result.status, 0, result.stderr);
       assert.equal(result.stdout, "");
     }
-    const sessionsDir = join(cwd, ".cursorclaw", "sessions");
+    const sessionsDir = join(cwd, ".codexclaw", "sessions");
     assert.deepEqual(readdirSync(sessionsDir), [`${sessionId}.json`]);
     const state = JSON.parse(readFileSync(join(sessionsDir, `${sessionId}.json`), "utf8"));
     assert.equal(state.phase, "IDLE");
@@ -287,7 +287,7 @@ test("SessionStart state bootstrap: ENOTDIR fails open with empty stdout and no 
   assert.ok(ep, "pabcd-state dist entrypoint must settle");
   const cwd = mkdtempSync(join(tmpdir(), "ccx-session-enotdir-"));
   try {
-    writeFileSync(join(cwd, ".cursorclaw"), "not a directory");
+    writeFileSync(join(cwd, ".codexclaw"), "not a directory");
     const result = runHook(ep, hookEvent, {
       hook_event_name: "SessionStart",
       session_id: "session-start-enotdir",
@@ -295,7 +295,7 @@ test("SessionStart state bootstrap: ENOTDIR fails open with empty stdout and no 
     });
     assert.equal(result.status, 0, result.stderr);
     assert.equal(result.stdout, "");
-    assert.equal(existsSync(join(cwd, ".cursorclaw", "sessions", "session-start-enotdir.json")), false);
+    assert.equal(existsSync(join(cwd, ".codexclaw", "sessions", "session-start-enotdir.json")), false);
   } finally {
     rmSync(cwd, { recursive: true, force: true });
   }
@@ -336,7 +336,7 @@ test("SessionStart state bootstrap: noncanonical identity and synthetic agent fi
     });
     assert.equal(syntheticChild.status, 0, syntheticChild.stderr);
     assert.equal(syntheticChild.stdout, "");
-    assert.equal(existsSync(join(cwd, ".cursorclaw", "sessions")), false);
+    assert.equal(existsSync(join(cwd, ".codexclaw", "sessions")), false);
 
     const attest = JSON.stringify({ from: "IDLE", to: "P", did: "noncanonical identity must remain unknown" });
     const planned = spawnSync(
@@ -389,7 +389,7 @@ test("L080: post-tool-use-friction records on a failing Bash response; pre gate 
       assert.equal(r.status, 0, r.stderr);
       assert.equal(r.stdout.trim(), "", "capture is side-effect only");
     }
-    assert.ok(existsSync(join(tmp, ".cursorclaw", "friction.jsonl")), "friction ledger written");
+    assert.ok(existsSync(join(tmp, ".codexclaw", "friction.jsonl")), "friction ledger written");
 
     // the PreToolUse gate now advises without blocking on a Bash call
     const adv = runHook(gateEp, gate.hookEvent, {
@@ -449,7 +449,7 @@ test("260709: pre-tool-use goal-complete hook e2e - mid-cycle complete denies, b
   const tmp = mkdtempSync(join(tmpdir(), "ccx-complete-"));
   try {
     // seed a mid-cycle session state (phase B, orchestration active)
-    const sessionsDir = join(tmp, ".cursorclaw", "sessions");
+    const sessionsDir = join(tmp, ".codexclaw", "sessions");
     mkdirSync(sessionsDir, { recursive: true });
     writeFileSync(join(sessionsDir, "gc-e2e.json"), JSON.stringify({
       phase: "B", sessionId: "gc-e2e", slug: "", updatedAt: new Date().toISOString(),
@@ -511,7 +511,7 @@ test("WP7/G19: post-tool-use hook e2e - captures a request_user_input round into
     });
     assert.equal(res.status, 0, res.stderr);
     assert.equal(res.stdout.trim(), "", "PostToolUse recorder emits nothing");
-    const ledger = join(tmp, ".cursorclaw", "interviews", "s1.jsonl");
+    const ledger = join(tmp, ".codexclaw", "interviews", "s1.jsonl");
     assert.ok(existsSync(ledger), "interview ledger not written");
     const events = readFileSync(ledger, "utf8").trim().split("\n").map((l) => JSON.parse(l).event);
     assert.ok(events.includes("question_asked"), "missing question_asked row");
@@ -537,7 +537,7 @@ test("WP7/G19: post-tool-use hook e2e - captures a JSON-string request_user_inpu
       tool_response: JSON.stringify({ answers: { item3: { answers: ["신규 채택에만 적용"] } } }),
     });
     assert.equal(res.status, 0, res.stderr);
-    const ledger = join(tmp, ".cursorclaw", "interviews", "s1.jsonl");
+    const ledger = join(tmp, ".codexclaw", "interviews", "s1.jsonl");
     assert.ok(existsSync(ledger), "interview ledger not written for string payload");
     const rows = readFileSync(ledger, "utf8").trim().split("\n").map((l) => JSON.parse(l));
     assert.ok(rows.some((r) => r.event === "question_asked"), "missing question_asked row");
@@ -586,14 +586,14 @@ test("WP22/G19: natural plan hint emits PLAN advice with IDLE footer, never acti
     assert.match(ctx, /codexclaw: PLAN/);
     assert.match(ctx, /PHASE UNCHANGED/);
     assert.match(ctx, /IPABCD: IDLE \(IDLE\)/);
-    const stateFile = join(tmp, ".cursorclaw", "sessions", "s1.json");
+    const stateFile = join(tmp, ".codexclaw", "sessions", "s1.json");
     assert.ok(existsSync(stateFile));
     const state = JSON.parse(readFileSync(stateFile, "utf8"));
     assert.equal(state.phase, "IDLE");
     assert.equal(state.orchestrationActive, false);
     assert.equal(state.lastInjectedPhase, null);
     assert.deepEqual(state.injectedTurns, ["t1"]);
-    assert.equal(existsSync(join(tmp, ".cursorclaw", "ledger.jsonl")), false);
+    assert.equal(existsSync(join(tmp, ".codexclaw", "ledger.jsonl")), false);
   } finally {
     rmSync(tmp, { recursive: true, force: true });
     rmSync(home.dir, { recursive: true, force: true });
@@ -624,9 +624,9 @@ test("wp3: advisory snapshot then agent CLI entry reports real state and preserv
       const status = cli("status");
       assert.equal(status.status, 0, status.stderr);
       assert.ok(status.stdout.includes(`phase=${phase}`));
-      const statePath = join(cwd, ".cursorclaw", "sessions", `${sessionId}.json`);
+      const statePath = join(cwd, ".codexclaw", "sessions", `${sessionId}.json`);
       assert.equal(JSON.parse(readFileSync(statePath, "utf8")).phase, phase);
-      const ledgerPath = join(cwd, ".cursorclaw", "ledger.jsonl");
+      const ledgerPath = join(cwd, ".codexclaw", "ledger.jsonl");
       const ledger = readFileSync(ledgerPath, "utf8");
       const rows = ledger.trim().split("\n").map(JSON.parse);
       assert.equal(rows.length, 1);
@@ -660,10 +660,10 @@ test("wp3: registered explicit orchestrate P/I commands still enter and record c
       }, home.env);
       assert.equal(res.status, 0, res.stderr);
       assert.ok(JSON.parse(res.stdout).hookSpecificOutput.additionalContext.includes(`IPABCD: ${phase} (`));
-      const state = JSON.parse(readFileSync(join(tmp, ".cursorclaw", "sessions", "explicit-entry.json"), "utf8"));
+      const state = JSON.parse(readFileSync(join(tmp, ".codexclaw", "sessions", "explicit-entry.json"), "utf8"));
       assert.equal(state.phase, phase);
       assert.equal(state.orchestrationActive, true);
-      const rows = readFileSync(join(tmp, ".cursorclaw", "ledger.jsonl"), "utf8")
+      const rows = readFileSync(join(tmp, ".codexclaw", "ledger.jsonl"), "utf8")
         .trim().split("\n").map(line => JSON.parse(line));
       assert.equal(rows.length, 1);
       assert.equal(rows[0].from, "IDLE");
@@ -689,7 +689,7 @@ test("WP22/G19: user-prompt-submit hook e2e - no trigger + un-orchestrated stays
     assert.equal(res.status, 0, res.stderr);
     assert.equal(res.stdout.trim(), "", "no trigger + never orchestrated => empty stdout");
     // fail-closed: nothing should have been persisted either.
-    assert.ok(!existsSync(join(tmp, ".cursorclaw", "sessions", "s2.json")), "no state should be written");
+    assert.ok(!existsSync(join(tmp, ".codexclaw", "sessions", "s2.json")), "no state should be written");
   } finally { rmSync(tmp, { recursive: true, force: true }); }
 });
 
@@ -710,7 +710,7 @@ test("agbrowse: user-prompt-submit hook e2e - natural language agbrowse request 
     assert.match(ctx, /cxc-search/);
     assert.match(ctx, /agbrowse fetch/);
     assert.match(ctx, /Never use plain `agbrowse search/);
-    const stateFile = join(tmp, ".cursorclaw", "sessions", "s-ag.json");
+    const stateFile = join(tmp, ".codexclaw", "sessions", "s-ag.json");
     assert.ok(existsSync(stateFile), "turn dedup state should be persisted");
     const persisted = JSON.parse(readFileSync(stateFile, "utf8"));
     assert.equal(persisted.orchestrationActive, false, "search injection must not activate PABCD");
@@ -719,7 +719,7 @@ test("agbrowse: user-prompt-submit hook e2e - natural language agbrowse request 
 });
 
 // lazygap_impl 010: SubagentStop evidence-receipt gate. A gated worker child with no
-// receipt must be blocked (decision:block); a valid receipt under .cursorclaw/evidence/
+// receipt must be blocked (decision:block); a valid receipt under .codexclaw/evidence/
 // releases. Drives the real dist entrypoint via the manifest command.
 for (const agentType of ["executor", "worker"]) test(`L010: subagent-stop hook e2e - ${agentType} w/o receipt blocks, valid receipt releases`, () => {
   const { event, hookEvent, distAbs } = readHookCommand("./hooks/subagent-stop-verifying-evidence.json");
@@ -747,12 +747,12 @@ for (const agentType of ["executor", "worker"]) test(`L010: subagent-stop hook e
     assert.equal(released.stdout.trim(), "", "non-gated agent_type must release");
 
     // 3) worker WITH a valid receipt -> released.
-    mkdirSync(join(tmp, ".cursorclaw", "evidence"), { recursive: true });
-    writeFileSync(join(tmp, ".cursorclaw", "evidence", "p.md"), "tests green");
+    mkdirSync(join(tmp, ".codexclaw", "evidence"), { recursive: true });
+    writeFileSync(join(tmp, ".codexclaw", "evidence", "p.md"), "tests green");
     const ok = runHook(ep, hookEvent, {
       hook_event_name: "SubagentStop", session_id: "s3", cwd: tmp,
       agent_type: agentType, agent_id: "a3",
-      last_assistant_message: "done.\nEVIDENCE_RECORDED: .cursorclaw/evidence/p.md",
+      last_assistant_message: "done.\nEVIDENCE_RECORDED: .codexclaw/evidence/p.md",
     });
     assert.equal(ok.status, 0, ok.stderr);
     assert.equal(ok.stdout.trim(), "", "valid receipt must release");
@@ -849,9 +849,9 @@ test("260713: spawn hook e2e - snapshot override composes mention repair with th
     // scope block; only v2 payloads receive the leaf guard.
     assert.ok(v1NormalizedUi.message.startsWith("[CXC-SUBAGENT-SCOPE]"), "260713 surface-split: v1 spawn gets the scope block");
 
-    mkdirSync(join(configuredCwd, ".cursorclaw"), { recursive: true });
+    mkdirSync(join(configuredCwd, ".codexclaw"), { recursive: true });
     writeFileSync(
-      join(configuredCwd, ".cursorclaw", "subagents.json"),
+      join(configuredCwd, ".codexclaw", "subagents.json"),
       JSON.stringify({ roles: { explorer: { mode: "model", model: "model-explorer", promptOverride: null } } }),
     );
     const v1Model = runHook(ep, hookEvent, {
@@ -960,7 +960,7 @@ test("L050: post-compact hook e2e - active cycle resets cursor, idle is a no-op"
   if (!ep) return;
   const tmp = mkdtempSync(join(tmpdir(), "ccx-postcompact-"));
   try {
-    const sessionsDir = join(tmp, ".cursorclaw", "sessions");
+    const sessionsDir = join(tmp, ".codexclaw", "sessions");
     mkdirSync(sessionsDir, { recursive: true });
     const statePath = join(sessionsDir, "s1.json");
     // active cycle at B with the cursor pinned to B (mode-3 short-header condition)
@@ -1048,7 +1048,7 @@ test("L060: session-start-rules hook e2e - seeded rules inject, empty dir is sil
     assert.equal(empty.stdout.trim(), "", "no rules => empty stdout");
 
     // seed a rule
-    const rulesDir = join(tmp, ".cursorclaw", "rules");
+    const rulesDir = join(tmp, ".codexclaw", "rules");
     mkdirSync(rulesDir, { recursive: true });
     writeFileSync(join(rulesDir, "a.md"), "Project rule: always run the gate.");
     const res = runHook(ep, hookEvent, { hook_event_name: "SessionStart", session_id: "s1", cwd: tmp });
@@ -1077,7 +1077,7 @@ test("subagent-guard: user-prompt-submit with agent fields is silent and writes 
     });
     assert.equal(res.status, 0, res.stderr);
     assert.equal(res.stdout.trim(), "", "subagent turn must not receive phase directives");
-    assert.ok(!existsSync(join(tmp, ".cursorclaw", "sessions")), "subagent turn must not write session state");
+    assert.ok(!existsSync(join(tmp, ".codexclaw", "sessions")), "subagent turn must not write session state");
   } finally { rmSync(tmp, { recursive: true, force: true }); }
 });
 
@@ -1101,7 +1101,7 @@ test("subagent-guard: pre-tool-use interview gate denies root, skips subagent pa
     db.exec("CREATE TABLE thread_goals (thread_id TEXT PRIMARY KEY NOT NULL, goal_id TEXT NOT NULL, objective TEXT NOT NULL, status TEXT NOT NULL);");
     db.prepare("INSERT INTO thread_goals (thread_id, goal_id, objective, status) VALUES (?,?,?,?)").run("s1", "g1", "obj", "active");
     db.close();
-    const env = { CURSOR_HOME: home, CURSORCLAW_HOME: join(home, "cxc"), CODEX_SQLITE_HOME: home };
+    const env = { CURSOR_HOME: home, CODEXCLAW_HOME: join(home, "cxc"), CODEX_SQLITE_HOME: home };
     const payload = {
       hook_event_name: "PreToolUse", session_id: "s1", cwd: tmp,
       tool_name: "request_user_input", tool_input: { questions: [] },

@@ -6,7 +6,7 @@ aliases: [Codexclaw Architecture Reference, codexclaw 구조 허브, structure i
 
 # Codexclaw Architecture Reference
 
-> codexclaw 프로젝트의 구조 허브. Start here for the single-plugin shape, the Codex runtime boundary, component responsibilities, skills/hooks/CLI surfaces, and the `.cursorclaw/` state model.
+> codexclaw 프로젝트의 구조 허브. Start here for the single-plugin shape, the Codex runtime boundary, component responsibilities, skills/hooks/CLI surfaces, and the `.codexclaw/` state model.
 >
 > Planning state lives under `devlog/_plan/`: `mvp_res/` is the shipped MVP source-of-record, while `mvp_hard/` is the parity-hardening track.
 
@@ -48,12 +48,12 @@ graph LR
     SKILLS --> AGENT["Main Codex agent discipline"]
     HOOKS --> NODE["short Node hook process"]
     NODE -->|read stdin JSON| EVENTS["Codex hook event payload"]
-    NODE -->|read/write project files| STATE[".cursorclaw/ file state"]
+    NODE -->|read/write project files| STATE[".codexclaw/ file state"]
     CLI["bin/codexclaw.mjs / cxc"] --> COMPONENTS["components/*/dist/*.js"]
     COMPONENTS --> STATE
     STATE --> SESSIONS["sessions/<id>.json"]
     STATE --> LEDGER["ledger.jsonl"]
-    MCP --> SUBCFG[".cursorclaw/subagents.json"]
+    MCP --> SUBCFG[".codexclaw/subagents.json"]
     OPENCODEX["opencodex / ocx (optional)"] -. detect-only .-> PROVIDER["provider-bridge"]
     PROVIDER --> COMPONENTS
 ```
@@ -70,7 +70,7 @@ opencodex (`ocx`) is adjacent but optional. opencodex is a local provider proxy 
 |:----:|-------------|-----------|
 | **1 — Foundation** | `README.md`, `plugins/cursorclaw/.cursor-plugin/plugin.json`, `devlog/_fin/mvp_res/000_INDEX.md` | single plugin boundary, manifest surfaces, shipped MVP ledger |
 | **2 — Runtime Flow** | `plugins/cursorclaw/hooks/*.json`, `plugins/cursorclaw/components/pabcd-state/src/hook.ts`, `plugins/cursorclaw/components/pabcd-state/src/goal-gate.ts`, `plugins/cursorclaw/components/pabcd-state/src/cli.ts` | Codex hook events -> short Node process -> additionalContext or deny envelope |
-| **3 — State + CLI** | `plugins/cursorclaw/components/pabcd-state/src/state.ts`, `fsm.ts`, `bin/codexclaw.mjs`, `plugins/cursorclaw/components/cxc-ops/src/*.ts` | `.cursorclaw/` session files, phase legality, `cxc` command delegation |
+| **3 — State + CLI** | `plugins/cursorclaw/components/pabcd-state/src/state.ts`, `fsm.ts`, `bin/codexclaw.mjs`, `plugins/cursorclaw/components/cxc-ops/src/*.ts` | `.codexclaw/` session files, phase legality, `cxc` command delegation |
 | **4 — Capabilities** | `plugins/cursorclaw/skills/`, `plugins/cursorclaw/agents/`, `plugins/cursorclaw/components/subagent-config/src/` | `$crc-*` skill family, inline subagent roles, model/prompt config |
 | **5 — Context** | `devlog/_fin/mvp_res/`, `devlog/_fin/mvp_hard/`, `../opencodex/README.md`, `../opencodex/src/codex-inject.ts` | shipped MVP vs hardening work, optional host/provider proxy relationship |
 
@@ -101,25 +101,25 @@ opencodex (`ocx`) is adjacent but optional. opencodex is a local provider proxy 
 
 ### `components/config-guard`
 
-Controlled activation for the Codex features codexclaw needs. `src/features.ts` declares `multi_agent`, `goals`, `hooks`, and soft `default_mode_request_user_input`; it parses `codex features list` output by exact feature name. `src/activate.ts` backs up `config.toml`, enables only missing declared flags through the official `codex features enable`, and writes `.cursorclaw-install.json` (manifest v2) under Codex home. `src/deactivate.ts` reverts per item: a flag or managed key goes back only when codexclaw set it and that value is still live, and anything an external writer changed or removed is left to its current owner. The whole-file hash is reported as `fileDrifted` rather than obeyed — codexclaw is not the only writer of that file, so the old blind-revert refusal disabled uninstall after any unrelated edit — and it still gates the one destructive case (removing a key that did not exist before install), which additionally requires the activation backup to corroborate. `src/toml-edit.ts` owns the component's TOML table/key grammar and the setter for keys `codex features` cannot reach; `src/managed-keys.ts` holds that whitelist, each entry carrying its own `autoEnable` decision so installation writes only the keys that earned it. The boundary between the two vocabularies is not the TOML table name but whether the switch means anything without codexclaw: `DECLARED_FEATURES` are flags codexclaw needs to function, and install plus SessionStart self-heal turn those on; `CONFIG_MANAGED_KEYS` holds switches whose effects reach past codexclaw (`memories.dedicated_tools` changes the whole memory pipeline), so an entry there is auto-enabled only on its own evidence and otherwise stays an explicit `cxc config set`. `memories.dedicated_tools` is auto-enabled since 260909: the PreToolUse memory write gate (`pabcd-state/src/memory-write-gate.ts`) supplies the precondition its caution named, and `activate.ts` records the pre-install value in `tableKeys` so `cxc disable` restores it exactly. `src/self-heal.ts` is the SessionStart call site: it enables a declared SOFT flag that is off, at most once per key (`healedKeys`), records the heal as codexclaw-owned in the manifest so `cxc disable` can revert it, and opts out permanently once the user runs `cxc disable`. `src/cli.ts` is the production binding that resolves `CURSOR_HOME` / `~/.cursor` and shells out to `codex`.
+Controlled activation for the Codex features codexclaw needs. `src/features.ts` declares `multi_agent`, `goals`, `hooks`, and soft `default_mode_request_user_input`; it parses `codex features list` output by exact feature name. `src/activate.ts` backs up `config.toml`, enables only missing declared flags through the official `codex features enable`, and writes `.codexclaw-install.json` (manifest v2) under Codex home. `src/deactivate.ts` reverts per item: a flag or managed key goes back only when codexclaw set it and that value is still live, and anything an external writer changed or removed is left to its current owner. The whole-file hash is reported as `fileDrifted` rather than obeyed — codexclaw is not the only writer of that file, so the old blind-revert refusal disabled uninstall after any unrelated edit — and it still gates the one destructive case (removing a key that did not exist before install), which additionally requires the activation backup to corroborate. `src/toml-edit.ts` owns the component's TOML table/key grammar and the setter for keys `codex features` cannot reach; `src/managed-keys.ts` holds that whitelist, each entry carrying its own `autoEnable` decision so installation writes only the keys that earned it. The boundary between the two vocabularies is not the TOML table name but whether the switch means anything without codexclaw: `DECLARED_FEATURES` are flags codexclaw needs to function, and install plus SessionStart self-heal turn those on; `CONFIG_MANAGED_KEYS` holds switches whose effects reach past codexclaw (`memories.dedicated_tools` changes the whole memory pipeline), so an entry there is auto-enabled only on its own evidence and otherwise stays an explicit `cxc config set`. `memories.dedicated_tools` is auto-enabled since 260909: the PreToolUse memory write gate (`pabcd-state/src/memory-write-gate.ts`) supplies the precondition its caution named, and `activate.ts` records the pre-install value in `tableKeys` so `cxc disable` restores it exactly. `src/self-heal.ts` is the SessionStart call site: it enables a declared SOFT flag that is off, at most once per key (`healedKeys`), records the heal as codexclaw-owned in the manifest so `cxc disable` can revert it, and opts out permanently once the user runs `cxc disable`. `src/cli.ts` is the production binding that resolves `CURSOR_HOME` / `~/.cursor` and shells out to `codex`.
 
 ### `components/cxc-ops`
 
-Local operations that do not require a codexclaw server. `src/doctor.ts` checks manifest parseability, hook file presence and trust-hash drift, skill metadata, agent TOMLs, MCP config drift, and optional ast-grep availability. `cxc hooks retrust` repairs reported hook drift with a timestamped config backup, atomic write, and hash-algorithm safety-pin. `src/reset.ts` removes only scoped `.cursorclaw/` working state: `--state`, `--generated`, or `--all`. `src/cli.ts` dispatches `doctor`, `hooks retrust`, and `reset` (unknown subcommands print usage and exit 0). The former `chat-search` wrapper was retired (D1', mvp_hard L13/WP1): Codex app-server `thread/search` has no native CLI/agent surface, so wrapping it made codexclaw a self-implemented search surface; public-web lookups route through the `cxc-search` skill. Past-session recall was later re-scoped by owner directive (2026-07-02, `devlog/_fin/260702_codex_recall/`): the `recall` component reads Codex-native disk artifacts directly — a different mechanism than the retired app-server wrapper, which stays a non-goal.
+Local operations that do not require a codexclaw server. `src/doctor.ts` checks manifest parseability, hook file presence and trust-hash drift, skill metadata, agent TOMLs, MCP config drift, and optional ast-grep availability. `cxc hooks retrust` repairs reported hook drift with a timestamped config backup, atomic write, and hash-algorithm safety-pin. `src/reset.ts` removes only scoped `.codexclaw/` working state: `--state`, `--generated`, or `--all`. `src/cli.ts` dispatches `doctor`, `hooks retrust`, and `reset` (unknown subcommands print usage and exit 0). The former `chat-search` wrapper was retired (D1', mvp_hard L13/WP1): Codex app-server `thread/search` has no native CLI/agent surface, so wrapping it made codexclaw a self-implemented search surface; public-web lookups route through the `cxc-search` skill. Past-session recall was later re-scoped by owner directive (2026-07-02, `devlog/_fin/260702_codex_recall/`): the `recall` component reads Codex-native disk artifacts directly — a different mechanism than the retired app-server wrapper, which stays a non-goal.
 
 ### `components/messenger-bridge`
 
-Loopback bridge for the dashboard and messenger agents. `src/cli.ts` dispatches `serve` and `service`: `serve` opens the project-scoped bridge DB, creates the HTTP server on `127.0.0.1`, starts enabled adapters through `BridgeController`, and shuts down the scheduler/controller/server/DB in order; `service` installs, uninstalls, or reports a macOS launchd daemon for `cxc serve`. `src/server.ts` serves the built GUI plus JSON API routes (`health`, compatibility, connect/manage, agents), with local Host and mutating-request guards. `src/db.ts` owns `.cursorclaw/bridge.db` via `node:sqlite`, including channels, allowlists, bindings, jobs, named agents, and migrations. `src/agent-service.ts` serializes per-binding Codex turns, records jobs, persists thread ids, and terminates active child processes on shutdown.
+Loopback bridge for the dashboard and messenger agents. `src/cli.ts` dispatches `serve` and `service`: `serve` opens the project-scoped bridge DB, creates the HTTP server on `127.0.0.1`, starts enabled adapters through `BridgeController`, and shuts down the scheduler/controller/server/DB in order; `service` installs, uninstalls, or reports a macOS launchd daemon for `cxc serve`. `src/server.ts` serves the built GUI plus JSON API routes (`health`, compatibility, connect/manage, agents), with local Host and mutating-request guards. `src/db.ts` owns `.codexclaw/bridge.db` via `node:sqlite`, including channels, allowlists, bindings, jobs, named agents, and migrations. `src/agent-service.ts` serializes per-binding Codex turns, records jobs, persists thread ids, and terminates active child processes on shutdown.
 
 ### `components/recall`
 
 Read-only recall search over the Codex session root (`CURSOR_HOME`, default `~/.cursor`); never writes. `src/rollout.ts` walks `sessions/YYYY/MM/DD/rollout-*.jsonl` with directory-date pruning, classifies main vs subagent rollouts from the `session_meta` first line (grow-until-newline head reads survive 40KB meta lines), filters harness-injected synthetic user messages, and extracts message + tool-log entries. `src/chat-search.ts` runs AND-default (OR with `--any`) case-insensitive word matching with file-level prefilter, exact per-message `--days` cutoff, cwd/role/source filters, context windows, and a truncation warning at the 200-cap limit. `src/threads-db.ts` enriches hits from the `threads` table (title, git branch) via a lazily-required read-only `node:sqlite` handle, degrading to a warning when unavailable. `src/memory-search.ts` paragraph-scans `memories/**/*.md` plus `stage1_outputs` in `memories_<N>.sqlite` with md/db thread dedupe. `src/cli.ts` dispatches `[chat|memory, "search"|"index", ...]` (jaw-style text or `--json`).
 
-WP2 sidecar index: chat search is served by default from a rebuildable derived cache at `$CURSORCLAW_HOME ?? ~/.cursorclaw` + `/recall/index.sqlite` — the one codexclaw surface that is user-level rather than project-local `.cursorclaw/`, because sessions span all projects (`devlog/_fin/260702_codex_recall/20_wp2_index.md`). `src/index-db.ts` owns the schema (msgs content table + trigger-synced `msgs_fts` unicode61 and `msgs_tri` trigram external-content FTS5 tables; version drift drops and rebuilds). `src/ingest.ts` re-ingests only files whose (mtime,size) changed, prunes vanished files, and caps tool outputs at 8KB. `src/index-search.ts` compiles the WP1 filter set to SQL — trigram MATCH for >=3-char words (substring semantics, CJK-capable), LIKE fallback below — with refresh-on-query keeping results live (measured: full build 1,533 files/326k msgs in ~161s once; queries ~20-40ms full-history vs 2-16s scans; ~2.1GB disk). `--scan` forces the JSONL path; index failure degrades to scan with a warning; `~/.cursor` stays read-only either way.
+WP2 sidecar index: chat search is served by default from a rebuildable derived cache at `$CODEXCLAW_HOME ?? ~/.codexclaw` + `/recall/index.sqlite` — the one codexclaw surface that is user-level rather than project-local `.codexclaw/`, because sessions span all projects (`devlog/_fin/260702_codex_recall/20_wp2_index.md`). `src/index-db.ts` owns the schema (msgs content table + trigger-synced `msgs_fts` unicode61 and `msgs_tri` trigram external-content FTS5 tables; version drift drops and rebuilds). `src/ingest.ts` re-ingests only files whose (mtime,size) changed, prunes vanished files, and caps tool outputs at 8KB. `src/index-search.ts` compiles the WP1 filter set to SQL — trigram MATCH for >=3-char words (substring semantics, CJK-capable), LIKE fallback below — with refresh-on-query keeping results live (measured: full build 1,533 files/326k msgs in ~161s once; queries ~20-40ms full-history vs 2-16s scans; ~2.1GB disk). `--scan` forces the JSONL path; index failure degrades to scan with a warning; `~/.cursor` stays read-only either way.
 
 ### `components/pabcd-state`
 
-The IPABCD file-state engine and hook logic. `src/state.ts` owns `Phase = "IDLE" | "I" | "P" | "A" | "B" | "C" | "D"`, `.cursorclaw/sessions/<sessionId>.json`, and `.cursorclaw/ledger.jsonl`. `src/fsm.ts` defines `nextPhase()`, legal entry checks, attest-gated A->B and C->D flag flips, and D->IDLE cycle close. `src/hook.ts` emits scoped phase hints without natural-language phase entry, leaves transitions to explicit user commands or authorized agent CLI calls with existing guards, injects compact stage headers through `additionalContext`, and runs bounded Stop continuation for active-goal work, including arming blocks at IDLE when no cycle is in flight. Post-answer rescan guidance independently respects scope; answer capture and readiness remain separate mechanisms. `src/goal-gate.ts` handles PreToolUse denials for budgeted `create_goal` calls and goal-mode `request_user_input`. `src/cli.ts` is the hook stdin/stdout process and `freeze` / `orchestrate` command entry.
+The IPABCD file-state engine and hook logic. `src/state.ts` owns `Phase = "IDLE" | "I" | "P" | "A" | "B" | "C" | "D"`, `.codexclaw/sessions/<sessionId>.json`, and `.codexclaw/ledger.jsonl`. `src/fsm.ts` defines `nextPhase()`, legal entry checks, attest-gated A->B and C->D flag flips, and D->IDLE cycle close. `src/hook.ts` emits scoped phase hints without natural-language phase entry, leaves transitions to explicit user commands or authorized agent CLI calls with existing guards, injects compact stage headers through `additionalContext`, and runs bounded Stop continuation for active-goal work, including arming blocks at IDLE when no cycle is in flight. Post-answer rescan guidance independently respects scope; answer capture and readiness remain separate mechanisms. `src/goal-gate.ts` handles PreToolUse denials for budgeted `create_goal` calls and goal-mode `request_user_input`. `src/cli.ts` is the hook stdin/stdout process and `freeze` / `orchestrate` command entry.
 
 Supporting files include `attest.ts` for evidence validation, `parse.ts` for hook payload parsing, `interview.ts` / `minds.ts` / `triage.ts` for interview readiness and contradiction support, `transcript.ts` for transcript-tail idempotency, and `freeze.ts` / `freeze-cli.ts` for freeze manifest handling.
 
@@ -136,7 +136,7 @@ the adapter preamble applies on load and `cxc-dev` discipline wins on conflict.
 
 ### `components/subagent-config`
 
-Per-role subagent model, reasoning-effort, and prompt configuration. `src/store.ts` reads/writes `.cursorclaw/subagents.json` atomically for `explorer`, `reviewer`, `executor`, and `architect`, defaulting each role to the main Codex model with inherited effort (`effort: null`; valid overrides are the catalog-supported values low/medium/high/xhigh). `src/catalog.ts` builds a selectable model catalog from the native Codex cache allowlist plus optional ocx-backed model ids, with native models first. `src/mcp.ts` serves a stdio MCP server with `subagents_get`, `subagents_set`, and `catalog_list` tools.
+Per-role subagent model, reasoning-effort, and prompt configuration. `src/store.ts` reads/writes `.codexclaw/subagents.json` atomically for `explorer`, `reviewer`, `executor`, and `architect`, defaulting each role to the main Codex model with inherited effort (`effort: null`; valid overrides are the catalog-supported values low/medium/high/xhigh). `src/catalog.ts` builds a selectable model catalog from the native Codex cache allowlist plus optional ocx-backed model ids, with native models first. `src/mcp.ts` serves a stdio MCP server with `subagents_get`, `subagents_set`, and `catalog_list` tools.
 
 ---
 
@@ -213,7 +213,7 @@ The manifest wires 22 hook JSON files; `plugin.json` `hooks` and `hooks/*.json` 
 | `UserPromptSubmit` | `hooks/user-prompt-submit-guiding-worktree-rename.json` | same pabcd-state CLI, `hook worktree-guard` | on worktree rename intent inside a managed worktree, injects the adopt-in-place guidance once per session (WORKTREE-GUARD-02) |
 | `PreToolUse` `^Bash$` | `hooks/pre-tool-use-guarding-managed-worktree-deletion.json` | same pabcd-state CLI, `hook worktree-guard-pretool` | denies commands that delete the session's own managed worktree (git worktree remove / rm -r of slot, checkout, cwd, or ancestors) — enforced for subagent turns too (WORKTREE-GUARD-03) |
 
-Hook processes are intentionally short: read stdin JSON, reconstruct state, optionally write `.cursorclaw/`, then print either nothing or one JSON hook envelope. `UserPromptSubmit` outputs `hookSpecificOutput.additionalContext`; `PreToolUse` can output `permissionDecision: "deny"` with a reason. Non-PreToolUse errors fail open to avoid blocking Codex; the goal-mode `request_user_input` guard is fail-closed.
+Hook processes are intentionally short: read stdin JSON, reconstruct state, optionally write `.codexclaw/`, then print either nothing or one JSON hook envelope. `UserPromptSubmit` outputs `hookSpecificOutput.additionalContext`; `PreToolUse` can output `permissionDecision: "deny"` with a reason. Non-PreToolUse errors fail open to avoid blocking Codex; the goal-mode `request_user_input` guard is fail-closed.
 
 ---
 
@@ -253,24 +253,24 @@ though they have no package-local `test` script. This asymmetry is intentional, 
 | `cxc status` | `components/config-guard/dist/cli.js status` | prints declared feature enabled/disabled state |
 | `cxc doctor` | `components/cxc-ops/dist/cli.js doctor` | plugin health report, including drifted/untrusted hook evidence |
 | `cxc hooks retrust` | `components/cxc-ops/dist/cli.js hooks retrust` | recomputes and records hook trust hashes with a timestamped backup, atomic write, and algorithm safety-pin |
-| `cxc reset` | `components/cxc-ops/dist/cli.js reset` | scoped `.cursorclaw/` cleanup |
+| `cxc reset` | `components/cxc-ops/dist/cli.js reset` | scoped `.codexclaw/` cleanup |
 | `cxc chat-search` | RETIRED (D1', L13/WP1) | removed; native `thread/search` has no CLI/agent surface = non-goal; use `cxc-search` |
 | `cxc chat search` | `components/recall/dist/cli.js chat search` | read-only recall over `~/.cursor` rollout JSONL (owner re-scope 2026-07-02; not the retired app-server wrapper) |
 | `cxc memory search` | `components/recall/dist/cli.js memory search` | read-only search over `~/.cursor/memories` + `stage1_outputs` |
 | `cxc gui` | `plugins/cursorclaw/gui` via `npm run dev` | starts the Vite dashboard when deps exist |
-| `cxc orchestrate` | `components/pabcd-state/dist/cli.js orchestrate` | agent-gated terminal phase control over the same `.cursorclaw/` session files; supports `help`/`--help`/`-h`; explicit-session text output includes current phase context |
-| `cxc freeze` | `components/pabcd-state/dist/cli.js freeze` | freezes the interview plan + writes the goal-activation handoff manifest at `.cursorclaw/interview/freeze.json` |
+| `cxc orchestrate` | `components/pabcd-state/dist/cli.js orchestrate` | agent-gated terminal phase control over the same `.codexclaw/` session files; supports `help`/`--help`/`-h`; explicit-session text output includes current phase context |
+| `cxc freeze` | `components/pabcd-state/dist/cli.js freeze` | freezes the interview plan + writes the goal-activation handoff manifest at `.codexclaw/interview/freeze.json` |
 | `cxc metric` | `components/pabcd-state/dist/cli.js metric` | records/shows objective metrics for emergence-harness loops |
 | `cxc divergence` | `components/pabcd-state/dist/cli.js divergence` | records divergence mode and candidate archive state |
 | `cxc loop` | `components/pabcd-state/dist/cli.js loop` | initializes, shows, or validates the project-local goalplan substrate |
 | `cxc goalplan` | `components/pabcd-state/dist/cli.js goalplan` | deprecated alias for `cxc loop` |
-| `cxc subagents` | `components/subagent-config/dist/cli.js` (list/get/set) | reads/writes the per-role `.cursorclaw/subagents.json` model+effort+prompt config |
+| `cxc subagents` | `components/subagent-config/dist/cli.js` (list/get/set) | reads/writes the per-role `.codexclaw/subagents.json` model+effort+prompt config |
 | `cxc provider` | `components/provider-bridge/dist/cli.js` (detect) | read-only ocx provider detect/status; never mutates provider state |
 | `cxc serve` | `components/messenger-bridge/dist/cli.js serve` | runs the loopback bridge server for the GUI, JSON API, and messenger adapters |
 | `cxc service` | `components/messenger-bridge/dist/cli.js service` | installs, uninstalls, or reports the macOS launchd daemon for `cxc serve` |
-| `cxc map` | `skills/repo-map/scripts/repomap.py` via bootstrap ladder (env override > `uv run` > `~/.cursorclaw/venvs/repomap` > bare `python3`) | ranked repo structure map; first skill-owned Python subcommand — vendored upstream script, so no TS component/dist build; `--help` bypasses the ladder (dep-free); degrades to an install hint without Python deps |
+| `cxc map` | `skills/repo-map/scripts/repomap.py` via bootstrap ladder (env override > `uv run` > `~/.codexclaw/venvs/repomap` > bare `python3`) | ranked repo structure map; first skill-owned Python subcommand — vendored upstream script, so no TS component/dist build; `--help` bypasses the ladder (dep-free); degrades to an install hint without Python deps |
 
-`cxc reset` is an ops cleanup command for `.cursorclaw/` state/generated files. `cxc orchestrate reset`
+`cxc reset` is an ops cleanup command for `.codexclaw/` state/generated files. `cxc orchestrate reset`
 is the PABCD phase reset command; keep the two meanings distinct when writing docs or tests.
 
 ---
@@ -280,7 +280,7 @@ is the PABCD phase reset command; keep the two meanings distinct when writing do
 Runtime project state is file-based and rooted at the working directory:
 
 ```text
-.cursorclaw/
+.codexclaw/
   sessions/
     <sessionId>.json
   ledger.jsonl
@@ -348,8 +348,8 @@ the L1-L19 full-span gap-remediation loop (`devlog/_fin/mvp_hard/200_L20_gap_reg
 
 - codexclaw is loaded by Codex; it does not replace Codex.
 - codexclaw hooks append context or deny tool calls; they do not swallow/replace user prompts.
-- codexclaw state is project-local `.cursorclaw/`, not a jaw server database; user-level
-  `~/.cursorclaw` may hold rebuildable derived caches only (recall FTS index, ast-grep runtime).
+- codexclaw state is project-local `.codexclaw/`, not a jaw server database; user-level
+  `~/.codexclaw` may hold rebuildable derived caches only (recall FTS index, ast-grep runtime).
 - `ocx` is optional provider infrastructure; codexclaw's provider bridge is detect-only.
 - `$crc-*` names are skill mentions/autocomplete; they are not slash commands.
 - `cxc` is a local CLI alias for plugin ops, not a server API.

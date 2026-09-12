@@ -3,7 +3,7 @@
  *
  * The no-interview local-loop entry: `init --objective "<text>"` captures a REAL objective
  * directly (not a slug placeholder) and seeds a project-local goalplan under
- * `.cursorclaw/goalplans/<slug>/`. `show` renders the current plan; `validate` is the read-only
+ * `.codexclaw/goalplans/<slug>/`. `show` renders the current plan; `validate` is the read-only
  * quality gate (E8) that 040's Stop consults before a final D-close.
  *
  * codexclaw never writes the host goal DB — `init` only writes the local artifact. Arming a
@@ -574,7 +574,7 @@ export function renderGoalplanHelp(): string {
     "",
     "Notes:",
     "  Mutating verbs require --session <id>; show, validate, and ready are read-only.",
-    "  The goalplan lives at <cwd>/.cursorclaw/goalplans/<slug>/goalplan.json, so --cwd",
+    "  The goalplan lives at <cwd>/.codexclaw/goalplans/<slug>/goalplan.json, so --cwd",
     "  matters when the process cwd is not the workspace you are planning in.",
     "  Repeat --depends-on once per prerequisite; add-task accepts only existing task ids",
     "  from the same work phase; comma-separated values are one id.",

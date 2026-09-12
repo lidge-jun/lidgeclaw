@@ -166,8 +166,8 @@ test("wp3: SessionStart and deferred compact recovery emit the same scoped loop 
       assert.match(questions[0], /exposed.*host-allowed/);
       assert.match(questions[0], /silence grants no approval/);
       assert.ok(questions[0].length < 800, "question policy stays a compact pointer");
-      assert.equal(existsSync(join(cwd, ".cursorclaw", "sessions")), false, "guidance must not start a phase");
-      assert.equal(existsSync(join(cwd, ".cursorclaw", "goalplans")), false, "guidance must not start a goal");
+      assert.equal(existsSync(join(cwd, ".codexclaw", "sessions")), false, "guidance must not start a phase");
+      assert.equal(existsSync(join(cwd, ".codexclaw", "goalplans")), false, "guidance must not start a goal");
       if (event === "SessionStart") {
         assert.match(ctx, /This session's id is `wp3-child`/);
         assert.match(ctx, /--session wp3-child/);

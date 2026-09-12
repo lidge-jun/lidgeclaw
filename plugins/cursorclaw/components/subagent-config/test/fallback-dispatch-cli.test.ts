@@ -11,7 +11,7 @@ const cli = resolve(dirname(fileURLToPath(import.meta.url)), "../src/fallback-di
 test("real CLI persists route, survives separate processes, and emits startup protocol", () => {
   const cwd = mkdtempSync(join(tmpdir(), "cxc-dispatch-cli-"));
   const { CODEX_THREAD_ID: _nativeSession, ...inherited } = process.env;
-  const env = { ...inherited, CURSORCLAW_HOME: join(cwd, "global") };
+  const env = { ...inherited, CODEXCLAW_HOME: join(cwd, "global") };
   setRole(cwd, "executor", { mode: "model", model: "xai/grok-4.6", fallback: { model: "cursor/grok-4.6", effort: "low" } }, "project", env);
   const call = (input: unknown, args: string[] = []) => {
     const child = spawnSync(process.execPath, [cli, ...args], { cwd, env, input: JSON.stringify(input), encoding: "utf8" });
@@ -39,7 +39,7 @@ test("real CLI refuses corrupt state and invalid JSON rather than resetting it",
   const run = (input: string) => spawnSync(process.execPath, [cli], { cwd, env, input, encoding: "utf8" });
   assert.equal(run("{").status, 1);
   assert.equal(run(JSON.stringify({ ...base, action: "start", role: "executor" })).status, 0);
-  writeFileSync(join(cwd, ".cursorclaw/dispatches/fixture/one.json"), "{}");
+  writeFileSync(join(cwd, ".codexclaw/dispatches/fixture/one.json"), "{}");
   const out = run(JSON.stringify({ ...base, action: "status" }));
   assert.equal(out.status, 1); assert.match(out.stdout, /invalid dispatch identity/);
 });
