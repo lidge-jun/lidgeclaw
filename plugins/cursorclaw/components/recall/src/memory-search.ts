@@ -12,14 +12,27 @@ import { readdirSync, readFileSync, statSync, existsSync } from "node:fs";
 import { join, relative, resolve, sep, posix as posixPath, win32 as win32Path } from "node:path";
 import { codexHome, memoriesDir, memoriesDbPath, stateDbPath } from "./paths.ts";
 import { openReadOnlyDb, loadThreadMeta, type ThreadMeta } from "./threads-db.ts";
-import { cwdMatches, normalizeCwd } from "./rollout.ts";
+import { cwdMatches, normalizeCwd, FOLD_CWD_CASE } from "./rollout.ts";
+import {
+  normalizeRepoKey,
+  repoKeyForCwd,
+  repoKeysEqual,
+  readOriginUrl,
+  type ReadOriginUrl,
+} from "./repo-key.ts";
 import {
   splitQueryWordsRaw,
   termIndexOf,
   termIncludes,
   countTermOccurrences,
   hasBoundaryTerm,
-  relaxQueryGroups,
+  relaxGroupsAt,
+  dropStopwords,
+  compileMatchPlan,
+  planMatches,
+  allGroups,
+  MAX_WORDS,
+  type MatchPlan,
   type QueryGroup,
 } from "./query-words.ts";
 import { expandQueryWords } from "./synonyms.ts";
@@ -46,6 +59,11 @@ export type MemorySearchOptions = {
   cwd?: string | null;
   /** with cwd: drop everything outside the scope instead of only boosting it. */
   cwdOnly?: boolean;
+  /**
+   * How to read the git origin of `cwd` (default: `git -C <cwd> config --get
+   * remote.origin.url`). Injected so tests never depend on a real repository.
+   */
+  readOriginUrl?: ReadOriginUrl;
   /**
    * Chat search used to backfill an empty memory result. Injected rather than
    * imported so this module keeps no edge to chat-search.ts and tests can run
@@ -277,6 +295,12 @@ type CwdScope = {
   lowerPrefixes: string[];
   only: boolean;
   threadCwd: Map<string, ThreadMeta>;
+  /**
+   * Normalized git remote of the requested directory, when it has one. This is
+   * what lets a managed worktree reach the summaries recorded under its main
+   * checkout: the two paths differ, the remote does not.
+   */
+  repoKey: string | null;
 };
 
 function buildCwdScope(home: string, opts: MemorySearchOptions, warnings: string[]): CwdScope | null {
@@ -293,6 +317,9 @@ function buildCwdScope(home: string, opts: MemorySearchOptions, warnings: string
   // thread rows costs ~90ms against a search budget measured in tens of ms.
   const meta = loadThreadMeta(stateDbPath(home));
   if (meta.warning) warnings.push(meta.warning);
+  // One git call per search: the remote of the requested directory cannot
+  // change mid-query, and calling it per hit would dominate the search budget.
+  const repoKey = repoKeyForCwd(prefix, opts.readOriginUrl ?? readOriginUrl);
   // Prose carries whatever separator its author typed, so both spellings count.
   const lower = prefix.toLowerCase();
   return {
@@ -300,6 +327,7 @@ function buildCwdScope(home: string, opts: MemorySearchOptions, warnings: string
     lowerPrefixes: [lower, lower.replace(/\//g, "\\")],
     only: opts.cwdOnly === true,
     threadCwd: meta.byId,
+    repoKey,
   };
 }
 
@@ -311,15 +339,21 @@ function buildCwdScope(home: string, opts: MemorySearchOptions, warnings: string
  * the path in prose — MEMORY.md writes `applies_to: cwd=/...` — counts as a
  * weaker one at half the boost. Without that second signal `--cwd-only` would
  * discard the handbook entirely, which is where project rules actually live.
+ *
+ * A hit recorded under a different path but the SAME git remote is the strong
+ * signal too, at the same boost: a managed worktree and the main checkout of
+ * one repository are one project, not two.
  */
 function scopeAdjust(
   scope: CwdScope | null,
   hitCwd: string | null,
   lowerText: string,
+  hitRepoKey: string | null = null,
 ): { keep: boolean; bonus: number } {
   if (scope === null) return { keep: true, bonus: 0 };
-  const matched = hitCwd !== null && hitCwd !== "" && cwdMatches(hitCwd, scope.prefix);
-  if (matched) return { keep: true, bonus: CWD_BOOST };
+  const cwdHit =
+    hitCwd !== null && hitCwd !== "" && cwdMatches(hitCwd, scope.prefix, { caseInsensitive: FOLD_CWD_CASE });
+  if (cwdHit || repoKeysEqual(scope.repoKey, hitRepoKey)) return { keep: true, bonus: CWD_BOOST };
   const mentioned = scope.lowerPrefixes.some((p) => lowerText.includes(p));
   if (mentioned) return { keep: true, bonus: CWD_BOOST / 2 };
   return { keep: !scope.only, bonus: 0 };
@@ -348,10 +382,28 @@ export function paragraphChunks(content: string): Array<{ text: string; startLin
   return chunks;
 }
 
-/** AND across groups, OR within a group; anyMode = any member of any group. */
-function matches(lowerText: string, groups: QueryGroup[], anyMode: boolean): boolean {
-  const groupHit = (group: QueryGroup) => group.some((term) => termIncludes(lowerText, term));
-  return anyMode ? groups.some(groupHit) : groups.every(groupHit);
+/** 1-based line of the first query-group hit in the file; 1 if none (should not happen after file AND). */
+function firstMatchStartLine(content: string, groups: QueryGroup[]): number {
+  const lines = splitLines(content);
+  for (let i = 0; i < lines.length; i++) {
+    if (groups.some((g) => groupHit(lines[i].toLowerCase(), g))) return i + 1;
+  }
+  return 1;
+}
+
+function groupHit(lowerText: string, group: QueryGroup): boolean {
+  return group.some((term) => termIncludes(lowerText, term));
+}
+
+/**
+ * Record which groups occur anywhere in this text (independently of the other
+ * groups). Drives the per-group relaxed retry: only a boundary group that is
+ * absent from the WHOLE corpus is opened to substring matching.
+ */
+function markGroupPresence(lowerText: string, groups: QueryGroup[], present: boolean[]): void {
+  for (let i = 0; i < groups.length; i++) {
+    if (!present[i] && groupHit(lowerText, groups[i])) present[i] = true;
+  }
 }
 
 /** First group member actually present in the text (excerpt anchor), else the lead word. */
@@ -382,7 +434,12 @@ export function searchMemory(query: string, opts: MemorySearchOptions = {}): Mem
   const cutoffMs = days > 0 ? nowMs - days * 86_400_000 : null;
   // Original case survives to expansion: the uppercase-acronym rule is the only
   // thing separating `CI` from a two-letter fragment (query-words.ts).
-  const words = splitQueryWordsRaw(query);
+  const rawAll = splitQueryWordsRaw(query);
+  // Padding removal and the relaxation threshold are both wp5. The threshold is
+  // judged on the ORIGINAL count so dropping `그` or `문제` cannot move it: the
+  // 9-word release query still relaxes after losing its one stopword.
+  const words = dropStopwords(rawAll);
+  const relax = rawAll.length > MAX_WORDS;
   const groups: QueryGroup[] = (opts.synonyms ?? true)
     ? expandQueryWords(words)
     : expandQueryWords(words).map((group) => [group[0]]);
@@ -396,10 +453,21 @@ export function searchMemory(query: string, opts: MemorySearchOptions = {}): Mem
   }
 
   const root = memoriesDir(home);
+  if (!existsSync(root)) {
+    warnings.push("memories root not found (file search off)");
+  }
+  if (!memoriesDbPath(home)) {
+    warnings.push("memories db not found (stage1 search off)");
+  }
   const files = listMarkdownFiles(root);
   const scope = buildCwdScope(home, opts, warnings);
 
-  const collect = (active: QueryGroup[]): MemoryHit[] => {
+  const present: boolean[] = groups.map(() => false);
+  const collect = (active: QueryGroup[], tallyPresence: boolean): MemoryHit[] => {
+    // Recompiled per pass on purpose: the relaxed retry below hands in groups
+    // whose boundary flags were dropped, and a plan captured once before that
+    // retry would still be matching on token boundaries.
+    const plan = compileMatchPlan(active, words, anyMode, relax);
     const candidates: MemoryHit[] = [];
     const matchedThreadIds = new Set<string>();
     scannedFiles = 0;
@@ -415,19 +483,26 @@ export function searchMemory(query: string, opts: MemorySearchOptions = {}): Mem
       }
       if (cutoffMs && mtimeMs < cutoffMs) continue;
       scannedFiles += 1;
-      if (!matches(content.toLowerCase(), active, anyMode)) continue;
+      const lowerFile = content.toLowerCase();
+      if (tallyPresence) markGroupPresence(lowerFile, groups, present);
+      if (!planMatches(lowerFile, plan)) continue;
       const threadId = frontmatterThreadId(content);
-      if (threadId) matchedThreadIds.add(threadId);
       const relpath = relative(root, file).split(sep).join("/");
       const kind = kindOfRelpath(relpath, "file");
       // Frontmatter first, then the thread join: a summary states its own cwd,
       // and a file that only carries a thread_id still resolves through state.
-      const fileCwd =
-        frontmatterCwd(content) ?? (threadId ? scope?.threadCwd.get(threadId)?.cwd ?? null : null);
+      const threadMeta = threadId ? scope?.threadCwd.get(threadId) : undefined;
+      const fileCwd = frontmatterCwd(content) ?? threadMeta?.cwd ?? null;
+      // The remote can only come from the thread join: a summary's frontmatter
+      // records cwd, never the origin URL.
+      const fileRepoKey = normalizeRepoKey(threadMeta?.gitOriginUrl);
+      const keptBefore = candidates.length;
+      let paragraphMatches = 0;
       for (const chunk of paragraphChunks(content)) {
         const lower = chunk.text.toLowerCase();
-        if (!matches(lower, active, anyMode)) continue;
-        const scoped = scopeAdjust(scope, fileCwd, lower);
+        if (!planMatches(lower, plan)) continue;
+        paragraphMatches += 1;
+        const scoped = scopeAdjust(scope, fileCwd, lower, fileRepoKey);
         if (!scoped.keep) continue;
         candidates.push({
           origin: "file",
@@ -442,11 +517,38 @@ export function searchMemory(query: string, opts: MemorySearchOptions = {}): Mem
           score: finalScore(scoreChunk(lower, active, lowerPhrase), kind, mtimeMs, nowMs) + scoped.bonus,
         });
       }
+      // File AND passed, every blank-separated paragraph failed AND: keep one
+      // file-span hit so split tokens still surface. Do not merge paragraphs
+      // and do not run this when a paragraph matched but cwd-only dropped it.
+      if (paragraphMatches === 0) {
+        const scoped = scopeAdjust(scope, fileCwd, lowerFile, fileRepoKey);
+        if (scoped.keep) {
+          candidates.push({
+            origin: "file",
+            kind,
+            relpath,
+            threadId,
+            updatedAt: new Date(mtimeMs).toISOString(),
+            // excerptAround (memory-search.ts:409-414) slices the original
+            // string, so pass LF-normalized text: a CRLF file would otherwise
+            // keep \r and fail Test A's no-\r assertion (same invariant as
+            // memory-search.test.ts:60). Paragraph chunks already join with
+            // "\n" via splitLines(...).join("\n") in paragraphChunks.
+            excerpt: excerptAround(splitLines(content).join("\n"), firstPresentMember(lowerFile, active), 400),
+            startLine: firstMatchStartLine(content, active),
+            cwd: fileCwd,
+            score: finalScore(scoreChunk(lowerFile, active, lowerPhrase), kind, mtimeMs, nowMs) + scoped.bonus,
+          });
+        }
+      }
+      // Record the thread only if this file actually kept a hit (paragraph or
+      // file-span). Recording on file AND was lying to stage1.
+      if (threadId && candidates.length > keptBefore) matchedThreadIds.add(threadId);
     }
     searchStage1(
       home,
+      plan,
       active,
-      anyMode,
       cutoffMs,
       lowerPhrase,
       nowMs,
@@ -458,16 +560,25 @@ export function searchMemory(query: string, opts: MemorySearchOptions = {}): Mem
     return candidates;
   };
 
-  let candidates = collect(groups);
-  // Relaxed retry: a symbol query that lands nowhere on token boundaries is
-  // better answered with low-confidence substring hits than with nothing. This
-  // is the fallback half of R1 — `3956` written as `PR3956` has no boundary in
-  // front of the digits, and a strict-only gate would hide it.
+  let candidates = collect(groups, true);
+  // Relaxed retry (per group, 260910 wp2): a symbol query that lands nowhere on
+  // token boundaries is better answered with low-confidence substring hits than
+  // with nothing — `3956` written as `PR3956` has no boundary in front of the
+  // digits. Only the boundary groups absent from the whole corpus are relaxed;
+  // a group that does hit somewhere keeps its precision (c-4: `LSP` must not
+  // start matching NaiControlsPanel because another group missed).
   if (candidates.length === 0 && hasBoundaryTerm(groups)) {
-    candidates = collect(relaxQueryGroups(groups));
-    if (candidates.length > 0) {
-      for (const hit of candidates) hit.score -= RELAXED_PENALTY;
-      warnings.push("no word-boundary matches — showing substring matches (lower confidence)");
+    fillStage1Presence(home, groups, present, cutoffMs, warnings);
+    const miss = new Set<number>();
+    for (let i = 0; i < groups.length; i++) {
+      if (groups[i].some((t) => t.boundary) && !present[i]) miss.add(i);
+    }
+    if (miss.size > 0) {
+      candidates = collect(relaxGroupsAt(groups, miss), false);
+      if (candidates.length > 0) {
+        for (const hit of candidates) hit.score -= RELAXED_PENALTY;
+        warnings.push("no word-boundary matches — showing substring matches (lower confidence)");
+      }
     }
   }
   const hits = rankAndTrim(candidates, limit);
@@ -527,8 +638,15 @@ function backfillFromChat(
       includeTools: opts.chatIncludeTools === true,
       source: "main",
       context: 0,
+      // Same injection point, so a hermetic memory test stays hermetic when the
+      // backfill runs.
+      readOriginUrl: opts.readOriginUrl,
       // A hard memory scope stays hard in the backfill; a boost does not filter.
       cwd: scope?.only ? scope.prefix : null,
+      // Memory defaults synonyms on; chat defaults them off. Dropping the flag
+      // here re-zeroes a Korean query the memory path just failed to answer.
+      synonyms: opts.synonyms ?? true,
+      any: opts.any === true,
     });
     const out: MemoryHit[] = result.hits.slice(0, want).map((hit) => {
       const updatedMs = Date.parse(hit.ts);
@@ -556,10 +674,41 @@ function backfillFromChat(
 }
 
 /** stage1_outputs holds per-thread raw_memory + rollout_summary; read-only, fail-soft. */
-function searchStage1(
+function fillStage1Presence(
   home: string,
   groups: QueryGroup[],
-  anyMode: boolean,
+  present: boolean[],
+  cutoffMs: number | null,
+  warnings: string[],
+): void {
+  if (present.every(Boolean)) return;
+  const dbPath = memoriesDbPath(home);
+  if (!dbPath) return;
+  let db: ReturnType<typeof openReadOnlyDb> | null = null;
+  try {
+    db = openReadOnlyDb(dbPath);
+    const rows = db
+      .prepare("SELECT raw_memory, rollout_summary, source_updated_at FROM stage1_outputs")
+      .all() as Array<Record<string, unknown>>;
+    for (const r of rows) {
+      const updatedSec = typeof r.source_updated_at === "number" ? r.source_updated_at : null;
+      if (cutoffMs && updatedSec !== null && updatedSec * 1000 < cutoffMs) continue;
+      const body = `${String(r.raw_memory ?? "")}\n${String(r.rollout_summary ?? "")}`.toLowerCase();
+      markGroupPresence(body, groups, present);
+      if (present.every(Boolean)) return;
+    }
+  } catch (err) {
+    warnings.push(`memories db unreadable (${err instanceof Error ? err.message : String(err)})`);
+  } finally {
+    db?.close();
+  }
+}
+
+/** stage1_outputs holds per-thread raw_memory + rollout_summary; read-only, fail-soft. */
+function searchStage1(
+  home: string,
+  plan: MatchPlan,
+  groups: QueryGroup[],
   cutoffMs: number | null,
   lowerPhrase: string,
   nowMs: number,
@@ -570,7 +719,6 @@ function searchStage1(
 ): void {
   const dbPath = memoriesDbPath(home);
   if (!dbPath) {
-    warnings.push("memories db not found (stage1 search off)");
     return;
   }
   let db: ReturnType<typeof openReadOnlyDb> | null = null;
@@ -584,31 +732,41 @@ function searchStage1(
     // prefilter, and the row body is re-checked with the same `matches`
     // predicate the file path uses, so boundary semantics hold either way.
     const params: string[] = [];
-    const conds = groups.map((group) => {
+    const groupCond = (group: QueryGroup): string => {
       const members = group.map((w) => {
         params.push(`%${w.text}%`);
         const n = params.length;
         return `(lower(raw_memory) LIKE ?${n} OR lower(rollout_summary) LIKE ?${n})`;
       });
-      return `(${members.join(" OR ")})`;
-    });
-    const where = conds.join(anyMode ? " OR " : " AND ");
+      return members.length > 0 ? `(${members.join(" OR ")})` : "1";
+    };
+    // Required groups only. The optional quota is enforced by planMatches
+    // below; ANDing optional groups here is what kept the long release query at
+    // zero hits, and a plan with no required group prefilters nothing at all —
+    // `WHERE 1`, never an empty condition list that would be invalid SQL.
+    const where = plan.anyMode
+      ? allGroups(plan).map(groupCond).join(" OR ") || "1"
+      : plan.required.length > 0
+        ? plan.required.map(groupCond).join(" AND ")
+        : "1";
     const sql = `SELECT thread_id, raw_memory, rollout_summary, source_updated_at FROM stage1_outputs
       WHERE ${where} ORDER BY source_updated_at DESC`;
     const rows = db.prepare(sql).all(...params) as Array<Record<string, unknown>>;
     for (const r of rows) {
       const threadId = typeof r.thread_id === "string" ? r.thread_id : null;
-      if (threadId && matchedThreadIds.has(threadId)) continue; // already hit via its md file
+      if (threadId && matchedThreadIds.has(threadId)) continue; // already kept a file hit for this thread
       const updatedSec = typeof r.source_updated_at === "number" ? r.source_updated_at : null;
       if (cutoffMs && updatedSec !== null && updatedSec * 1000 < cutoffMs) continue;
       const body = `${String(r.raw_memory ?? "")}\n${String(r.rollout_summary ?? "")}`;
       const lowerBody = body.toLowerCase();
-      // The LIKE prefilter above ignores boundaries; enforce them here.
-      if (!matches(lowerBody, groups, anyMode)) continue;
+      // The LIKE prefilter above ignores boundaries and skips the optional
+      // groups; the plan predicate enforces both here.
+      if (!planMatches(lowerBody, plan)) continue;
       // stage1_outputs has no cwd column (schema dump, 011 4.3); threads.cwd is
       // the accurate substitute and it covered all 516 rows in the live store.
-      const rowCwd = threadId ? scope?.threadCwd.get(threadId)?.cwd ?? null : null;
-      const scoped = scopeAdjust(scope, rowCwd, lowerBody);
+      const rowThread = threadId ? scope?.threadCwd.get(threadId) : undefined;
+      const rowCwd = rowThread?.cwd ?? null;
+      const scoped = scopeAdjust(scope, rowCwd, lowerBody, normalizeRepoKey(rowThread?.gitOriginUrl));
       if (!scoped.keep) continue;
       const updatedMs = updatedSec !== null ? updatedSec * 1000 : null;
       candidates.push({

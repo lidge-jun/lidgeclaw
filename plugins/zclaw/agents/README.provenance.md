@@ -1,1 +1,1 @@
-../../cursorclaw/agents/README.provenance.md
+../../shared/agents/README.provenance.md

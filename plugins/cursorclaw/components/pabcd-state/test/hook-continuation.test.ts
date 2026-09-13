@@ -32,7 +32,7 @@ const nodeRequire = createRequire(import.meta.url);
 // payload dispatcher). Pin the literal so command-string assertions below stay
 // deterministic on machines without `cxc` on PATH. Each test FILE is its own
 // node --test process, so this setup pin needs no restore.
-process.env.CURSORCLAW_CRC = "cxc";
+process.env.CURSORCLAW_CRC = "crc";
 
 function freshCwd(): string {
   return mkdtempSync(join(tmpdir(), "codexclaw-hook-"));
@@ -142,7 +142,7 @@ test("WP4: the emitted interview directive names the state-grounding loop", () =
   const d = interviewDirective();
   // Without this citation no agent has any reason to run the deriver, so the
   // tracker stays empty and every question is generated from a blank slate.
-  assert.match(d, /cxc scan record[^\n]*--derive/, "must cite the deriver command");
+  assert.match(d, /crc scan record[^\n]*--derive/, "must cite the deriver command");
   assert.match(d, /--map/, "must show how questions are attributed to a dimension");
   assert.match(d, /known\[\]/, "must name where answers land");
   assert.match(d, /unknown\[\]/, "must name where gaps land");
@@ -191,7 +191,7 @@ test("WP4 delivery: the passive I-phase injection carries the grounding rules", 
     writeState(cwd, { ...defaultState("gr1"), phase: "I", orchestrationActive: true, lastInjectedPhase: "P" });
     const ctx = groundingContext(handleUserPromptSubmit(ups("continue", cwd, "gr1", "t-gr1")));
     assert.match(ctx, /INTERVIEW-GROUND-01/, "grounding rule must reach the model");
-    assert.match(ctx, /cxc scan record[^\n]*--derive/, "the deriver command must reach the model");
+    assert.match(ctx, /crc scan record[^\n]*--derive/, "the deriver command must reach the model");
     assert.match(ctx, /INTERVIEW-RENDER-01/);
     assert.match(ctx, /INTERVIEW-INDEPENDENT-01/);
     assert.match(ctx, /Mind dispatch/i, "the Mind contract must still ride along");
@@ -519,7 +519,7 @@ test("GOAL-IDLE-CONTINUE-01: active goal at IDLE blocks with the arming command"
       assert.match(parsed.reason, /crc orchestrate P --session gi1 --attest '\{/);
       assert.match(parsed.reason, /update_goal/);
       assert.match(parsed.reason, /LOOP-UNIT-CHAIN-01/, "IDLE block must teach heterogeneous work-phase chaining");
-      assert.match(parsed.reason, /cxc loop init/, "unbound session must be pointed at loop init");
+      assert.match(parsed.reason, /crc loop init/, "unbound session must be pointed at loop init");
       // the counter write bootstraps the session file, keyed at IDLE
       const st = readState(cwd, "gi1");
       assert.equal(st.stopBlockPhase, "IDLE");
@@ -581,7 +581,7 @@ test("GOAL-IDLE-CONTINUE-01: bound goalplan names remaining work in the IDLE blo
       assert.match(reason, /Ready tasks: wp-1\/t-1 \(goal-idle block\)/);
       assert.doesNotMatch(reason, /Remaining work:/);
       assert.match(reason, /Required evidence: node --test green/);
-      assert.doesNotMatch(reason, /cxc loop init/, "bound session must not be told to re-init");
+      assert.doesNotMatch(reason, /crc loop init/, "bound session must not be told to re-init");
     });
   } finally { rmSync(cwd, { recursive: true, force: true }); }
 });

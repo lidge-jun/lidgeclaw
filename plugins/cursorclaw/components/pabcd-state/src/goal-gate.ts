@@ -48,14 +48,14 @@ import { hasSpentBudget, unrecordableVerdictStatus } from "./subagent-evidence.t
 type CxcInvocationFn = (moduleUrl: string, env?: Record<string, string | undefined>) => string;
 let cxcInvocationFn: CxcInvocationFn | null = null;
 try {
-  ({ cxcInvocation: cxcInvocationFn } = (await import("../../ops/dist/resolve.js")) as {
+  ({ cxcInvocation: cxcInvocationFn } = (await import("../../cxc-ops/dist/cxc-resolve.js")) as {
     cxcInvocation: CxcInvocationFn;
   });
 } catch {
   cxcInvocationFn = null;
 }
 function cxcInvocation(moduleUrl: string): string {
-  return cxcInvocationFn ? cxcInvocationFn(moduleUrl) : "cxc";
+  return cxcInvocationFn ? cxcInvocationFn(moduleUrl) : "crc";
 }
 
 const REQUEST_USER_INPUT_TOOL = "request_user_input";

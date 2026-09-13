@@ -46,10 +46,14 @@
  * except through additionalContext (idle-edit.ts:10-12), so this gate stays
  * silent when it allows.
  */
+import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { isAbsolute, join, normalize, resolve, sep } from "node:path";
 import { readState, writeState } from "./state.ts";
 import { splitLines } from "./text-lines.ts";
+import { shellWriteDestinations } from "./shell-write-destinations.ts";
+
+export { shellWriteDestinations } from "./shell-write-destinations.ts";
 
 /**
  * Hook-facing names for the memory write tool. `memoriesadd_ad_hoc_note` is what
@@ -74,7 +78,7 @@ const SHELL_TOOLS: ReadonlySet<string> = new Set(["Bash", "shell", "exec_command
  */
 export const MEMORY_WRITE_PATTERNS: readonly RegExp[] = [
   /기억\s*(해둬|해 둬|해줘|해라|하자|해$|해[.!,]|해서\s*(둬|놔))/,
-  /(기억|메모)\s*(에|해서)?\s*(남겨|남겨둬|적어|적어둬|저장|기록)/,
+  /(기억|메모리?)\s*(에다|에도|에|도|해서)?\s*(남겨|남겨둬|적어|적어둬|저장|기록)/,
   /메모리\s*(에|에다)?\s*(남겨|기록|추가|저장|적어|넣어|써)/,
   /(노트|메모)\s*(로|를|에)?\s*(남겨|남겨둬|추가|저장|기록)/,
   /잊지\s*(말고|마|마라|말아)/,
@@ -105,10 +109,20 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-/** The memories root this gate protects: $CURSOR_HOME/memories, else ~/.cursor/memories. */
+/** Dual-read corpus home, same order as recall/src/paths.ts. */
+function corpusHome(env: NodeJS.ProcessEnv): string {
+  const fromEnv = (env.CURSOR_HOME || env.CODEX_HOME || "").trim();
+  if (fromEnv) return resolve(fromEnv);
+  const cursor = join(homedir(), ".cursor");
+  const codex = join(homedir(), ".codex");
+  if (existsSync(join(cursor, "projects"))) return cursor;
+  if (existsSync(codex)) return codex;
+  return cursor;
+}
+
+/** The memories root this gate protects: same home as recall dual-read, then /memories. */
 export function memoriesRoot(env: NodeJS.ProcessEnv = process.env): string {
-  const home = env.CURSOR_HOME && env.CURSOR_HOME.trim() !== "" ? env.CURSOR_HOME.trim() : join(homedir(), ".codex");
-  return resolve(join(home, "memories"));
+  return resolve(join(corpusHome(env), "memories"));
 }
 
 /**
@@ -123,14 +137,35 @@ export function isMemoryPath(candidate: string, root: string): boolean {
 }
 
 /**
- * Expand a possibly `~`-prefixed, possibly relative path against cwd. Shell text and
- * patch headers both carry these forms, and a tilde path that stayed literal would
- * read as relative and escape the check.
+ * Expand a possibly home-prefixed, possibly relative path against cwd. Shell text
+ * and patch headers both carry these forms, and a tilde / USERPROFILE path that
+ * stayed literal would read as relative and escape the check.
+ *
+ * Home prefixes, case-insensitive except for the exact `~` forms: `~`, `~/`, `~\`,
+ * `%USERPROFILE%`, `$env:USERPROFILE`, `$HOME`. Expansion uses `homedir()`, the
+ * same target `~` already uses. It does not consult `CODEX_HOME`; `memoriesRoot`
+ * still decides the protected root. After expansion, backslashes become `/` so
+ * `~\.codex\memories\n.md` classifies on win32 and on POSIX CI.
  */
+function expandHomePrefix(raw: string): string {
+  const home = homedir();
+  if (raw === "~") return home;
+  if (raw.startsWith("~/") || raw.startsWith("~\\")) return join(home, raw.slice(2));
+  const lower = raw.toLowerCase();
+  const prefixes = ["%userprofile%", "$env:userprofile", "$home"];
+  for (const prefix of prefixes) {
+    if (lower === prefix) return home;
+    if (lower.startsWith(prefix + "/") || lower.startsWith(prefix + "\\")) {
+      return join(home, raw.slice(prefix.length + 1));
+    }
+  }
+  return raw;
+}
+
 function absolutize(raw: string, cwd: string): string {
   let value = raw.trim().replace(/^["']|["']$/g, "");
   if (value === "") return "";
-  if (value === "~" || value.startsWith("~/")) value = join(homedir(), value.slice(1));
+  value = expandHomePrefix(value).replace(/\\/g, "/");
   if (isAbsolute(value)) return resolve(value);
   return cwd === "" ? "" : resolve(cwd, value);
 }
@@ -149,22 +184,6 @@ export function patchTargets(patchText: string): string[] {
     }
     const unified = /^\+\+\+ (?:b\/)?(.+)$/.exec(line);
     if (unified) out.push(unified[1].trim());
-  }
-  return out;
-}
-
-/**
- * Shell tokens that could name a write destination. Deliberately BROAD and
- * path-shaped: it collects every token that mentions a memories path rather than
- * modelling redirection, `tee`, `sed -i` and friends separately. Over-collection is
- * safe here — the caller still requires the token to resolve under the memories
- * root, and the remedy for a false deny is one CLI grant.
- */
-export function shellPathTokens(command: string): string[] {
-  const out: string[] = [];
-  for (const token of command.split(/[\s;|&()<>]+/)) {
-    const cleaned = token.replace(/^["']|["']$/g, "");
-    if (cleaned.includes("memories")) out.push(cleaned);
   }
   return out;
 }
@@ -207,12 +226,12 @@ export function classifyMemoryWrite(
   if (SHELL_TOOLS.has(toolName)) {
     const command = typeof toolInput.command === "string" ? toolInput.command : "";
     if (command === "") return { surface: "", target: "" };
-    // A read is not a write. Only commands that can CREATE or MUTATE bytes are gated,
-    // so `cat`/`rg` over memories (what recall does constantly) stays free.
-    if (!/>>?|\btee\b|\bsed\b|\bcp\b|\bmv\b|\brm\b|\btouch\b|\bmkdir\b|\bdd\b|\bteee?\b|\bwrite\b|\binstall\b/.test(command)) {
-      return { surface: "", target: "" };
-    }
-    for (const token of shellPathTokens(command)) {
+    // Classify by WRITE DESTINATION (260910 wp1). A memories path that appears only
+    // as a read operand, inside quotes, or in a heredoc body is not a write, so
+    // `sed -n`, `rg ... 2>/dev/null` and a devlog heredoc whose body mentions the
+    // memories root stay free. Redirections, `tee`, `sed -i`, `cp`/`mv` targets and
+    // `perl -i`/`ruby -i` operands are the write surface.
+    for (const token of shellWriteDestinations(command)) {
       const abs = absolutize(token, cwd);
       if (isMemoryPath(abs, root)) return { surface: "shell", target: abs };
     }
@@ -220,16 +239,18 @@ export function classifyMemoryWrite(
   return { surface: "", target: "" };
 }
 
-export function denyReason(attempt: MemoryWriteAttempt, sessionId: string): string {
+export function denyReason(attempt: MemoryWriteAttempt, sessionId: string, cwd = ""): string {
   const what =
     attempt.surface === "tool"
       ? `a memory note (${attempt.target})`
       : `a file under the Codex memories directory (${attempt.target})`;
+  const cwdHint = cwd === "" ? "the session working directory" : cwd;
   return [
     `[cursorclaw MEMORY-WRITE-GATE] Blocked a write of ${what}: this session has no explicit user request to remember anything.`,
     "Memory notes outlive codexclaw and reach every later session, so they are written only when the user asks.",
     "Two ways forward: ask the user to confirm they want this remembered (a prompt such as \"기억해둬\" or \"remember this\" authorizes the next write),",
-    `or record an explicit grant with \`crc memory allow-write --session ${sessionId || "<id>"}\`.`,
+    `or record an explicit grant with \`crc memory allow-write --session ${sessionId || "<id>"}\` from ${cwdHint}.`,
+    "The grant is stored per cwd; issuing it from a different working directory will print success and never be seen by this hook.",
     "If the user did ask, say so and retry — the request must appear in their own message, not in yours.",
   ].join(" ");
 }
@@ -308,7 +329,7 @@ export function handleMemoryWriteGate(raw: string, env: NodeJS.ProcessEnv = proc
     // exception: the fail-open promise covers CRASHES, and the deny still names both
     // remedies.
     if (cwd !== "" && sessionId !== "" && consumeAuthorization(cwd, sessionId, turnId)) return "";
-    return denyEnvelope(denyReason(attempt, sessionId));
+    return denyEnvelope(denyReason(attempt, sessionId, cwd));
   } catch {
     return ""; // FAIL-OPEN: a gate crash must never block an explicitly requested write
   }

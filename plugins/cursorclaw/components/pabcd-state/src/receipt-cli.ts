@@ -41,7 +41,7 @@ export function parseReceiptCliArgs(argv: string[], cwd: string): ReceiptCliArgs
     return { verb: "help", cwd, command: [] };
   }
   if (verb !== "test") {
-    return { error: `unknown receipt verb '${argv[0] ?? ""}' (expected test); run cxc receipt --help` };
+    return { error: `unknown receipt verb '${argv[0] ?? ""}' (expected test); run crc receipt --help` };
   }
   const out: ReceiptCliArgs = { verb: "test", cwd, command: [] };
   let i = 1;
@@ -75,11 +75,11 @@ export function runReceiptCli(args: ReceiptCliArgs): ReceiptCliResult {
   if (args.verb === "help") {
     return {
       output: [
-        "cxc receipt — record a check receipt that binds a command's result to a source tree",
+        "crc receipt — record a check receipt that binds a command's result to a source tree",
         "",
         "Usage:",
-        "  cxc receipt test --session <id> [--cwd <path>] [--generated <path>]... -- <command> [args...]",
-        "  cxc receipt --help",
+        "  crc receipt test --session <id> [--cwd <path>] [--generated <path>]... -- <command> [args...]",
+        "  crc receipt --help",
         "",
         "Notes:",
         "  Everything after `--` is the command; nothing before it is.",
@@ -90,7 +90,7 @@ export function runReceiptCli(args: ReceiptCliArgs): ReceiptCliResult {
         "  rebuilds its own artifacts). Repeatable. Undeclared rewrites are still refused.",
         "",
         "Example:",
-        "  cxc receipt test --session <id> -- npm test",
+        "  crc receipt test --session <id> -- npm test",
       ].join("\n"),
       code: 0,
     };
@@ -157,7 +157,7 @@ export function runReceiptCli(args: ReceiptCliArgs): ReceiptCliResult {
       output: [
         `receipt test: the command changed the source while running (${cmp.detail}); no receipt written — a check cannot certify a tree it rewrote.`,
         "If the check REGENERATES artifacts by design, declare them:",
-        "  cxc receipt test --session <id> --generated <path> -- <command>",
+        "  crc receipt test --session <id> --generated <path> -- <command>",
         "(repeatable; a path covers that file or that directory. Undeclared rewrites are still refused.)",
       ].join("\n"),
       code: 1,

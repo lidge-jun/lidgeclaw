@@ -96,7 +96,7 @@ export function parseScanCliArgs(
     };
   }
   if (action !== "record") {
-    return { error: `unknown scan action '${action ?? ""}'; run cxc scan --help` };
+    return { error: `unknown scan action '${action ?? ""}'; run crc scan --help` };
   }
   let sessionId = "";
   let contradictionCount = 0;
@@ -297,14 +297,14 @@ export function runScanCli(args: ScanCliArgs): { output: string; code: number } 
   if (args.action === "help") {
     return {
       output: [
-        "cxc scan — record an interview rescan round and fold answers into the tracker",
+        "crc scan — record an interview rescan round and fold answers into the tracker",
         "",
         "Usage:",
-        "  cxc scan record --session <id> [--cwd <path>] [--contradictions N] [--high N]",
+        "  crc scan record --session <id> [--cwd <path>] [--contradictions N] [--high N]",
         "                  [--derive] [--map <questionId>=<dimension>]...",
         "                  [--dim <dimension>=<level>]... [--known <dimension>=<text>]...",
         "                  [--unknown <dimension>=<text>]... [--confidence <dimension>=<0..1>]...",
-        "  cxc scan --help",
+        "  crc scan --help",
         "",
         "Notes:",
         "  --session is required; there is no latest-session fallback for a mutating command.",

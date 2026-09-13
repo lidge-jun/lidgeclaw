@@ -7,6 +7,7 @@ import { dateParts } from "./fixtures.ts";
 import { openIndex } from "../src/index-db.ts";
 import { ingest } from "../src/ingest.ts";
 import { listCwdSessions } from "../src/cwd-context.ts";
+import { FOLD_CWD_CASE, foldCwdCaseFor } from "../src/rollout.ts";
 import { loadSummaryIndex } from "../src/cwd-context.ts";
 
 // A real ingested index, not a hand-built table: the cwd column and the synthetic
@@ -14,13 +15,30 @@ import { loadSummaryIndex } from "../src/cwd-context.ts";
 let home: string;
 let idx: string;
 const CWD = "/hash/worktrees/1fa9/project";
+/** The same repository, checked out where the user actually works. */
+const MAIN_CHECKOUT = "/Users/someone/dev/project";
+const ORIGIN = "https://github.com/example/project.git";
+const OTHER_ORIGIN = "git@github.com:example/unrelated.git";
 
-function rollout(threadId: string, cwd: string, iso: string, msgs: Array<[string, string]>): string {
+function rollout(
+  threadId: string,
+  cwd: string,
+  iso: string,
+  msgs: Array<[string, string]>,
+  repositoryUrl?: string,
+): string {
   const lines = [
     JSON.stringify({
       timestamp: iso,
       type: "session_meta",
-      payload: { id: threadId, timestamp: iso, cwd, originator: "codex-tui", cli_version: "0.130.0" },
+      payload: {
+        id: threadId,
+        timestamp: iso,
+        cwd,
+        originator: "codex-tui",
+        cli_version: "0.130.0",
+        ...(repositoryUrl ? { git: { repository_url: repositoryUrl, branch: "main" } } : {}),
+      },
     }),
   ];
   for (const [role, text] of msgs) {
@@ -73,6 +91,22 @@ test.before(() => {
     ]),
   );
 
+  // Same repository as the hash slot above, checked out elsewhere. A brand-new
+  // slot has no history of its own, so this is the session the hook needs.
+  writeFileSync(
+    join(dir, `rollout-${today.y}-${today.m}-${today.d}T04-00-00-019f0000-0000-7000-8000-0000000000a4.jsonl`),
+    rollout(
+      "019f0000-0000-7000-8000-0000000000a4",
+      MAIN_CHECKOUT,
+      today.iso,
+      [
+        ["user", "land the parser rewrite on the main checkout"],
+        ["assistant", "ok"],
+      ],
+      ORIGIN,
+    ),
+  );
+
   const db = openIndex(idx);
   try {
     ingest(home, db, 0);
@@ -108,6 +142,31 @@ test("cwd enumeration never returns another directory's sessions", () => {
   assert.equal(other[0].excerpt, "secret from another project");
   // A cwd with no rows is an empty list, not a fallback signal.
   assert.deepEqual(listCwdSessions("/nonexistent/cwd", 5, { indexPath: idx }), []);
+});
+
+test("a fresh worktree slot sees the same repository's other checkout", () => {
+  // Without an origin the slot only has its own two sessions...
+  const local = listCwdSessions(CWD, 5, { indexPath: idx, home, readOriginUrl: () => null }) ?? [];
+  assert.equal(local.length, 2);
+
+  // ...and with one, the main checkout of the same remote joins them.
+  const federated = listCwdSessions(CWD, 5, { indexPath: idx, home, readOriginUrl: () => ORIGIN }) ?? [];
+  assert.equal(federated.length, 3);
+  assert.ok(
+    federated.some((s) => s.excerpt === "land the parser rewrite on the main checkout"),
+    "the same-origin session must be listed",
+  );
+  for (const s of federated) assert.doesNotMatch(s.excerpt, /secret from another project/);
+});
+
+test("a different remote never federates into this project", () => {
+  const sessions =
+    listCwdSessions(CWD, 5, { indexPath: idx, home, readOriginUrl: () => OTHER_ORIGIN }) ?? [];
+  assert.equal(sessions.length, 2, "only this cwd's own sessions");
+  for (const s of sessions) {
+    assert.doesNotMatch(s.excerpt, /main checkout/);
+    assert.doesNotMatch(s.excerpt, /secret from another project/);
+  }
 });
 
 test("a missing index yields null so the caller can fall back", () => {
@@ -187,6 +246,65 @@ test("a machine with no summaries yields an empty map, never a throw", () => {
   const root = mkdtempSync(join(tmpdir(), "recall-nosummaries-"));
   try {
     assert.equal(loadSummaryIndex(root).size, 0);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("listCwdSessions matches a \\\\?\\\\ recorded cwd with repo_key NULL", () => {
+  const root = mkdtempSync(join(tmpdir(), "recall-cwdctx-ext-"));
+  try {
+    const today = dateParts(0);
+    const dir = join(root, "sessions", today.y, today.m, today.d);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(
+      join(dir, `rollout-${today.y}-${today.m}-${today.d}T01-00-00-019f0000-0000-7000-8000-0000000000e1.jsonl`),
+      rollout("019f0000-0000-7000-8000-0000000000e1", "\\\\?\\C:\\proj\\here", today.iso, [
+        ["user", "wire the hook budget to the compaction source"],
+      ]),
+    );
+    const lidx = join(root, "sidecar", "index.sqlite");
+    const db = openIndex(lidx);
+    try {
+      ingest(root, db, 0);
+    } finally {
+      db.close();
+    }
+    const opts = { indexPath: lidx, home: root, readOriginUrl: () => null };
+    const sessions = listCwdSessions("C:\\proj\\here", 5, opts) ?? [];
+    assert.equal(sessions.length, 1);
+    assert.equal(sessions[0].excerpt, "wire the hook budget to the compaction source");
+    assert.deepEqual(listCwdSessions("C:\\proj\\here2", 5, opts) ?? [], []);
+    assert.equal((listCwdSessions("//?/C:/proj/here", 5, opts) ?? []).length, 1);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("listCwdSessions case-fold follows FOLD_CWD_CASE when repo_key is NULL", () => {
+  const root = mkdtempSync(join(tmpdir(), "recall-cwdctx-case-"));
+  try {
+    const today = dateParts(0);
+    const dir = join(root, "sessions", today.y, today.m, today.d);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(
+      join(dir, `rollout-${today.y}-${today.m}-${today.d}T01-00-00-019f0000-0000-7000-8000-0000000000e2.jsonl`),
+      rollout("019f0000-0000-7000-8000-0000000000e2", "C:\\proj\\here", today.iso, [
+        ["user", "case fold probe for cwd injection"],
+      ]),
+    );
+    const lidx = join(root, "sidecar", "index.sqlite");
+    const db = openIndex(lidx);
+    try {
+      ingest(root, db, 0);
+    } finally {
+      db.close();
+    }
+    const shouldFold = process.platform === "win32" || process.platform === "darwin";
+    const sessions =
+      listCwdSessions("c:\\proj\\HERE", 5, { indexPath: lidx, home: root, readOriginUrl: () => null }) ?? [];
+    assert.equal(sessions.length, shouldFold ? 1 : 0);
+    assert.equal(FOLD_CWD_CASE, foldCwdCaseFor(process.platform));
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

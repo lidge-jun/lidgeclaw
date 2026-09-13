@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 // Pin the cxc-resolve seam (B1): the search-footer assertion expects a literal
 // `crc skill show`, which must not depend on the runner's PATH.
-process.env.CURSORCLAW_CRC = "cxc";
+process.env.CURSORCLAW_CRC = "crc";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";

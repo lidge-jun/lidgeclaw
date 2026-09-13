@@ -12,7 +12,7 @@ import assert from "node:assert/strict";
 
 // Pin the cxc-resolve seam (B1): these tests assert literal `crc ...` command
 // mentions, which would otherwise depend on whether the runner's PATH has cxc.
-process.env.CURSORCLAW_CRC = "cxc";
+process.env.CURSORCLAW_CRC = "crc";
 import { mkdtempSync, mkdirSync, writeFileSync, existsSync, readFileSync, rmSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
@@ -72,7 +72,7 @@ test("size gate: below threshold -> no map line (skill line only), at threshold 
   assert.notEqual(smallOut, "", "skill-search affordance is always on");
   const smallEnv = JSON.parse(smallOut);
   assert.doesNotMatch(smallEnv.hookSpecificOutput.additionalContext, /cxc map/);
-  assert.match(smallEnv.hookSpecificOutput.additionalContext, /cxc skill search/);
+  assert.match(smallEnv.hookSpecificOutput.additionalContext, /crc skill search/);
   assert.match(smallEnv.hookSpecificOutput.additionalContext, /User questions:/);
 
   const big = tmp();
@@ -81,8 +81,8 @@ test("size gate: below threshold -> no map line (skill line only), at threshold 
   assert.notEqual(out, "");
   const env = JSON.parse(out);
   assert.equal(env.hookSpecificOutput.hookEventName, "SessionStart");
-  assert.match(env.hookSpecificOutput.additionalContext, /cxc map/);
-  assert.match(env.hookSpecificOutput.additionalContext, /cxc skill search/);
+  assert.match(env.hookSpecificOutput.additionalContext, /crc map/);
+  assert.match(env.hookSpecificOutput.additionalContext, /crc skill search/);
 });
 
 test("affordance is a POINTER, not the map body (no preload)", () => {
@@ -96,15 +96,15 @@ test("affordance is a POINTER, not the map body (no preload)", () => {
 
 test("skill-search affordance is a POINTER: names both commands, stays short", () => {
   const text = renderSkillSearchAffordance();
-  assert.match(text, /cxc skill search/);
-  assert.match(text, /cxc skill show/);
+  assert.match(text, /crc skill search/);
+  assert.match(text, /crc skill show/);
   assert.match(text, /cxc-dev/, "must state that built-in discipline wins on conflict");
   assert.ok(text.length < 600, "affordance must stay a one-liner-ish pointer");
 });
 
 test("kwrite affordance: always on, genre-free pointer to $crc-kwrite", () => {
   const text = renderKwriteAffordance();
-  assert.match(text, /cxc-kwrite/);
+  assert.match(text, /crc-kwrite/);
   assert.match(text, /윤문/);
   // universal guidance only — no platform/genre routing in the hook line
   assert.doesNotMatch(text, /thread|쓰레드|SNS|블로그|DC/i);
@@ -112,7 +112,7 @@ test("kwrite affordance: always on, genre-free pointer to $crc-kwrite", () => {
   // rides every SessionStart envelope regardless of repo size
   const small = tmp();
   const out = runMapAffordanceSessionStart("", small);
-  assert.match(JSON.parse(out).hookSpecificOutput.additionalContext, /cxc-kwrite/);
+  assert.match(JSON.parse(out).hookSpecificOutput.additionalContext, /crc-kwrite/);
 });
 
 test("critical loop and stack guidance survives SessionStart and PostCompact without intent triggers", () => {
@@ -231,13 +231,13 @@ test("cwd is read from the stdin payload; malformed stdin falls back safely", ()
   );
   assert.match(
     JSON.parse(viaStdin).hookSpecificOutput.additionalContext,
-    /cxc map/,
+    /crc map/,
     "cwd from stdin should clear the map gate",
   );
 
   // malformed stdin -> uses fallback cwd (the big repo) -> still fires, no throw
   const viaFallback = runMapAffordanceSessionStart("{not json", big);
-  assert.match(JSON.parse(viaFallback).hookSpecificOutput.additionalContext, /cxc map/);
+  assert.match(JSON.parse(viaFallback).hookSpecificOutput.additionalContext, /crc map/);
   assert.match(JSON.parse(viaFallback).hookSpecificOutput.additionalContext, /DEV-STACK-06\/07/);
   // empty stdin + small fallback -> no map line, skill line still present, no throw
   const smallOut = runMapAffordanceSessionStart("", empty);
@@ -254,9 +254,11 @@ test("stack guidance survives SessionStart and deferred compact recovery without
       const ctx = envelope.hookSpecificOutput.additionalContext;
       const stackLine = ctx.split("\n").find((line: string) => line.includes("DEV-STACK-06/07"));
       assert.ok(stackLine, `${event} must expose stack guidance even in an empty non-Git repo`);
-      assert.match(stackLine, /cxc-dev.*references\/stacked-prs\.md/);
+      assert.match(stackLine, /cursorclaw:dev.*references\/stacked-prs\.md/);
       assert.match(stackLine, /ordinary PRs\/manual chains by default/);
       assert.match(stackLine, /parent base or Can Stack banner is not opt-in/);
+      assert.match(stackLine, /one Codex task each, not subagents \(same checkout\)/);
+      assert.match(stackLine, /the lane request authorizes them/);
       assert.match(stackLine, /Per-PR CI is expected/);
       assert.match(stackLine, /Do not suggest or create GitHub native stacks unless the user clearly and strongly requests them for this task/);
       assert.doesNotMatch(stackLine, /Publish GitHub stacks natively/);
@@ -268,8 +270,12 @@ test("stack guidance survives SessionStart and deferred compact recovery without
   } finally { rmSync(cwd, { recursive: true, force: true }); }
 });
 
-test("hook JSON wires SessionStart to the cxc-ops dist entry", () => {
+test("hook JSON wires SessionStart to the cxc-ops dist entry", (t) => {
   const hookPath = join(pluginRoot, "hooks", "session-start-announcing-map-affordance.json");
+  if (!existsSync(hookPath)) {
+    t.skip("Codex per-event hook JSON is not part of the Cursor payload (hooks/hooks.json)");
+    return;
+  }
   assert.ok(existsSync(hookPath), "hook JSON must exist");
   const hook = JSON.parse(readFileSync(hookPath, "utf8"));
   const cmd = hook.hooks.SessionStart[0].hooks[0].command;
@@ -281,7 +287,7 @@ test("degraded mode: no CURSORCLAW_CRC + cxc-free PATH falls back to the payload
   // payload dispatcher (fresh marketplace install simulation).
   const env = { PATH: "/usr/bin:/bin" };
   const invocation = cxcInvocation(import.meta.url, env);
-  assert.match(invocation, /bin[\\/]cxc\.mjs/, "fallback must name the payload dispatcher");
+  assert.match(invocation, /bin[\\/]cursorclaw\.mjs/, "fallback must name the payload dispatcher");
   assert.match(invocation, /^node "/, "fallback must be runnable via node");
 
   // Command mentions resolve...
@@ -293,14 +299,14 @@ test("degraded mode: no CURSORCLAW_CRC + cxc-free PATH falls back to the payload
     writeFileSync(join(staleBin, "cxc"), "stale repository CLI");
     const staleEnv = { PATH: staleBin };
     const owned = cxcInvocation(import.meta.url, staleEnv, "session");
-    assert.match(owned, /bin[\\/]cxc\.mjs/);
-    assert.equal(cxcInvocation(import.meta.url, staleEnv, "map"), "cxc");
-    assert.equal(cxcInvocation(import.meta.url, staleEnv, "gui"), "cxc");
+    assert.match(owned, /bin[\\/]cursorclaw\.mjs/);
+    assert.equal(cxcInvocation(import.meta.url, staleEnv, "map"), "crc");
+    assert.equal(cxcInvocation(import.meta.url, staleEnv, "gui"), "crc");
     assert.equal(cxcInvocation(import.meta.url, { ...staleEnv, CURSORCLAW_CRC: "chosen-cxc" }, "session"), "chosen-cxc");
     const mixed = resolveCxcCommands("`crc session current` and `crc map src`", staleEnv);
     assert.equal(mixed, `\`${owned} session current\` and \`crc map src\``);
     const absent = pathToFileURL(join(staleBin, "absent", "components", "cxc-ops", "src", "cxc-resolve.ts")).href;
-    assert.equal(cxcInvocation(absent, staleEnv, "session"), "cxc");
+    assert.equal(cxcInvocation(absent, staleEnv, "session"), "crc");
   } finally { rmSync(staleBin, { recursive: true, force: true }); }
 
   // ...but noun phrases, skill names, and chat commands are byte-identical (H1).
@@ -336,7 +342,7 @@ test("direct-exec guard fires through a symlinked install path (plugin-cache reg
   });
   assert.equal(res.status, 0, `stderr: ${res.stderr}`);
   assert.match(res.stdout, /additionalContext/, "symlink invocation must emit the envelope");
-  assert.match(res.stdout, /cxc map/, "envelope must carry the map pointer");
+  assert.match(res.stdout, /crc map/, "envelope must carry the map pointer");
   assert.match(JSON.parse(res.stdout).hookSpecificOutput.additionalContext, /DEV-STACK-06\/07/);
   assert.match(JSON.parse(res.stdout).hookSpecificOutput.additionalContext, /native stacks unless the user clearly and strongly requests them for this task/);
   assert.match(JSON.parse(res.stdout).hookSpecificOutput.additionalContext, /User questions:.*request_user_input_async/);

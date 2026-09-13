@@ -1,0 +1,21 @@
+{
+  "name": "claudeclaw",
+  "displayName": "claudeclaw",
+  "version": "0.1.0",
+  "description": "Claude Code surface of lidgeclaw: shared PABCD skills, agents, commands, and Codex-parity hook fan-out.",
+  "author": {
+    "name": "lidge-jun",
+    "url": "https://github.com/lidge-jun"
+  },
+  "homepage": "https://github.com/lidge-jun/lidgeclaw",
+  "repository": "https://github.com/lidge-jun/lidgeclaw",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "claudeclaw",
+    "lidgeclaw",
+    "pabcd",
+    "skills",
+    "hooks"
+  ]
+}

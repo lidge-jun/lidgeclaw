@@ -14,6 +14,8 @@
 import { readdirSync, existsSync, openSync, readSync, closeSync } from "node:fs";
 import { join, basename } from "node:path";
 import { splitLines } from "./text-lines.ts";
+import { normalizeRepoKey } from "./repo-key.ts";
+import { planMatches, planIsEmpty, type MatchPlan } from "./query-words.ts";
 
 export type RolloutSource = "main" | "subagent";
 
@@ -23,6 +25,12 @@ export type RolloutMeta = {
   source: RolloutSource;
   nickname: string | null;
   originator: string | null;
+  /**
+   * Normalized git remote (payload.git.repository_url) — the project identity a
+   * worktree shares with its main checkout. null when the session was not
+   * recorded in a repository with an origin.
+   */
+  repoKey: string | null;
 };
 
 export type ChatEntry = {
@@ -68,27 +76,60 @@ export function localDateString(d: Date): string {
 /**
  * Canonical form for comparing two working directories.
  *
- * Separators fold to "/" and a trailing one is dropped, so a path stored by a
- * POSIX session and the same path typed with backslashes compare equal. Drive
- * letters upper-case because Windows reports them either way for one directory.
- * Case is otherwise preserved: macOS and Linux both host case-sensitive paths,
- * and folding them would let /Repo match /repo.
+ * Separators fold to "/", a trailing one is dropped, and Windows extended-length
+ * prefixes (`\\?\` / `//?/` and `\\?\UNC\` / `//?/UNC/`) are stripped so a
+ * session recorded as `\\?\C:\\Users\\...` compares equal to a caller-typed
+ * `C:\\Users\\...`. Drive letters upper-case because Windows reports them either
+ * way for one directory. Path case is otherwise preserved: callers that need a
+ * case-insensitive volume (`darwin`, `win32`) pass `FOLD_CWD_CASE` into
+ * `cwdMatches` or wrap the SQL twin in `lower()`.
  */
 export function normalizeCwd(cwd: string): string {
-  const unified = cwd.replace(/\\/g, "/").replace(/\/+$/, "");
+  let unified = cwd.replace(/\\/g, "/").replace(/\/+$/, "");
+  if (/^\/\/\?\/unc\//i.test(unified)) {
+    unified = `//${unified.slice(8)}`;
+  } else if (unified.startsWith("//?/")) {
+    unified = unified.slice(4);
+  }
+  unified = unified.replace(/\/+$/, "");
   return /^[a-z]:/.test(unified) ? unified[0].toUpperCase() + unified.slice(1) : unified;
+}
+
+/** SQL expression mirroring `normalizeCwd`. `expr` is a column or SQL expression, never a bind placeholder (`?`). */
+export function canonicalCwdSql(expr: string): string {
+  const slashed = `rtrim(replace(${expr}, '\\', '/'), '/')`;
+  const stripped = `(CASE WHEN substr(${slashed}, 1, 8) LIKE '//?/UNC/' THEN '//' || substr(${slashed}, 9) WHEN substr(${slashed}, 1, 4) = '//?/' THEN substr(${slashed}, 5) ELSE ${slashed} END)`;
+  const trimmed = `rtrim(${stripped}, '/')`;
+  return `(CASE WHEN ${trimmed} GLOB '[a-z]:*' THEN upper(substr(${trimmed}, 1, 1)) || substr(${trimmed}, 2) ELSE ${trimmed} END)`;
 }
 
 /**
  * Separator-aware cwd prefix test: /repo matches /repo and /repo/x, never
  * /repo2. Both sides are normalized first, so the comparison does not depend on
  * which platform recorded the session or which separator the caller typed.
+ *
+ * `caseInsensitive` is opt-in per call site. The default stays case-sensitive
+ * because Linux paths are, while macOS and Windows ship case-insensitive volumes
+ * by default.
  */
-export function cwdMatches(sessionCwd: string, prefix: string): boolean {
-  const s = normalizeCwd(sessionCwd);
-  const p = normalizeCwd(prefix);
+export function cwdMatches(
+  sessionCwd: string,
+  prefix: string,
+  opts?: { caseInsensitive?: boolean },
+): boolean {
+  const fold = opts?.caseInsensitive === true;
+  const s0 = normalizeCwd(sessionCwd);
+  const p0 = normalizeCwd(prefix);
+  const s = fold ? s0.toLowerCase() : s0;
+  const p = fold ? p0.toLowerCase() : p0;
   return s === p || s.startsWith(`${p}/`);
 }
+
+/** macOS and Windows volumes are case-insensitive by default; Linux is not. */
+export function foldCwdCaseFor(platform: string): boolean {
+  return platform === "darwin" || platform === "win32";
+}
+export const FOLD_CWD_CASE = foldCwdCaseFor(process.platform);
 
 /** rollout-YYYY-MM-DDTHH-MM-SS-<uuid>.jsonl → YYYY-MM-DD (null when unparseable). */
 export function dateFromRolloutName(name: string): string | null {
@@ -159,18 +200,28 @@ function safeDirs(dir: string): string[] {
 /** Parse only the head of the file to classify it (session_meta is the first line). */
 export function readRolloutMeta(path: string): RolloutMeta {
   const firstLine = readFirstLine(path);
-  const fallback: RolloutMeta = { threadId: null, cwd: null, source: "main", nickname: null, originator: null };
+  const fallback: RolloutMeta = {
+    threadId: null,
+    cwd: null,
+    source: "main",
+    nickname: null,
+    originator: null,
+    repoKey: null,
+  };
   try {
     const j = JSON.parse(firstLine);
     if (j?.type !== "session_meta") return fallback;
     const p = j.payload ?? {};
     const isSub = p.thread_source === "subagent" || p.source?.subagent !== undefined;
+    const git = p.git && typeof p.git === "object" ? (p.git as Record<string, unknown>) : null;
+    const repositoryUrl = git && typeof git.repository_url === "string" ? git.repository_url : null;
     return {
       threadId: typeof p.id === "string" ? p.id : null,
       cwd: typeof p.cwd === "string" ? p.cwd : null,
       source: isSub ? "subagent" : "main",
       nickname: typeof p.agent_nickname === "string" ? p.agent_nickname : null,
       originator: typeof p.originator === "string" ? p.originator : null,
+      repoKey: normalizeRepoKey(repositoryUrl),
     };
   } catch {
     return fallback;
@@ -201,14 +252,16 @@ function readFirstLine(path: string): string {
 }
 
 /**
- * File-level prefilter: one lowercase pass, no line split / JSON.parse.
- * AND mode requires every word; OR mode any word.
+ * File-level prefilter: one lowercase pass, no line split / JSON.parse. Runs
+ * the SAME plan predicate the per-message test uses, so a file can never be
+ * skipped for a requirement the messages inside it would have satisfied.
+ *
+ * Sound as a prefilter because the plan is monotone in the text: whatever a
+ * single message satisfies, the whole-file concatenation satisfies too.
  */
-export function matchesFilePrefilter(lowerContent: string, words: string[], anyMode: boolean): boolean {
-  if (words.length === 0) return false;
-  return anyMode
-    ? words.some((w) => lowerContent.includes(w))
-    : words.every((w) => lowerContent.includes(w));
+export function matchesFilePrefilter(lowerContent: string, plan: MatchPlan): boolean {
+  if (planIsEmpty(plan)) return false;
+  return planMatches(lowerContent, plan);
 }
 
 /** function_call_output.output: string, {content|text} object, or content array. */

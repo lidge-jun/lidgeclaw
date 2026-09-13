@@ -30,14 +30,14 @@ import { readState, writeState } from "./state.ts";
 type CxcInvocationFn = (moduleUrl: string, env?: Record<string, string | undefined>) => string;
 let cxcInvocationFn: CxcInvocationFn | null = null;
 try {
-  ({ cxcInvocation: cxcInvocationFn } = (await import("../../ops/dist/resolve.js")) as {
+  ({ cxcInvocation: cxcInvocationFn } = (await import("../../cxc-ops/dist/cxc-resolve.js")) as {
     cxcInvocation: CxcInvocationFn;
   });
 } catch {
   cxcInvocationFn = null;
 }
 function cxcInvocation(moduleUrl: string): string {
-  return cxcInvocationFn ? cxcInvocationFn(moduleUrl) : "cxc";
+  return cxcInvocationFn ? cxcInvocationFn(moduleUrl) : "crc";
 }
 
 const EDIT_TOOLS = new Set(["apply_patch", "Write", "Edit"]);

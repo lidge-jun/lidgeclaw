@@ -1,1 +1,1 @@
-../../cursorclaw/commands/orchestrate.md
+../../shared/commands/orchestrate.md

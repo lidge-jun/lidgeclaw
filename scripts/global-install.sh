@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# global-install.sh — install lidgeclaw into Cursor and/or ZCode homes.
+# global-install.sh — install lidgeclaw into Cursor, ZCode, and/or Claude Code.
 #
 # Installs (idempotent):
 #   Cursor (--target cursor|all):
-#     1. Plugin copy → ~/.cursor/plugins/local/cursorclaw
+#     1. Plugin copy → ~/.cursor/plugins/local/cursorclaw (rsync -aL flattens shared/)
 #     2. Skills via the plugin only (cleans stale ~/.cursor/skills mirrors)
 #     3. User hooks → ~/.cursor/hooks.json
 #     4. Core rule → ~/.cursor/rules/cursorclaw-core.mdc
@@ -12,10 +12,14 @@
 #     1. Marketplace tree → ~/.zcode/cli/plugins/marketplaces/lidgeclaw
 #     2. Register in known_marketplaces.json (directory source)
 #     3. Skills via the zclaw plugin only (no ~/.zcode/skills mirror)
+#   Claude (--target claude|all):
+#     1. claude plugin marketplace add <repo>
+#     2. claude plugin install claudeclaw@lidgeclaw -s user
+#     3. Do not mirror skills into ~/.claude/skills
 #
 # Usage:
 #   scripts/global-install.sh
-#   scripts/global-install.sh --target cursor|zcode|all
+#   scripts/global-install.sh --target cursor|zcode|claude|all
 #   scripts/global-install.sh --no-build
 #   scripts/global-install.sh --status
 set -euo pipefail
@@ -23,6 +27,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PLUGIN_SRC="$REPO_ROOT/plugins/cursorclaw"
 ZCLAW_SRC="$REPO_ROOT/plugins/zclaw"
+CLAUDE_SRC="$REPO_ROOT/plugins/claudeclaw"
 CURSOR_HOME="${CURSOR_HOME:-$HOME/.cursor}"
 PLUGIN_DST="$CURSOR_HOME/plugins/local/cursorclaw"
 SKILLS_DST="$CURSOR_HOME/skills"
@@ -40,6 +45,9 @@ die() { echo "error: $*" >&2; exit 1; }
 [ -f "$PLUGIN_SRC/.cursor-plugin/plugin.json" ] || die "Cursor plugin manifest missing"
 [ -d "$ZCLAW_SRC" ] || die "zclaw plugin missing: $ZCLAW_SRC"
 [ -f "$ZCLAW_SRC/.zcode-plugin/plugin.json" ] || die "ZCode plugin manifest missing"
+[ -d "$CLAUDE_SRC" ] || die "claudeclaw plugin missing: $CLAUDE_SRC"
+[ -f "$CLAUDE_SRC/.claude-plugin/plugin.json" ] || die "Claude plugin manifest missing"
+[ -f "$REPO_ROOT/.claude-plugin/marketplace.json" ] || die "Claude marketplace missing"
 
 BUILD=1
 TARGET=all
@@ -51,13 +59,13 @@ while [ "$i" -lt "${#ARGS[@]}" ]; do
     --no-build) BUILD=0 ;;
     --target)
       i=$((i + 1))
-      [ "$i" -lt "${#ARGS[@]}" ] || die "--target requires cursor|zcode|all"
+      [ "$i" -lt "${#ARGS[@]}" ] || die "--target requires cursor|zcode|claude|all"
       TARGET="${ARGS[$i]}"
-      case "$TARGET" in cursor|zcode|all) ;; *) die "bad --target: $TARGET" ;; esac
+      case "$TARGET" in cursor|zcode|claude|all) ;; *) die "bad --target: $TARGET" ;; esac
       ;;
     --target=*)
       TARGET="${arg#--target=}"
-      case "$TARGET" in cursor|zcode|all) ;; *) die "bad --target: $TARGET" ;; esac
+      case "$TARGET" in cursor|zcode|claude|all) ;; *) die "bad --target: $TARGET" ;; esac
       ;;
     --status)
       echo "repo:    $REPO_ROOT"
@@ -82,6 +90,15 @@ PY
       else
         echo "known:   MISSING ($ZCODE_KNOWN)"
       fi
+      echo "=== claudeclaw (Claude Code) ==="
+      echo "plugin:  $CLAUDE_SRC $([ -f "$CLAUDE_SRC/.claude-plugin/plugin.json" ] && echo OK || echo MISSING)"
+      echo "market:  $REPO_ROOT/.claude-plugin/marketplace.json $([ -f "$REPO_ROOT/.claude-plugin/marketplace.json" ] && echo OK || echo MISSING)"
+      if command -v claude >/dev/null 2>&1; then
+        echo "claude:  $(command -v claude) ($(claude --version 2>/dev/null | head -1))"
+        claude plugin list 2>/dev/null | sed 's/^/  /' || echo "  plugin list failed"
+      else
+        echo "claude:  MISSING"
+      fi
       exit 0
       ;;
     *) die "unknown argument: $arg" ;;
@@ -99,7 +116,7 @@ install_cursor() {
   mkdir -p "$(dirname "$PLUGIN_DST")"
   rm -rf "$PLUGIN_DST"
   mkdir -p "$PLUGIN_DST"
-  rsync -a \
+  rsync -aL \
     --exclude 'node_modules' \
     --exclude 'gui/node_modules' \
     --exclude 'gui/dist' \
@@ -293,12 +310,55 @@ PY
   echo "  Restart the ZCode agent session so skills/hooks reload."
 }
 
+install_claude() {
+  command -v claude >/dev/null 2>&1 || die "claude CLI not on PATH"
+  echo "[lidgeclaw/claudeclaw] registering marketplace → $REPO_ROOT"
+  # Re-add is required when the checkout moved; ignore remove failure on first install.
+  claude plugin marketplace remove lidgeclaw >/dev/null 2>&1 || true
+  claude plugin marketplace add "$REPO_ROOT"
+  echo "[lidgeclaw/claudeclaw] installing claudeclaw@lidgeclaw (user scope)"
+  claude plugin install claudeclaw@lidgeclaw -s user -y
+  echo "[lidgeclaw/claudeclaw] skills stay plugin-scoped (no ~/.claude/skills mirror)"
+  if [ -d "$HOME/.claude/skills" ]; then
+    for d in "$CLAUDE_SRC/skills"/*; do
+      [ -e "$d" ] || continue
+      name="$(basename "$d")"
+      [ "$name" = "aside-jun" ] && continue
+      if [ -L "$HOME/.claude/skills/$name" ]; then
+        target="$(readlink "$HOME/.claude/skills/$name" || true)"
+        case "$target" in
+          *claudeclaw/skills*|*plugins/shared/skills*) rm -f "$HOME/.claude/skills/$name" ;;
+        esac
+      fi
+    done
+  fi
+  mkdir -p "$HOME/.lidgeclaw" "$HOME/.codexclaw"
+  python3 - <<PY
+import json, time
+from pathlib import Path
+stamp = {
+  "umbrella": "lidgeclaw",
+  "surface": "claudeclaw",
+  "installedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+  "repoRoot": "$REPO_ROOT",
+  "pluginSrc": "$CLAUDE_SRC",
+  "version": json.loads(Path("$CLAUDE_SRC/.claude-plugin/plugin.json").read_text()).get("version", "0.1.0"),
+}
+Path("$HOME/.lidgeclaw/install-claude.json").write_text(json.dumps(stamp, indent=2) + "\n")
+print(json.dumps(stamp, indent=2))
+PY
+  echo "[lidgeclaw/claudeclaw] Claude install complete. Restart the Claude Code session."
+  echo "  Try: /claudeclaw:status"
+}
+
 case "$TARGET" in
   cursor) install_cursor ;;
   zcode) install_zcode ;;
+  claude) install_claude ;;
   all)
     install_cursor
     install_zcode
+    install_claude
     ;;
 esac
 

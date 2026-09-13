@@ -1,1 +1,1 @@
-../../cursorclaw/agents/executor.md
+../../shared/agents/executor.md

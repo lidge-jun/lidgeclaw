@@ -1,1 +1,1 @@
-../../cursorclaw/agents/architect.md
+../../shared/agents/architect.md

@@ -1,1 +1,1 @@
-../../cursorclaw/commands/map.md
+../../shared/commands/map.md

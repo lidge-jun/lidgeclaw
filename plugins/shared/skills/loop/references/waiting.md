@@ -1,0 +1,35 @@
+# Waiting on work
+
+Read while awaiting dispatched work or long external processes in either HITL or HOTL.
+
+These continuation/dispatch rules concern this goal's own work and delegated
+subagents, not independent peer advice. Peer timeouts do not authorize retirement,
+replacement, forced wakeups, or an unconditional wait; use
+[peer collaboration](../../dev/references/peer-collaboration.md). Do not send
+unsolicited progress notices or nudges to independent tasks while waiting. Contact requires
+an explicit user request or necessary confirmed blocking CI/merge collision
+coordination, plus host permission and wake checks.
+
+## Wait visibility (LOOP-WAIT-VISIBILITY-01, DEFAULT)
+
+Long silent waits read as a dead loop to the user and invite interrupts that
+kill the work-phase (019f4456: a 6-minute silent `wait_agent` stretch looked
+like "stopped after one work-phase"). While waiting on subagents or long
+external processes inside a loop:
+
+- Prefer bounded waits (`wait_agent` with `timeout_ms` <= 120000) over one
+  long blocking wait; between waits, emit a one-line progress update naming
+  what is being waited on and the elapsed time.
+- Know which wait you are calling. V1's `wait_agent` may carry the child's final
+  message in its result; V2's is a no-content mailbox and the answer arrives
+  separately. Reading the answer out of the wait result works on V1 and silently
+  returns nothing on V2, which looks like a stalled agent rather than a schema
+  mismatch. Threads are different again: `wait_threads` takes per-target cursors.
+  See `cxc-pabcd` `references/delegation.md`.
+- Never end the turn just because a wait timed out — re-wait or poll, and keep
+  the user informed each cycle.
+- If a reviewer/worker has produced nothing after ~3 wait cycles, treat it as
+  a failed dispatch (DISPATCH-RETIRE-01) rather than waiting silently forever.
+  That retirement CONSUMES the DISPATCH-RETIRE-01 same-agent retry: go straight
+  to a fresh spawn with the failure folded into the new packet — the silent
+  agent does not get a second retry.

@@ -1,1 +1,1 @@
-../../cursorclaw/commands/interview.md
+../../shared/commands/interview.md

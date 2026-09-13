@@ -1,0 +1,35 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "lidgeclaw",
+  "owner": {
+    "name": "lidge-jun",
+    "email": "plugins@lidge.dev"
+  },
+  "metadata": {
+    "description": "lidgeclaw Claude Code marketplace — claudeclaw plugin (shared skills with cursorclaw/zclaw).",
+    "version": "0.3.0"
+  },
+  "plugins": [
+    {
+      "name": "claudeclaw",
+      "source": "./plugins/claudeclaw",
+      "description": "Claude Code port of lidgeclaw — shared skills, PABCD hooks, agents, commands.",
+      "version": "0.1.0",
+      "author": {
+        "name": "lidge-jun",
+        "url": "https://github.com/lidge-jun"
+      },
+      "homepage": "https://github.com/lidge-jun/lidgeclaw",
+      "repository": "https://github.com/lidge-jun/lidgeclaw",
+      "license": "MIT",
+      "keywords": [
+        "claude-code",
+        "claudeclaw",
+        "lidgeclaw",
+        "pabcd",
+        "skills",
+        "hooks"
+      ]
+    }
+  ]
+}
