@@ -15,9 +15,30 @@ export type NativeSessionResult =
   | { ok: true; sessionId: string; cwd: string; dbPath: string | null; source: string }
   | { ok: false; error: string };
 
+/**
+ * Canonical absolute path. JS `realpathSync` THROWS on the Windows
+ * extended-length prefix that Codex stores in the native thread DB:
+ * `realpathSync("\\\\?\\C:\\...")` fails with
+ * `EISDIR: illegal operation on a directory, lstat 'C:'` because it parses the
+ * prefix as a path segment. `realpathSync.native` resolves that shape. Measured on
+ * a Windows desktop install: 159 of 159 `threads.cwd` rows carried the prefix, so
+ * this is the normal shape, not an edge case (#134). Native additionally expands
+ * 8.3 short names, which is why `session-source.ts` already keeps its own copy of
+ * this helper.
+ *
+ * Deliberately private and duplicated rather than shared: `session-source.ts`
+ * does not export its copy, and `worktree-guard.ts` `canonicalize()` must NOT be
+ * reused here because it walks a missing path up to its nearest existing ancestor
+ * and RETURNS a string instead of throwing, which would silently reclassify a
+ * missing cwd as a mismatch and break the fail-closed contract below.
+ */
+function canonical(path: string): string {
+  return realpathSync.native(path);
+}
+
 function resolveCanonicalCwd(cwd: string): { ok: true; cwd: string } | { ok: false; error: string } {
   try {
-    const canonicalCwd = realpathSync(cwd);
+    const canonicalCwd = canonical(cwd);
     if (!lstatSync(canonicalCwd).isDirectory()) throw new Error();
     return { ok: true, cwd: canonicalCwd };
   } catch {
@@ -45,11 +66,11 @@ function resolveCursorSession(cwd: string, env: NodeJS.ProcessEnv): NativeSessio
   if (typeof sessionId !== "string" || !CURSOR_SESSION_ID.test(sessionId) || sessionId.length === 0 || sessionId.length > 128) {
     return { ok: false, error: `${source} must be an unmodified Cursor session id.` };
   }
-  const canonical = resolveCanonicalCwd(cwd);
-  if (!canonical.ok) return canonical;
+  const resolved = resolveCanonicalCwd(cwd);
+  if (!resolved.ok) return resolved;
   // Cursor has no Codex threads SQLite row for conversation ids. Hooks already
   // keyed .codexclaw/sessions/<id>.json by this id; CLI recovery must match.
-  return { ok: true, sessionId, cwd: canonical.cwd, dbPath: null, source };
+  return { ok: true, sessionId, cwd: resolved.cwd, dbPath: null, source };
 }
 
 function resolveCodexSession(cwd: string, env: NodeJS.ProcessEnv, sessionId: string): NativeSessionResult {
@@ -57,13 +78,13 @@ function resolveCodexSession(cwd: string, env: NodeJS.ProcessEnv, sessionId: str
     return { ok: false, error: "CODEX_THREAD_ID must be an unmodified native UUID." };
   }
 
-  const canonical = resolveCanonicalCwd(cwd);
-  if (!canonical.ok) return canonical;
-  const canonicalCwd = canonical.cwd;
+  const resolved = resolveCanonicalCwd(cwd);
+  if (!resolved.ok) return resolved;
+  const canonicalCwd = resolved.cwd;
 
   let dbPath: string;
   try {
-    const home = env.CODEX_SQLITE_HOME || env.CURSOR_HOME || join(homedir(), ".codex");
+    const home = env.CODEX_SQLITE_HOME || env.CURSOR_HOME || env.CODEX_HOME || join(homedir(), ".codex");
     const candidates = readdirSync(home)
       .filter(name => /^state_[0-9]+\.sqlite$/.test(name))
       .map(name => ({ name, version: BigInt(name.slice(6, -7)) }))
@@ -98,7 +119,7 @@ function resolveCodexSession(cwd: string, env: NodeJS.ProcessEnv, sessionId: str
         return { ok: false, error: "Native session has an invalid working directory." };
       }
       try {
-        if (realpathSync(row.cwd) !== canonicalCwd) {
+        if (canonical(row.cwd) !== canonicalCwd) {
           return { ok: false, error: "Working directory does not match the native session. Run from its exact directory." };
         }
       } catch {

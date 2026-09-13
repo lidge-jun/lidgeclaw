@@ -39,14 +39,14 @@ import {
 type CxcInvocationFn = (moduleUrl: string, env?: Record<string, string | undefined>, command?: string) => string;
 let cxcInvocationFn: CxcInvocationFn | null = null;
 try {
-  ({ cxcInvocation: cxcInvocationFn } = (await import("../../ops/dist/resolve.js")) as {
+  ({ cxcInvocation: cxcInvocationFn } = (await import("../../cxc-ops/dist/cxc-resolve.js")) as {
     cxcInvocation: CxcInvocationFn;
   });
 } catch {
   cxcInvocationFn = null;
 }
 function cxcInvocation(moduleUrl: string, command?: string): string {
-  return cxcInvocationFn ? cxcInvocationFn(moduleUrl, process.env, command) : "cxc";
+  return cxcInvocationFn ? cxcInvocationFn(moduleUrl, process.env, command) : "crc";
 }
 import { hasStageMarkerForPhase, isContextPressureTail, readTranscriptTail } from "./transcript.ts";
 import { getGoalActiveStatus, suppressesInterview } from "./goal-active.ts";
@@ -1497,12 +1497,12 @@ export function stopNextCommand(phase: Phase, platform: NodeJS.Platform = proces
   const posix = STOP_NEXT_COMMAND[phase];
   if (posix === undefined || platform !== "win32") return posix;
   const json = /--attest '(\{.*\})'/.exec(posix)?.[1];
-  const verb = /cxc orchestrate (\S+)/.exec(posix)?.[1];
+  const verb = /crc orchestrate (\S+)/.exec(posix)?.[1];
   if (!json || !verb) return posix;
   // Backtick-quoted for the Stop reason renderer, same as the POSIX table entries.
   const q = String.fromCharCode(96);
   const write = q + "'" + json + "' | Set-Content -Encoding utf8 .codexclaw/attest.json" + q;
-  const run = q + "cxc orchestrate " + verb + " --attest-file .codexclaw/attest.json" + q;
+  const run = q + "crc orchestrate " + verb + " --attest-file .codexclaw/attest.json" + q;
   return write + " then " + run;
 }
 
@@ -1548,7 +1548,7 @@ export function buildStopBlock(
   let nextCommand = stopNextCommand(phase) ?? "`crc orchestrate status`";
   if (sessionId) {
     nextCommand = nextCommand.replace(
-      /cxc orchestrate (\w+)/,
+      /crc orchestrate (\w+)/,
       `crc orchestrate $1 --session ${sessionId}`,
     );
   }

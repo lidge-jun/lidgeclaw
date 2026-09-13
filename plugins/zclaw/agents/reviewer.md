@@ -1,1 +1,1 @@
-../../cursorclaw/agents/reviewer.md
+../../shared/agents/reviewer.md

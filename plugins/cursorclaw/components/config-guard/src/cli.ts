@@ -21,17 +21,27 @@ import {
 
 const CONFIG_USAGE = [
   "Usage:",
-  "  cxc config list                          managed keys, their live values and side effects",
-  "  cxc config get <table.key>",
-  "  cxc config set <table.key> <true|false>",
-  "  cxc config unset <table.key>             restore the value from before codexclaw set it",
-  "  cxc config interview [off|new-unit|always]",
+  "  crc config list                          managed keys, their live values and side effects",
+  "  crc config get <table.key>",
+  "  crc config set <table.key> <true|false>",
+  "  crc config unset <table.key>             restore the value from before cursorclaw set it",
+  "  crc config interview [off|new-unit|always]",
   "",
   "Only whitelisted keys can be set; 'config list' shows them. Installation writes just the",
-  "ones marked auto-enable in managed-keys.ts, records the pre-install value, and 'cxc",
+  "ones marked auto-enable in managed-keys.ts, records the pre-install value, and 'crc",
   "disable' restores it; the rest stay an explicit choice. (Separate vocabulary: the",
   "[features] flags codexclaw needs to run ARE turned on by install and by SessionStart",
   "self-heal; see crc doctor's `features` check.)",
+].join("\n");
+
+const FEATURE_USAGE = [
+  "Usage:",
+  "  crc enable                         activate declared Codex feature flags",
+  "  crc disable | uninstall            revert flags cursorclaw enabled when safe",
+  "  crc status                         show declared feature-flag state",
+  "",
+  "  --help / -h / help in any argument position prints this text and writes nothing.",
+  "  enable writes $CODEX_HOME/config.toml and a timestamped .bak; disable/uninstall revert.",
 ].join("\n");
 
 function runConfig(argv: readonly string[], codexHome: string): number {
@@ -139,6 +149,21 @@ export function makeRealRunner(): CodexRunner {
 
 function main(argv: readonly string[]): number {
   const cmd = argv[0];
+  // Same class of bug as freeze-cli.ts:61-65, where `cxc freeze --help` used to WRITE
+  // freeze.json. Help is position-independent and runs BEFORE the action: once the
+  // dispatcher forwards ["enable", "--help"], argv[0] is "enable" and runConfig's
+  // first-argument help check at :41 never sees the flag.
+  // Do not steal `config --help` (that is CONFIG_USAGE via runConfig) or the
+  // SessionStart `hook` path, which must stay fail-open. Empty argv still falls to the
+  // switch default and exits 2 — unlike freeze, a bare invocation here is not mutating.
+  if (
+    cmd !== "config" &&
+    cmd !== "hook" &&
+    argv.some((a) => a === "help" || a === "--help" || a === "-h")
+  ) {
+    process.stdout.write(`${FEATURE_USAGE}\n`);
+    return 0;
+  }
   const run = makeRealRunner();
   const codexHome = resolveCodexHome();
 

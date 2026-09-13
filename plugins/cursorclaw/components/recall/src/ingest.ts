@@ -13,10 +13,16 @@
  */
 import { readFileSync, statSync, openSync, readSync, closeSync } from "node:fs";
 import { listRolloutFiles, readRolloutMeta, parseRollout } from "./rollout.ts";
+import { loadThreadMeta } from "./threads-db.ts";
+import { stateDbPath } from "./paths.ts";
+import { normalizeRepoKey } from "./repo-key.ts";
 import type { RwDb } from "./sqlite.ts";
 
 /** Tool outputs dominate corpus bytes; cap them to bound index size. */
 export const TOOL_TEXT_CAP = 8_192;
+
+/** Backfill batch size: one transaction per 1,000 threads, never one for 13k. */
+const BACKFILL_BATCH = 1_000;
 
 export type IngestResult = {
   scanned: number;
@@ -27,7 +33,106 @@ export type IngestResult = {
   elapsedMs: number;
 };
 
+/** Bound for SessionStart / search freshness walks. `--status` passes no budget. */
+export type FreshnessBudget = {
+  maxStats: number;
+  maxMs: number;
+};
+
+/** Newest 512 files or 50ms, whichever comes first. */
+export const BANNER_FRESHNESS_BUDGET: FreshnessBudget = { maxStats: 512, maxMs: 50 };
+
+export type IndexFreshness = {
+  /** `listRolloutFiles(home, days)` entries (path-set; no stat). */
+  sourceFiles: number;
+  /** rows in `files`. */
+  indexedFiles: number;
+  /** on disk, no `files` row. Path-set difference; no stat. */
+  missingFiles: number;
+  /** on disk and in `files`, but `(mtime_ms, size)` differs. */
+  changedFiles: number;
+  /** in `files`, not on disk. Path-set difference; no stat. */
+  extraFiles: number;
+  /** `missingFiles + changedFiles + extraFiles` — what a `days=0` ingest would touch. */
+  staleFiles: number;
+  /** true when the changed-file walk stopped at the budget. */
+  truncated: boolean;
+};
+
 type KnownFile = { mtime_ms: number; size: number; bytes_ingested: number; last_ord: number };
+
+function fingerprintMatches(
+  prev: { mtime_ms: number; size: number },
+  st: { mtimeMs: number; size: number },
+): boolean {
+  return prev.mtime_ms === Math.floor(st.mtimeMs) && prev.size === st.size;
+}
+
+/**
+ * Read-only comparison of the `files` table against source JSONL.
+ * Stats only overlapping paths (changedFiles); missing/extra are path-set diffs.
+ * Never parses JSONL, never writes, never bumps `last_ingest_at`.
+ */
+export function measureIndexFreshness(
+  home: string,
+  db: RwDb,
+  days = 0,
+  opts?: { budget?: FreshnessBudget | null },
+): IndexFreshness {
+  const onDisk = listRolloutFiles(home, days);
+  const known = new Map<string, { mtime_ms: number; size: number }>();
+  for (const row of db
+    .prepare("SELECT path, mtime_ms, size FROM files")
+    .all() as Array<Record<string, unknown>>) {
+    known.set(String(row.path), { mtime_ms: Number(row.mtime_ms), size: Number(row.size) });
+  }
+
+  const diskPaths = new Set<string>();
+  let missingFiles = 0;
+  for (const file of onDisk) {
+    diskPaths.add(file.path);
+    if (!known.has(file.path)) missingFiles += 1;
+  }
+
+  let extraFiles = 0;
+  if (days === 0) {
+    for (const path of known.keys()) {
+      if (!diskPaths.has(path)) extraFiles += 1;
+    }
+  }
+
+  const budget = opts?.budget ?? null;
+  let changedFiles = 0;
+  let truncated = false;
+  let stats = 0;
+  const started = Date.now();
+  for (const file of onDisk) {
+    const prev = known.get(file.path);
+    if (!prev) continue;
+    if (budget !== null && (stats >= budget.maxStats || Date.now() - started >= budget.maxMs)) {
+      truncated = true;
+      break;
+    }
+    stats += 1;
+    let st: { mtimeMs: number; size: number };
+    try {
+      st = statSync(file.path);
+    } catch {
+      continue;
+    }
+    if (!fingerprintMatches(prev, st)) changedFiles += 1;
+  }
+
+  return {
+    sourceFiles: onDisk.length,
+    indexedFiles: known.size,
+    missingFiles,
+    changedFiles,
+    extraFiles,
+    staleFiles: missingFiles + changedFiles + extraFiles,
+    truncated,
+  };
+}
 
 /** Offset just past the last complete line (0 when the buffer has no newline). */
 function completeLineBoundary(buf: Buffer): number {
@@ -48,6 +153,11 @@ function readSlice(path: string, from: number, to: number): Buffer {
 
 export function ingest(home: string, db: RwDb, days = 0): IngestResult {
   const started = Date.now();
+  // Before the skip check below: an unchanged file is never re-read, so rows
+  // written by an older CLI would keep repo_key NULL forever otherwise. This
+  // is an UPDATE over ~13k file rows joined to the threads table — it never
+  // touches msgs and never re-parses a JSONL head.
+  backfillRepoKeysFromThreads(home, db);
   const onDisk = listRolloutFiles(home, days);
   const known = new Map<string, KnownFile>();
   for (const row of db
@@ -72,8 +182,8 @@ export function ingest(home: string, db: RwDb, days = 0): IngestResult {
   const delMsgs = db.prepare("DELETE FROM msgs WHERE path = ?");
   const delFile = db.prepare("DELETE FROM files WHERE path = ?");
   const insFile = db.prepare(
-    "INSERT OR REPLACE INTO files (path, mtime_ms, size, thread_id, cwd, source, date, bytes_ingested, last_ord)" +
-      " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    "INSERT OR REPLACE INTO files (path, mtime_ms, size, thread_id, cwd, source, date, bytes_ingested, last_ord, repo_key)" +
+      " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
   );
   const insMsg = db.prepare(
     "INSERT INTO msgs (path, ord, ts, role, match_field, synthetic, text) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -102,7 +212,7 @@ export function ingest(home: string, db: RwDb, days = 0): IngestResult {
     }
     const prev = known.get(file.path);
     const mtimeMs = Math.floor(st.mtimeMs);
-    if (prev && prev.mtime_ms === mtimeMs && prev.size === st.size) continue;
+    if (prev && fingerprintMatches(prev, st)) continue;
     // Concurrent-append safety: stat is taken BEFORE the read, so a write landing
     // between them stores a stat older than the content we indexed — the next
     // refresh sees the mismatch and re-ingests (self-healing, never silently stale).
@@ -129,6 +239,7 @@ export function ingest(home: string, db: RwDb, days = 0): IngestResult {
           file.date,
           prev.bytes_ingested + boundary,
           lastOrd,
+          meta.repoKey,
         );
         result.appended += 1;
       } else {
@@ -139,7 +250,18 @@ export function ingest(home: string, db: RwDb, days = 0): IngestResult {
         const entries = boundary > 0 ? parseRollout(buf.subarray(0, boundary).toString("utf8"), true) : [];
         delMsgs.run(file.path);
         const lastOrd = insertEntries(file.path, entries, 0);
-        insFile.run(file.path, mtimeMs, st.size, meta.threadId, meta.cwd, meta.source, file.date, boundary, lastOrd);
+        insFile.run(
+          file.path,
+          mtimeMs,
+          st.size,
+          meta.threadId,
+          meta.cwd,
+          meta.source,
+          file.date,
+          boundary,
+          lastOrd,
+          meta.repoKey,
+        );
         result.ingested += 1;
       }
       db.exec("COMMIT");
@@ -167,9 +289,62 @@ export function ingest(home: string, db: RwDb, days = 0): IngestResult {
     }
   }
 
-  db.prepare("INSERT OR REPLACE INTO meta (key, value) VALUES ('last_ingest_at', ?)").run(
-    new Date().toISOString(),
-  );
+  if (result.ingested + result.appended + result.pruned > 0) {
+    db.prepare("INSERT OR REPLACE INTO meta (key, value) VALUES ('last_ingest_at', ?)").run(
+      new Date().toISOString(),
+    );
+  }
   result.elapsedMs = Date.now() - started;
   return result;
+}
+
+/**
+ * Fill files.repo_key for rows an older ingest wrote, from threads.git_origin_url.
+ *
+ * Idempotent by construction: only rows with a NULL key and a known cwd are
+ * touched, so re-running costs one COUNT once every row is filled. This also
+ * repairs coexistence with an older installed CLI — its INSERT names an
+ * explicit column list without repo_key, so re-ingesting a file resets that
+ * row's key to NULL, and the next new-code refresh restores it.
+ *
+ * Fail-soft: the state db is owned by the Codex runtime and may be absent,
+ * locked, or column-shy. A failure leaves keys NULL, which is exactly the
+ * cwd-prefix behaviour that predates wp4.
+ */
+function backfillRepoKeysFromThreads(home: string, db: RwDb): void {
+  try {
+    const pending = db
+      .prepare(
+        "SELECT COUNT(*) AS n FROM files WHERE repo_key IS NULL AND cwd IS NOT NULL AND thread_id IS NOT NULL",
+      )
+      .get() as { n: number };
+    if (Number(pending.n) === 0) return;
+    const meta = loadThreadMeta(stateDbPath(home));
+    if (meta.byId.size === 0) return;
+    const pairs: Array<[string, string]> = [];
+    for (const [id, thread] of meta.byId) {
+      const key = normalizeRepoKey(thread.gitOriginUrl);
+      if (key !== null) pairs.push([key, id]);
+    }
+    if (pairs.length === 0) return;
+    const upd = db.prepare(
+      "UPDATE files SET repo_key = ? WHERE thread_id = ? AND repo_key IS NULL AND cwd IS NOT NULL",
+    );
+    // Own transaction, outside the per-file loop below: nesting BEGIN inside the
+    // ingest transaction would be an error, and one transaction for every
+    // thread would be 13k fsyncs.
+    for (let i = 0; i < pairs.length; i += BACKFILL_BATCH) {
+      const batch = pairs.slice(i, i + BACKFILL_BATCH);
+      db.exec("BEGIN");
+      try {
+        for (const [key, id] of batch) upd.run(key, id);
+        db.exec("COMMIT");
+      } catch (err) {
+        db.exec("ROLLBACK");
+        throw err;
+      }
+    }
+  } catch {
+    // Keys stay NULL; scoping falls back to the cwd prefix.
+  }
 }

@@ -11,6 +11,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   isSymbolWord,
+  isVersionWord,
   splitQueryWords,
   splitQueryWordsRaw,
   termIncludes,
@@ -20,6 +21,11 @@ import {
   relaxQueryGroups,
   groupTexts,
   MAX_WORDS,
+  MAX_QUERY_TERMS,
+  dropStopwords,
+  isRequiredTerm,
+  compileMatchPlan,
+  planMatches,
 } from "../src/query-words.ts";
 import { expandQueryWords } from "../src/synonyms.ts";
 import { searchMemory, scoreChunk } from "../src/memory-search.ts";
@@ -30,7 +36,74 @@ const loose = (text: string) => ({ text, boundary: false });
 test("splitQueryWords: raw keeps case, lowercase variant matches the historical tokenizer", () => {
   assert.deepEqual(splitQueryWordsRaw("  CI  PR3956 "), ["CI", "PR3956"]);
   assert.deepEqual(splitQueryWords("  CI  PR3956 "), ["ci", "pr3956"]);
-  assert.equal(splitQueryWordsRaw("a b c d e f g h i j").length, MAX_WORDS);
+  // MAX_WORDS is a relaxation threshold now, not a truncation cap (wp5): a
+  // 10-word query keeps all ten tokens and relaxes its AND instead of losing
+  // the tail, which is where a sentence query's symbols usually sit.
+  assert.equal(splitQueryWordsRaw("a b c d e f g h i j").length, 10);
+  assert.ok(10 > MAX_WORDS, "and ten is past the threshold");
+  // MAX_QUERY_TERMS is the real cap: per-word SQL conditions grow with it.
+  const many = Array.from({ length: MAX_QUERY_TERMS + 5 }, (_, i) => `w${i}`).join(" ");
+  assert.equal(splitQueryWordsRaw(many).length, MAX_QUERY_TERMS);
+});
+
+test("dropStopwords: symbols survive, and an all-stopword query keeps its words", () => {
+  assert.deepEqual(dropStopwords(["CI", "문제"]), ["CI"], "CI is two characters but it is the query");
+  assert.deepEqual(dropStopwords(["재시작", "문제", "방법"]), ["재시작"]);
+  assert.deepEqual(dropStopwords(["그", "문제"]), ["그", "문제"], "removing everything would match everything");
+  assert.deepEqual(dropStopwords(["이해", "문제"]), ["이해"], "only the exact word is a stopword, not a prefix");
+});
+
+test("isRequiredTerm: symbols and mixed-case proper nouns, nothing else", () => {
+  const required = [
+    "2.49.0", "v2.49.0", "npm", "CI", "3956", "#3956",
+    "hook.ts", "src/hook.ts", "6e97e73d", "Codex", "BundledPluginsMarketplace", "NaiControlsPanel",
+  ];
+  for (const w of required) assert.ok(isRequiredTerm(w), `${w} must be required`);
+  for (const w of ["배포하고", "코덱스를", "deploy", "release", "korean", "지난번", "확인한"]) {
+    assert.ok(!isRequiredTerm(w), `${w} must be optional`);
+  }
+});
+
+test("compileMatchPlan: past the threshold, symbols are required and prose is a quota", () => {
+  const raw = splitQueryWordsRaw("2.49.0 배포하고 npm 패키지가 진짜 그 소스인지 검증한 기록");
+  assert.equal(raw.length, 9, "the 9th word is no longer truncated");
+  const kept = dropStopwords(raw);
+  assert.deepEqual(kept, ["2.49.0", "배포하고", "npm", "패키지가", "진짜", "소스인지", "검증한", "기록"]);
+  // Relaxation follows the ORIGINAL count: kept is back down to 8, so judging
+  // the threshold after stopword removal would silently re-impose the full AND.
+  assert.equal(kept.length, MAX_WORDS);
+  const plan = compileMatchPlan(expandQueryWords(kept), kept, false, raw.length > MAX_WORDS);
+  assert.deepEqual(plan.required.map((g) => g[0].text), ["2.49.0", "npm"]);
+  assert.equal(plan.optional.length, 6);
+  assert.equal(plan.minOptional, 3);
+});
+
+test("compileMatchPlan: a short query keeps whole-query AND, and --any outranks the quota", () => {
+  const short = ["trigram", "korean"];
+  const strict = compileMatchPlan(expandQueryWords(short), short, false, false);
+  assert.equal(strict.required.length, 2, "under the threshold every group stays required");
+  assert.deepEqual(strict.optional, []);
+  assert.equal(strict.minOptional, 0);
+
+  const long = splitQueryWordsRaw("지난번 로컬 소스를 실제 서비스에 연결하고 정상 동작까지 확인한 방법");
+  const anyPlan = compileMatchPlan(expandQueryWords(long), long, true, true);
+  assert.ok(anyPlan.anyMode, "--any is explicit and wins");
+  assert.equal(anyPlan.required.length, 10);
+  assert.deepEqual(anyPlan.optional, [], "OR over everything leaves no quota to meet");
+});
+
+test("planMatches: required groups are absolute, optional groups are a half quota", () => {
+  const raw = ["2.49.0", "npm", "패키지가", "검증한", "기록"];
+  const plan = compileMatchPlan(expandQueryWords(raw), raw, false, true);
+  assert.equal(plan.minOptional, 2, "ceil(3/2)");
+  assert.ok(planMatches("2.49.0 npm 패키지가 검증한 기록", plan));
+  assert.ok(planMatches("2.49.0 npm 패키지가 검증한 내용", plan), "two of three optional groups is enough");
+  assert.ok(!planMatches("2.49.0 npm 패키지가 다른 내용", plan), "one of three is not");
+  assert.ok(!planMatches("배포 npm 패키지가 검증한 기록", plan), "a missing required group ends it");
+  assert.ok(
+    !planMatches("anything at all", { required: [], optional: [], minOptional: 0, anyMode: false }),
+    "an empty plan matches nothing, never everything",
+  );
 });
 
 test("isSymbolWord: covers every shape in the roadmap table and excludes prose", () => {
@@ -204,6 +277,93 @@ test("memory search: --no-synonyms drops expansion but keeps boundary gating", (
     const r = searchMemory("LSP", { home, synonyms: false });
     assert.equal(r.hits.length, 1);
     assert.ok(r.hits[0].excerpt.includes("LSP server"));
+  } finally {
+    rmSync(home, { recursive: true, force: true });
+  }
+});
+
+test("isVersionWord: dotted versions are VERSION, not prose or filenames", () => {
+  for (const w of ["2.49.0", "2.49", "2.49.0-rc.1", "v2.49.0", "V2.49.0"]) {
+    assert.ok(isVersionWord(w), `${w} is VERSION`);
+    assert.ok(isSymbolWord(w), `${w} stays a symbol`);
+  }
+  for (const w of ["hook.ts", "plan.md", "package.json", "src/hook.ts", "LSP", "3956", "deploy"]) {
+    assert.ok(!isVersionWord(w), `${w} is not VERSION`);
+  }
+  assert.ok(isSymbolWord("hook.ts"));
+  assert.ok(!isSymbolWord("deploy"));
+});
+
+test("termIndexOf: VERSION core allows a lone v/V prefix as a boundary", () => {
+  const v = bounded("2.49.0");
+  assert.ok(termIncludes("slsa provenance, v2.49.0", v));
+  assert.ok(termIncludes("released (v2.49.0) today", v));
+  assert.ok(termIncludes("V2.49.0".toLowerCase(), v));
+  assert.ok(termIncludes("2.49.0", v), "bare form still matches");
+  assert.ok(!termIncludes("av2.49.0", v), "v must itself be a token edge");
+  assert.ok(!termIncludes("12.49.0", v), "leading digit stays a token char");
+  assert.ok(!termIncludes("2.49.00", v), "trailing digit is inside the token");
+  assert.ok(!termIncludes("vci runner", bounded("ci")), "v-prefix exception is VERSION-only");
+  assert.ok(termIncludes("see hook.ts for details", bounded("hook.ts")));
+  assert.ok(!termIncludes("edit my-hook.tsx now", bounded("hook.ts")));
+});
+
+test("memory search: 2.49.0 SLSA recovers v2.49.0 handbook while summary already matches", () => {
+  const home = mkdtempSync(join(tmpdir(), "recall-r1-version-"));
+  try {
+    const mem = join(home, "memories");
+    mkdirSync(mem, { recursive: true });
+    writeFileSync(
+      join(mem, "memory_summary.md"),
+      "# Summary\n\nOpenCodex 2.49.0 HOTL release, SLSA provenance.\n",
+    );
+    writeFileSync(
+      join(mem, "MEMORY.md"),
+      "# Handbook\n\nSLSA provenance, v2.49.0\n\nFor v2.49.0, main SHA verified with SLSA.\n",
+    );
+    writeFileSync(join(mem, "noise.md"), "# Noise\n\nNaiControlsPanel notes, no version.\n");
+    const r = searchMemory("2.49.0 SLSA", { home });
+    const paths = new Set(r.hits.map((h) => h.relpath));
+    assert.ok(paths.has("memory_summary.md"), "summary keep");
+    assert.ok(paths.has("MEMORY.md"), "handbook v-prefix recovered");
+    assert.ok(!paths.has("noise.md"));
+    assert.ok(!r.warnings.some((w) => w.includes("lower confidence")), "strict v-prefix, no relax");
+    assert.ok(r.hits.some((h) => h.relpath === "MEMORY.md" && /v2\.49\.0/i.test(h.excerpt)));
+  } finally {
+    rmSync(home, { recursive: true, force: true });
+  }
+});
+
+test("memory search: c-4 LSP still excludes NaiControlsPanel when a real hit exists", () => {
+  const home = mkdtempSync(join(tmpdir(), "recall-r1-c4-"));
+  try {
+    const mem = join(home, "memories");
+    mkdirSync(mem, { recursive: true });
+    writeFileSync(join(mem, "MEMORY.md"), "# Notes\n\nTouched NaiControlsPanel and negativePrompt.\n");
+    writeFileSync(join(mem, "real.md"), "# Real\n\nThe LSP server crashed.\n");
+    const r = searchMemory("LSP", { home });
+    assert.ok(r.hits.length >= 1);
+    assert.ok(r.hits.every((h) => h.relpath === "real.md"));
+    assert.ok(!r.warnings.some((w) => w.includes("lower confidence")));
+  } finally {
+    rmSync(home, { recursive: true, force: true });
+  }
+});
+
+test("memory search: relaxes only the boundary group that missed the whole corpus", () => {
+  const home = mkdtempSync(join(tmpdir(), "recall-r1-group-miss-"));
+  try {
+    const mem = join(home, "memories");
+    mkdirSync(mem, { recursive: true });
+    writeFileSync(join(mem, "real-lsp.md"), "# Real\n\nThe LSP server crashed.\n");
+    writeFileSync(join(mem, "glued.md"), "# Glued\n\nNaiControlsPanel and PR3956 together.\n");
+    writeFileSync(join(mem, "both.md"), "# Both\n\nThe LSP server and PR3956 shipped.\n");
+    const r = searchMemory("3956 LSP", { home });
+    const paths = r.hits.map((h) => h.relpath);
+    assert.ok(paths.includes("both.md"), "substring 3956 + boundary LSP");
+    assert.ok(!paths.includes("glued.md"), "NaiControlsPanel must not satisfy LSP after group-miss relax");
+    assert.ok(!paths.includes("real-lsp.md"), "no 3956 in the standalone LSP file");
+    assert.ok(r.warnings.some((w) => w.includes("lower confidence")));
   } finally {
     rmSync(home, { recursive: true, force: true });
   }

@@ -2,18 +2,18 @@
 
 ZCode plugin surface of **[lidgeclaw](../..)**.
 
-Skills, agents, and commands are **shared** with `plugins/cursorclaw` via relative symlinks — one skill tree, two runtimes.
+Skills, agents, and commands come from `plugins/shared/` via relative symlinks — one tree, three runtimes (cursorclaw / zclaw / claudeclaw).
 
-Host-unique: `.zcode-plugin/` and `hooks/zcode-bridge.mjs`. Common state dir remains `.codexclaw/` (aligned with codexclaw).
+Host-unique: `.zcode-plugin/` and `hooks/zcode-bridge.mjs`. Common state dir remains `.codexclaw/`.
 
 ## Layout
 
 ```text
 plugins/zclaw/
   .zcode-plugin/plugin.json
-  skills/          → ../../cursorclaw/skills/*
-  agents/          → ../../cursorclaw/agents/*.md
-  commands/        → ../../cursorclaw/commands/*
+  skills/          → ../../shared/skills/*
+  agents/          → ../../shared/agents/*.md
+  commands/        → ../../shared/commands/*
   hooks/hooks.json # ZCode SessionStart → zcode-bridge.mjs
 ```
 

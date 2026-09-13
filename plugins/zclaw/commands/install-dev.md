@@ -1,1 +1,1 @@
-../../cursorclaw/commands/install-dev.md
+../../shared/commands/install-dev.md

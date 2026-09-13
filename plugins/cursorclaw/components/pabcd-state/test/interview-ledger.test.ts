@@ -13,7 +13,7 @@ import { join } from "node:path";
 // B1 (260724 WP1): the L18 reinjection resolves the `cxc` invocation per-machine,
 // so the equality assertion against RESCAN_REINJECT_DIRECTIVE needs the literal
 // pinned (each test file is its own node --test process — no restore needed).
-process.env.CURSORCLAW_CRC = "cxc";
+process.env.CURSORCLAW_CRC = "crc";
 
 import {
   captureInterviewAnswers,

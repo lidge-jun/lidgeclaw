@@ -1,1 +1,1 @@
-../../cursorclaw/commands/status.md
+../../shared/commands/status.md

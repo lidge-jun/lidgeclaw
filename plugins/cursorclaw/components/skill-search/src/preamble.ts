@@ -19,7 +19,7 @@ try {
   cxcInvocationFn = null;
 }
 function cxcInvocation(moduleUrl: string): string {
-  return cxcInvocationFn ? cxcInvocationFn(moduleUrl) : "cxc";
+  return cxcInvocationFn ? cxcInvocationFn(moduleUrl) : "crc";
 }
 
 export const ADAPTER_PREAMBLE = `[cursorclaw external skill adapter]

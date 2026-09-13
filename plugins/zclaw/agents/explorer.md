@@ -1,1 +1,1 @@
-../../cursorclaw/agents/explorer.md
+../../shared/agents/explorer.md

@@ -1,1 +1,1 @@
-../../cursorclaw/commands/doctor.md
+../../shared/commands/doctor.md

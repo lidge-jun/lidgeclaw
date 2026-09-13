@@ -171,13 +171,13 @@ export function planFilesHash(files: PlanFileHash[]): string {
 
 export function renderReviewRoundHelp(): string {
   return [
-    "cxc review-round — the opt-in A-gate plan-audit round (LEAN-REVIEW-01)",
+    "crc review-round — the opt-in A-gate plan-audit round (LEAN-REVIEW-01)",
     "",
     "Usage:",
-    "  cxc review-round open --session <id> [--plan-path <path>]... [--cwd <path>] [--json]",
-    "  cxc review-round show --session <id> [--cwd <path>] [--json]",
-    "  cxc review-round abort --session <id> [--reason <text>] [--cwd <path>]",
-    "  cxc review-round --help",
+    "  crc review-round open --session <id> [--plan-path <path>]... [--cwd <path>] [--json]",
+    "  crc review-round show --session <id> [--cwd <path>] [--json]",
+    "  crc review-round abort --session <id> [--reason <text>] [--cwd <path>]",
+    "  crc review-round --help",
     "",
     "Notes:",
     "  A round is OPTIONAL. With no round open, A>B advances on the attest alone.",
@@ -196,8 +196,8 @@ function renderOpenPacket(round: ReviewRoundState, fileCount: number): string {
     "",
     `Round ${round.roundId} is in flight over ${fileCount} file(s).`,
     v2SpawnSurface()
-      ? "Dispatch an independent reviewer (agent_type explorer) and require it to end its"
-      : "Dispatch an independent reviewer and require it to end its",
+      ? "Dispatch an independent reviewer (agent_type \"reviewer\" if exposed; otherwise agent_type \"explorer\" with CXC-ROLE: reviewer before TASK:; if the host has no agent_type field, omit agent_type and prepend CXC-ROLE: reviewer before TASK:) and require it to end its"
+      : "Dispatch an independent reviewer (agent_type \"reviewer\" if exposed; otherwise agent_type \"explorer\" with CXC-ROLE: reviewer before TASK:; if the host has no agent_type field, omit agent_type and prepend CXC-ROLE: reviewer before TASK:) and require it to end its",
     "final message with exactly these two lines:",
     "",
     `  LAUNCH: ${launchId}`,

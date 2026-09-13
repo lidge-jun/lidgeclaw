@@ -197,7 +197,7 @@ function linkSafePath(p: string): boolean {
  */
 export function skillMention(skillsDir: string, folder: string): string {
   const item = skillItem(skillsDir, folder);
-  return linkSafePath(item.path) ? `[$${item.name}](skill://${item.path})` : `$codexclaw:${item.name}`;
+  return linkSafePath(item.path) ? `[$crc-${folder}](skill://${item.path})` : `$cursorclaw:${folder}`;
 }
 
 /**

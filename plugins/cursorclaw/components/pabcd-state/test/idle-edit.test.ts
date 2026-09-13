@@ -7,7 +7,7 @@ import { join } from "node:path";
 // B1 (260724 WP1): the advisory resolves the `cxc` invocation per-machine. Pin the
 // literal so the command assertion stays deterministic without `cxc` on PATH
 // (each test file is its own node --test process — no restore needed).
-process.env.CURSORCLAW_CRC = "cxc";
+process.env.CURSORCLAW_CRC = "crc";
 
 import { handleIdleEditAdvisory } from "../src/idle-edit.ts";
 import { writeState, readState, defaultState } from "../src/state.ts";
